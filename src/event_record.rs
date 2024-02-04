@@ -1,6 +1,6 @@
 use crate::event_type::EventType;
 
-struct RawEventRecord<T> {
+pub struct RawEventRecord<T> {
     time: u64,
     event_type: EventType,
 }

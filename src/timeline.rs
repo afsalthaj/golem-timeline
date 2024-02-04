@@ -1,15 +1,6 @@
-use crate::event_type::EventType;
 use crate::event_predicate::EventPredicate;
-use crate::value::Value;
 use std::time::{UNIX_EPOCH};
-
-
-
-struct TimeLinePoint<T> {
-    t1: u64,
-    t2: u64,
-    value: T
-}
+use crate::timeline_point::TimeLinePoint;
 
 pub struct TimeLine<T> {
     // we dont use any backend here, but a mere state of the timeline.
@@ -49,51 +40,6 @@ impl<T> TimeLine<T> {
 
 }
 
-struct Constant {
-    value: Value
-}
-
-// A timeline stream is essentially corresponding to the original timeine
-// in the paper
-// A timeline stream is essentially a worker
-// Convert to GADT for better typesafety
-enum TimeLineOp<T> {
-    // Essentially based on paper, there is only numerical timeline and state dynamic timeline
-    // A state dynamic is pretty much state that is dynamic. Consider this as a constant value
-    // during the timeline, while numerical keeps moving
-    // A numerical timeline essentially cannot be pattern matched, as it is a continuous value
-    EqualTo(TimeLineOp<T>, T),
-    GreaterThan(TimeLineOp<T>, T),
-    LessThan(TimeLineOp<T>, T),
-    And(TimeLineOp<T>, TimeLineOp<T>),
-    Or(TimeLineOp<T>, TimeLineOp<T>),
-    Not(TimeLineOp<T>),
-    TlHasExisted(TimeLineOp<T>, EventPredicate),
-    TlHasExistedWithin(TimeLineOp<T>, EventPredicate),
-    TlLatestEventToState(TimeLineOp<T>, EventPredicate),
-    TlDurationWhere(TimeLineOp<T>, EventPredicate),
-    TlDurationInCurState(TimeLineOp<T>),
-}
-
-impl<T> TimeLineOp<T> {
-    fn evaluate(&self) -> TimeLine<T> {
-        unimplemented!("evaluate not implemented")
-    }
-}
-
-enum EventStream {
-    InMemoryEvents(Vec<RawEventRecord<Value>>),
-}
-
-impl Iterator for EventStream {
-    type Item = RawEventRecord<Value>;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        match self {
-            EventStream::InMemoryEvents(events) => events.pop(),
-        }
-    }
-}
 
 // Each o the below functions invokes a worker
 // Each worker is responsible for forgetting past beyond an extent
