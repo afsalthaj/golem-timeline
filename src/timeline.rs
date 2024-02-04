@@ -21,6 +21,8 @@ struct TimeLine<T> {
     value: T
 }
 
+// A timeline stream is essentially corresponding to the original timeine
+// in the paper
 enum TimeLineStream<T> {
     // Essentially based on paper, there is only numerical timeline and state dynamic timeline
     // A state dynamic is pretty much state that is dynamic. Consider this as a constant value
@@ -56,4 +58,11 @@ fn tl_has_existed<T>() -> TimeLineStream<T> {
 // t9-t13: true
 fn tl_has_existed_within<T>() -> TimeLineStream<T> {
     unimplemented!("tl_has_existed_within not implemented")
+}
+
+
+// This is more or less making number of events to a very simple
+// timeline
+fn tl_latest_event_to_state<T>() -> TimeLineStream<T> {
+    unimplemented!("tl_latest_event_to_state not implemented")
 }
