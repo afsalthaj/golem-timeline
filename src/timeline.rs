@@ -1,27 +1,52 @@
 use crate::event_type::EventType;
 use crate::event_predicate::EventPredicate;
 use crate::value::Value;
+use std::time::{UNIX_EPOCH};
 
-struct TimeLineRecord<T> {
-    time: f64,
-    event_type: EventType,
+
+
+struct TimeLinePoint<T> {
+    t1: u64,
+    t2: u64,
     value: T
 }
 
-impl<T> TimeLineRecord<T> {
-    fn new(time: f64, event_type: EventType, value: f64) -> TimeLineRecord<T> {
-        TimeLineRecord {
-            time,
-            event_type,
-            value
+pub struct TimeLine<T> {
+    // we dont use any backend here, but a mere state of the timeline.
+    // Flushing of this vector can involve storing it to postgres if needed
+    points: Vec<TimeLinePoint<T>>
+}
+
+impl<T> Default for TimeLine<T> {
+    fn default() -> Self {
+        TimeLine {
+            points: vec![]
         }
     }
 }
 
-struct TimeLine<T> {
-    t1: f64,
-    t2: f64,
-    value: T
+impl<T> TimeLine<T> {
+  fn add_point(&mut self, end_time: u64, value: T) -> &mut TimeLine<T> {
+      if self.points.is_empty() {
+            self.points.push(TimeLinePoint {
+                // epoch starting time
+                t1: UNIX_EPOCH.elapsed().unwrap().as_secs(),
+                t2: end_time,
+                value
+            });
+          self
+      } else {
+          let last_point = self.points.last().unwrap();
+          self.points.push(TimeLinePoint {
+              t1: last_point.t2,
+              t2: end_time,
+              value
+          });
+
+          self
+      }
+  }
+
 }
 
 struct Constant {
@@ -31,19 +56,43 @@ struct Constant {
 // A timeline stream is essentially corresponding to the original timeine
 // in the paper
 // A timeline stream is essentially a worker
-enum TimeLineStream<T> {
+// Convert to GADT for better typesafety
+enum TimeLineOp<T> {
     // Essentially based on paper, there is only numerical timeline and state dynamic timeline
     // A state dynamic is pretty much state that is dynamic. Consider this as a constant value
     // during the timeline, while numerical keeps moving
     // A numerical timeline essentially cannot be pattern matched, as it is a continuous value
-    Numerical(TimeLine<T>),
-    StateDynamic(TimeLine<T>),
-    EqualTo(TimeLineStream<T>, T),
-    GreaterThan(TimeLineStream<T>, T),
-    LessThan(TimeLineStream<T>, T),
-    And(TimeLineStream<T>, TimeLineStream<T>),
-    Or(TimeLineStream<T>, TimeLineStream<T>),
-    Not(TimeLineStream<T>)
+    EqualTo(TimeLineOp<T>, T),
+    GreaterThan(TimeLineOp<T>, T),
+    LessThan(TimeLineOp<T>, T),
+    And(TimeLineOp<T>, TimeLineOp<T>),
+    Or(TimeLineOp<T>, TimeLineOp<T>),
+    Not(TimeLineOp<T>),
+    TlHasExisted(TimeLineOp<T>, EventPredicate),
+    TlHasExistedWithin(TimeLineOp<T>, EventPredicate),
+    TlLatestEventToState(TimeLineOp<T>, EventPredicate),
+    TlDurationWhere(TimeLineOp<T>, EventPredicate),
+    TlDurationInCurState(TimeLineOp<T>),
+}
+
+impl<T> TimeLineOp<T> {
+    fn evaluate(&self) -> TimeLine<T> {
+        unimplemented!("evaluate not implemented")
+    }
+}
+
+enum EventStream {
+    InMemoryEvents(Vec<RawEventRecord<Value>>),
+}
+
+impl Iterator for EventStream {
+    type Item = RawEventRecord<Value>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        match self {
+            EventStream::InMemoryEvents(events) => events.pop(),
+        }
+    }
 }
 
 // Each o the below functions invokes a worker
@@ -58,8 +107,8 @@ enum TimeLineStream<T> {
 // Output
 // t1-t2: false
 // t2-t3: true
-fn tl_has_existed<T>(event_predicate: EventPredicate) -> TimeLineStream<bool> {
-    unimplemented!("tl_has_existed not implemented")
+fn tl_has_existed<T>(event_stream: event_predicate: EventPredicate) -> TimeLine<bool> {
+
 }
 
 // This is more of tracking a StateDynamic event, as a cumulative OR

@@ -56,7 +56,16 @@ fn col(event: &str) -> EventIndex {
 
 
 struct EventValue {
-    value: Value
+    pub value: Value
+}
+
+impl EventValue {
+    fn to_string(self) -> String {
+        match self.value {
+            Value::StringValue(value) => value,
+            _ => panic!("Value is not a string")
+        }
+    }
 }
 
 pub fn string_value(value: &str) -> EventValue {
@@ -77,6 +86,7 @@ pub fn float_value(value: f64) -> EventValue {
     }
 }
 
+// Event predicate can be inspected to filter which event to include in the timeline
 pub enum EventPredicate {
     Equals(EventIndex, EventValue),
     GreaterThan(EventIndex, EventValue),
