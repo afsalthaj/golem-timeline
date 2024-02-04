@@ -1,25 +1,27 @@
 use crate::event_record::RawEventRecord;
 use crate::value::Value;
 
-enum EventStream {
-    InMemoryEvents(Vec<RawEventRecord<Value>>),
+
+pub enum EventStream {
+    InMemoryEvents(InMemoryEventStream),
+}
+
+
+struct InMemoryEventStream {
+    pub events: Vec<RawEventRecord<Value>>,
 }
 
 // Forward iterator for the event stream
-impl Iterator for EventStream {
+impl Iterator for InMemoryEventStream {
     type Item = RawEventRecord<Value>;
 
     fn next(&mut self) -> Option<Self::Item> {
-        match self {
-            EventStream::InMemoryEvents(events) => {
-                // Check if there are events in the vector
-                if events.is_empty() {
-                    None // If the vector is empty, return None
-                } else {
-                    // If there are events, remove and return the first one
-                    Some(events.remove(0))
-                }
-            }
+        if self.events.is_empty() {
+            None // If the vector is empty, return None
+        } else {
+            // If there are events, remove and return the first one
+            Some(self.events.remove(0))
         }
+
     }
 }

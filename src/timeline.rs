@@ -17,7 +17,7 @@ impl<T> Default for TimeLine<T> {
 }
 
 impl<T> TimeLine<T> {
-  fn add_point(&mut self, end_time: u64, value: T) -> &mut TimeLine<T> {
+  pub fn add_info(&mut self, end_time: u64, value: T) -> &mut TimeLine<T> {
       if self.points.is_empty() {
             self.points.push(TimeLinePoint {
                 // epoch starting time
@@ -37,27 +37,5 @@ impl<T> TimeLine<T> {
           self
       }
   }
-
 }
 
-
-fn tl_has_existed<T>(event_stream: event_predicate: EventPredicate) -> TimeLine<bool> {
-
-}
-
-fn tl_has_existed_within<T>(event_predicate: EventPredicate) -> TimeLineStream<bool> {
-    unimplemented!("tl_has_existed_within not implemented")
-}
-
-
-fn tl_latest_event_to_state<T>(event_predicate: EventPredicate) -> TimeLineStream<bool> {
-    unimplemented!("tl_latest_event_to_state not implemented")
-}
-
-fn tl_duration_where<T>(event_predicate: EventPredicate) -> TimeLineStream<u64> {
-    unimplemented!("tl_duration_where not implemented")
-}
-
-fn tl_duration_in_cur_state<T>() -> TimeLineStream<u64> {
-    unimplemented!("tl_duration_in_cur_state not implemented")
-}

@@ -1,8 +1,9 @@
 use crate::event_predicate::EventPredicate;
 use crate::timeline::TimeLine;
+use crate::event_stream::EventStream;
 
 // In paper, it is referred as object DAG
-enum TimeLineOp<T> {
+pub enum TimeLineOp<T> {
     // Essentially based on paper, there is only numerical timeline and state dynamic timeline
     // A state dynamic is pretty much state that is dynamic. Consider this as a constant value
     // At this stage of development, I am not thinking of state dynamic in TimeLineOp, as I am not
@@ -10,6 +11,7 @@ enum TimeLineOp<T> {
     // during the timeline, while numerical keeps moving
     // A numerical timeline essentially cannot be pattern matched, as it is a continuous value
     // Refer paper to understand what these operations are
+    Leaf(EventStream),
     EqualTo(TimeLineOp<T>, T),
     GreaterThan(TimeLineOp<T>, T),
     LessThan(TimeLineOp<T>, T),
@@ -82,5 +84,25 @@ enum TimeLineOp<T> {
 impl<T> TimeLineOp<T> {
     fn evaluate(&self) -> TimeLine<T> {
         unimplemented!("evaluate not implemented")
+    }
+
+   fn tl_has_existed(self, event_predicate: EventPredicate) -> TimeLineOp<bool> {
+        TimeLineOp::TlHasExisted(self, event_predicate)
+    }
+
+    fn tl_has_existed_within(self, event_predicate: EventPredicate) -> TimeLineOp<bool> {
+        TimeLineOp::TlHasExistedWithin(self, event_predicate)
+    }
+
+    fn tl_latest_event_to_state(self, event_predicate: EventPredicate) -> TimeLineOp<bool> {
+        TimeLineOp::TlLatestEventToState(self, event_predicate)
+    }
+
+    fn tl_duration_where(self, event_predicate: EventPredicate) -> TimeLineOp<u64> {
+        TimeLineOp::TlDurationWhere(self, event_predicate)
+    }
+
+    fn tl_duration_in_cur_state(self) -> TimeLineOp<u64> {
+        TimeLineOp::TlDurationInCurState(self)
     }
 }
