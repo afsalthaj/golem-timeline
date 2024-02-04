@@ -1,4 +1,5 @@
 use crate::event_predicate::EventPredicate;
+use crate::timeline::TimeLine;
 
 // In paper, it is referred as object DAG
 enum TimeLineOp<T> {
