@@ -1,0 +1,4 @@
+enum BackEnd {
+  Golem,
+  InMemory
+}

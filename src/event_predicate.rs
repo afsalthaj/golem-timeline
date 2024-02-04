@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use crate::value::Value;
 
 // More closer to state dynamic event
 #[derive(Clone)]
@@ -54,38 +54,30 @@ fn col(event: &str) -> EventIndex {
     }
 }
 
-// Not attaining greater typesafety here
-// just a helper for the user to clearly specify the type for readability of the DSL
-// col("age") > 10
-enum Value {
-    StringValue(String),
-    IntValue(i64),
-    FloatValue(f64),
-}
 
 struct EventValue {
     value: Value
 }
 
-fn string_value(value: &str) -> EventValue {
+pub fn string_value(value: &str) -> EventValue {
     EventValue {
         value: Value::StringValue(value.to_string())
     }
 }
 
-fn int_value(value: i64) -> EventValue {
+pub fn int_value(value: i64) -> EventValue {
     EventValue {
         value: Value::IntValue(value)
     }
 }
 
-fn float_value(value: f64) -> EventValue {
+pub fn float_value(value: f64) -> EventValue {
     EventValue {
         value: Value::FloatValue(value)
     }
 }
 
-enum EventPredicate {
+pub enum EventPredicate {
     Equals(EventIndex, EventValue),
     GreaterThan(EventIndex, EventValue),
     LessThan(EventIndex, EventValue),
@@ -94,11 +86,11 @@ enum EventPredicate {
 }
 
 impl EventPredicate {
-    fn and(self, other: EventPredicate) -> EventPredicate {
+    pub fn and(self, other: EventPredicate) -> EventPredicate {
         EventPredicate::And(self, other)
     }
 
-    fn or(self, other: EventPredicate) -> EventPredicate {
+    pub fn or(self, other: EventPredicate) -> EventPredicate {
         EventPredicate::Or(self, other)
     }
 }
