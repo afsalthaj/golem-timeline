@@ -7,7 +7,7 @@ use crate::value::Value;
 pub struct TimeLine {
     // we dont use any backend here, but a mere state of the timeline.
     // Flushing of this vector can involve storing it to postgres if needed
-    points: Vec<TimeLinePoint>
+    pub points: Vec<TimeLinePoint>
 }
 
 impl Default for TimeLine {

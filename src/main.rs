@@ -1,12 +1,11 @@
 use std::sync::Arc;
 use timeline::backend::{BackEnd};
-use timeline::worker_sink::{InMemoryWorkerSink};
+use timeline::worker_sink::{InMemoryWorkerInvoke};
 use timeline::event_record::RawEventRecord;
 use timeline::event_stream::EventStream;
 use timeline::event_type::EventType;
 use timeline::timeline_execution::TimeLineExecution;
-use timeline::worker_sink::WorkerSink;
-
+use chrono::{DateTime, NaiveDateTime, Utc};
 fn main() {
     print!("Golem TimeLine");
 
@@ -158,12 +157,31 @@ fn main() {
 
     let time_line_op = timeline::timeline_op::TimeLineOp::Leaf(event_stream);
 
-    let mut in_memory_workers = std::sync::Arc::new(std::sync::Mutex::new(InMemoryWorkerSink::new()));
+    let mut in_memory_workers = std::sync::Arc::new(std::sync::Mutex::new(InMemoryWorkerInvoke::new()));
     let in_memory_backend = BackEnd::InMemory(Arc::clone(&in_memory_workers));
     time_line_op.run(in_memory_backend);
 
     let locked_workers = in_memory_workers.lock().unwrap();
+
+    // 2024-02-05T08:14:22Z 2023-01-01T00:00:00Z "play"
+    // 2023-01-01T00:00:00Z 2023-01-01T00:01:00Z "pause"
+    // 2023-01-01T00:01:00Z 2023-01-01T00:02:00Z "seek"
+    // 2023-01-01T00:02:00Z 2023-01-01T00:03:00Z "buffer"
+    // 2023-01-01T00:03:00Z 2023-01-01T00:04:00Z "play"
+    // 2023-01-01T00:04:00Z 2023-01-01T00:07:00Z "buffer"
+    // 2023-01-01T00:07:00Z 2023-01-01T00:08:00Z "play"
+    // 2023-01-01T00:08:00Z 2023-01-01T00:10:00Z "seek"
+    // 2023-01-01T00:10:00Z 2023-01-01T00:11:00Z "buffer"
     for worker in locked_workers.workers() {
-        println!("{:?}", worker.timeline);
+        for i in worker.timeline.points.iter() {
+            println!("{:?} {:?} {:?}", timestamp_to_datetime(i.t1 as i64), timestamp_to_datetime(i.t2 as i64), i.value.to_string());
+        }
     }
+}
+
+fn timestamp_to_datetime(timestamp: i64) -> DateTime<Utc> {
+    // Convert the timestamp to a NaiveDateTime (seconds since Unix epoch)
+    let naive_datetime = NaiveDateTime::from_timestamp_opt(timestamp, 0);
+    // Convert the NaiveDateTime to a DateTime<Utc>
+    DateTime::<Utc>::from_naive_utc_and_offset(naive_datetime.unwrap(), Utc)
 }

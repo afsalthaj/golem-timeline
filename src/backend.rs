@@ -1,7 +1,7 @@
 use std::sync::{Arc, Mutex};
-use crate::worker_sink::InMemoryWorkerSink;
+use crate::worker_sink::InMemoryWorkerInvoke;
 
 pub enum BackEnd {
   Golem,
-  InMemory(Arc<Mutex<InMemoryWorkerSink>>),
+  InMemory(Arc<Mutex<InMemoryWorkerInvoke>>),
 }

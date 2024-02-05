@@ -9,9 +9,9 @@ pub enum Value {
 }
 
 impl Value {
-    pub fn to_string(self) -> String {
+    pub fn to_string(&self) -> String {
         match self {
-            Value::StringValue(value) => value,
+            Value::StringValue(value) => value.clone(),
             _ => panic!("Value is not a string")
         }
     }
