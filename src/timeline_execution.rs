@@ -2,11 +2,11 @@ use crate::timeline::TimeLine;
 use crate::timeline_op::TimeLineOp;
 use crate::event_stream::EventStream;
 use crate::backend::{BackEnd};
-use crate::backend::WorkerSink;
+use crate::worker_sink::WorkerSink;
 use crate::value::Value;
 use crate::worker::{Worker, WorkerKey};
 
-trait TimeLineExecution {
+pub trait TimeLineExecution {
      fn run(&self, back_end: BackEnd);
 }
 

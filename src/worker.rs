@@ -6,7 +6,7 @@ pub struct Worker {
     pub timeline: TimeLine
 }
 
-#[derive(Clone, PartialEq, Eq, Hash)]
+#[derive(Clone, PartialEq, Eq, Hash, Debug)]
 pub struct WorkerKey {
     // A time line is a worker
     pub time_line_op_name: String,

@@ -7,7 +7,7 @@ pub struct RawEventRecord {
 }
 
 impl RawEventRecord {
-    fn new(key: String, time: u64, event_type: EventType) -> RawEventRecord {
+    pub fn new(key: String, time: u64, event_type: EventType) -> RawEventRecord {
         RawEventRecord {
             time,
             event_type,

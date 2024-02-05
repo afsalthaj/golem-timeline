@@ -3,6 +3,7 @@ use std::time::{UNIX_EPOCH};
 use crate::timeline_point::TimeLinePoint;
 use crate::value::Value;
 
+#[derive(Clone, Debug)]
 pub struct TimeLine {
     // we dont use any backend here, but a mere state of the timeline.
     // Flushing of this vector can involve storing it to postgres if needed
