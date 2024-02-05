@@ -4,6 +4,10 @@ Forget imperative style and extremely complex and hefty data piplelines and stre
 
 https://www.cidrdb.org/cidr2023/papers/p22-milner.pdf
 
+The project begins with building the library to get the following DSL working
+
+<img width="675" alt="image" src="https://github.com/afsalthaj/golem-timeline/assets/7448613/f31587dd-ec03-4298-8dfe-9f436ac03345">
+
 
 ### Events Structure
 
