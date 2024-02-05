@@ -1,14 +1,15 @@
 use crate::event_predicate::EventPredicate;
 use std::time::{UNIX_EPOCH};
 use crate::timeline_point::TimeLinePoint;
+use crate::value::Value;
 
-pub struct TimeLine<T> {
+pub struct TimeLine {
     // we dont use any backend here, but a mere state of the timeline.
     // Flushing of this vector can involve storing it to postgres if needed
-    points: Vec<TimeLinePoint<T>>
+    points: Vec<TimeLinePoint>
 }
 
-impl<T> Default for TimeLine<T> {
+impl Default for TimeLine {
     fn default() -> Self {
         TimeLine {
             points: vec![]
@@ -16,8 +17,8 @@ impl<T> Default for TimeLine<T> {
     }
 }
 
-impl<T> TimeLine<T> {
-  pub fn add_info(&mut self, end_time: u64, value: T) -> &mut TimeLine<T> {
+impl TimeLine {
+  pub fn add_info(&mut self, end_time: u64, value: Value) -> &mut TimeLine {
       if self.points.is_empty() {
             self.points.push(TimeLinePoint {
                 // epoch starting time

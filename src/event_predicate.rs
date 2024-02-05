@@ -38,20 +38,10 @@ fn event(column_name: &str) -> EventIndex {
         column_of_action: column_name.to_string()
     })
 }
-
-// Bring typesafety
-// A string can be action or state
-// col("state") == "buffer" && col("action") == "seek"
-fn col(event: &str) -> EventIndex {
-    if event.contains("state") {
-        EventIndex::StateDynamic(EventState {
-            column_of_state: event.to_string()
-        })
-    } else {
-        EventIndex::Event(EventAction {
-            column_of_action: event.to_string()
-        })
-    }
+fn action(column_name: &str) -> EventIndex {
+    EventIndex:: StateDynamic (EventState {
+        column_of_state: column_name.to_string()
+    })
 }
 
 
@@ -91,16 +81,16 @@ pub enum EventPredicate {
     Equals(EventIndex, EventValue),
     GreaterThan(EventIndex, EventValue),
     LessThan(EventIndex, EventValue),
-    And(EventPredicate, EventPredicate),
-    Or(EventPredicate, EventPredicate),
+    And(Box<EventPredicate>, Box<EventPredicate>),
+    Or(Box<EventPredicate>, Box<EventPredicate>),
 }
 
 impl EventPredicate {
     pub fn and(self, other: EventPredicate) -> EventPredicate {
-        EventPredicate::And(self, other)
+        EventPredicate::And(Box::new(self), Box::new(other))
     }
 
     pub fn or(self, other: EventPredicate) -> EventPredicate {
-        EventPredicate::Or(self, other)
+        EventPredicate::Or(Box::new(self), Box::new(other))
     }
 }

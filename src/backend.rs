@@ -1,34 +1,40 @@
-use std::collections::HashMap;
-use crate::event_stream::EventStream;
-use crate::event_type::EventType;
-use crate::timeline::TimeLine;
-use crate::timeline_op::TimeLineOp;
-use crate::value::Value;
+use std::sync::{Arc, Mutex};
+use crate::worker::{Worker, WorkerKey};
 
 pub enum BackEnd {
   Golem,
-  InMemory(Box<dyn InMemorySink>)
+  InMemory(Arc<Mutex<InMemoryWorkerSink>>),
 }
 
-// Every timeline or event is associated with some sort of a key
-type EntityKey = String;
-type TimeLineOpHash = String;
-type InMemoryKey = (EntityKey, TimeLineOpHash, EventType);
-
-pub trait InMemorySink {
-  fn add(mut self, key: InMemoryKey, time: u64, value: Value);
+pub struct InMemoryWorkerSink {
+  pub workers: Vec<Worker>,
 }
 
-struct InMemorySinkDefault {
-  pub timelines:  HashMap<InMemoryKey, TimeLine<Value>>
-}
-
-impl InMemorySink for InMemorySinkDefault {
-  fn add(mut self, key: InMemoryKey, time: u64, value: Value) {
-    let timeline = self.timelines.entry(key).or_insert_with(|| {
-         TimeLine::default()
-    });
-     timeline.add_info(time, value);
-
+// Implement methods for InMemoryWorkerSink
+impl InMemoryWorkerSink {
+  fn new() -> Self {
+    // Initialize with an empty vector of workers
+    InMemoryWorkerSink { workers: Vec::new() }
   }
+}
+// Define a trait for an in-memory sink
+pub trait WorkerSink {
+  fn add_worker(&mut self, worker: Worker);
+  fn workers(&self) -> &Vec<Worker>;
+  fn get_worker_mut(&mut self, worker_key: &WorkerKey) -> Option<&mut Worker>;
+}
+
+impl WorkerSink for InMemoryWorkerSink {
+  fn add_worker(&mut self, worker: Worker) {
+    // Add the worker to the vector
+    self.workers.push(worker);
+  }
+
+  fn workers(&self) -> &Vec<Worker> {
+    // Return a reference to the vector of workers
+    &self.workers
+  }
+
+  fn get_worker_mut(&mut self, key: &WorkerKey) -> Option<&mut Worker> {
+    self.workers.iter_mut().find(|worker| worker.key == key.clone())  }
 }
