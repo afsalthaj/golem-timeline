@@ -1,8 +1,8 @@
 use crate::timeline_op::TimeLineOp;
 use crate::event_stream::EventStream;
 use crate::backend::{BackEnd};
-use crate::worker_sink::InvokeWorker;
-use crate::worker::{WorkerKey};
+use crate::worker_timeline_data::InvokeWorker;
+use crate::worker_timeline::{WorkerKey};
 
 pub trait TimeLineExecution {
      fn run(&self, back_end: BackEnd);

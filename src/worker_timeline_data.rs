@@ -1,6 +1,6 @@
 use crate::event_record::RawEventRecord;
 use crate::timeline::TimeLine;
-use crate::worker::{Worker, WorkerKey};
+use crate::worker_timeline::{WorkerTimeLineData, WorkerKey};
 
 // Interface to invoke worker and update timeline
 pub trait InvokeWorker {
@@ -9,7 +9,7 @@ pub trait InvokeWorker {
 
 
 pub struct InMemoryWorkerInvoke {
-    pub workers: Vec<Worker>,
+    pub workers: Vec<WorkerTimeLineData>,
 }
 
 // Implement methods for InMemoryWorkerSink
@@ -19,12 +19,12 @@ impl InMemoryWorkerInvoke {
         InMemoryWorkerInvoke { workers: Vec::new() }
     }
 
-    pub fn workers(&self) -> &Vec<Worker> {
+    pub fn workers(&self) -> &Vec<WorkerTimeLineData> {
         // Return a reference to the vector of workers
         &self.workers
     }
 
-    pub fn get_worker_mut(&mut self, key: &WorkerKey) -> Option<&mut Worker> {
+    pub fn get_worker_mut(&mut self, key: &WorkerKey) -> Option<&mut WorkerTimeLineData> {
         self.workers.iter_mut().find(|worker| worker.key == key.clone())  }
 }
 
@@ -40,7 +40,7 @@ impl InvokeWorker for InMemoryWorkerInvoke {
             None => {
                 let mut timeline = TimeLine::default();
                 timeline.add_info(event.time, event.event_type.to_value());
-                let worker = Worker {
+                let worker = WorkerTimeLineData {
                     key: worker_key.clone(),
                     timeline
                 };

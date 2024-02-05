@@ -1,6 +1,6 @@
 use std::sync::Arc;
 use timeline::backend::{BackEnd};
-use timeline::worker_sink::{InMemoryWorkerInvoke};
+use timeline::worker_timeline_data::{InMemoryWorkerInvoke};
 use timeline::event_record::RawEventRecord;
 use timeline::event_stream::EventStream;
 use timeline::event_type::EventType;

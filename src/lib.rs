@@ -9,5 +9,5 @@ pub mod event_stream;
 pub mod timeline_execution;
 pub mod backend;
 
-pub mod worker;
-pub mod worker_sink;
+pub mod worker_timeline;
+pub mod worker_timeline_data;

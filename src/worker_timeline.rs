@@ -1,7 +1,8 @@
 use crate::timeline::TimeLine;
 use crate::value::Value;
 
-pub struct Worker {
+// The data that each worker needs to care about
+pub struct WorkerTimeLineData {
     pub key: WorkerKey,
     pub timeline: TimeLine
 }
