@@ -83,6 +83,23 @@ pub enum TimeLineOp {
 }
 
 impl TimeLineOp {
+    fn is_boolean_timeline(&self) -> bool {
+        match self {
+            TimeLineOp::EqualTo(_, _) => true,
+            TimeLineOp::GreaterThan(_, _) => true,
+            TimeLineOp::LessThan(_, _) => true,
+            TimeLineOp::And(_, _) => true,
+            TimeLineOp::Or(_, _) => true,
+            TimeLineOp::Not(_) => true,
+            TimeLineOp::TlHasExisted(_, _) => true,
+            TimeLineOp::TlHasExistedWithin(_, _) => true,
+            TimeLineOp::TlLatestEventToState(_, _) => true,
+            _ => false
+        }
+    }
+}
+
+impl TimeLineOp {
     fn evaluate(&self) -> TimeLine {
         unimplemented!("evaluate not implemented")
     }

@@ -5,7 +5,8 @@ pub enum Value {
     StringValue(String),
     IntValue(i64),
     FloatValue(f64),
-    BooleanValue(bool)
+    BooleanValue(bool),
+    ArrayValue(Vec<Value>),
 }
 
 impl Value {

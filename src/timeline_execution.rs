@@ -3,8 +3,12 @@ use crate::event_stream::EventStream;
 use crate::backend::{BackEnd};
 use crate::worker_timeline_data::InvokeWorker;
 use crate::worker_timeline::{WorkerKey};
+use futures::{stream, Stream};
+use futures::StreamExt;
 
 pub trait TimeLineExecution {
+    // The result is a stream of stream of workers
+    // The outer stream represents
      fn run(&self, back_end: BackEnd);
 }
 
@@ -35,7 +39,7 @@ impl TimeLineExecution for TimeLineOp {
                 }
             }
 
-            _ => todo!()
+           _ => todo!()
         }
     }
 }

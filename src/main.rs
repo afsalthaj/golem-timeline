@@ -172,6 +172,37 @@ fn main() {
     // 2023-01-01T00:07:00Z 2023-01-01T00:08:00Z "play"
     // 2023-01-01T00:08:00Z 2023-01-01T00:10:00Z "seek"
     // 2023-01-01T00:10:00Z 2023-01-01T00:11:00Z "buffer"
+
+    // convert to boolean: is it ==  "play-afsal"
+    // 8.00 to 8.20 "true"
+    // 8.20 to 8.30 "false"
+    // 8.30 to 8.40 "true"
+
+
+    // convert to boolean: is it ==  "play-adam"
+    // 8.00 to 8.25 "true"
+    // 8.25 to 8.35 "false"
+    // 8.35 to 8.39 "true"
+
+    // Step 1: Line up the timelines
+    // 8.00 to 8.20 "true" "true"
+    // 8.20 to 8.25 "false" "true"
+    // 8.25 to 8.30 "false" "false"
+    // 8.30 to 8.35 "false" "true"
+    // 8.35 to 8.39 "false" "false"
+    // no data (wait for it)
+
+    // Step 2: Apply the function (And)
+    // 8.00 to 8.20 true
+    // 8.20 to 8.25 false
+    // 8.25 to 8.30 false
+    // 8.30 to 8.35 false
+    // 8.35 to 8.39 false
+
+    // Step 3: Collapse same values
+    // 8.00 to 8.20 true
+    // 8.20 to 8.39 false
+
     for worker in locked_workers.workers() {
         for i in worker.timeline.points.iter() {
             println!("{:?} {:?} {:?}", timestamp_to_datetime(i.t1 as i64), timestamp_to_datetime(i.t2 as i64), i.value.to_string());

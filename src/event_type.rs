@@ -13,6 +13,20 @@ use crate::value::Value;
 //      +----|----------------|---- t
 //           t1               t2
 //
+//   boolean
+//      |
+//     T|---------------------
+//     F|                      -----
+//      +---------------------|---- t
+//           t1               t2
+//
+// And
+////       |
+// //     T|---------------------
+// //     F|                      -----
+// //      +---------------------|---- t
+// //           t1               t2
+//
 pub enum EventType {
     // This has value at each point in continuous time, and it can be different from one to the other. It keeps changing
     Numerical(u64), // CIRR

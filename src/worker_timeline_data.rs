@@ -35,11 +35,11 @@ impl InvokeWorker for InMemoryWorkerInvoke {
 
         match worker {
             Some(worker) => {
-                worker.timeline.add_info(event.time, event.event_type.to_value());
+                worker.timeline.add_state_dynamic_info(event.time, event.event_type.to_value());
             }
             None => {
                 let mut timeline = TimeLine::default();
-                timeline.add_info(event.time, event.event_type.to_value());
+                timeline.add_state_dynamic_info(event.time, event.event_type.to_value());
                 let worker = WorkerTimeLineData {
                     key: worker_key.clone(),
                     timeline
