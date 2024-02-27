@@ -1,6 +1,6 @@
 // Represents an event or state value
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum Value {
     StringValue(String),
     IntValue(i64),

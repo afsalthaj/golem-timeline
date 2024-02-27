@@ -3,7 +3,7 @@ use std::time::{SystemTime, UNIX_EPOCH};
 use crate::timeline_point::TimeLinePoint;
 use crate::value::Value;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct TimeLine {
     // we dont use any backend here, but a mere state of the timeline.
     // Flushing of this vector can involve storing it to postgres if needed
@@ -187,8 +187,40 @@ mod tests {
             }
         });
 
+        let expected = TimeLine { points: vec![
+            // From 77 to future, they are playing a movie
+            TimeLinePoint {
+                t1: 1708997977,
+                t2: None,
+                value: Value::ArrayValue(
+                    vec![
+                        Value::StringValue(
+                            "playing".to_string(),
+                        ),
+                        Value::StringValue(
+                            "movie".to_string(),
+                        ),
+                    ],
+                ),
+            },
+            TimeLinePoint {
+                // From 75 to 77, they are playing something, but no information about whethr it was a movie or not
+                t1: 1708997975,
+                t2: Some(
+                    1708997977,
+                ),
+                value: Value::ArrayValue(
+                    vec![
+                        Value::StringValue(
+                            "playing".to_string(),
+                        ),
+                    ],
+                ),
+            },
+        ]};
+
         dbg!("The timeline is {}", result.clone());
-        assert_eq!(result.points.len(), 5);
+        assert_eq!(result, expected);
     }
 }
 
