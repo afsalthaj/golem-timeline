@@ -19,12 +19,24 @@ impl<T> Default for TimeLine<T> {
     }
 }
 
-enum ZipResult<'t> {
-    Both((&'t Value, &'t Value)),
-    Singleton(&'t Value)
+#[derive(Clone, Debug, PartialEq)]
+enum ZipResult<'t, T: Clone> {
+    Both((&'t T, &'t T)),
+    Singleton(&'t T)
 }
 
-impl<T> TimeLine<T> {
+impl<T: Clone> ZipResult<T> {
+    pub fn combine(&self, other: &ZipResult<T>) -> ZipResult<T> {
+       match (self, other) {
+           (ZipResult::Singleton(a), ZipResult::Singleton(c)) => {
+               ZipResult::Both((a, c))
+           }
+           _ => panic!("Cannot combine")
+       }
+    }
+}
+
+impl<T: std::fmt::Debug + Clone> TimeLine<T> {
 
   // Implement zip with
     // convert to boolean: is it ==  "play-afsal"
@@ -52,8 +64,8 @@ impl<T> TimeLine<T> {
     //         timeline2.add_state_dynamic_info(7, Value::StringValue("movie".to_string()));
     //         timeline2.add_state_dynamic_info(9, Value::StringValue("cartoon".to_string()));
     pub fn zip_with<F>(&self, other: &TimeLine<T>, f: F) -> TimeLine<T>
-    where F: Fn(ZipResult) -> Value {
-        let mut merged_points = Vec::new();
+    where F: Fn(&ZipResult<T>) -> Value {
+        let mut flattened_time_line_points = Vec::new();
         let mut self_iter = self.points.iter().peekable();
         let mut other_iter = other.points.iter().peekable();
 
@@ -107,7 +119,7 @@ impl<T> TimeLine<T> {
                 TimeLinePoint {
                     t1: t1x0,
                     t2: Some(t1x1),
-                    value: f(None, Some(&other_point.value))
+                    value: ZipResult::Singleton(&other_point.value)
                 }
             };
 
@@ -119,36 +131,74 @@ impl<T> TimeLine<T> {
                         let right_ex = TimeLinePoint {
                             t1: t2x0,
                             t2: t2x1,
-                            value: f(None, Some(&other_point.value))
+                            value: ZipResult::Singleton(&other_point.value)
                         };
                         dbg!("The right_ex is {}", right_ex.clone());
 
-                        merged_points.push(right_ex);
+                        flattened_time_line_points.push(right_ex);
                     } else {
                         let right_ex = TimeLinePoint {
                             t1: t2x0,
                             t2: t2x1,
-                            value: f(Some(&self_point.value), None)
+                            value: ZipResult::Singleton(&self_point.value)
                         };
 
                         dbg!("The right_ex is {}", right_ex.clone());
-                        merged_points.push(right_ex);
+                        flattened_time_line_points.push(right_ex);
                     }
                 }
                 None => {}
             }
 
-            merged_points.push(intersection);
-            merged_points.push(left_ex);
+            flattened_time_line_points.push(intersection);
+            flattened_time_line_points.push(left_ex);
+
+            flattened_time_line_points.sort_by(|a, b| a.t1.cmp(&b.t1));
+
+            let mut merged_timeline_points = vec![];
+
+            for time_line_points in flattened_time_line_points.windows(2) {
+                let left = &time_line_points.get(0);
+                let right = &time_line_points.get(1);
+
+                match (left, right) {
+                    (Some(left), Some(right)) => {
+                        if left.t1 == right.t1 && left.t2 == right.t2 {
+                            let time_line_point = TimeLinePoint {
+                                t1: left.t1,
+                                t2: left.t2,
+                                value: f(&left.value.combine(&right.value))
+                            };
+                            merged_timeline_points.push(time_line_point);
+                        } else {
+                            let time_line_point_left = TimeLinePoint {
+                                t1: left.t1,
+                                t2: left.t2,
+                                value: f(&left.value)
+                            };
+
+                            let time_line_point_right = TimeLinePoint {
+                                t1: right.t1,
+                                t2: right.t2,
+                                value: f(&right.value)
+                            };
+
+                            merged_timeline_points.push(time_line_point_left);
+                            merged_timeline_points.push(time_line_point_right);
+                        }
+                    }
+                    _ => {}
+                }
+            }
         }
 
         TimeLine {
-            points: merged_points
+            points: flattened_time_line_points
         }
     }
 
     // In a state dynamic timeline, the value is valid from t1 to t2
-  pub fn add_state_dynamic_info(&mut self, start_time: u64, value: Value) -> &mut TimeLine {
+  pub fn add_state_dynamic_info(&mut self, start_time: u64, value: T) -> &mut TimeLine<T> {
       if self.points.is_empty() {
             self.points.push(TimeLinePoint {
                 // epoch starting time
@@ -192,36 +242,25 @@ mod tests {
         // 77 to 79 "playing" "movie"     (correct)
         // 79 to 80 "playing" "cartoon"
         // 80 to Noe "pause" "cartoon"    (correct)
-        let result1 = timeline1.zip_with(&timeline2, |a, b| {
-            match (a, b) {
-                (Some(a), Some(b)) => {
-                    Value::ArrayValue(vec![a.clone(), b.clone()])
+        let result1 = timeline1.zip_with(&timeline2, |a| {
+            match a {
+                ZipResult::Both((a, b)) => {
+                    Value::ArrayValue(vec![**a, **b])
                 }
-                (Some(a), None) => {
-                    Value::ArrayValue(vec![a.clone()])
-                }
-                (None, Some(b)) => {
-                    Value::ArrayValue(vec![b.clone()])
-                }
-                (None, None) => {
-                    Value::ArrayValue(vec![])
+                ZipResult::Singleton(a) => {
+                    Value::ArrayValue(vec![**a])
                 }
             }
         });
 
-        let result2 = timeline2.zip_with(&timeline1, |a, b| {
-            match (a, b) {
-                (Some(a), Some(b)) => {
-                    Value::ArrayValue(vec![b.clone(), a.clone()])
+
+        let result2 = timeline2.zip_with(&timeline1, |a| {
+            match a {
+                ZipResult::Both((a, b)) => {
+                    Value::ArrayValue(vec![**b, **a])
                 }
-                (Some(a), None) => {
-                    Value::ArrayValue(vec![a.clone()])
-                }
-                (None, Some(b)) => {
-                    Value::ArrayValue(vec![b.clone()])
-                }
-                (None, None) => {
-                    Value::ArrayValue(vec![])
+                ZipResult::Singleton(a) => {
+                    Value::ArrayValue(vec![**a])
                 }
             }
         });
@@ -278,19 +317,13 @@ mod tests {
         // 5 to 7 "playing"
         // 7 to 8 "playing" "movie"
         // 8 to 9 "pause" "movie"
-        let result = timeline1.zip_with(&timeline2, |a, b| {
-            match (a, b) {
-                (Some(a), Some(b)) => {
-                    Value::ArrayValue(vec![a.clone(), b.clone()])
+        let result = timeline2.zip_with(&timeline1, |a| {
+            match a {
+                ZipResult::Both((a, b)) => {
+                    Value::ArrayValue(vec![**b, **a])
                 }
-                (Some(a), None) => {
-                    Value::ArrayValue(vec![a.clone()])
-                }
-                (None, Some(b)) => {
-                    Value::ArrayValue(vec![b.clone()])
-                }
-                (None, None) => {
-                    Value::ArrayValue(vec![])
+                ZipResult::Singleton(a) => {
+                    Value::ArrayValue(vec![**a])
                 }
             }
         });

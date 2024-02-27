@@ -4,7 +4,7 @@ use crate::value::Value;
 // The data that each worker needs to care about
 pub struct WorkerTimeLineData {
     pub key: WorkerKey,
-    pub timeline: TimeLine
+    pub timeline: TimeLine<Value>
 }
 
 #[derive(Clone, PartialEq, Eq, Hash, Debug)]

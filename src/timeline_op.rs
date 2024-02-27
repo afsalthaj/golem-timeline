@@ -100,7 +100,7 @@ impl TimeLineOp {
 }
 
 impl TimeLineOp {
-    fn evaluate(&self) -> TimeLine {
+    fn evaluate(&self) -> TimeLine<Value> {
         unimplemented!("evaluate not implemented")
     }
 
