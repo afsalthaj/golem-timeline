@@ -25,8 +25,8 @@ enum ZipResult<'t, T: Clone> {
     Singleton(&'t T)
 }
 
-impl<T: Clone> ZipResult<T> {
-    pub fn combine(&self, other: &ZipResult<T>) -> ZipResult<T> {
+impl<'t, T: Clone> ZipResult<'t, T> {
+    pub fn combine(&'t self, other: &'t ZipResult<T>) -> ZipResult<T> {
        match (self, other) {
            (ZipResult::Singleton(a), ZipResult::Singleton(c)) => {
                ZipResult::Both((a, c))
@@ -64,10 +64,11 @@ impl<T: std::fmt::Debug + Clone> TimeLine<T> {
     //         timeline2.add_state_dynamic_info(7, Value::StringValue("movie".to_string()));
     //         timeline2.add_state_dynamic_info(9, Value::StringValue("cartoon".to_string()));
     pub fn zip_with<F>(&self, other: &TimeLine<T>, f: F) -> TimeLine<T>
-    where F: Fn(&ZipResult<T>) -> Value {
-        let mut flattened_time_line_points = Vec::new();
+    where F: Fn(&ZipResult<T>) -> T {
+        let mut flattened_time_line_points: Vec<TimeLinePoint<ZipResult<T>>> = Vec::new();
         let mut self_iter = self.points.iter().peekable();
         let mut other_iter = other.points.iter().peekable();
+        let mut merged_timeline_points = vec![];
 
         while self_iter.peek().is_some() && other_iter.peek().is_some() {
             let self_point = self_iter.next().unwrap();
@@ -154,46 +155,44 @@ impl<T: std::fmt::Debug + Clone> TimeLine<T> {
             flattened_time_line_points.push(left_ex);
 
             flattened_time_line_points.sort_by(|a, b| a.t1.cmp(&b.t1));
+        }
 
-            let mut merged_timeline_points = vec![];
+        for time_line_points in flattened_time_line_points.windows(2) {
+            let left = &time_line_points.get(0);
+            let right = &time_line_points.get(1);
 
-            for time_line_points in flattened_time_line_points.windows(2) {
-                let left = &time_line_points.get(0);
-                let right = &time_line_points.get(1);
+            match (left, right) {
+                (Some(left), Some(right)) => {
+                    if left.t1 == right.t1 && left.t2 == right.t2 {
+                        let time_line_point = TimeLinePoint {
+                            t1: left.t1,
+                            t2: left.t2,
+                            value: f(&left.value.combine(&right.value))
+                        };
+                        merged_timeline_points.push(time_line_point);
+                    } else {
+                        let time_line_point_left = TimeLinePoint {
+                            t1: left.t1,
+                            t2: left.t2,
+                            value: f(&left.value)
+                        };
 
-                match (left, right) {
-                    (Some(left), Some(right)) => {
-                        if left.t1 == right.t1 && left.t2 == right.t2 {
-                            let time_line_point = TimeLinePoint {
-                                t1: left.t1,
-                                t2: left.t2,
-                                value: f(&left.value.combine(&right.value))
-                            };
-                            merged_timeline_points.push(time_line_point);
-                        } else {
-                            let time_line_point_left = TimeLinePoint {
-                                t1: left.t1,
-                                t2: left.t2,
-                                value: f(&left.value)
-                            };
+                        let time_line_point_right = TimeLinePoint {
+                            t1: right.t1,
+                            t2: right.t2,
+                            value: f(&right.value)
+                        };
 
-                            let time_line_point_right = TimeLinePoint {
-                                t1: right.t1,
-                                t2: right.t2,
-                                value: f(&right.value)
-                            };
-
-                            merged_timeline_points.push(time_line_point_left);
-                            merged_timeline_points.push(time_line_point_right);
-                        }
+                        merged_timeline_points.push(time_line_point_left);
+                        merged_timeline_points.push(time_line_point_right);
                     }
-                    _ => {}
                 }
+                _ => {}
             }
         }
 
         TimeLine {
-            points: flattened_time_line_points
+            points: merged_timeline_points
         }
     }
 
@@ -245,10 +244,13 @@ mod tests {
         let result1 = timeline1.zip_with(&timeline2, |a| {
             match a {
                 ZipResult::Both((a, b)) => {
-                    Value::ArrayValue(vec![**a, **b])
+                    let a0 = a.clone().clone();
+                    let b0 = a.clone().clone();
+                    Value::ArrayValue(vec![a0, b0])
                 }
                 ZipResult::Singleton(a) => {
-                    Value::ArrayValue(vec![**a])
+                    let a0 = a.clone().clone();
+                    Value::ArrayValue(vec![a0])
                 }
             }
         });
@@ -257,10 +259,13 @@ mod tests {
         let result2 = timeline2.zip_with(&timeline1, |a| {
             match a {
                 ZipResult::Both((a, b)) => {
-                    Value::ArrayValue(vec![**b, **a])
+                    let a0 = a.clone().clone();
+                    let b0 = a.clone().clone();
+                    Value::ArrayValue(vec![b0, a0])
                 }
                 ZipResult::Singleton(a) => {
-                    Value::ArrayValue(vec![**a])
+                    let a0 = a.clone().clone();
+                    Value::ArrayValue(vec![a0])
                 }
             }
         });
@@ -320,10 +325,13 @@ mod tests {
         let result = timeline2.zip_with(&timeline1, |a| {
             match a {
                 ZipResult::Both((a, b)) => {
-                    Value::ArrayValue(vec![**b, **a])
+                    let a0 = a.clone().clone();
+                    let b0 = a.clone().clone();
+                    Value::ArrayValue(vec![a0, b0])
                 }
                 ZipResult::Singleton(a) => {
-                    Value::ArrayValue(vec![**a])
+                    let a0 = a.clone().clone();
+                    Value::ArrayValue(vec![a0])
                 }
             }
         });
