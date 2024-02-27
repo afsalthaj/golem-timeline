@@ -4,14 +4,14 @@ use crate::timeline_point::TimeLinePoint;
 use crate::value::Value;
 
 #[derive(Clone, Debug, PartialEq)]
-pub struct TimeLine {
+pub struct TimeLine<T> {
     // we dont use any backend here, but a mere state of the timeline.
     // Flushing of this vector can involve storing it to postgres if needed
-    pub points: Vec<TimeLinePoint>
+    pub points: Vec<TimeLinePoint<T>>
 }
 
 
-impl Default for TimeLine {
+impl<T> Default for TimeLine<T> {
     fn default() -> Self {
         TimeLine {
             points: vec![]
@@ -19,7 +19,12 @@ impl Default for TimeLine {
     }
 }
 
-impl TimeLine {
+enum ZipResult<'t> {
+    Both((&'t Value, &'t Value)),
+    Singleton(&'t Value)
+}
+
+impl<T> TimeLine<T> {
 
   // Implement zip with
     // convert to boolean: is it ==  "play-afsal"
@@ -40,8 +45,14 @@ impl TimeLine {
     // 8.30 to 8.35 "false" "true"
     // 8.35 to 8.39 "false" "false"
 
-    pub fn zip_with<F>(&self, other: &TimeLine, f: F) -> TimeLine
-    where F: Fn(Option<&Value>, Option<&Value>) -> Value {
+    //         timeline1.add_state_dynamic_info(5, Value::StringValue("playing".to_string()));
+    //         timeline1.add_state_dynamic_info(8, Value::StringValue("pause".to_string()));
+    //
+    //         let mut timeline2 = TimeLine::default();
+    //         timeline2.add_state_dynamic_info(7, Value::StringValue("movie".to_string()));
+    //         timeline2.add_state_dynamic_info(9, Value::StringValue("cartoon".to_string()));
+    pub fn zip_with<F>(&self, other: &TimeLine<T>, f: F) -> TimeLine<T>
+    where F: Fn(ZipResult) -> Value {
         let mut merged_points = Vec::new();
         let mut self_iter = self.points.iter().peekable();
         let mut other_iter = other.points.iter().peekable();
@@ -50,6 +61,8 @@ impl TimeLine {
             let self_point = self_iter.next().unwrap();
             let other_point = other_iter.next().unwrap();
 
+            dbg!("The self point is {}", self_point.clone());
+            dbg!("The other point is {}", other_point.clone());
             // Intersection boundary
             let t1 = self_point.t1.max(other_point.t1);
 
@@ -59,6 +72,7 @@ impl TimeLine {
                 (Some(t2), Some(t2_other)) => Some(t2.min(t2_other)),
                 (None, None) => None
             };
+
 
             // Left Exclusive
             let t1x0 = self_point.t1.min(other_point.t1);
@@ -76,15 +90,17 @@ impl TimeLine {
             let intersection = TimeLinePoint {
                 t1,
                 t2,
-                value: f(Some(&self_point.value), Some(&other_point.value))
+                value: ZipResult::Both((&self_point.value, &other_point.value))
             };
+
+            dbg!("The intersection is {}", intersection.clone());
 
             // if t1x0 == self_point.t1, then it means t1 is before t2 and the value exists only in self time line.
             let left_ex = if t1x0 == self_point.t1 {
                  TimeLinePoint {
                     t1: t1x0,
                     t2: Some(t1x1),
-                    value: f(Some(&self_point.value), None)
+                    value: ZipResult::Singleton(&self_point.value)
                 }
             } else {
                 // if t1x0 == other_point.t1, then it means t1 is before t2 and the value exists only in self time line.
@@ -95,21 +111,27 @@ impl TimeLine {
                 }
             };
 
+            dbg!("The left_ex is {}", left_ex.clone());
+
             match t2x0 {
                 Some(t2x0) => {
                     if Some(t2x0) == self_point.t2 {
                         let right_ex = TimeLinePoint {
                             t1: t2x0,
                             t2: t2x1,
-                            value: f(Some(&self_point.value), None)
+                            value: f(None, Some(&other_point.value))
                         };
+                        dbg!("The right_ex is {}", right_ex.clone());
+
                         merged_points.push(right_ex);
                     } else {
                         let right_ex = TimeLinePoint {
                             t1: t2x0,
                             t2: t2x1,
-                            value: f(None, Some(&other_point.value))
+                            value: f(Some(&self_point.value), None)
                         };
+
+                        dbg!("The right_ex is {}", right_ex.clone());
                         merged_points.push(right_ex);
                     }
                 }
@@ -153,13 +175,13 @@ mod tests {
     use crate::value::Value;
 
     #[test]
-    fn test_zip_with() {
+    fn test_zip_with_simple() {
         let mut timeline1 = TimeLine::default();
-        timeline1.add_state_dynamic_info(1708997975, Value::StringValue("playing".to_string()));
+        timeline1.add_state_dynamic_info(5, Value::StringValue("playing".to_string()));
         //timeline1.add_state_dynamic_info(1708997980, Value::StringValue("pause".to_string()));
 
         let mut timeline2 = TimeLine::default();
-        timeline2.add_state_dynamic_info(1708997977, Value::StringValue("movie".to_string()));
+        timeline2.add_state_dynamic_info(7, Value::StringValue("movie".to_string()));
         //timeline2.add_state_dynamic_info(1708997979, Value::StringValue("cartoon".to_string()));
 
 
@@ -170,6 +192,92 @@ mod tests {
         // 77 to 79 "playing" "movie"     (correct)
         // 79 to 80 "playing" "cartoon"
         // 80 to Noe "pause" "cartoon"    (correct)
+        let result1 = timeline1.zip_with(&timeline2, |a, b| {
+            match (a, b) {
+                (Some(a), Some(b)) => {
+                    Value::ArrayValue(vec![a.clone(), b.clone()])
+                }
+                (Some(a), None) => {
+                    Value::ArrayValue(vec![a.clone()])
+                }
+                (None, Some(b)) => {
+                    Value::ArrayValue(vec![b.clone()])
+                }
+                (None, None) => {
+                    Value::ArrayValue(vec![])
+                }
+            }
+        });
+
+        let result2 = timeline2.zip_with(&timeline1, |a, b| {
+            match (a, b) {
+                (Some(a), Some(b)) => {
+                    Value::ArrayValue(vec![b.clone(), a.clone()])
+                }
+                (Some(a), None) => {
+                    Value::ArrayValue(vec![a.clone()])
+                }
+                (None, Some(b)) => {
+                    Value::ArrayValue(vec![b.clone()])
+                }
+                (None, None) => {
+                    Value::ArrayValue(vec![])
+                }
+            }
+        });
+
+        let expected = TimeLine { points: vec![
+            // From 77 to future, they are playing a movie
+            TimeLinePoint {
+                t1: 7,
+                t2: None,
+                value: Value::ArrayValue(
+                    vec![
+                        Value::StringValue(
+                            "playing".to_string(),
+                        ),
+                        Value::StringValue(
+                            "movie".to_string(),
+                        ),
+                    ],
+                ),
+            },
+            TimeLinePoint {
+                // From 75 to 77, they are playing something, but no information about whethr it was a movie or not
+                t1: 5,
+                t2: Some(
+                    7,
+                ),
+                value: Value::ArrayValue(
+                    vec![
+                        Value::StringValue(
+                            "playing".to_string(),
+                        ),
+                    ],
+                ),
+            },
+        ]};
+
+        assert_eq!(result1, expected);
+        assert_eq!(result2, expected);
+    }
+
+    //  t1-----------t3~~~~~~~~~~~~~~~~~~
+    //            t2-----------t4~~~~~~~~~~~~~~
+    #[test]
+    fn test_zip_with_complex() {
+        let mut timeline1 = TimeLine::default();
+        timeline1.add_state_dynamic_info(5, Value::StringValue("playing".to_string()));
+        timeline1.add_state_dynamic_info(8, Value::StringValue("pause".to_string()));
+
+        let mut timeline2 = TimeLine::default();
+        timeline2.add_state_dynamic_info(7, Value::StringValue("movie".to_string()));
+        timeline2.add_state_dynamic_info(9, Value::StringValue("cartoon".to_string()));
+
+
+        // 5 to 7 "playing"
+        // 7 to 8 "playing" "movie"
+        // 8 to 9 "pause" "movie"
         let result = timeline1.zip_with(&timeline2, |a, b| {
             match (a, b) {
                 (Some(a), Some(b)) => {
@@ -190,7 +298,7 @@ mod tests {
         let expected = TimeLine { points: vec![
             // From 77 to future, they are playing a movie
             TimeLinePoint {
-                t1: 1708997977,
+                t1: 7,
                 t2: None,
                 value: Value::ArrayValue(
                     vec![
@@ -205,9 +313,9 @@ mod tests {
             },
             TimeLinePoint {
                 // From 75 to 77, they are playing something, but no information about whethr it was a movie or not
-                t1: 1708997975,
+                t1: 5,
                 t2: Some(
-                    1708997977,
+                    7,
                 ),
                 value: Value::ArrayValue(
                     vec![
@@ -219,7 +327,7 @@ mod tests {
             },
         ]};
 
-        dbg!("The timeline is {}", result.clone());
+       // dbg!("The timeline is {}", result.clone());
         assert_eq!(result, expected);
     }
 }
