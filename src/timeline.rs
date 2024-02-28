@@ -77,7 +77,7 @@ impl<T: std::fmt::Debug + Clone> TimeLine<T> {
     }
 }
 
-fn merge_result<F, T>(
+fn merge_result<F, T: Clone>(
     flattened_time_line_points: &Vec<TimeLinePoint<ZipResult<T>>>,
     f: F,
 ) -> Vec<TimeLinePoint<T>>
@@ -96,7 +96,7 @@ where
                         t1: current_timeline.t1,
                         t2: current_timeline.t2,
                         value: f(
-                            &ZipResult::Singleton(&last.value).combine_singletons(&current_timeline.value)
+                            &ZipResult::Singleton(&last.value).combine(&current_timeline.value)
                         ),
                     };
 
@@ -138,7 +138,7 @@ mod tests {
     //   t1 - t2     : playing
     //   t2 -> future: playing a movie
     #[test]
-    fn test_zip_with_simple() {
+    fn test_zip_with_scenario1() {
         let mut timeline1 = TimeLine::default();
         timeline1.add_state_dynamic_info(5, Value::StringValue("playing".to_string()));
 
@@ -199,7 +199,7 @@ mod tests {
     //   t3 - t4    : paused movie
     //   t4 - future: paused cartoon
     #[test]
-    fn test_zip_with_complex() {
+    fn test_zip_with_scenario2() {
         let mut timeline1 = TimeLine::default();
         timeline1.add_state_dynamic_info(5, Value::StringValue("playing".to_string()));
         timeline1.add_state_dynamic_info(8, Value::StringValue("pause".to_string()));
@@ -256,6 +256,83 @@ mod tests {
                 },
                 TimeLinePoint {
                     t1: 9,
+                    t2: None,
+                    value: Value::ArrayValue(vec![
+                        Value::StringValue("cartoon".to_string()),
+                        Value::StringValue("pause".to_string()),
+                    ]),
+                },
+            ],
+        };
+
+        assert_eq!(result, expected);
+    }
+
+    // t1-------(playing)----------t4~~~~(pause)~~~~~>
+    //      t2----(movie)---t3~~~~(cartoon)~~~~~>
+    // Expected Result:
+    //   t1 - t2    : playing
+    //   t2 - t3    : playing a movie
+    //   t3 - t4    : playing a cartoon
+    //   t4 - future: paused cartoon
+    #[test]
+    fn test_zip_with_scenario3() {
+        let mut timeline1 = TimeLine::default();
+        timeline1.add_state_dynamic_info(1, Value::StringValue("playing".to_string()));
+        timeline1.add_state_dynamic_info(4, Value::StringValue("pause".to_string()));
+
+        let mut timeline2 = TimeLine::default();
+        timeline2.add_state_dynamic_info(2, Value::StringValue("movie".to_string()));
+        timeline2.add_state_dynamic_info(3, Value::StringValue("cartoon".to_string()));
+
+        let result = timeline2.zip_with(&timeline1, |a| match a {
+            ZipResult::Both((a, b)) => {
+                let a0 = a.clone().clone();
+                let b0 = b.clone().clone();
+                match (a0, b0) {
+                    (Value::ArrayValue(a), Value::ArrayValue(b)) => {
+                        Value::ArrayValue(a.iter().chain(b.iter()).cloned().collect())
+                    }
+                    (Value::ArrayValue(a), value) => {
+                        Value::ArrayValue(a.iter().chain(&vec![value]).cloned().collect())
+                    }
+                    (value, Value::ArrayValue(b)) => {
+                        Value::ArrayValue(vec![value].iter().chain(b.iter()).cloned().collect())
+                    }
+                    (value1, value2) => Value::ArrayValue(vec![value1, value2]),
+                }
+            }
+            ZipResult::Singleton(a) => {
+                let a0 = a.clone().clone();
+                Value::ArrayValue(vec![a0])
+            }
+        });
+
+        let expected = TimeLine {
+            points: vec![
+                TimeLinePoint {
+                    t1: 1,
+                    t2: Some(2),
+                    value: Value::ArrayValue(vec![Value::StringValue("playing".to_string())]),
+                },
+                TimeLinePoint {
+                    t1: 2,
+                    t2: Some(3),
+                    value: Value::ArrayValue(vec![
+                        Value::StringValue("movie".to_string()),
+                        Value::StringValue("playing".to_string()),
+                    ]),
+                },
+                TimeLinePoint {
+                    t1: 3,
+                    t2: Some(4),
+                    value: Value::ArrayValue(vec![
+                        Value::StringValue("playing".to_string()),
+                        Value::StringValue("cartoon".to_string()),
+                    ]),
+                },
+                TimeLinePoint {
+                    t1: 4,
                     t2: None,
                     value: Value::ArrayValue(vec![
                         Value::StringValue("cartoon".to_string()),
