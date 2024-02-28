@@ -11,3 +11,5 @@ pub mod backend;
 
 pub mod worker_timeline;
 pub mod worker_timeline_data;
+pub mod boundaries;
+pub mod zip_result;
