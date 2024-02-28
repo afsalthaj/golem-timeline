@@ -1,3 +1,4 @@
+use std::fmt::Debug;
 use crate::timeline_point::TimeLinePoint;
 use crate::zip_result::ZipResult;
 
@@ -7,7 +8,21 @@ pub struct Boundaries<'t, T: Clone> {
     pub right: Option<TimeLinePoint<ZipResult<'t, T>>>,
 }
 
-impl<'t, T: Clone> Boundaries<'t, T> {
+fn optional_less_than(left: Option<u64>, right: Option<u64>) -> bool {
+    dbg!("left: {:?}, right: {:?}", left, right);
+    let x = match (left, right) {
+        (Some(l), Some(r)) => l < r,
+        (Some(_), None) => true,
+        (None, Some(_)) => false,
+        (None, None) => true,
+    };
+
+    dbg!("hmmm {}", x);
+
+    x
+}
+
+impl<'t, T: Debug + Clone> Boundaries<'t, T> {
     pub fn get_boundaries(
         left: &'t TimeLinePoint<T>,
         right: &'t TimeLinePoint<T>,
