@@ -96,7 +96,7 @@ where
                         t1: current_timeline.t1,
                         t2: current_timeline.t2,
                         value: f(
-                            &ZipResult::Singleton(&last.value).combine(&current_timeline.value)
+                            &ZipResult::Singleton(&last.value).combine_singletons(&current_timeline.value)
                         ),
                     };
 

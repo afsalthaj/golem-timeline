@@ -10,7 +10,7 @@ impl<'t, T: Clone> ZipResult<'t, T> {
         match (self, other) {
             (ZipResult::Singleton(a), ZipResult::Singleton(c)) => ZipResult::Both((a, c)),
 
-            // TODO; Return Option
+            // TODO; Return Option. currently panics until we cover them in all tests
             _ => panic!("Cannot combine"),
         }
     }
