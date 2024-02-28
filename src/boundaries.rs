@@ -8,28 +8,11 @@ pub struct Boundaries<'t, T: Clone> {
     pub right: Option<TimeLinePoint<ZipResult<'t, T>>>,
 }
 
-fn optional_less_than(left: Option<u64>, right: Option<u64>) -> bool {
-    dbg!("left: {:?}, right: {:?}", left, right);
-    let x = match (left, right) {
-        (Some(l), Some(r)) => l < r,
-        (Some(_), None) => true,
-        (None, Some(_)) => false,
-        (None, None) => true,
-    };
-
-    dbg!("hmmm {}", x);
-
-    x
-}
-
 impl<'t, T: Debug + Clone> Boundaries<'t, T> {
     pub fn get_boundaries(
         left: &'t TimeLinePoint<T>,
         right: &'t TimeLinePoint<T>,
     ) -> Boundaries<'t, T> {
-        // Required intersection
-        // t1---------------------t4
-        //       t2---------t3
         let intersection_boundary_left = left.t1.max(right.t1);
 
         let intersection_boundary_right = match (left.t2, right.t2) {
@@ -103,5 +86,13 @@ impl<'t, T: Debug + Clone> Boundaries<'t, T> {
             intersection,
             right: right_boundary,
         }
+    }
+}
+fn optional_less_than(left: Option<u64>, right: Option<u64>) -> bool {
+    match (left, right) {
+        (Some(l), Some(r)) => l < r,
+        (Some(_), None) => true,
+        (None, Some(_)) => false,
+        (None, None) => true,
     }
 }
