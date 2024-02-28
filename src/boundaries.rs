@@ -4,11 +4,14 @@ use crate::zip_result::ZipResult;
 pub struct Boundaries<'t, T: Clone> {
     pub left: Option<TimeLinePoint<ZipResult<'t, T>>>,
     pub intersection: TimeLinePoint<ZipResult<'t, T>>,
-    pub right: Option<TimeLinePoint<ZipResult<'t, T>>>
+    pub right: Option<TimeLinePoint<ZipResult<'t, T>>>,
 }
 
 impl<'t, T: Clone> Boundaries<'t, T> {
-    pub fn get_boundaries(left: &'t TimeLinePoint<T>, right: &'t TimeLinePoint<T>) -> Boundaries<'t, T> {
+    pub fn get_boundaries(
+        left: &'t TimeLinePoint<T>,
+        right: &'t TimeLinePoint<T>,
+    ) -> Boundaries<'t, T> {
         // Required intersection
         // t1---------------------t4
         //       t2---------t3
@@ -18,13 +21,13 @@ impl<'t, T: Clone> Boundaries<'t, T> {
             (Some(t2), None) => Some(t2),
             (None, Some(t2)) => Some(t2),
             (Some(t2), Some(t2_other)) => Some(t2.min(t2_other)),
-            (None, None) => None
+            (None, None) => None,
         };
 
         let intersection = TimeLinePoint {
             t1: intersection_boundary_left,
             t2: intersection_boundary_right,
-            value: ZipResult::Both((&left.value, &right.value))
+            value: ZipResult::Both((&left.value, &right.value)),
         };
 
         // left boundary optional: t1 -> t2
@@ -37,14 +40,14 @@ impl<'t, T: Clone> Boundaries<'t, T> {
                 TimeLinePoint {
                     t1: left_boundary_left,
                     t2: Some(left_boundary_right),
-                    value: ZipResult::Singleton(&left.value)
+                    value: ZipResult::Singleton(&left.value),
                 }
             } else {
                 // if t1x0 == other_point.t1, then it means t1 is before t2 and the value exists only in self time line.
                 TimeLinePoint {
                     t1: left_boundary_left,
                     t2: Some(left_boundary_right),
-                    value: ZipResult::Singleton(&right.value)
+                    value: ZipResult::Singleton(&right.value),
                 }
             })
         };
@@ -52,13 +55,13 @@ impl<'t, T: Clone> Boundaries<'t, T> {
         // right boundary optional
         let right_boundary = if left.t2 == right.t2 {
             None
-        } else  {
+        } else {
             let right_boundary_left = intersection_boundary_right;
             let right_boundary_right = match (left.t2, right.t2) {
                 (Some(t2), None) => Some(t2),
                 (None, Some(t2)) => Some(t2),
                 (Some(t2), Some(t2_other)) => Some(t2.max(t2_other)),
-                (None, None) => None
+                (None, None) => None,
             };
             match right_boundary_left {
                 Some(t2x0) => {
@@ -66,24 +69,24 @@ impl<'t, T: Clone> Boundaries<'t, T> {
                         Some(TimeLinePoint {
                             t1: t2x0,
                             t2: right_boundary_right,
-                            value: ZipResult::Singleton(&right.value)
+                            value: ZipResult::Singleton(&right.value),
                         })
                     } else {
                         Some(TimeLinePoint {
                             t1: t2x0,
                             t2: right_boundary_right,
-                            value: ZipResult::Singleton(&left.value)
+                            value: ZipResult::Singleton(&left.value),
                         })
                     }
                 }
-                None => None
+                None => None,
             }
         };
 
         Boundaries {
             left: left_boundary,
             intersection,
-            right: right_boundary
+            right: right_boundary,
         }
     }
 }

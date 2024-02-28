@@ -1,19 +1,19 @@
-use crate::timeline_op::TimeLineOp;
+use crate::backend::BackEnd;
 use crate::event_stream::EventStream;
-use crate::backend::{BackEnd};
+use crate::timeline_op::TimeLineOp;
+use crate::worker_timeline::WorkerKey;
 use crate::worker_timeline_data::InvokeWorker;
-use crate::worker_timeline::{WorkerKey};
-use futures::{stream, Stream};
 use futures::StreamExt;
+use futures::{stream, Stream};
 
 pub trait TimeLineExecution {
     // The result is a stream of stream of workers
     // The outer stream represents
-     fn run(&self, back_end: BackEnd);
+    fn run(&self, back_end: BackEnd);
 }
 
 impl TimeLineExecution for TimeLineOp {
-    fn run(&self, backend: BackEnd){
+    fn run(&self, backend: BackEnd) {
         match self {
             // Can pre-inspect and avoid timelines of unnecessary events if needed
             TimeLineOp::Leaf(events) => {
@@ -26,20 +26,19 @@ impl TimeLineExecution for TimeLineOp {
                                     let mut sink = sink.lock().unwrap();
                                     let worker_key = WorkerKey {
                                         time_line_op_name: "time_line_op_leaf".to_string(),
-                                        identity: event.key.clone()
+                                        identity: event.key.clone(),
                                     };
 
                                     sink.add_worker(event, &worker_key);
                                 }
-                                BackEnd::Golem => todo!()
-
+                                BackEnd::Golem => todo!(),
                             }
                         }
                     }
                 }
             }
 
-           _ => todo!()
+            _ => todo!(),
         }
     }
 }

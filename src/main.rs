@@ -1,11 +1,11 @@
+use chrono::{DateTime, NaiveDateTime, Utc};
 use std::sync::Arc;
-use timeline::backend::{BackEnd};
-use timeline::worker_timeline_data::{InMemoryWorkerInvoke};
+use timeline::backend::BackEnd;
 use timeline::event_record::RawEventRecord;
 use timeline::event_stream::EventStream;
 use timeline::event_type::EventType;
 use timeline::timeline_execution::TimeLineExecution;
-use chrono::{DateTime, NaiveDateTime, Utc};
+use timeline::worker_timeline_data::InMemoryWorkerInvoke;
 fn main() {
     print!("Golem TimeLine");
 
@@ -152,12 +152,13 @@ fn main() {
     }
 
     let event_stream = EventStream::InMemoryEvents(timeline::event_stream::InMemoryEventStream {
-        events: records
+        events: records,
     });
 
     let time_line_op = timeline::timeline_op::TimeLineOp::Leaf(event_stream);
 
-    let mut in_memory_workers = std::sync::Arc::new(std::sync::Mutex::new(InMemoryWorkerInvoke::new()));
+    let mut in_memory_workers =
+        std::sync::Arc::new(std::sync::Mutex::new(InMemoryWorkerInvoke::new()));
     let in_memory_backend = BackEnd::InMemory(Arc::clone(&in_memory_workers));
     time_line_op.run(in_memory_backend);
 
@@ -177,7 +178,6 @@ fn main() {
     // 8.00 to 8.20 "true"
     // 8.20 to 8.30 "false"
     // 8.30 to 8.40 "true"
-
 
     // convert to boolean: is it ==  "play-adam"
     // 8.00 to 8.25 "true"
@@ -205,7 +205,12 @@ fn main() {
 
     for worker in locked_workers.workers() {
         for i in worker.timeline.points.iter() {
-            println!("{:?} {:?} {:?}", timestamp_to_datetime(i.t1 as i64), timestamp_to_datetime(i.t2.unwrap() as i64), i.value.to_string());
+            println!(
+                "{:?} {:?} {:?}",
+                timestamp_to_datetime(i.t1 as i64),
+                timestamp_to_datetime(i.t2.unwrap() as i64),
+                i.value.to_string()
+            );
         }
     }
 }

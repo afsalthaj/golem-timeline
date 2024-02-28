@@ -8,7 +8,7 @@ use crate::value::Value;
 pub struct TimeLinePoint<T> {
     pub t1: u64,
     pub t2: Option<u64>,
-    pub value: T
+    pub value: T,
 }
 
 impl<T> TimeLinePoint<T> {

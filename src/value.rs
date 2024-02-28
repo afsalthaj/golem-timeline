@@ -13,7 +13,7 @@ impl Value {
     pub fn to_string(&self) -> String {
         match self {
             Value::StringValue(value) => value.clone(),
-            _ => panic!("Value is not a string")
+            _ => panic!("Value is not a string"),
         }
     }
 }

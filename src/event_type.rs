@@ -39,7 +39,7 @@ pub enum EventType {
 }
 
 impl EventType {
-   pub fn to_value(&self)  -> Value {
+    pub fn to_value(&self) -> Value {
         match self {
             EventType::Numerical(value) => Value::IntValue(*value as i64),
             EventType::StateDynamic(value) => Value::StringValue(value.to_string()),

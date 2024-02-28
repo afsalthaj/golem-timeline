@@ -4,7 +4,6 @@ pub enum EventStream {
     InMemoryEvents(InMemoryEventStream),
 }
 
-
 pub struct InMemoryEventStream {
     pub events: Vec<RawEventRecord>,
 }

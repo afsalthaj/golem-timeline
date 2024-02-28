@@ -1,12 +1,11 @@
 use crate::event_record::RawEventRecord;
 use crate::timeline::TimeLine;
-use crate::worker_timeline::{WorkerTimeLineData, WorkerKey};
+use crate::worker_timeline::{WorkerKey, WorkerTimeLineData};
 
 // Interface to invoke worker and update timeline
 pub trait InvokeWorker {
     fn add_worker(&mut self, raw_event_record: &RawEventRecord, worker: &WorkerKey);
 }
-
 
 pub struct InMemoryWorkerInvoke {
     pub workers: Vec<WorkerTimeLineData>,
@@ -16,7 +15,9 @@ pub struct InMemoryWorkerInvoke {
 impl InMemoryWorkerInvoke {
     pub fn new() -> Self {
         // Initialize with an empty vector of workers
-        InMemoryWorkerInvoke { workers: Vec::new() }
+        InMemoryWorkerInvoke {
+            workers: Vec::new(),
+        }
     }
 
     pub fn workers(&self) -> &Vec<WorkerTimeLineData> {
@@ -25,7 +26,10 @@ impl InMemoryWorkerInvoke {
     }
 
     pub fn get_worker_mut(&mut self, key: &WorkerKey) -> Option<&mut WorkerTimeLineData> {
-        self.workers.iter_mut().find(|worker| worker.key == key.clone())  }
+        self.workers
+            .iter_mut()
+            .find(|worker| worker.key == key.clone())
+    }
 }
 
 impl InvokeWorker for InMemoryWorkerInvoke {
@@ -35,14 +39,16 @@ impl InvokeWorker for InMemoryWorkerInvoke {
 
         match worker {
             Some(worker) => {
-                worker.timeline.add_state_dynamic_info(event.time, event.event_type.to_value());
+                worker
+                    .timeline
+                    .add_state_dynamic_info(event.time, event.event_type.to_value());
             }
             None => {
                 let mut timeline = TimeLine::default();
                 timeline.add_state_dynamic_info(event.time, event.event_type.to_value());
                 let worker = WorkerTimeLineData {
                     key: worker_key.clone(),
-                    timeline
+                    timeline,
                 };
                 self.workers.push(worker);
             }

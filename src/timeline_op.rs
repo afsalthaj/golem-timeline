@@ -1,6 +1,6 @@
 use crate::event_predicate::EventPredicate;
-use crate::timeline::TimeLine;
 use crate::event_stream::EventStream;
+use crate::timeline::TimeLine;
 use crate::value::Value;
 
 // In paper, it is referred as object DAG
@@ -20,17 +20,17 @@ pub enum TimeLineOp {
     Or(Box<TimeLineOp>, Box<TimeLineOp>),
     Not(Box<TimeLineOp>),
 
-     // Each o the below functions invokes a worker
-     // Each worker is responsible for forgetting past beyond an extent
-     // This limitation exists in any real world system
-     // This is more of tracking a StateDynamic event, as a cumulative OR
-     // Input
-     // t1: false
-     // t2: true
-     // t3: false
-     // Output
-     // t1-t2: false
-     // t2-t3: true
+    // Each o the below functions invokes a worker
+    // Each worker is responsible for forgetting past beyond an extent
+    // This limitation exists in any real world system
+    // This is more of tracking a StateDynamic event, as a cumulative OR
+    // Input
+    // t1: false
+    // t2: true
+    // t3: false
+    // Output
+    // t1-t2: false
+    // t2-t3: true
     TlHasExisted(Box<TimeLineOp>, EventPredicate),
     // This is more of tracking a StateDynamic event, as a cumulative OR
     // Input
@@ -94,7 +94,7 @@ impl TimeLineOp {
             TimeLineOp::TlHasExisted(_, _) => true,
             TimeLineOp::TlHasExistedWithin(_, _) => true,
             TimeLineOp::TlLatestEventToState(_, _) => true,
-            _ => false
+            _ => false,
         }
     }
 }
@@ -104,15 +104,15 @@ impl TimeLineOp {
         unimplemented!("evaluate not implemented")
     }
 
-   fn tl_has_existed(self, event_predicate: EventPredicate) -> TimeLineOp{
+    fn tl_has_existed(self, event_predicate: EventPredicate) -> TimeLineOp {
         TimeLineOp::TlHasExisted(Box::new(self), event_predicate)
     }
 
-    fn tl_has_existed_within(self, event_predicate: EventPredicate) -> TimeLineOp{
+    fn tl_has_existed_within(self, event_predicate: EventPredicate) -> TimeLineOp {
         TimeLineOp::TlHasExistedWithin(Box::new(self), event_predicate)
     }
 
-    fn tl_latest_event_to_state(self, event_predicate: EventPredicate) -> TimeLineOp{
+    fn tl_latest_event_to_state(self, event_predicate: EventPredicate) -> TimeLineOp {
         TimeLineOp::TlLatestEventToState(Box::new(self), event_predicate)
     }
 
