@@ -7,6 +7,8 @@ use crate::state_dynamic_timeline_point::StateDynamicsTimeLinePoint;
 use crate::value::Value;
 use crate::zip_result::ZipResult;
 use std::fmt::Debug;
+use std::ops::Neg;
+use crate::negatable::Negatable;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct StateDynamicsTimeLine<T> {
@@ -21,7 +23,21 @@ impl<T> Default for StateDynamicsTimeLine<T> {
     }
 }
 
+impl <T: Debug + Clone + Eq + Ord + Negatable> StateDynamicsTimeLine<T> {
+    pub fn negate(&self) -> StateDynamicsTimeLine<T> {
+        let mut negated_timeline = StateDynamicsTimeLine::default();
+
+        for point in &self.points {
+            let negated_value = point.value.negate();
+            negated_timeline.add_state_dynamic_info(point.t1, negated_value);
+        }
+
+        negated_timeline
+    }
+}
+
 impl<T: Debug + Clone + Eq + Ord> StateDynamicsTimeLine<T> {
+
     pub fn tl_has_existed(
         event_time_line: &EventTimeLine<T>,
         event_predicate: EventPredicate<T>,
@@ -615,6 +631,38 @@ mod tests {
                 },
                 StateDynamicsTimeLinePoint {
                     t1: 7,
+                    t2: None,
+                    value: false,
+                },
+            ],
+        };
+
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn test_negatable() {
+        let mut timeline = StateDynamicsTimeLine::default();
+        timeline.add_state_dynamic_info(1, true);
+        timeline.add_state_dynamic_info(2, false);
+        timeline.add_state_dynamic_info(3, true);
+
+        let result = timeline.negate();
+
+        let expected = StateDynamicsTimeLine {
+            points: vec![
+                StateDynamicsTimeLinePoint {
+                    t1: 1,
+                    t2: Some(2),
+                    value: false,
+                },
+                StateDynamicsTimeLinePoint {
+                    t1: 2,
+                    t2: Some(3),
+                    value: true,
+                },
+                StateDynamicsTimeLinePoint {
+                    t1: 3,
                     t2: None,
                     value: false,
                 },
