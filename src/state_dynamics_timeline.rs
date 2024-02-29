@@ -33,6 +33,39 @@ impl StateDynamicsTimeLine<bool> {
 
         negated_timeline
     }
+
+    pub fn tl_duration_where(&self) -> EventTimeLine<u64> {
+        let mut event_time_line = EventTimeLine::new();
+        let mut duration = 0;
+
+        for point in &self.points {
+            let start = point.t1;
+            let end = point.t2;
+
+            match end {
+                Some(end) => {
+                    if point.value {
+                        let mut i = 0;
+                        while i < end {
+                            duration = duration + i;
+                            event_time_line.add_event_info(start + i, duration);
+                            i += 1;
+                        }
+                    } else {
+                        let mut i = 0;
+                        while i < end {
+                            event_time_line.add_event_info(start + i, duration);
+                            i += 1;
+                        }
+                    }
+                }
+
+                None => break,
+            }
+        }
+
+        event_time_line
+    }
 }
 
 impl<T: Debug + Clone + Eq + Ord> StateDynamicsTimeLine<T> {

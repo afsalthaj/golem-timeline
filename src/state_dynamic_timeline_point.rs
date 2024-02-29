@@ -1,16 +1,22 @@
 use crate::value::Value;
 use crate::zip_result::ZipResult;
 
-// In a state dynamic timeline component, the value is valid for the duration of t1 to t2, unlike event or numerical
-// Having t2 as None allows
-// us to assume for StateDynamic and Events together
-// If None, may be the Value is an event
-// And if not None, then it implies the Value is valid for the duration of t1 to t2
+// None represents, for the most of the time, future
 #[derive(Clone, Debug, PartialEq)]
 pub struct StateDynamicsTimeLinePoint<T> {
     pub t1: u64,
     pub t2: Option<u64>,
     pub value: T,
+}
+
+impl StateDynamicsTimeLinePoint<bool> {
+    pub fn is_true(&self) -> bool {
+        self.value
+    }
+
+    pub fn is_false(&self) -> bool {
+        !self.value
+    }
 }
 
 impl<T: Clone> StateDynamicsTimeLinePoint<T> {

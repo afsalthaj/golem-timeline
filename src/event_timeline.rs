@@ -1,3 +1,4 @@
+// EventTimeLine can represent Numerical TimeLine or Event TimeLine
 pub struct EventTimeLine<T> {
     pub points: Vec<EventTimeLinePoint<T>>,
 }
