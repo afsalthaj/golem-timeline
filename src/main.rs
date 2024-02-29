@@ -205,10 +205,15 @@ fn main() {
 
     for worker in locked_workers.workers() {
         for i in worker.timeline.points.iter() {
+            let end_time = match i.t2 {
+                Some(t2) => timestamp_to_datetime(t2 as i64).to_string(),
+                None => "Unknown future".to_string(),
+            };
+
             println!(
                 "{:?} {:?} {:?}",
                 timestamp_to_datetime(i.t1 as i64),
-                timestamp_to_datetime(i.t2.unwrap() as i64),
+                end_time,
                 i.value.to_string()
             );
         }
