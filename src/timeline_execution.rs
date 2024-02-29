@@ -12,7 +12,7 @@ pub trait TimeLineExecution {
     fn run(&self, back_end: BackEnd);
 }
 
-impl TimeLineExecution for TimeLineOp {
+impl<T> TimeLineExecution for TimeLineOp<T> {
     fn run(&self, backend: BackEnd) {
         match self {
             // Can pre-inspect and avoid timelines of unnecessary events if needed

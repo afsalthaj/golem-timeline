@@ -7,15 +7,15 @@ use crate::zip_result::ZipResult;
 // If None, may be the Value is an event
 // And if not None, then it implies the Value is valid for the duration of t1 to t2
 #[derive(Clone, Debug, PartialEq)]
-pub struct StateDynamicsTimeLineSlice<T> {
+pub struct StateDynamicsTimeLinePoint<T> {
     pub t1: u64,
     pub t2: Option<u64>,
     pub value: T,
 }
 
-impl<T: Clone> StateDynamicsTimeLineSlice<T> {
-    pub fn to_zip_result(&self) -> StateDynamicsTimeLineSlice<ZipResult<T>> {
-        StateDynamicsTimeLineSlice {
+impl<T: Clone> StateDynamicsTimeLinePoint<T> {
+    pub fn to_zip_result(&self) -> StateDynamicsTimeLinePoint<ZipResult<T>> {
+        StateDynamicsTimeLinePoint {
             t1: self.t1,
             t2: self.t2,
             value: ZipResult::Singleton(&self.value),
@@ -29,7 +29,7 @@ impl<T: Clone> StateDynamicsTimeLineSlice<T> {
             t >= self.t1
         }
     }
-    pub fn is_mutually_exclusive(&self, other: &StateDynamicsTimeLineSlice<T>) -> bool {
+    pub fn is_mutually_exclusive(&self, other: &StateDynamicsTimeLinePoint<T>) -> bool {
         // first timeline's end is less than second timeline's start or
         // first timeline's start is greater than second timeline's end
         optional_less_than(self.t2, Some(other.t1))
