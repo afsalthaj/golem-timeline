@@ -1,4 +1,4 @@
-use crate::timeline::TimeLine;
+use crate::state_dynamics_timeline::StateDynamicsTimeLine;
 use std::fmt::Debug;
 
 // Aligning two timelines is an important step before you start zipping timelines
@@ -14,18 +14,18 @@ use std::fmt::Debug;
 // TimeLine1:                  t3-----------t5
 // TimeLine2: t1----------t2---------t4
 // Output: AlignedTimeLine returns (t3 - t5) and (t2 -t4)
-pub struct AlignedTimeLine<T> {
-    pub time_line1: TimeLine<T>,
-    pub time_line2: TimeLine<T>,
-    pub removed_points_timeline1: Option<TimeLine<T>>,
-    pub removed_points_timeline2: Option<TimeLine<T>>,
+pub struct AlignedStateDynamicsTimeLine<T> {
+    pub time_line1: StateDynamicsTimeLine<T>,
+    pub time_line2: StateDynamicsTimeLine<T>,
+    pub removed_points_timeline1: Option<StateDynamicsTimeLine<T>>,
+    pub removed_points_timeline2: Option<StateDynamicsTimeLine<T>>,
 }
 
-impl<T: Clone + Debug> AlignedTimeLine<T> {
+impl<T: Clone + Debug> AlignedStateDynamicsTimeLine<T> {
     pub fn from_left_and_right(
-        left: &mut TimeLine<T>,
-        right: &mut TimeLine<T>,
-    ) -> AlignedTimeLine<T> {
+        left: &mut StateDynamicsTimeLine<T>,
+        right: &mut StateDynamicsTimeLine<T>,
+    ) -> AlignedStateDynamicsTimeLine<T> {
         if &left.beginning() <= &right.beginning() {
             let mut n = 0;
 
@@ -39,10 +39,10 @@ impl<T: Clone + Debug> AlignedTimeLine<T> {
 
             let new_points = left.points.split_off(n);
 
-            AlignedTimeLine {
-                time_line1: TimeLine { points: new_points },
+            AlignedStateDynamicsTimeLine {
+                time_line1: StateDynamicsTimeLine { points: new_points },
                 time_line2: right.clone(),
-                removed_points_timeline1: Some(TimeLine {
+                removed_points_timeline1: Some(StateDynamicsTimeLine {
                     points: left.points.clone(),
                 }),
                 removed_points_timeline2: None,
@@ -60,11 +60,11 @@ impl<T: Clone + Debug> AlignedTimeLine<T> {
 
             let new_points = right.points.split_off(n);
 
-            AlignedTimeLine {
+            AlignedStateDynamicsTimeLine {
                 time_line1: left.clone(),
-                time_line2: TimeLine { points: new_points },
+                time_line2: StateDynamicsTimeLine { points: new_points },
                 removed_points_timeline1: None,
-                removed_points_timeline2: Some(TimeLine {
+                removed_points_timeline2: Some(StateDynamicsTimeLine {
                     points: right.points.clone(),
                 }),
             }
