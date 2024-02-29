@@ -1,51 +1,18 @@
 use crate::value::Value;
 
-// At the primary level, everything is just an event
-// As we operate more on it, we get numerical timeline, state dynamic timeline or stay as event timeline
-#[derive(Clone)]
-struct EventState {
-    column_of_state: String, // col("player_state_change_change")
-}
-
-// More closer to event
-struct EventAction {
-    column_of_action: String, // col("player_action")
-}
-
-enum EventIndex {
-    StateDynamic(EventState),
-    Event(EventAction),
-}
-
-impl EventIndex {
-    fn equal_to(self, value: EventValue) -> EventPredicate {
+pub struct EventColumn(String);
+impl EventColumn {
+    pub fn equal_to(self, value: EventValue) -> EventPredicate {
         EventPredicate::Equals(self, value)
     }
 
-    fn greater_than(self, value: EventValue) -> EventPredicate {
+    pub fn greater_than(self, value: EventValue) -> EventPredicate {
         EventPredicate::GreaterThan(self, value)
     }
 
-    fn less_than(self, value: EventValue) -> EventPredicate {
+    pub fn less_than(self, value: EventValue) -> EventPredicate {
         EventPredicate::LessThan(self, value)
     }
-}
-
-fn event(column_name: &str) -> EventIndex {
-    EventIndex::Event(EventAction {
-        column_of_action: column_name.to_string(),
-    })
-}
-fn state(column_name: &str) -> EventIndex {
-    EventIndex::StateDynamic(EventState {
-        column_of_state: column_name.to_string(),
-    })
-}
-
-fn col(column_name: &str) -> EventIndex {
-    EventIndex::StateDynamic(EventState {
-        column_of_state: column_name.to_string(),
-    })
 }
 
 struct EventValue {
@@ -59,6 +26,10 @@ impl EventValue {
             _ => panic!("Value is not a string"),
         }
     }
+}
+
+pub fn col(column_name: &str) -> EventColumn {
+    EventColumn(column_name.to_string())
 }
 
 pub fn string_value(value: &str) -> EventValue {
@@ -81,9 +52,9 @@ pub fn float_value(value: f64) -> EventValue {
 
 // Event predicate can be inspected to filter which event to include in the timeline
 pub enum EventPredicate {
-    Equals(EventIndex, EventValue),
-    GreaterThan(EventIndex, EventValue),
-    LessThan(EventIndex, EventValue),
+    Equals(EventColumn, EventValue),
+    GreaterThan(EventColumn, EventValue),
+    LessThan(EventColumn, EventValue),
     And(Box<EventPredicate>, Box<EventPredicate>),
     Or(Box<EventPredicate>, Box<EventPredicate>),
 }
