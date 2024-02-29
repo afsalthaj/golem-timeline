@@ -539,6 +539,9 @@ mod tests {
         assert_eq!(result, expected);
     }
 
+    // Input t1------(pause)-----t2~~~~~(playing)~~~~~>
+    // Expiration time: 1 seconds, predicate: if playing
+    // t1------(false)-----t2----(true)-------t3~~~(false)~~~~>
     #[test]
     fn test_tl_has_existed_within_scenario1() {
         let mut event_time_line = EventTimeLine::new();
@@ -573,6 +576,9 @@ mod tests {
         assert_eq!(result, expected);
     }
 
+    // Input t1------(pause)-----t2----------(playing)------t5~~~~~~(playing)~~~~>
+    // Expiration time: 2 seconds, predicate: if playing
+    // t1--------(false)-----t2----(true)---t4----(false)---t5----(true)---t7~~~~(false)~~~~~~>
     #[test]
     fn test_tl_has_existed_within_scenario2() {
         let mut event_time_line = EventTimeLine::new();
