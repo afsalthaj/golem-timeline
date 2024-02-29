@@ -4,7 +4,7 @@ use crate::state_dynamics_timeline::StateDynamicsTimeLine;
 use crate::value::Value;
 
 // In paper, it is referred as object DAG
-pub enum TimeLineOp<T> {
+pub enum TimeLineOp {
     // Essentially based on paper, there is only numerical timeline and state dynamic timeline
     // A state dynamic is pretty much state that is dynamic. Consider this as a constant value
     // At this stage of development, I am not thinking of state dynamic in TimeLineOp, as I am not
@@ -13,12 +13,12 @@ pub enum TimeLineOp<T> {
     // A numerical timeline essentially cannot be pattern matched, as it is a continuous value
     // Refer paper to understand what these operations are
     Leaf(EventStream),
-    EqualTo(Box<TimeLineOp<T>>, Value),
-    GreaterThan(Box<TimeLineOp<T>>, Value),
-    LessThan(Box<TimeLineOp<T>>, Value),
-    And(Box<TimeLineOp<T>>, Box<TimeLineOp<T>>),
-    Or(Box<TimeLineOp<T>>, Box<TimeLineOp<T>>),
-    Not(Box<TimeLineOp<T>>),
+    EqualTo(Box<TimeLineOp>, Value),
+    GreaterThan(Box<TimeLineOp>, Value),
+    LessThan(Box<TimeLineOp>, Value),
+    And(Box<TimeLineOp>, Box<TimeLineOp>),
+    Or(Box<TimeLineOp>, Box<TimeLineOp>),
+    Not(Box<TimeLineOp>),
 
     // Each o the below functions invokes a worker
     // Each worker is responsible for forgetting past beyond an extent
@@ -31,7 +31,7 @@ pub enum TimeLineOp<T> {
     // Output
     // t1-t2: false
     // t2-t3: true
-    TlHasExisted(Box<TimeLineOp<T>>, EventPredicate<T>),
+    TlHasExisted(Box<TimeLineOp>, EventPredicate<Value>),
     // This is more of tracking a StateDynamic event, as a cumulative OR
     // Input
     // Duration: D = 4
@@ -43,7 +43,7 @@ pub enum TimeLineOp<T> {
     // t3-t7: true
     // t7-t9: false
     // t9-t13: true
-    TlHasExistedWithin(Box<TimeLineOp<T>>, EventPredicate<T>),
+    TlHasExistedWithin(Box<TimeLineOp>, EventPredicate<Value>),
     // This is more or less making number of events to a very simple
     // timeline. Obviously this is corresponding to the events that are state dynamic in nature
     // t1 - t10 : CDN2
@@ -52,7 +52,7 @@ pub enum TimeLineOp<T> {
     // Output
     // t1-t10: CDN2
     // t10-t12: CDN1
-    TlLatestEventToState(Box<TimeLineOp<T>>, EventPredicate<T>),
+    TlLatestEventToState(Box<TimeLineOp>, EventPredicate<Value>),
     // A Numerical Timeline of
     // the cumulative duration
     // where the state was True
@@ -65,7 +65,7 @@ pub enum TimeLineOp<T> {
     // t3 - t8 : 5
     // t8 - t4 : 5
     // t14 - t20: 11
-    TlDurationWhere(Box<TimeLineOp<T>>, EventPredicate<T>),
+    TlDurationWhere(Box<TimeLineOp>, EventPredicate<Value>),
 
     // A Numerical Timeline of
     // the duration since the last
@@ -79,10 +79,10 @@ pub enum TimeLineOp<T> {
     // t3- t8: 5
     // t8-t14: 6
     // t14- t20: 6
-    TlDurationInCurState(Box<TimeLineOp<T>>),
+    TlDurationInCurState(Box<TimeLineOp>),
 }
 
-impl<T> TimeLineOp<T> {
+impl TimeLineOp {
     fn is_boolean_timeline(&self) -> bool {
         match self {
             TimeLineOp::EqualTo(_, _) => true,
@@ -102,23 +102,23 @@ impl<T> TimeLineOp<T> {
         unimplemented!("evaluate not implemented")
     }
 
-    fn tl_has_existed(self, event_predicate: EventPredicate<T>) -> TimeLineOp<T> {
+    fn tl_has_existed(self, event_predicate: EventPredicate<Value>) -> TimeLineOp {
         TimeLineOp::TlHasExisted(Box::new(self), event_predicate)
     }
 
-    fn tl_has_existed_within(self, event_predicate: EventPredicate<T>) -> TimeLineOp<T> {
+    fn tl_has_existed_within(self, event_predicate: EventPredicate<Value>) -> TimeLineOp {
         TimeLineOp::TlHasExistedWithin(Box::new(self), event_predicate)
     }
 
-    fn tl_latest_event_to_state(self, event_predicate: EventPredicate<T>) -> TimeLineOp<T> {
+    fn tl_latest_event_to_state(self, event_predicate: EventPredicate<Value>) -> TimeLineOp {
         TimeLineOp::TlLatestEventToState(Box::new(self), event_predicate)
     }
 
-    fn tl_duration_where(self, event_predicate: EventPredicate<T>) -> TimeLineOp<T> {
+    fn tl_duration_where(self, event_predicate: EventPredicate<Value>) -> TimeLineOp {
         TimeLineOp::TlDurationWhere(Box::new(self), event_predicate)
     }
 
-    fn tl_duration_in_cur_state(self) -> TimeLineOp<T> {
+    fn tl_duration_in_cur_state(self) -> TimeLineOp {
         TimeLineOp::TlDurationInCurState(Box::new(self))
     }
 }
