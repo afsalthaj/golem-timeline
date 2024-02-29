@@ -3,7 +3,6 @@ use crate::boundaries::Boundaries;
 use crate::event_predicate::string;
 use crate::event_predicate::EventPredicate;
 use crate::event_timeline::EventTimeLine;
-use crate::negatable::Negatable;
 use crate::state_dynamic_timeline_point::StateDynamicsTimeLinePoint;
 use crate::value::Value;
 use crate::zip_result::ZipResult;
@@ -23,12 +22,12 @@ impl<T> Default for StateDynamicsTimeLine<T> {
     }
 }
 
-impl<T: Debug + Clone + Eq + Ord + Negatable> StateDynamicsTimeLine<T> {
-    pub fn negate(&self) -> StateDynamicsTimeLine<T> {
+impl StateDynamicsTimeLine<bool> {
+    pub fn negate(&self) -> StateDynamicsTimeLine<bool> {
         let mut negated_timeline = StateDynamicsTimeLine::default();
 
         for point in &self.points {
-            let negated_value = point.value.negate();
+            let negated_value = !point.value;
             negated_timeline.add_state_dynamic_info(point.t1, negated_value);
         }
 
