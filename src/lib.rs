@@ -6,7 +6,7 @@ pub mod event_type;
 pub mod state_dynamics_timeline;
 pub mod timeline_execution;
 pub mod timeline_op;
-pub mod timeline_point;
+pub mod state_dynamic_timeline_point;
 pub mod value;
 
 pub mod boundaries;

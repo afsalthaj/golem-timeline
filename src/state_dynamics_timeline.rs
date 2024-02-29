@@ -1,6 +1,6 @@
 use crate::aligned_state_dynamic_timeline::AlignedStateDynamicsTimeLine;
 use crate::boundaries::Boundaries;
-use crate::timeline_point::StateDynamicsTimeLineComponent;
+use crate::state_dynamic_timeline_point::StateDynamicsTimeLineSlice;
 use crate::value::Value;
 use crate::zip_result::ZipResult;
 use std::fmt::Debug;
@@ -9,7 +9,7 @@ use std::fmt::Debug;
 pub struct StateDynamicsTimeLine<T> {
     // we dont use any backend here, but a mere state of the timeline.
     // Flushing of this vector can involve storing it to postgres if needed
-    pub points: Vec<StateDynamicsTimeLineComponent<T>>,
+    pub points: Vec<StateDynamicsTimeLineSlice<T>>,
 }
 
 impl<T> Default for StateDynamicsTimeLine<T> {
@@ -27,7 +27,7 @@ impl<T: std::fmt::Debug + Clone> StateDynamicsTimeLine<T> {
     where
         F: Fn(&ZipResult<T>) -> T,
     {
-        let mut flattened_time_line_points: Vec<StateDynamicsTimeLineComponent<ZipResult<T>>> = Vec::new();
+        let mut flattened_time_line_points: Vec<StateDynamicsTimeLineSlice<ZipResult<T>>> = Vec::new();
         let mut self_cloned = self.clone();
         let mut right_cloned = other.clone();
 
@@ -42,7 +42,7 @@ impl<T: std::fmt::Debug + Clone> StateDynamicsTimeLine<T> {
                 .points
                 .iter()
                 .map(|point| point.to_zip_result())
-                .collect::<Vec<StateDynamicsTimeLineComponent<ZipResult<T>>>>();
+                .collect::<Vec<StateDynamicsTimeLineSlice<ZipResult<T>>>>();
 
             flattened_time_line_points.extend(zipped_result);
         }
@@ -52,7 +52,7 @@ impl<T: std::fmt::Debug + Clone> StateDynamicsTimeLine<T> {
                 .points
                 .iter()
                 .map(|point| point.to_zip_result())
-                .collect::<Vec<StateDynamicsTimeLineComponent<ZipResult<T>>>>();
+                .collect::<Vec<StateDynamicsTimeLineSlice<ZipResult<T>>>>();
 
             flattened_time_line_points.extend(zipped_result);
         }
@@ -89,7 +89,7 @@ impl<T: std::fmt::Debug + Clone> StateDynamicsTimeLine<T> {
     // In a state dynamic timeline, the value is valid from t1 to t2
     pub fn add_state_dynamic_info(&mut self, start_time: u64, value: T) -> &mut StateDynamicsTimeLine<T> {
         if self.points.is_empty() {
-            self.points.push(StateDynamicsTimeLineComponent {
+            self.points.push(StateDynamicsTimeLineSlice {
                 // epoch starting time
                 t1: start_time,
                 t2: None,
@@ -98,7 +98,7 @@ impl<T: std::fmt::Debug + Clone> StateDynamicsTimeLine<T> {
             self
         } else {
             self.points.last_mut().unwrap().update_t2(start_time);
-            self.points.push(StateDynamicsTimeLineComponent {
+            self.points.push(StateDynamicsTimeLineSlice {
                 t1: start_time,
                 t2: None,
                 value,
@@ -110,13 +110,13 @@ impl<T: std::fmt::Debug + Clone> StateDynamicsTimeLine<T> {
 }
 
 fn merge_result<F, T: Clone>(
-    flattened_time_line_points: &Vec<StateDynamicsTimeLineComponent<ZipResult<T>>>,
+    flattened_time_line_points: &Vec<StateDynamicsTimeLineSlice<ZipResult<T>>>,
     f: F,
-) -> Vec<StateDynamicsTimeLineComponent<T>>
+) -> Vec<StateDynamicsTimeLineSlice<T>>
 where
     F: Fn(&ZipResult<T>) -> T,
 {
-    let mut merged_timeline_points: Vec<StateDynamicsTimeLineComponent<T>> = vec![];
+    let mut merged_timeline_points: Vec<StateDynamicsTimeLineSlice<T>> = vec![];
 
     for current_timeline in flattened_time_line_points.iter() {
         let last_merged_timeline_points = merged_timeline_points.last_mut();
@@ -124,7 +124,7 @@ where
         match last_merged_timeline_points {
             Some(last) => {
                 if last.t1 == current_timeline.t1 && last.t2 == current_timeline.t2 {
-                    let time_line_point = StateDynamicsTimeLineComponent {
+                    let time_line_point = StateDynamicsTimeLineSlice {
                         t1: current_timeline.t1,
                         t2: current_timeline.t2,
                         value: f(
@@ -134,7 +134,7 @@ where
 
                     *last = time_line_point;
                 } else {
-                    let current_time_line_evaluated = StateDynamicsTimeLineComponent {
+                    let current_time_line_evaluated = StateDynamicsTimeLineSlice {
                         t1: current_timeline.t1,
                         t2: current_timeline.t2,
                         value: f(&current_timeline.value),
@@ -144,7 +144,7 @@ where
                 }
             }
             None => {
-                let current_time_line_evaluated = StateDynamicsTimeLineComponent {
+                let current_time_line_evaluated = StateDynamicsTimeLineSlice {
                     t1: current_timeline.t1,
                     t2: current_timeline.t2,
                     value: f(&current_timeline.value),
@@ -203,12 +203,12 @@ mod tests {
 
         let expected = StateDynamicsTimeLine {
             points: vec![
-                StateDynamicsTimeLineComponent {
+                StateDynamicsTimeLineSlice {
                     t1: 5,
                     t2: Some(7),
                     value: Value::ArrayValue(vec![Value::StringValue("playing".to_string())]),
                 },
-                StateDynamicsTimeLineComponent {
+                StateDynamicsTimeLineSlice {
                     t1: 7,
                     t2: None,
                     value: Value::ArrayValue(vec![
@@ -265,12 +265,12 @@ mod tests {
 
         let expected = StateDynamicsTimeLine {
             points: vec![
-                StateDynamicsTimeLineComponent {
+                StateDynamicsTimeLineSlice {
                     t1: 5,
                     t2: Some(7),
                     value: Value::ArrayValue(vec![Value::StringValue("playing".to_string())]),
                 },
-                StateDynamicsTimeLineComponent {
+                StateDynamicsTimeLineSlice {
                     t1: 7,
                     t2: Some(8),
                     value: Value::ArrayValue(vec![
@@ -278,7 +278,7 @@ mod tests {
                         Value::StringValue("playing".to_string()),
                     ]),
                 },
-                StateDynamicsTimeLineComponent {
+                StateDynamicsTimeLineSlice {
                     t1: 8,
                     t2: Some(9),
                     value: Value::ArrayValue(vec![
@@ -286,7 +286,7 @@ mod tests {
                         Value::StringValue("pause".to_string()),
                     ]),
                 },
-                StateDynamicsTimeLineComponent {
+                StateDynamicsTimeLineSlice {
                     t1: 9,
                     t2: None,
                     value: Value::ArrayValue(vec![
@@ -342,12 +342,12 @@ mod tests {
 
         let expected = StateDynamicsTimeLine {
             points: vec![
-                StateDynamicsTimeLineComponent {
+                StateDynamicsTimeLineSlice {
                     t1: 1,
                     t2: Some(2),
                     value: Value::ArrayValue(vec![Value::StringValue("playing".to_string())]),
                 },
-                StateDynamicsTimeLineComponent {
+                StateDynamicsTimeLineSlice {
                     t1: 2,
                     t2: Some(3),
                     value: Value::ArrayValue(vec![
@@ -355,7 +355,7 @@ mod tests {
                         Value::StringValue("playing".to_string()),
                     ]),
                 },
-                StateDynamicsTimeLineComponent {
+                StateDynamicsTimeLineSlice {
                     t1: 3,
                     t2: Some(4),
                     value: Value::ArrayValue(vec![
@@ -363,7 +363,7 @@ mod tests {
                         Value::StringValue("cartoon".to_string()),
                     ]),
                 },
-                StateDynamicsTimeLineComponent {
+                StateDynamicsTimeLineSlice {
                     t1: 4,
                     t2: None,
                     value: Value::ArrayValue(vec![
@@ -418,17 +418,17 @@ mod tests {
 
         let expected = StateDynamicsTimeLine {
             points: vec![
-                StateDynamicsTimeLineComponent {
+                StateDynamicsTimeLineSlice {
                     t1: 1,
                     t2: Some(2),
                     value: Value::ArrayValue(vec![Value::StringValue("pause".to_string())]),
                 },
-                StateDynamicsTimeLineComponent {
+                StateDynamicsTimeLineSlice {
                     t1: 2,
                     t2: Some(3),
                     value: Value::ArrayValue(vec![Value::StringValue("playing".to_string())]),
                 },
-                StateDynamicsTimeLineComponent {
+                StateDynamicsTimeLineSlice {
                     t1: 3,
                     t2: None,
                     value: Value::ArrayValue(vec![

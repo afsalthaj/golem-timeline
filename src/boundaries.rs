@@ -1,17 +1,17 @@
-use crate::timeline_point::StateDynamicsTimeLineComponent;
+use crate::state_dynamic_timeline_point::StateDynamicsTimeLineSlice;
 use crate::zip_result::ZipResult;
 use std::fmt::Debug;
 
 pub struct Boundaries<'t, T: Clone> {
-    pub left: Option<StateDynamicsTimeLineComponent<ZipResult<'t, T>>>,
-    pub intersection: StateDynamicsTimeLineComponent<ZipResult<'t, T>>,
-    pub right: Option<StateDynamicsTimeLineComponent<ZipResult<'t, T>>>,
+    pub left: Option<StateDynamicsTimeLineSlice<ZipResult<'t, T>>>,
+    pub intersection: StateDynamicsTimeLineSlice<ZipResult<'t, T>>,
+    pub right: Option<StateDynamicsTimeLineSlice<ZipResult<'t, T>>>,
 }
 
 impl<'t, T: Debug + Clone> Boundaries<'t, T> {
     pub fn get_boundaries(
-        left: &'t StateDynamicsTimeLineComponent<T>,
-        right: &'t StateDynamicsTimeLineComponent<T>,
+        left: &'t StateDynamicsTimeLineSlice<T>,
+        right: &'t StateDynamicsTimeLineSlice<T>,
     ) -> Boundaries<'t, T> {
         let intersection_boundary_left = left.t1.max(right.t1);
 
@@ -22,7 +22,7 @@ impl<'t, T: Debug + Clone> Boundaries<'t, T> {
             (None, None) => None,
         };
 
-        let intersection = StateDynamicsTimeLineComponent {
+        let intersection = StateDynamicsTimeLineSlice {
             t1: intersection_boundary_left,
             t2: intersection_boundary_right,
             value: ZipResult::Both((&left.value, &right.value)),
@@ -35,14 +35,14 @@ impl<'t, T: Debug + Clone> Boundaries<'t, T> {
             let left_boundary_left = left.t1.min(right.t1);
             let left_boundary_right = intersection_boundary_left;
             Some(if left_boundary_left == left.t1 {
-                StateDynamicsTimeLineComponent {
+                StateDynamicsTimeLineSlice {
                     t1: left_boundary_left,
                     t2: Some(left_boundary_right),
                     value: ZipResult::Singleton(&left.value),
                 }
             } else {
                 // if t1x0 == other_point.t1, then it means t1 is before t2 and the value exists only in self time line.
-                StateDynamicsTimeLineComponent {
+                StateDynamicsTimeLineSlice {
                     t1: left_boundary_left,
                     t2: Some(left_boundary_right),
                     value: ZipResult::Singleton(&right.value),
@@ -64,13 +64,13 @@ impl<'t, T: Debug + Clone> Boundaries<'t, T> {
             match right_boundary_left {
                 Some(t2x0) => {
                     if Some(t2x0) == left.t2 {
-                        Some(StateDynamicsTimeLineComponent {
+                        Some(StateDynamicsTimeLineSlice {
                             t1: t2x0,
                             t2: right_boundary_right,
                             value: ZipResult::Singleton(&right.value),
                         })
                     } else {
-                        Some(StateDynamicsTimeLineComponent {
+                        Some(StateDynamicsTimeLineSlice {
                             t1: t2x0,
                             t2: right_boundary_right,
                             value: ZipResult::Singleton(&left.value),
