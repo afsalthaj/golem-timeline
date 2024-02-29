@@ -3,12 +3,12 @@ use crate::boundaries::Boundaries;
 use crate::event_predicate::string;
 use crate::event_predicate::EventPredicate;
 use crate::event_timeline::EventTimeLine;
+use crate::negatable::Negatable;
 use crate::state_dynamic_timeline_point::StateDynamicsTimeLinePoint;
 use crate::value::Value;
 use crate::zip_result::ZipResult;
 use std::fmt::Debug;
 use std::ops::Neg;
-use crate::negatable::Negatable;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct StateDynamicsTimeLine<T> {
@@ -23,7 +23,7 @@ impl<T> Default for StateDynamicsTimeLine<T> {
     }
 }
 
-impl <T: Debug + Clone + Eq + Ord + Negatable> StateDynamicsTimeLine<T> {
+impl<T: Debug + Clone + Eq + Ord + Negatable> StateDynamicsTimeLine<T> {
     pub fn negate(&self) -> StateDynamicsTimeLine<T> {
         let mut negated_timeline = StateDynamicsTimeLine::default();
 
@@ -37,7 +37,6 @@ impl <T: Debug + Clone + Eq + Ord + Negatable> StateDynamicsTimeLine<T> {
 }
 
 impl<T: Debug + Clone + Eq + Ord> StateDynamicsTimeLine<T> {
-
     pub fn tl_has_existed(
         event_time_line: &EventTimeLine<T>,
         event_predicate: EventPredicate<T>,
