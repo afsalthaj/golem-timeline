@@ -3,7 +3,7 @@ pub mod event_predicate;
 pub mod event_record;
 pub mod event_stream;
 pub mod event_type;
-pub mod timeline;
+pub mod state_dynamics_timeline;
 pub mod timeline_execution;
 pub mod timeline_op;
 pub mod timeline_point;
@@ -14,4 +14,4 @@ pub mod worker_timeline;
 pub mod worker_timeline_data;
 pub mod zip_result;
 
-pub mod aligned_timeline;
+pub mod aligned_state_dynamic_timeline;

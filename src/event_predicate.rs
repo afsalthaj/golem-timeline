@@ -1,6 +1,7 @@
 use crate::value::Value;
 
-// More closer to state dynamic event
+// At the primary level, everything is just an event
+// As we operate more on it, we get numerical timeline, state dynamic timeline or stay as event timeline
 #[derive(Clone)]
 struct EventState {
     column_of_state: String, // col("player_state_change_change")
@@ -35,7 +36,13 @@ fn event(column_name: &str) -> EventIndex {
         column_of_action: column_name.to_string(),
     })
 }
-fn action(column_name: &str) -> EventIndex {
+fn state(column_name: &str) -> EventIndex {
+    EventIndex::StateDynamic(EventState {
+        column_of_state: column_name.to_string(),
+    })
+}
+
+fn col(column_name: &str) -> EventIndex {
     EventIndex::StateDynamic(EventState {
         column_of_state: column_name.to_string(),
     })

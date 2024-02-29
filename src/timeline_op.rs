@@ -1,6 +1,6 @@
 use crate::event_predicate::EventPredicate;
 use crate::event_stream::EventStream;
-use crate::timeline::TimeLine;
+use crate::state_dynamics_timeline::StateDynamicsTimeLine;
 use crate::value::Value;
 
 // In paper, it is referred as object DAG
@@ -100,7 +100,7 @@ impl TimeLineOp {
 }
 
 impl TimeLineOp {
-    fn evaluate(&self) -> TimeLine<Value> {
+    fn evaluate(&self) -> StateDynamicsTimeLine<Value> {
         unimplemented!("evaluate not implemented")
     }
 

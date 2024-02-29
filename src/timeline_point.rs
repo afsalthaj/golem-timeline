@@ -1,20 +1,21 @@
 use crate::value::Value;
 use crate::zip_result::ZipResult;
 
+// In a state dynamic timeline component, the value is valid for the duration of t1 to t2, unlike event or numerical
 // Having t2 as None allows
 // us to assume for StateDynamic and Events together
 // If None, may be the Value is an event
 // And if not None, then it implies the Value is valid for the duration of t1 to t2
 #[derive(Clone, Debug, PartialEq)]
-pub struct TimeLinePoint<T> {
+pub struct StateDynamicsTimeLineComponent<T> {
     pub t1: u64,
     pub t2: Option<u64>,
     pub value: T,
 }
 
-impl<T: Clone> TimeLinePoint<T> {
-    pub fn to_zip_result(&self) -> TimeLinePoint<ZipResult<T>> {
-        TimeLinePoint {
+impl<T: Clone> StateDynamicsTimeLineComponent<T> {
+    pub fn to_zip_result(&self) -> StateDynamicsTimeLineComponent<ZipResult<T>> {
+        StateDynamicsTimeLineComponent {
             t1: self.t1,
             t2: self.t2,
             value: ZipResult::Singleton(&self.value),
@@ -28,7 +29,7 @@ impl<T: Clone> TimeLinePoint<T> {
             t >= self.t1
         }
     }
-    pub fn is_mutually_exclusive(&self, other: &TimeLinePoint<T>) -> bool {
+    pub fn is_mutually_exclusive(&self, other: &StateDynamicsTimeLineComponent<T>) -> bool {
         // first timeline's end is less than second timeline's start or
         // first timeline's start is greater than second timeline's end
         optional_less_than(self.t2, Some(other.t1))

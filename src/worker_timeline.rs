@@ -1,10 +1,10 @@
-use crate::timeline::TimeLine;
+use crate::state_dynamics_timeline::StateDynamicsTimeLine;
 use crate::value::Value;
 
 // The data that each worker needs to care about
 pub struct WorkerTimeLineData {
     pub key: WorkerKey,
-    pub timeline: TimeLine<Value>,
+    pub timeline: StateDynamicsTimeLine<Value>,
 }
 
 #[derive(Clone, PartialEq, Eq, Hash, Debug)]
