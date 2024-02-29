@@ -1,7 +1,9 @@
+use crate::aligned_timeline::AlignedTimeLine;
 use crate::boundaries::Boundaries;
 use crate::timeline_point::TimeLinePoint;
 use crate::value::Value;
 use crate::zip_result::ZipResult;
+use std::fmt::Debug;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct TimeLine<T> {
@@ -17,13 +19,43 @@ impl<T> Default for TimeLine<T> {
 }
 
 impl<T: std::fmt::Debug + Clone> TimeLine<T> {
+    pub fn beginning(&self) -> Option<u64> {
+        self.points.first().map(|point| point.t1)
+    }
+
     pub fn zip_with<F>(&self, other: &TimeLine<T>, f: F) -> TimeLine<T>
     where
         F: Fn(&ZipResult<T>) -> T,
     {
         let mut flattened_time_line_points: Vec<TimeLinePoint<ZipResult<T>>> = Vec::new();
-        let mut self_iter = self.points.iter().peekable();
-        let mut other_iter = other.points.iter().peekable();
+        let mut self_cloned = self.clone();
+        let mut right_cloned = other.clone();
+
+        let aligned_time_lines =
+            AlignedTimeLine::from_left_and_right(&mut self_cloned, &mut right_cloned);
+
+        let mut self_iter = aligned_time_lines.time_line1.points.iter().peekable();
+        let mut other_iter = aligned_time_lines.time_line2.points.iter().peekable();
+
+        if let Some(removed_time_lines) = &aligned_time_lines.removed_points_timeline1 {
+            let zipped_result = removed_time_lines
+                .points
+                .iter()
+                .map(|point| point.to_zip_result())
+                .collect::<Vec<TimeLinePoint<ZipResult<T>>>>();
+
+            flattened_time_line_points.extend(zipped_result);
+        }
+
+        if let Some(removed_time_lines) = &aligned_time_lines.removed_points_timeline2 {
+            let zipped_result = removed_time_lines
+                .points
+                .iter()
+                .map(|point| point.to_zip_result())
+                .collect::<Vec<TimeLinePoint<ZipResult<T>>>>();
+
+            flattened_time_line_points.extend(zipped_result);
+        }
 
         while self_iter.peek().is_some() && other_iter.peek().is_some() {
             let self_point = self_iter.next().unwrap();
@@ -394,9 +426,7 @@ mod tests {
                 TimeLinePoint {
                     t1: 2,
                     t2: Some(3),
-                    value: Value::ArrayValue(vec![
-                        Value::StringValue("playing".to_string()),
-                    ]),
+                    value: Value::ArrayValue(vec![Value::StringValue("playing".to_string())]),
                 },
                 TimeLinePoint {
                     t1: 3,
@@ -405,7 +435,7 @@ mod tests {
                         Value::StringValue("playing".to_string()),
                         Value::StringValue("movie".to_string()),
                     ]),
-                }
+                },
             ],
         };
 

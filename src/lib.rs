@@ -13,3 +13,5 @@ pub mod boundaries;
 pub mod worker_timeline;
 pub mod worker_timeline_data;
 pub mod zip_result;
+
+pub mod aligned_timeline;

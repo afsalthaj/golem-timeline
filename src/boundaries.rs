@@ -1,6 +1,6 @@
-use std::fmt::Debug;
 use crate::timeline_point::TimeLinePoint;
 use crate::zip_result::ZipResult;
+use std::fmt::Debug;
 
 pub struct Boundaries<'t, T: Clone> {
     pub left: Option<TimeLinePoint<ZipResult<'t, T>>>,
@@ -86,13 +86,5 @@ impl<'t, T: Debug + Clone> Boundaries<'t, T> {
             intersection,
             right: right_boundary,
         }
-    }
-}
-fn optional_less_than(left: Option<u64>, right: Option<u64>) -> bool {
-    match (left, right) {
-        (Some(l), Some(r)) => l < r,
-        (Some(_), None) => true,
-        (None, Some(_)) => false,
-        (None, None) => true,
     }
 }
