@@ -72,6 +72,21 @@ impl StateDynamicsTimeLine<bool> {
 
         event_time_line
     }
+
+    pub fn and(&self, that: StateDynamicsTimeLine<bool>) -> StateDynamicsTimeLine<bool> {
+        self.zip_with(&that, |a| match a {
+            ZipResult::Both((a, b)) => a && b,
+            ZipResult::Singleton(a) => *a,
+        })
+    }
+
+    pub fn or(&self, that: StateDynamicsTimeLine<bool>) -> StateDynamicsTimeLine<bool> {
+        self.zip_with(&that, |a| match a {
+            ZipResult::Both((a, b)) => a || b,
+            ZipResult::Singleton(a) => *a,
+        })
+    }
+
 }
 
 impl<T: Debug + Clone + Eq + Ord> StateDynamicsTimeLine<T> {
@@ -135,6 +150,39 @@ impl<T: Debug + Clone + Eq + Ord> StateDynamicsTimeLine<T> {
 
     pub fn beginning(&self) -> Option<u64> {
         self.points.first().map(|point| point.t1)
+    }
+
+    pub fn equal_to(&self, constant: T) -> StateDynamicsTimeLine<bool> {
+        let mut state_dynamics_time_line = StateDynamicsTimeLine::default();
+
+        for point in &self.points {
+            let is_equal = point.value == constant;
+            state_dynamics_time_line.add_state_dynamic_info(point.t1, is_equal);
+        }
+
+        state_dynamics_time_line
+    }
+
+    pub fn greater_than(&self, constant: T) -> StateDynamicsTimeLine<bool> {
+        let mut state_dynamics_time_line = StateDynamicsTimeLine::default();
+
+        for point in &self.points {
+            let is_greater_than = point.value > constant;
+            state_dynamics_time_line.add_state_dynamic_info(point.t1, is_greater_than);
+        }
+
+        state_dynamics_time_line
+    }
+
+    pub fn less_than(&self, constant: T) -> StateDynamicsTimeLine<bool> {
+        let mut state_dynamics_time_line = StateDynamicsTimeLine::default();
+
+        for point in &self.points {
+            let is_less_than = point.value < constant;
+            state_dynamics_time_line.add_state_dynamic_info(point.t1, is_less_than);
+        }
+
+        state_dynamics_time_line
     }
 
     pub fn zip_with<F>(&self, other: &StateDynamicsTimeLine<T>, f: F) -> StateDynamicsTimeLine<T>
