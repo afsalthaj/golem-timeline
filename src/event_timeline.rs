@@ -5,7 +5,7 @@ pub struct EventTimeLine<T> {
 }
 
 impl<T> EventTimeLine<T> {
-    pub fn new() -> EventTimeLine<T> {
+    pub fn default() -> EventTimeLine<T> {
         EventTimeLine { points: Vec::new() }
     }
 

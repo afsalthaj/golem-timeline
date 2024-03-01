@@ -8,10 +8,6 @@ pub struct RawEventRecord {
 
 impl RawEventRecord {
     pub fn new(key: String, time: u64, event: Value) -> RawEventRecord {
-        RawEventRecord {
-            time,
-            event,
-            key,
-        }
+        RawEventRecord { time, event, key }
     }
 }

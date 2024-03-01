@@ -35,7 +35,7 @@ impl StateDynamicsTimeLine<bool> {
     }
 
     pub fn tl_duration_where(&self) -> EventTimeLine<u64> {
-        let mut event_time_line = EventTimeLine::new();
+        let mut event_time_line = EventTimeLine::default();
         let mut duration = 0;
 
         // 1: false
@@ -626,7 +626,7 @@ mod tests {
 
     #[test]
     fn test_tl_has_existed() {
-        let mut event_time_line = EventTimeLine::new();
+        let mut event_time_line = EventTimeLine::default();
         event_time_line.add_event_info(1, "pause".to_string());
         event_time_line.add_event_info(2, "playing".to_string());
         event_time_line.add_event_info(3, "pause".to_string());
@@ -658,7 +658,7 @@ mod tests {
     // t1------(false)-----t2----(true)-------t3~~~(false)~~~~>
     #[test]
     fn test_tl_has_existed_within_scenario1() {
-        let mut event_time_line = EventTimeLine::new();
+        let mut event_time_line = EventTimeLine::default();
         event_time_line.add_event_info(1, "pause".to_string());
         event_time_line.add_event_info(2, "playing".to_string());
 
@@ -695,7 +695,7 @@ mod tests {
     // t1--------(false)-----t2----(true)---t4----(false)---t5----(true)---t7~~~~(false)~~~~~~>
     #[test]
     fn test_tl_has_existed_within_scenario2() {
-        let mut event_time_line = EventTimeLine::new();
+        let mut event_time_line = EventTimeLine::default();
         event_time_line.add_event_info(1, "pause".to_string());
         event_time_line.add_event_info(2, "playing".to_string());
         event_time_line.add_event_info(5, "playing".to_string());

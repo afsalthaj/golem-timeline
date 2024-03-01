@@ -137,7 +137,6 @@ fn main() {
     for json_record in json_data {
         let event = Value::StringValue(json_record["event"].as_str().unwrap().to_string());
 
-
         let key = json_record["playback_session_id"].as_str().unwrap();
         let timestamp = json_record["timestamp"].as_u64().unwrap();
         let video = json_record["video"].as_str().unwrap();
@@ -199,18 +198,35 @@ fn main() {
     // 8.20 to 8.39 false
 
     for worker in locked_workers.workers() {
-        for i in worker.timeline.state_points().unwrap().iter() {
-            let end_time = match i.t2 {
-                Some(t2) => timestamp_to_datetime(t2 as i64).to_string(),
-                None => "Unknown future".to_string(),
-            };
+        // We don't know the type of timeline each worker is managing
+        // Sometimes the worker is streaming raw events
+        // Sometimes the worker is managing state dynamic events
+        match &worker.timeline {
+            timeline::timeline::TimeLine::EventTime(event_timeline) => {
+                for i in &event_timeline.points {
+                    println!(
+                        "{:?} {:?}",
+                        timestamp_to_datetime(i.t1 as i64),
+                        i.value.to_string()
+                    );
+                }
+            }
 
-            println!(
-                "{:?} {:?} {:?}",
-                timestamp_to_datetime(i.t1 as i64),
-                end_time,
-                i.value.to_string()
-            );
+            timeline::timeline::TimeLine::StateDynamic(state_dynamics) => {
+                for i in &state_dynamics.points {
+                    let end_time = match i.t2 {
+                        Some(t2) => timestamp_to_datetime(t2 as i64).to_string(),
+                        None => "Unknown future".to_string(),
+                    };
+
+                    println!(
+                        "{:?} {:?} {:?}",
+                        timestamp_to_datetime(i.t1 as i64),
+                        end_time,
+                        i.value.to_string()
+                    );
+                }
+            }
         }
     }
 }

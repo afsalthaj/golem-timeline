@@ -1,8 +1,8 @@
 use crate::event_predicate::EventPredicate;
 use crate::event_stream::EventStream;
 use crate::state_dynamics_timeline::StateDynamicsTimeLine;
-use crate::value::Value;
 use crate::timeline::TimeLine;
+use crate::value::Value;
 
 // In paper, it is referred as object DAG
 // TimeLineOp will produce numerical or state-dynamic timeline of a `Value` which can be (currently) string, int etc
