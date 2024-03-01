@@ -136,10 +136,10 @@ Input
 
 ```
 
-### CIRR
+## CIRR
 
 
-# Actual timeline
+### Actual timeline
 ```
       |
 seek  |                   seek
@@ -150,16 +150,16 @@ t ---------------------------------------------->
                 t1        t2          t3          t10
 ```
 
-# Operated timeline   
+### TimeLine DSL semantics   
 
-### TLHas_Existed(play)
+#### TLHas_Existed(play)
 
 ```
      (play)--------------------------------------
 -----t1
 ```
 
-### Not TLHas_Existed_Within(seek, 5sec)
+#### Not TLHas_Existed_Within(seek, 5sec)
 
 ```
                          
@@ -169,7 +169,7 @@ t1----------             t5-------------
 
 ```
 
-### Latest state is buffer (TL_LatestEventToState)
+#### Latest state is buffer (TL_LatestEventToState)
 
 ```
             t3-------------(bufer)
@@ -179,7 +179,7 @@ t1          t3
 
 ```
 
-### And all of it
+#### And all of it
 
 ```
 
@@ -188,7 +188,7 @@ t1          t3
 t1------t2----------t7
 ```
 
-### TL_duration_where: 
+#### TL_duration_where: 
 
 ```
 
@@ -199,3 +199,9 @@ t1------t2----------t7
                           t7  t8 t9 t10
 
 ```
+
+The summary of the above timeline is as follows,
+user did start playing at some point. Although the user
+action was seek at some point, even after giving an extension of 5 seconds
+for seek, there still exists 3 seconds of buffering,
+contributing to the connection induced rebuffering.
