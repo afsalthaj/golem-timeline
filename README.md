@@ -135,3 +135,67 @@ Input
 ]
 
 ```
+
+### CIRR
+
+
+# Actual timeline
+```
+      |
+seek  |                   seek
+      |               
+buffer|                               ---(buffer)---
+play  |         ---(play)--             
+t ---------------------------------------------->  
+                t1        t2          t3          t10
+```
+
+# Operated timeline   
+
+### TLHas_Existed(play)
+
+```
+     (play)--------------------------------------
+-----t1
+```
+
+### Not TLHas_Existed_Within(seek, 5sec)
+
+```
+                         
+t1----------             t5-------------             
+                         
+           t2---(seek)---t5
+
+```
+
+### Latest state is buffer (TL_LatestEventToState)
+
+```
+            t3-------------(bufer)
+
+-------------  
+t1          t3
+
+```
+
+### And all of it
+
+```
+
+                    t7--------t10
+       
+t1------t2----------t7
+```
+
+### TL_duration_where: 
+
+```
+
+3sec                            /
+2sec                          /
+1sec                        /
+0sec----------------------/
+                          t7  t8 t9 t10
+
+```
