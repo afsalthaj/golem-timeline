@@ -1,4 +1,5 @@
 // EventTimeLine can represent Numerical TimeLine or Event TimeLine
+#[derive(PartialEq, Debug)]
 pub struct EventTimeLine<T> {
     pub points: Vec<EventTimeLinePoint<T>>,
 }
@@ -14,6 +15,7 @@ impl<T> EventTimeLine<T> {
     }
 }
 
+#[derive(PartialEq, Debug, Clone)]
 pub struct EventTimeLinePoint<T> {
     pub t1: u64,
     pub value: T,

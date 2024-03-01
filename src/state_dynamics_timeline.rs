@@ -38,7 +38,9 @@ impl StateDynamicsTimeLine<bool> {
         let mut event_time_line = EventTimeLine::new();
         let mut duration = 0;
 
+        // 1: false
         for point in &self.points {
+            dbg! {point};
             let start = point.t1;
             let end = point.t2;
 
@@ -46,21 +48,25 @@ impl StateDynamicsTimeLine<bool> {
                 Some(end) => {
                     if point.value {
                         let mut i = 0;
-                        while i < end {
-                            duration = duration + i;
+                        while (start + i) < end {
                             event_time_line.add_event_info(start + i, duration);
+                            duration = duration + 1;
                             i += 1;
                         }
                     } else {
                         let mut i = 0;
-                        while i < end {
+                        while (start + i) < end {
                             event_time_line.add_event_info(start + i, duration);
                             i += 1;
                         }
                     }
                 }
 
-                None => break,
+                None => {
+                    if point.value {
+                        event_time_line.add_event_info(start, duration);
+                    }
+                }
             }
         }
 
@@ -277,6 +283,7 @@ mod tests {
     use super::*;
     use crate::event_predicate;
     use crate::event_predicate::EventValue;
+    use crate::event_timeline::EventTimeLinePoint;
     use crate::value::Value;
 
     // t1~~~~(playing)~~~~~~~~~~~~>
@@ -697,6 +704,30 @@ mod tests {
                     t2: None,
                     value: false,
                 },
+            ],
+        };
+
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn tl_duration_where() {
+        let mut timeline = StateDynamicsTimeLine::default();
+        timeline.add_state_dynamic_info(1, true);
+        timeline.add_state_dynamic_info(3, false);
+        timeline.add_state_dynamic_info(5, true);
+        timeline.add_state_dynamic_info(7, true);
+        let result = timeline.tl_duration_where();
+
+        let expected = EventTimeLine {
+            points: vec![
+                EventTimeLinePoint { t1: 1, value: 0 },
+                EventTimeLinePoint { t1: 2, value: 1 },
+                EventTimeLinePoint { t1: 3, value: 2 },
+                EventTimeLinePoint { t1: 4, value: 2 },
+                EventTimeLinePoint { t1: 5, value: 2 },
+                EventTimeLinePoint { t1: 6, value: 3 },
+                EventTimeLinePoint { t1: 7, value: 4 },
             ],
         };
 
