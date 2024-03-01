@@ -1,11 +1,10 @@
 use crate::event_record::RawEventRecord;
 use crate::event_timeline::EventTimeLine;
-use crate::state_dynamics_timeline::StateDynamicsTimeLine;
 use crate::timeline::TimeLine;
 use crate::worker_timeline::{WorkerKey, WorkerTimeLineData};
-// Interface to invoke worker and update timeline
+
 pub trait InvokeWorker {
-    fn add_worker(&mut self, raw_event_record: RawEventRecord, worker: &WorkerKey);
+    fn add_event_worker(&mut self, raw_event_record: RawEventRecord, worker: &WorkerKey);
 }
 
 pub struct InMemoryWorkerInvoke {
@@ -34,7 +33,7 @@ impl InMemoryWorkerInvoke {
 }
 
 impl InvokeWorker for InMemoryWorkerInvoke {
-    fn add_worker(&mut self, event: RawEventRecord, worker_key: &WorkerKey) {
+    fn add_event_worker(&mut self, event: RawEventRecord, worker_key: &WorkerKey) {
         // For in-memory, see if worker already exist and update the timeline
         let worker = self.get_worker_mut(&worker_key);
 

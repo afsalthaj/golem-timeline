@@ -29,7 +29,7 @@ impl TimeLineExecution for TimeLineOp {
                                         identity: event.key.clone(),
                                     };
 
-                                    sink.add_worker(event, &worker_key);
+                                    sink.add_event_worker(event, &worker_key);
                                 }
                                 BackEnd::Golem => todo!(),
                             }
