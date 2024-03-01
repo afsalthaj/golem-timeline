@@ -75,21 +75,33 @@ impl StateDynamicsTimeLine<bool> {
 
     pub fn and(&self, that: StateDynamicsTimeLine<bool>) -> StateDynamicsTimeLine<bool> {
         self.zip_with(&that, |a| match a {
-            ZipResult::Both((a, b)) => a && b,
-            ZipResult::Singleton(a) => *a,
+            ZipResult::Both((a, b)) => **a && **b,
+            ZipResult::Singleton(a) => **a,
         })
     }
 
     pub fn or(&self, that: StateDynamicsTimeLine<bool>) -> StateDynamicsTimeLine<bool> {
         self.zip_with(&that, |a| match a {
-            ZipResult::Both((a, b)) => a || b,
-            ZipResult::Singleton(a) => *a,
+            ZipResult::Both((a, b)) => **a || **b,
+            ZipResult::Singleton(a) => **a,
         })
     }
-
 }
 
 impl<T: Debug + Clone + Eq + Ord> StateDynamicsTimeLine<T> {
+    // This turned out to be a mere conversion of events to state
+    pub fn tl_latest_event_to_state(
+        event_time_line: &EventTimeLine<T>,
+    ) -> StateDynamicsTimeLine<T> {
+        let mut state_dynamics_time_line = StateDynamicsTimeLine::default();
+
+        for point in &event_time_line.points {
+            state_dynamics_time_line.add_state_dynamic_info(point.t1, point.value.clone());
+        }
+
+        state_dynamics_time_line
+    }
+
     pub fn tl_has_existed(
         event_time_line: &EventTimeLine<T>,
         event_predicate: EventPredicate<T>,
