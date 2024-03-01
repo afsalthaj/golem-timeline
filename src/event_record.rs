@@ -1,16 +1,16 @@
-use crate::event_type::EventType;
+use crate::value::Value;
 
 pub struct RawEventRecord {
     pub time: u64,
-    pub event_type: EventType,
+    pub event: Value,
     pub key: String,
 }
 
 impl RawEventRecord {
-    pub fn new(key: String, time: u64, event_type: EventType) -> RawEventRecord {
+    pub fn new(key: String, time: u64, event: Value) -> RawEventRecord {
         RawEventRecord {
             time,
-            event_type,
+            event,
             key,
         }
     }

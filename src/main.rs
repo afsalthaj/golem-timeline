@@ -3,8 +3,8 @@ use std::sync::Arc;
 use timeline::backend::BackEnd;
 use timeline::event_record::RawEventRecord;
 use timeline::event_stream::EventStream;
-use timeline::event_type::EventType;
 use timeline::timeline_execution::TimeLineExecution;
+use timeline::value::Value;
 use timeline::worker_timeline_data::InMemoryWorkerInvoke;
 fn main() {
     print!("Golem TimeLine");
@@ -135,19 +135,14 @@ fn main() {
 
     let mut records: Vec<RawEventRecord> = Vec::new();
     for json_record in json_data {
-        let event = json_record["event"].as_str().unwrap();
+        let event = Value::StringValue(json_record["event"].as_str().unwrap().to_string());
 
-        let event_type = if event == "play" || event == "pause" || event == "seek" {
-            EventType::Event(event.to_string())
-        } else {
-            EventType::StateDynamic(event.to_string())
-        };
 
         let key = json_record["playback_session_id"].as_str().unwrap();
         let timestamp = json_record["timestamp"].as_u64().unwrap();
         let video = json_record["video"].as_str().unwrap();
 
-        let record = RawEventRecord::new(key.to_string(), timestamp, event_type);
+        let record = RawEventRecord::new(key.to_string(), timestamp, event);
         records.push(record);
     }
 
@@ -204,7 +199,7 @@ fn main() {
     // 8.20 to 8.39 false
 
     for worker in locked_workers.workers() {
-        for i in worker.timeline.points.iter() {
+        for i in worker.timeline.state_points().unwrap().iter() {
             let end_time = match i.t2 {
                 Some(t2) => timestamp_to_datetime(t2 as i64).to_string(),
                 None => "Unknown future".to_string(),
