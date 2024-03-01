@@ -5,6 +5,8 @@ use crate::value::Value;
 use crate::timeline::TimeLine;
 
 // In paper, it is referred as object DAG
+// TimeLineOp will produce numerical or state-dynamic timeline of a `Value` which can be (currently) string, int etc
+// This implies your raw events needs to produce events, or state that can be coalesced to `Value`
 pub enum TimeLineOp {
     // Essentially based on paper, there is only numerical timeline and state dynamic timeline
     // A state dynamic is pretty much state that is dynamic. Consider this as a constant value
