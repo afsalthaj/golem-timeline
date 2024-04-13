@@ -1,3 +1,5 @@
+mod bindings;
+
 pub mod aligned_state_dynamic_timeline;
 pub mod backend;
 pub mod boundaries;
@@ -14,3 +16,14 @@ pub mod value;
 pub mod worker_timeline;
 pub mod worker_timeline_data;
 pub mod zip_result;
+
+use crate::bindings::exports::golem::timeline::api::Guest;
+use crate::bindings::exports::golem::timeline::api::*;
+
+struct Component;
+
+impl Guest for Component {
+    fn get_timelines() -> wit_bindgen::rt::vec::Vec<wit_bindgen::rt::string::String> {
+        todo!()
+    }
+}

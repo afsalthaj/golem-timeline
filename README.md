@@ -144,7 +144,7 @@ Input
       |
 seek  |                   seek
       |               
-buffer|                               ---(buffer)---
+buffer|               \                ---(buffer)---
 play  |         ---(play)--             
 t ---------------------------------------------->  
                 t1        t2          t3          t10
@@ -205,3 +205,7 @@ user did start playing at some point. Although the user
 action was seek at some point, even after giving an extension of 5 seconds
 for seek, there still exists 3 seconds of buffering,
 contributing to the connection induced rebuffering.
+
+
+
+a + b 
