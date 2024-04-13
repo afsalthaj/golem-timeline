@@ -1,12 +1,14 @@
 use crate::event_predicate::EventPredicate;
 use crate::event_stream::EventStream;
-use crate::state_dynamics_timeline::StateDynamicsTimeLine;
 use crate::timeline::TimeLine;
 use crate::value::Value;
 
 // In paper, it is referred as object DAG
 // TimeLineOp will produce numerical or state-dynamic timeline of a `Value` which can be (currently) string, int etc
 // This implies your raw events needs to produce events, or state that can be coalesced to `Value`
+
+// Id annotation for each node
+// timeline-op Id + integer Id
 pub enum TimeLineOp {
     // Essentially based on paper, there is only numerical timeline and state dynamic timeline
     // A state dynamic is pretty much state that is dynamic. Consider this as a constant value
