@@ -254,3 +254,15 @@ core component further on various leaf and other composed components responsible
 
 For now, as a POC, we are focussing on the workflow and reiterating and getting it right, to further optimise as we go.
 
+
+### How to use?
+
+```scala
+cargo component build
+
+golem-cli stubgen compose --source-wasm target/wasm32-wasi/debug/driver.wasm --stub-wasm target/wasm32-wasi/debug/core_stub.wasm --dest-wasm target/wasm32-wasi/debug/driver_composed.wasm
+Writing composed component to "target/wasm32-wasi/debug/driver_composed.wasm"
+
+
+
+```
