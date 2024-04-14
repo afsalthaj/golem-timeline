@@ -1,5 +1,4 @@
-use timeline_lib::timeline_op::TimeLineOp as GolemTimeLineOp;
-use crate::bindings::exports::timeline::rawevents::api::Guest;
+use crate::bindings::exports::timeline::driver::api::Guest;
 
 mod bindings;
 struct Component;

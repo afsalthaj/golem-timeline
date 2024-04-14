@@ -1,12 +1,12 @@
-package timeline:rawevents;
+package timeline:driver;
 
 interface api {
-  //use timeline:rawevents/api.{event};
+  use timeline:rawevents/api.{event};
   use golem:timeline/api.{event-column-predicate-info};
 
   run: func() -> ();
 }
 
-world rawevents {
+world driver {
   export api;
 }
