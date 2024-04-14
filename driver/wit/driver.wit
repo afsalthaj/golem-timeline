@@ -1,9 +1,9 @@
-package timeline:rawevents;
+package timeline:driver;
 
 interface api {
-  hello: func() -> ();
+  run: func(value: string) -> ();
 }
 
-world rawevents {
+world driver {
   export api;
 }

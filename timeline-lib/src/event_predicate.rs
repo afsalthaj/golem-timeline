@@ -1,7 +1,7 @@
-use crate::value::Value;
 use std::fmt::Display;
-use crate::bindings::exports::golem::timeline::api::FilterOp;
-
+use crate::bindings::timeline::rawevents::api::EventValue as GolemEventValue;
+//use crate::bindings::exports::golem::timeline::api::FilterOp;
+//use crate::bindings::exports::golem::timeline::api::EventValue as WitEventValue;
 pub struct EventColumn(pub String);
 impl EventColumn {
     pub fn equal_to<T>(self, value: EventValue<T>) -> EventPredicate<T> {
@@ -21,15 +21,21 @@ pub struct EventValue<T> {
     pub value: T,
 }
 
-impl From<crate::bindings::exports::golem::timeline::api::EventValue> for EventValue<Value> {
-    fn from(value: crate::bindings::exports::golem::timeline::api::EventValue) -> Self {
-       let value: Value = value.into();
-        value.into()
-    }
-}
+// impl From<crate::bindings::exports::golem::timeline::api::EventValue> for EventValue<GolemEventValue> {
+//     fn from(value: crate::bindings::exports::golem::timeline::api::EventValue) -> Self {
+//        let value: GolemEventValue =  match value {
+//            WitEventValue::StringValue(value) => GolemEventValue::StringValue(value),
+//            WitEventValue::IntValue(value) => GolemEventValue::IntValue(value),
+//            WitEventValue::BoolValue(value) => GolemEventValue::BooleanValue(value),
+//            WitEventValue::FloatValue(value) => GolemEventValue::FloatValue(value),
+//        };
+//
+//         value.into()
+//     }
+// }
 
-impl From<Value> for EventValue<Value> {
-    fn from(value: Value) -> Self {
+impl From<GolemEventValue> for EventValue<GolemEventValue> {
+    fn from(value: GolemEventValue) -> Self {
         EventValue {
             value,
         }
@@ -46,15 +52,15 @@ pub fn col(column_name: &str) -> EventColumn {
     EventColumn(column_name.to_string())
 }
 
-pub fn string_value(value: &str) -> EventValue<Value> {
+pub fn string_value(value: &str) -> EventValue<GolemEventValue> {
     EventValue {
-        value: Value::StringValue(value.to_string()),
+        value: GolemEventValue::StringValue(value.to_string()),
     }
 }
 
-pub fn int_value(value: i64) -> EventValue<Value> {
+pub fn int_value(value: i64) -> EventValue<GolemEventValue> {
     EventValue {
-        value: Value::IntValue(value),
+        value: GolemEventValue::IntValue(value),
     }
 }
 

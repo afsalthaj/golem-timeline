@@ -1,6 +1,8 @@
 package golem:timeline;
 
 interface api {
+  use timeline:rawevents/api.{event-value, event};
+
   type node-index = s32;
 
   record timeline-op {
@@ -58,17 +60,10 @@ interface api {
     value: event-value,
   }
 
-  variant event-value{
-    string-value(string),
-    int-value(s64),
-    float-value(f64),
-    bool-value(bool),
-  }
-
-  get-timelines: func() -> list<string>;
   initialize-timeline: func(timeline: timeline-op) -> ();
 }
 
 world golem-timeline {
   export api;
 }
+
