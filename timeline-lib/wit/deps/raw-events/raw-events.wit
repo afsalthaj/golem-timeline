@@ -1,12 +1,13 @@
 package timeline:rawevents;
 
 interface api {
+
   record event {
     time: u64,
     event: event-value
   }
 
-  variant event-value{
+  variant event-value {
     string-value(string),
     int-value(s64),
     float-value(f64),

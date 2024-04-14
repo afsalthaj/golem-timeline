@@ -1,4 +1,4 @@
-use raw_events::raw_event::RawEventRecord;
+use crate::bindings::timeline::rawevents::api::Event as RawEventRecord;
 use crate::event_timeline::EventTimeLine;
 use crate::timeline::TimeLine;
 use crate::worker_timeline::{WorkerKey, WorkerTimeLineData};
@@ -29,30 +29,5 @@ impl InMemoryWorkerInvoke {
         self.workers
             .iter_mut()
             .find(|worker| worker.key == key.clone())
-    }
-}
-
-impl InvokeWorker for InMemoryWorkerInvoke {
-    fn add_event_worker(&mut self, event: RawEventRecord, worker_key: &WorkerKey) {
-        // For in-memory, see if worker already exist and update the timeline
-        let worker = self.get_worker_mut(&worker_key);
-
-        match worker {
-            Some(worker) => {
-                let event_cloned = event.event;
-                worker.timeline.add_info(event.time, event_cloned);
-            }
-            None => {
-                let mut timeline = EventTimeLine::default();
-                let event_cloned = event.event;
-
-                timeline.add_event_info(event.time, event_cloned);
-                let worker = WorkerTimeLineData {
-                    key: worker_key.clone(),
-                    timeline: TimeLine::EventTime(timeline),
-                };
-                self.workers.push(worker);
-            }
-        }
     }
 }

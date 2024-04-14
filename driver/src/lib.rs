@@ -4,7 +4,7 @@ mod bindings;
 struct Component;
 
 impl Guest for Component {
-    fn run() {
+    fn run(value: String) {
         todo!()
     }
 }

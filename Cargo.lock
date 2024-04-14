@@ -451,7 +451,6 @@ dependencies = [
  "bitflags",
  "chrono",
  "futures",
- "raw-events",
  "serde_json",
  "tokio",
  "wit-bindgen",

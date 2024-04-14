@@ -1,8 +1,8 @@
-use raw_events::golem_event_value::GolemEventValue;
-use crate::bindings::exports::golem::timeline::api::{FilterOp, TimelineNode, TimelineOp as WitTimeLineOp, TimelinePrimitiveOp};
+use crate::bindings::timeline::rawevents::api::EventValue as GolemEventValue;
+//use crate::bindings::exports::golem::timeline::api::{/*FilterOp, TimelineNode, TimelineOp as WitTimeLineOp, TimelinePrimitiveOp};
 use crate::event_predicate::{EventColumn, EventPredicate, EventValue};
 use crate::timeline::TimeLine;
-use crate::bindings::exports::golem::timeline::api::EventValue as WitEventValue;
+//use crate::bindings::exports::golem::timeline::api::EventValue as WitEventValue;
 
 // In paper, it is referred as object DAG
 // TimeLineOp will produce numerical or state-dynamic timeline of a `Value` which can be (currently) string, int etc
@@ -125,96 +125,96 @@ impl TimeLineOp {
     }
 }
 
-impl From<WitTimeLineOp> for TimeLineOp {
-    fn from(value: WitTimeLineOp) -> Self {
-        assert!(!value.nodes.is_empty());
-        build_tree(&value.nodes[0], &value.nodes)
+// impl From<WitTimeLineOp> for TimeLineOp {
+//     fn from(value: WitTimeLineOp) -> Self {
+//         assert!(!value.nodes.is_empty());
+//         build_tree(&value.nodes[0], &value.nodes)
+//
+//     }
+// }
+//
+// fn get_golem_event_value(wit_event_value: &WitEventValue) -> GolemEventValue {
+//    match wit_event_value {
+//          WitEventValue::StringValue(value) => GolemEventValue::StringValue(value.clone()),
+//          WitEventValue::IntValue(value) => GolemEventValue::IntValue(*value),
+//          WitEventValue::BoolValue(value) => GolemEventValue::BooleanValue(*value),
+//          WitEventValue::FloatValue(value) => GolemEventValue::FloatValue(*value),
+//
+//    }
+//}
 
-    }
-}
-
-fn get_golem_event_value(wit_event_value: &WitEventValue) -> GolemEventValue {
-   match wit_event_value {
-         WitEventValue::StringValue(value) => GolemEventValue::StringValue(value.clone()),
-         WitEventValue::IntValue(value) => GolemEventValue::IntValue(*value),
-         WitEventValue::BoolValue(value) => GolemEventValue::BooleanValue(*value),
-         WitEventValue::FloatValue(value) => GolemEventValue::FloatValue(*value),
-
-   }
-}
-
-fn build_tree(node: &TimelineNode, nodes: &[TimelineNode]) -> TimeLineOp {
-    match node {
-        TimelineNode::Primitive(primitive_timeline) => {
-            let time_line = build_tree(&nodes[primitive_timeline.timeline as usize], nodes);
-            let value: &WitEventValue = &primitive_timeline.value;
-            let golem_event_value: GolemEventValue = get_golem_event_value(value);
-
-            match primitive_timeline.op {
-                TimelinePrimitiveOp::GreaterThan => TimeLineOp::GreaterThan(Box::new(time_line), golem_event_value),
-                TimelinePrimitiveOp::GreaterThanEqual => TimeLineOp::GreaterThanOrEqual(Box::new(time_line), golem_event_value),
-                TimelinePrimitiveOp::LessThan => TimeLineOp::LessThan(Box::new(time_line), golem_event_value),
-                TimelinePrimitiveOp::LessThanEqual => TimeLineOp::LessThanOrEqual(Box::new(time_line), golem_event_value),
-            }
-        }
-        TimelineNode::NotNode(node_index) => {
-            let time_line = build_tree(&nodes[*node_index as usize], nodes);
-            TimeLineOp::Not(Box::new(time_line))
-        }
-        TimelineNode::TlHasExisted(filtered_timeline) => {
-            let time_line = build_tree(&nodes[filtered_timeline.node as usize], nodes);
-            let event_value: EventValue<GolemEventValue> =  filtered_timeline.event_predicate.value.clone().into();
-            let event_column = EventColumn(filtered_timeline.event_predicate.col_name.clone());
-
-            let filter = match filtered_timeline.filter {
-                FilterOp::Equal => EventPredicate::Equals(event_column, event_value),
-                FilterOp::GreaterThan => EventPredicate::GreaterThan(event_column, event_value),
-                FilterOp::LessThan => EventPredicate::LessThan(event_column, event_value),
-            };
-
-            TimeLineOp::TlHasExisted(Box::new(time_line), filter)
-        }
-
-        TimelineNode::TlHasExistedWithin(filtered_timeline) => {
-            let time_line = build_tree(&nodes[filtered_timeline.filtered.node as usize], nodes);
-            let event_value: EventValue<GolemEventValue> =  filtered_timeline.filtered.event_predicate.value.clone().into();
-            let event_column = EventColumn(filtered_timeline.filtered.event_predicate.col_name.clone());
-            let max_duration = filtered_timeline.time;
-
-            let filter = match filtered_timeline.filtered.filter {
-                FilterOp::Equal => EventPredicate::Equals(event_column, event_value),
-                FilterOp::GreaterThan => EventPredicate::GreaterThan(event_column, event_value),
-                FilterOp::LessThan => EventPredicate::LessThan(event_column, event_value),
-            };
-
-            TimeLineOp::TlHasExistedWithin(Box::new(time_line), filter, max_duration)
-        }
-        TimelineNode::TlDurationWhere(filtered_timeline) => {
-            let time_line = build_tree(&nodes[filtered_timeline.node as usize], nodes);
-            let event_value: EventValue<GolemEventValue> =  filtered_timeline.event_predicate.value.clone().into();
-            let event_column = EventColumn(filtered_timeline.event_predicate.col_name.clone());
-
-            let filter = match filtered_timeline.filter {
-                FilterOp::Equal => EventPredicate::Equals(event_column, event_value),
-                FilterOp::GreaterThan => EventPredicate::GreaterThan(event_column, event_value),
-                FilterOp::LessThan => EventPredicate::LessThan(event_column, event_value),
-            };
-
-            TimeLineOp::TlDurationWhere(Box::new(time_line), filter)
-        }
-        TimelineNode::TlDurationInCurState(filtered_timeline) => {
-            let time_line = build_tree(&nodes[filtered_timeline.node as usize], nodes);
-            let event_value: EventValue<GolemEventValue> =  filtered_timeline.event_predicate.value.clone().into();
-            let event_column = EventColumn(filtered_timeline.event_predicate.col_name.clone());
-
-            let filter = match filtered_timeline.filter {
-                FilterOp::Equal => EventPredicate::Equals(event_column, event_value),
-                FilterOp::GreaterThan => EventPredicate::GreaterThan(event_column, event_value),
-                FilterOp::LessThan => EventPredicate::LessThan(event_column, event_value),
-            };
-
-            TimeLineOp::TlDurationInCurState(Box::new(time_line), filter)
-        }
-        TimelineNode::Leaf => TimeLineOp::Leaf(),
-    }
-}
+//fn build_tree(node: &TimelineNode, nodes: &[TimelineNode]) -> TimeLineOp {
+    // match node {
+    //     TimelineNode::Primitive(primitive_timeline) => {
+    //         let time_line = build_tree(&nodes[primitive_timeline.timeline as usize], nodes);
+    //         let value: &WitEventValue = &primitive_timeline.value;
+    //         let golem_event_value: GolemEventValue = get_golem_event_value(value);
+    //
+    //         match primitive_timeline.op {
+    //             TimelinePrimitiveOp::GreaterThan => TimeLineOp::GreaterThan(Box::new(time_line), golem_event_value),
+    //             TimelinePrimitiveOp::GreaterThanEqual => TimeLineOp::GreaterThanOrEqual(Box::new(time_line), golem_event_value),
+    //             TimelinePrimitiveOp::LessThan => TimeLineOp::LessThan(Box::new(time_line), golem_event_value),
+    //             TimelinePrimitiveOp::LessThanEqual => TimeLineOp::LessThanOrEqual(Box::new(time_line), golem_event_value),
+    //         }
+    //     }
+    //     TimelineNode::NotNode(node_index) => {
+    //         let time_line = build_tree(&nodes[*node_index as usize], nodes);
+    //         TimeLineOp::Not(Box::new(time_line))
+    //     }
+    //     TimelineNode::TlHasExisted(filtered_timeline) => {
+    //         let time_line = build_tree(&nodes[filtered_timeline.node as usize], nodes);
+    //         let event_value: EventValue<GolemEventValue> =  filtered_timeline.event_predicate.value.clone().into();
+    //         let event_column = EventColumn(filtered_timeline.event_predicate.col_name.clone());
+    //
+    //         let filter = match filtered_timeline.filter {
+    //             FilterOp::Equal => EventPredicate::Equals(event_column, event_value),
+    //             FilterOp::GreaterThan => EventPredicate::GreaterThan(event_column, event_value),
+    //             FilterOp::LessThan => EventPredicate::LessThan(event_column, event_value),
+    //         };
+    //
+    //         TimeLineOp::TlHasExisted(Box::new(time_line), filter)
+    //     }
+    //
+    //     TimelineNode::TlHasExistedWithin(filtered_timeline) => {
+    //         let time_line = build_tree(&nodes[filtered_timeline.filtered.node as usize], nodes);
+    //         let event_value: EventValue<GolemEventValue> =  filtered_timeline.filtered.event_predicate.value.clone().into();
+    //         let event_column = EventColumn(filtered_timeline.filtered.event_predicate.col_name.clone());
+    //         let max_duration = filtered_timeline.time;
+    //
+    //         let filter = match filtered_timeline.filtered.filter {
+    //             FilterOp::Equal => EventPredicate::Equals(event_column, event_value),
+    //             FilterOp::GreaterThan => EventPredicate::GreaterThan(event_column, event_value),
+    //             FilterOp::LessThan => EventPredicate::LessThan(event_column, event_value),
+    //         };
+    //
+    //         TimeLineOp::TlHasExistedWithin(Box::new(time_line), filter, max_duration)
+    //     }
+    //     TimelineNode::TlDurationWhere(filtered_timeline) => {
+    //         let time_line = build_tree(&nodes[filtered_timeline.node as usize], nodes);
+    //         let event_value: EventValue<GolemEventValue> =  filtered_timeline.event_predicate.value.clone().into();
+    //         let event_column = EventColumn(filtered_timeline.event_predicate.col_name.clone());
+    //
+    //         let filter = match filtered_timeline.filter {
+    //             FilterOp::Equal => EventPredicate::Equals(event_column, event_value),
+    //             FilterOp::GreaterThan => EventPredicate::GreaterThan(event_column, event_value),
+    //             FilterOp::LessThan => EventPredicate::LessThan(event_column, event_value),
+    //         };
+    //
+    //         TimeLineOp::TlDurationWhere(Box::new(time_line), filter)
+    //     }
+    //     TimelineNode::TlDurationInCurState(filtered_timeline) => {
+    //         let time_line = build_tree(&nodes[filtered_timeline.node as usize], nodes);
+    //         let event_value: EventValue<GolemEventValue> =  filtered_timeline.event_predicate.value.clone().into();
+    //         let event_column = EventColumn(filtered_timeline.event_predicate.col_name.clone());
+    //
+    //         let filter = match filtered_timeline.filter {
+    //             FilterOp::Equal => EventPredicate::Equals(event_column, event_value),
+    //             FilterOp::GreaterThan => EventPredicate::GreaterThan(event_column, event_value),
+    //             FilterOp::LessThan => EventPredicate::LessThan(event_column, event_value),
+    //         };
+    //
+    //         TimeLineOp::TlDurationInCurState(Box::new(time_line), filter)
+    //     }
+    //     TimelineNode::Leaf => TimeLineOp::Leaf(),
+    // }
+//}

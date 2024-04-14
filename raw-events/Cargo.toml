@@ -14,5 +14,6 @@ wit-bindgen = { version = "0.17.0", default-features = false, features = ["reall
 
 [package.metadata.component.target]
 path = "wit"
+world = "rawevents"
 
 [package.metadata.component.target.dependencies]
