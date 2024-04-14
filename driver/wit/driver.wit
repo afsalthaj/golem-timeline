@@ -1,0 +1,9 @@
+package timeline:rawevents;
+
+interface api {
+  hello: func() -> ();
+}
+
+world rawevents {
+  export api;
+}
