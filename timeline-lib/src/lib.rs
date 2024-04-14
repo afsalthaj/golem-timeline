@@ -14,10 +14,8 @@ pub mod worker_timeline;
 pub mod worker_timeline_data;
 pub mod zip_result;
 
-use golem_wasm_rpc::Value;
 use crate::bindings::exports::golem::timeline::api::Guest;
 use crate::bindings::exports::golem::timeline::api::*;
-use golem_wasm_rpc::*;
 
 struct Component;
 

@@ -1,6 +1,9 @@
 package timeline:rawevents;
 
 interface api {
+  //use timeline:rawevents/api.{event};
+  use golem:timeline/api.{event-column-predicate-info};
+
   run: func() -> ();
 }
 

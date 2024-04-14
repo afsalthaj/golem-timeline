@@ -13,9 +13,6 @@ world = "golem-timeline"
 
 [package.metadata.component.dependencies]
 
-[package.metadata.component.target.dependencies."golem:rpc"]
-path = "wit/deps/wasm-rpc"
-
 [package.metadata.component.target.dependencies."timeline:rawevents"]
 path = "wit/deps/raw-events"
 
@@ -33,4 +30,3 @@ serde_json = "1.0.113"
 chrono = "0.4.33"
 futures = "0.3.30"
 bitflags = "2.4.2"
-golem-wasm-rpc = { version = "0.0.16", default-features = false, features = ["stub"] }
