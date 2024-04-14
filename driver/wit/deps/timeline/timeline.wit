@@ -1,0 +1,74 @@
+package golem:timeline;
+
+interface api {
+  type node-index = s32;
+
+  record timeline-op {
+    nodes: list<timeline-node>,
+  }
+
+  variant timeline-node {
+    leaf,
+    primitive(primitive-timeline),
+    not-node(node-index),
+    tl-has-existed(filtered-timeline),
+    tl-has-existed-within(filtered-timeline-within),
+    tl-duration-where(filtered-timeline),
+    tl-duration-in-cur-state(filtered-timeline)
+  }
+
+  enum timeline-primitive-op {
+    greater-than,
+    greater-than-equal,
+    less-than,
+    less-than-equal,
+  }
+
+  record primitive-timeline {
+    op: timeline-primitive-op,
+    timeline: node-index,
+    value: event-value
+  }
+
+  record filtered-timeline {
+    filter: filter-op,
+    node: node-index,
+    event-predicate: event-column-predicate-info,
+  }
+
+  record filtered-timeline-within {
+    filtered: filtered-timeline,
+    time: u64,
+  }
+
+  record timeline-primitive {
+    op: timeline-primitive-op,
+    ind: node-index,
+    value: event-value,
+  }
+
+  enum filter-op{
+    equal,
+    greater-than,
+    less-than,
+  }
+
+  record event-column-predicate-info {
+    col-name: string,
+    value: event-value,
+  }
+
+  variant event-value{
+    string-value(string),
+    int-value(s64),
+    float-value(f64),
+    bool-value(bool),
+  }
+
+  get-timelines: func() -> list<string>;
+  initialize-timeline: func(timeline: timeline-op) -> ();
+}
+
+world golem-timeline {
+  export api;
+}
