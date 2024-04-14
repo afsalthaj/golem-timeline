@@ -238,7 +238,7 @@ golem-cli template add --template-name raw-event target/wasm32-wasi/debug/raw_ev
 golem-cli template add --template-name driver target/wasm32-wasi/debug/driver_composed.wasm
 
 ### Invoke the function in the driver
-
+golem-cli worker invoke-and-await  --template-name driver --worker-name first-try --function timeline:driver/api/run --parameters '["<template-id-of-core>"]'
 
 
 
