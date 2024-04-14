@@ -257,11 +257,32 @@ For now, as a POC, we are focussing on the workflow and reiterating and getting 
 
 ### How to use?
 
-```scala
+```bash
 cargo component build
 
 golem-cli stubgen compose --source-wasm target/wasm32-wasi/debug/driver.wasm --stub-wasm target/wasm32-wasi/debug/core_stub.wasm --dest-wasm target/wasm32-wasi/debug/driver_composed.wasm
 Writing composed component to "target/wasm32-wasi/debug/driver_composed.wasm"
+
+## Spin up golem
+curl -O https://raw.githubusercontent.com/golemcloud/golem/main/docker-examples/docker-compose-sqlite.yaml -O  https://raw.githubusercontent.com/golemcloud/golem/main/docker-examples/.env
+docker-compose -f docker-compose-sqlite.yaml up
+
+
+## Upload Templates
+
+### The timeline engine, to say, keep a note of the template id, which we will use for the time being to initiate the function in the driver (below)
+golem-cli template add --template-name core target/wasm32-wasi/debug/core.wasm
+
+### The raw-events processor component - will be initiated for most of the queries as it forms the base
+golem-cli template add --template-name raw-event target/wasm32-wasi/debug/raw_events.wasm
+
+### The composed driver component - which is the a composite of the core-stub and the driver, to invoke the core functionality from the driver in a typesafe way
+golem-cli template add --template-name driver target/wasm32-wasi/debug/driver_composed.wasm
+
+### Invoke the function in the driver
+
+
+
 
 
 
