@@ -34,6 +34,4 @@ impl Guest for Component {
     }
 }
 
-fn get_value_from_with_value(value: WitValue) -> Value {
-  value.into()
-}
+

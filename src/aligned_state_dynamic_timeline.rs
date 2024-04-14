@@ -21,7 +21,7 @@ pub struct AlignedStateDynamicsTimeLine<T> {
     pub removed_points_timeline2: Option<StateDynamicsTimeLine<T>>,
 }
 
-impl<T: Clone + Debug + Eq + Ord> AlignedStateDynamicsTimeLine<T> {
+impl<T: Clone + Debug + Eq + PartialOrd> AlignedStateDynamicsTimeLine<T> {
     pub fn from_left_and_right(
         left: &mut StateDynamicsTimeLine<T>,
         right: &mut StateDynamicsTimeLine<T>,

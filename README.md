@@ -238,3 +238,9 @@ select(TLDurationWhere(
 )
 
 ```
+
+### A simple credit card transaction outlier detection
+
+```rust
+TL_HasExistedWithin(TL_DurationInCurState(TL_LatestEventToState(col("lat_long")), col(duration) < 10)
+```

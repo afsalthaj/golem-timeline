@@ -1,5 +1,7 @@
-use crate::event_predicate::EventPredicate;
+use crate::bindings::exports::golem::timeline::api::{FilterOp, TimelineNode, TimelineOp as WitTimeLineOp, TimelinePrimitiveOp};
+use crate::event_predicate::{EventColumn, EventPredicate, EventValue};
 use crate::event_stream::EventStream;
+use crate::event_stream::EventStream::InMemoryEvents;
 use crate::timeline::TimeLine;
 use crate::value::Value;
 
@@ -10,17 +12,13 @@ use crate::value::Value;
 // Id annotation for each node
 // timeline-op Id + integer Id
 pub enum TimeLineOp {
-    // Essentially based on paper, there is only numerical timeline and state dynamic timeline
-    // A state dynamic is pretty much state that is dynamic. Consider this as a constant value
-    // At this stage of development, I am not thinking of state dynamic in TimeLineOp, as I am not
-    // sure of the exact implication of skipping this concept, and I wanted to see how it goes
-    // during the timeline, while numerical keeps moving
-    // A numerical timeline essentially cannot be pattern matched, as it is a continuous value
-    // Refer paper to understand what these operations are
-    Leaf(EventStream),
+    // Pretty much represents the event-timeline (not state dynamics) - source (through workerid) and collection
+    Leaf(), // A leaf node results in a component that exposes a function accepting event and storing it in a configurable buffer
     EqualTo(Box<TimeLineOp>, Value),
     GreaterThan(Box<TimeLineOp>, Value),
+    GreaterThanOrEqual(Box<TimeLineOp>, Value),
     LessThan(Box<TimeLineOp>, Value),
+    LessThanOrEqual(Box<TimeLineOp>, Value),
     And(Box<TimeLineOp>, Box<TimeLineOp>),
     Or(Box<TimeLineOp>, Box<TimeLineOp>),
     Not(Box<TimeLineOp>),
@@ -48,7 +46,7 @@ pub enum TimeLineOp {
     // t3-t7: true
     // t7-t9: false
     // t9-t13: true
-    TlHasExistedWithin(Box<TimeLineOp>, EventPredicate<Value>),
+    TlHasExistedWithin(Box<TimeLineOp>, EventPredicate<Value>, u64),
     // This is more or less making number of events to a very simple
     // timeline. Obviously this is corresponding to the events that are state dynamic in nature
     // t1 - t10 : CDN2
@@ -84,7 +82,7 @@ pub enum TimeLineOp {
     // t3- t8: 5
     // t8-t14: 6
     // t14- t20: 6
-    TlDurationInCurState(Box<TimeLineOp>),
+    TlDurationInCurState(Box<TimeLineOp>, EventPredicate<Value>),
 }
 
 impl TimeLineOp {
@@ -97,7 +95,7 @@ impl TimeLineOp {
             TimeLineOp::Or(_, _) => true,
             TimeLineOp::Not(_) => true,
             TimeLineOp::TlHasExisted(_, _) => true,
-            TimeLineOp::TlHasExistedWithin(_, _) => true,
+            TimeLineOp::TlHasExistedWithin(_, _, _) => true,
             TimeLineOp::TlLatestEventToState(_, _) => true,
             _ => false,
         }
@@ -111,8 +109,8 @@ impl TimeLineOp {
         TimeLineOp::TlHasExisted(Box::new(self), event_predicate)
     }
 
-    fn tl_has_existed_within(self, event_predicate: EventPredicate<Value>) -> TimeLineOp {
-        TimeLineOp::TlHasExistedWithin(Box::new(self), event_predicate)
+    fn tl_has_existed_within(self, event_predicate: EventPredicate<Value>, within_time: u64) -> TimeLineOp {
+        TimeLineOp::TlHasExistedWithin(Box::new(self), event_predicate, within_time)
     }
 
     fn tl_latest_event_to_state(self, event_predicate: EventPredicate<Value>) -> TimeLineOp {
@@ -123,7 +121,90 @@ impl TimeLineOp {
         TimeLineOp::TlDurationWhere(Box::new(self), event_predicate)
     }
 
-    fn tl_duration_in_cur_state(self) -> TimeLineOp {
-        TimeLineOp::TlDurationInCurState(Box::new(self))
+    fn tl_duration_in_cur_state(self, event_predicate: EventPredicate<Value>) -> TimeLineOp {
+        TimeLineOp::TlDurationInCurState(Box::new(self), event_predicate)
+    }
+}
+
+impl From<WitTimeLineOp> for TimeLineOp {
+    fn from(value: WitTimeLineOp) -> Self {
+        assert!(!value.nodes.is_empty());
+        build_tree(&value.nodes[0], &value.nodes)
+
+    }
+}
+
+fn build_tree(node: &TimelineNode, nodes: &[TimelineNode]) -> TimeLineOp {
+    match node {
+        TimelineNode::Primitive(primitive_timeline) => {
+            let time_line = build_tree(&nodes[primitive_timeline.timeline as usize], nodes);
+            let value = &primitive_timeline.value;
+
+            match primitive_timeline.op {
+                TimelinePrimitiveOp::GreaterThan => TimeLineOp::GreaterThan(Box::new(time_line), value.clone().into()),
+                TimelinePrimitiveOp::GreaterThanEqual => TimeLineOp::GreaterThanOrEqual(Box::new(time_line), value.clone().into()),
+                TimelinePrimitiveOp::LessThan => TimeLineOp::LessThan(Box::new(time_line), value.clone().into()),
+                TimelinePrimitiveOp::LessThanEqual => TimeLineOp::LessThanOrEqual(Box::new(time_line), value.clone().into()),
+            }
+        }
+        TimelineNode::NotNode(node_index) => {
+            let time_line = build_tree(&nodes[*node_index as usize], nodes);
+            TimeLineOp::Not(Box::new(time_line))
+        }
+        TimelineNode::TlHasExisted(filtered_timeline) => {
+            let time_line = build_tree(&nodes[filtered_timeline.node as usize], nodes);
+            let event_value: EventValue<Value> =  filtered_timeline.event_predicate.value.clone().into();
+            let event_column = EventColumn(filtered_timeline.event_predicate.col_name.clone());
+
+            let filter = match filtered_timeline.filter {
+                FilterOp::Equal => EventPredicate::Equals(event_column, event_value),
+                FilterOp::GreaterThan => EventPredicate::GreaterThan(event_column, event_value),
+                FilterOp::LessThan => EventPredicate::LessThan(event_column, event_value),
+            };
+
+            TimeLineOp::TlHasExisted(Box::new(time_line), filter)
+        }
+
+        TimelineNode::TlHasExistedWithin(filtered_timeline) => {
+            let time_line = build_tree(&nodes[filtered_timeline.filtered.node as usize], nodes);
+            let event_value: EventValue<Value> =  filtered_timeline.filtered.event_predicate.value.clone().into();
+            let event_column = EventColumn(filtered_timeline.filtered.event_predicate.col_name.clone());
+            let max_duration = filtered_timeline.time;
+
+            let filter = match filtered_timeline.filtered.filter {
+                FilterOp::Equal => EventPredicate::Equals(event_column, event_value),
+                FilterOp::GreaterThan => EventPredicate::GreaterThan(event_column, event_value),
+                FilterOp::LessThan => EventPredicate::LessThan(event_column, event_value),
+            };
+
+            TimeLineOp::TlHasExistedWithin(Box::new(time_line), filter, max_duration)
+        }
+        TimelineNode::TlDurationWhere(filtered_timeline) => {
+            let time_line = build_tree(&nodes[filtered_timeline.node as usize], nodes);
+            let event_value: EventValue<Value> =  filtered_timeline.event_predicate.value.clone().into();
+            let event_column = EventColumn(filtered_timeline.event_predicate.col_name.clone());
+
+            let filter = match filtered_timeline.filter {
+                FilterOp::Equal => EventPredicate::Equals(event_column, event_value),
+                FilterOp::GreaterThan => EventPredicate::GreaterThan(event_column, event_value),
+                FilterOp::LessThan => EventPredicate::LessThan(event_column, event_value),
+            };
+
+            TimeLineOp::TlDurationWhere(Box::new(time_line), filter)
+        }
+        TimelineNode::TlDurationInCurState(filtered_timeline) => {
+            let time_line = build_tree(&nodes[filtered_timeline.node as usize], nodes);
+            let event_value: EventValue<Value> =  filtered_timeline.event_predicate.value.clone().into();
+            let event_column = EventColumn(filtered_timeline.event_predicate.col_name.clone());
+
+            let filter = match filtered_timeline.filter {
+                FilterOp::Equal => EventPredicate::Equals(event_column, event_value),
+                FilterOp::GreaterThan => EventPredicate::GreaterThan(event_column, event_value),
+                FilterOp::LessThan => EventPredicate::LessThan(event_column, event_value),
+            };
+
+            TimeLineOp::TlDurationInCurState(Box::new(time_line), filter)
+        }
+        TimelineNode::Leaf => TimeLineOp::Leaf(),
     }
 }

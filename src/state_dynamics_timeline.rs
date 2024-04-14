@@ -88,7 +88,7 @@ impl StateDynamicsTimeLine<bool> {
     }
 }
 
-impl<T: Debug + Clone + Eq + Ord> StateDynamicsTimeLine<T> {
+impl<T: Debug + Clone + Eq + PartialOrd> StateDynamicsTimeLine<T> {
     // This turned out to be a mere conversion of events to state
     pub fn tl_latest_event_to_state(
         event_time_line: &EventTimeLine<T>,

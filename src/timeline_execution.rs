@@ -7,37 +7,28 @@ use futures::StreamExt;
 use futures::{stream, Stream};
 
 pub trait TimeLineExecution {
-    // The result is a stream of stream of workers
-    // The outer stream represents
-    fn run(self, back_end: BackEnd);
+    fn run(&self) -> WorkerId;
 }
 
-impl TimeLineExecution for TimeLineOp {
-    fn run(self, backend: BackEnd) {
-        match self {
-            // Can pre-inspect and avoid timelines of unnecessary events if needed
-            TimeLineOp::Leaf(events) => {
-                match events {
-                    EventStream::InMemoryEvents(in_memory_events) => {
-                        // In a usecase like CIRR, the event types are finite
-                        for event in in_memory_events.events {
-                            match backend {
-                                BackEnd::InMemory(ref sink) => {
-                                    let mut sink = sink.lock().unwrap();
-                                    let worker_key = WorkerKey {
-                                        time_line_op_name: "time_line_op_leaf".to_string(),
-                                        identity: event.key.clone(),
-                                    };
+pub struct WorkerId(pub String);
 
-                                    sink.add_event_worker(event, &worker_key);
-                                }
-                                BackEnd::Golem => todo!(),
-                            }
-                        }
-                    }
-                }
-            }
-            _ => todo!(),
+impl TimeLineExecution for TimeLineOp {
+    fn run(&self) -> WorkerId {
+        match self {
+            TimeLineOp::Leaf() => panic!("Not implemented"),
+            TimeLineOp::EqualTo(_, _) =>panic!("Not implemented"),
+            TimeLineOp::GreaterThan(_, _) =>panic!("Not implemented"),
+            TimeLineOp::GreaterThanOrEqual(_, _) =>panic!("Not implemented"),
+            TimeLineOp::LessThan(_, _) =>panic!("Not implemented"),
+            TimeLineOp::LessThanOrEqual(_, _) =>panic!("Not implemented"),
+            TimeLineOp::And(_, _) =>panic!("Not implemented"),
+            TimeLineOp::Or(_, _) =>panic!("Not implemented"),
+            TimeLineOp::Not(_) =>panic!("Not implemented"),
+            TimeLineOp::TlHasExisted(_, _) =>panic!("Not implemented"),
+            TimeLineOp::TlHasExistedWithin(_, _, _) =>panic!("Not implemented"),
+            TimeLineOp::TlLatestEventToState(_, _) =>panic!("Not implemented"),
+            TimeLineOp::TlDurationWhere(_, _) =>panic!("Not implemented"),
+            TimeLineOp::TlDurationInCurState(_, _) =>panic!("Not implemented")
         }
     }
 }

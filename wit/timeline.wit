@@ -11,7 +11,8 @@ interface api {
   }
 
   variant timeline-node {
-    primitive(timeline-primitive-op),
+    leaf,
+    primitive(primitive-timeline),
     not-node(node-index),
     tl-has-existed(filtered-timeline),
     tl-has-existed-within(filtered-timeline-within),
@@ -24,6 +25,12 @@ interface api {
     greater-than-equal,
     less-than,
     less-than-equal,
+  }
+
+  record primitive-timeline {
+    op: timeline-primitive-op,
+    timeline: node-index,
+    value: event-value
   }
 
   record filtered-timeline {
@@ -56,8 +63,8 @@ interface api {
 
   variant event-value{
      string-value(string),
-     int-value(s32),
-     float-value(f32),
+     int-value(s64),
+     float-value(f64),
      bool-value(bool),
   }
 
