@@ -1,5 +1,5 @@
 [workspace]
-members = ["raw-events", "timeline-lib", "driver"]
+members = ["raw-events", "core", "driver"]
 resolver = "2"
 
 [profile.release]

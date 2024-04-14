@@ -1,4 +1,4 @@
-use crate::bindings::exports::timeline::rawevents::api::{Event, Guest};
+use crate::bindings::exports::timeline::raw_events::api::{Event, Guest};
 
 mod bindings;
 pub mod raw_event;

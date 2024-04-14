@@ -1,4 +1,4 @@
-use crate::bindings::timeline::rawevents::api::EventValue;
+use crate::bindings::timeline::raw_events::api::EventValue;
 use crate::state_dynamics_timeline::StateDynamicsTimeLine;
 use crate::timeline::TimeLine;
 

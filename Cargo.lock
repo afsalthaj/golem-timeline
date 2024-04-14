@@ -95,6 +95,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "core"
+version = "0.1.0"
+dependencies = [
+ "bitflags",
+ "chrono",
+ "futures",
+ "serde_json",
+ "tokio",
+ "wit-bindgen",
+]
+
+[[package]]
 name = "core-foundation-sys"
 version = "0.8.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -104,10 +116,10 @@ checksum = "06ea2b9bc92be3c2baa9334a323ebca2d6f074ff852cd1d7b11064035cd3868f"
 name = "driver"
 version = "0.0.1"
 dependencies = [
+ "core",
  "once_cell",
  "rand",
  "raw-events",
- "timeline-lib",
  "wit-bindgen",
 ]
 
@@ -442,18 +454,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "unicode-ident",
-]
-
-[[package]]
-name = "timeline-lib"
-version = "0.1.0"
-dependencies = [
- "bitflags",
- "chrono",
- "futures",
- "serde_json",
- "tokio",
- "wit-bindgen",
 ]
 
 [[package]]

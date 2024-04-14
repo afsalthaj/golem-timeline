@@ -1,4 +1,4 @@
-use crate::bindings::timeline::rawevents::api::Event as RawEventRecord;
+use crate::bindings::timeline::raw_events::api::Event as RawEventRecord;
 use crate::event_timeline::EventTimeLine;
 use crate::timeline::TimeLine;
 use crate::worker_timeline::{WorkerKey, WorkerTimeLineData};

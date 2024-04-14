@@ -1,5 +1,5 @@
 use std::fmt::Display;
-use crate::bindings::timeline::rawevents::api::EventValue as GolemEventValue;
+use crate::bindings::timeline::raw_events::api::EventValue as GolemEventValue;
 //use crate::bindings::exports::golem::timeline::api::FilterOp;
 //use crate::bindings::exports::golem::timeline::api::EventValue as WitEventValue;
 pub struct EventColumn(pub String);

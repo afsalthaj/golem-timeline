@@ -1,7 +1,7 @@
 // Represents an event or state value
 
 use std::cmp::Ordering;
-use crate::bindings::exports::timeline::rawevents::api::EventValue as WitEventValue;
+use crate::bindings::exports::timeline::raw_events::api::EventValue as WitEventValue;
 
 #[derive(Clone, Debug, PartialEq, PartialOrd)]
 pub enum GolemEventValue {

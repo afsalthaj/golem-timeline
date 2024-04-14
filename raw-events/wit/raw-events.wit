@@ -1,4 +1,4 @@
-package timeline:rawevents;
+package timeline:raw-events;
 
 interface api {
 
@@ -21,6 +21,6 @@ interface api {
   get-events: func() -> list<event>;
 }
 
-world rawevents {
+world raw-events {
   export api;
 }

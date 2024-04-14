@@ -8,7 +8,7 @@ path = "src/lib.rs"
 crate-type = ["cdylib"]
 
 [dependencies]
-timeline-lib = { path = "../timeline-lib" }
+core = { path = "../core" }
 raw-events = { path = "../raw-events" }
 once_cell = "1.17.1"
 rand = "0.8.5"
@@ -19,7 +19,7 @@ path = "wit"
 world = "driver"
 
 [package.metadata.component.target.dependencies."timeline:rawevents"]
-path = "wit/deps/rawevents"
+path = "wit/deps/raw-events"
 
-[package.metadata.component.target.dependencies."golem:timeline"]
-path = "wit/deps/timeline"
+[package.metadata.component.target.dependencies."timeline:core"]
+path = "wit/deps/core"

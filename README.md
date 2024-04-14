@@ -249,9 +249,8 @@ TL_HasExistedWithin(TL_DurationInCurState(TL_LatestEventToState(col("lat_long"))
 ## Basic structure
 
 A driver exposing a mere run function for golem to initiate the execution of the timeline.
-It internally instantiate the timeline workflow by invoking the exported function in timeline_lib component.
-timeline_lib component depends on various leaf and composite components responsible for each node in the tree, such as `raw-event` component
-and get the worker-id back and then it is fed to the next component in the tree which repeats this process.
+It internally instantiate the timeline workflow by invoking the exported function in core component.
+core component further on various leaf and other composed components responsible for each node in the execution tree, such as `raw-event` component.
 
 For now, as a POC, we are focussing on the workflow and reiterating and getting it right, to further optimise as we go.
 

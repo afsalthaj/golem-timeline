@@ -14,8 +14,8 @@ pub mod worker_timeline;
 pub mod worker_timeline_data;
 pub mod zip_result;
 
-use crate::bindings::exports::golem::timeline::api::Guest;
-use crate::bindings::exports::golem::timeline::api::*;
+use crate::bindings::exports::timeline::core::api::Guest;
+use crate::bindings::exports::timeline::core::api::*;
 
 struct Component;
 
