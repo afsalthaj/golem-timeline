@@ -4,6 +4,12 @@ pub enum EventStream {
     InMemoryEvents(InMemoryEventStream),
 }
 
+impl Default for EventStream {
+    fn default() -> Self {
+        EventStream::InMemoryEvents(InMemoryEventStream { events: vec![] })
+    }
+}
+
 pub struct InMemoryEventStream {
     pub events: Vec<RawEventRecord>,
 }

@@ -1,9 +1,0 @@
-package golem:timeline;
-
-interface api {
-  get-timelines: func() -> list<string>;
-}
-
-world golem-timeline {
-  export api;
-}

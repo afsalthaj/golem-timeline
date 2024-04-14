@@ -8,7 +8,7 @@ pub enum TimeLine<T> {
     EventTime(EventTimeLine<T>),
 }
 
-impl<T: Debug + Clone + Eq + Ord> TimeLine<T> {
+impl<T: Debug + Clone + Eq + PartialOrd> TimeLine<T> {
     pub fn state_points(&self) -> Option<&Vec<StateDynamicsTimeLinePoint<T>>> {
         match self {
             TimeLine::StateDynamic(value) => Some(&value.points),

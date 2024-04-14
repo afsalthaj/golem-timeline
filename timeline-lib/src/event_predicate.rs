@@ -1,7 +1,8 @@
 use crate::value::Value;
 use std::fmt::Display;
+use crate::bindings::exports::golem::timeline::api::FilterOp;
 
-pub struct EventColumn(String);
+pub struct EventColumn(pub String);
 impl EventColumn {
     pub fn equal_to<T>(self, value: EventValue<T>) -> EventPredicate<T> {
         EventPredicate::Equals(self, value)
@@ -18,6 +19,21 @@ impl EventColumn {
 
 pub struct EventValue<T> {
     pub value: T,
+}
+
+impl From<crate::bindings::exports::golem::timeline::api::EventValue> for EventValue<Value> {
+    fn from(value: crate::bindings::exports::golem::timeline::api::EventValue) -> Self {
+       let value: Value = value.into();
+        value.into()
+    }
+}
+
+impl From<Value> for EventValue<Value> {
+    fn from(value: Value) -> Self {
+        EventValue {
+            value,
+        }
+    }
 }
 
 pub fn string(value: &str) -> EventValue<String> {
@@ -51,7 +67,7 @@ pub enum EventPredicate<T> {
     Or(Box<EventPredicate<T>>, Box<EventPredicate<T>>),
 }
 
-impl<T: Eq + Ord> EventPredicate<T> {
+impl<T: Eq + PartialOrd> EventPredicate<T> {
     pub fn evaluate(&self, original_value: &T) -> bool {
         match self {
             EventPredicate::Equals(_, event_value) => original_value == &event_value.value,

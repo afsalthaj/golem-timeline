@@ -207,5 +207,40 @@ for seek, there still exists 3 seconds of buffering,
 contributing to the connection induced rebuffering.
 
 
+```json
+result = heartbeats . toTimeline (eventTime = col ( " t "
+. select (TL_DurationWhere(
+    (TL_LatestEventToState( col ( "playerStateChange" )) == " buffer " ) &
+    TL_HasExisted( col ( "playerStateChange") == "play" ) &
+     ( ~ TL_HasExistedWithin( col ( "userAction" ) == "seek" , 5s )) &
+     (TL_LatestEventToState( col ( "cdnChange")) == "CDN1")
+   ). as ( "cirDuration" ))
 
-a + b 
+```
+
+```json
+TLHasExistedWithin(debit, 10 sec)
+               ---------------------------t11
+--------------t1
+
+TL_LatestEventToState(lat_long)
+       --------t2         --------------t4
+------t1         --------t3
+
+(TL_LatestEventToState( col ( "transaction_type")) == "CDN1")
+        
+               -----------t3
+--------------t1           ---------------t4
+
+select(TLDurationWhere(
+    (TL_LatestEventToState(col("transaction_type")) == "debit") &
+    
+)
+
+```
+
+### A simple credit card transaction outlier detection
+
+```rust
+TL_HasExistedWithin(TL_DurationInCurState(TL_LatestEventToState(col("lat_long")), col(duration) < 10)
+```
