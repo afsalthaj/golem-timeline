@@ -21,7 +21,7 @@ struct Component;
 
 impl Guest for Component {
     fn initialize_timeline(timeline: TimelineOp) {
-        todo!()
+       dbg!("Initiating timeline");
     }
 }
 

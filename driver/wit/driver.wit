@@ -1,9 +1,12 @@
 package timeline:driver;
 
+
 interface api {
   run: func(value: string) -> ();
 }
 
 world driver {
+  import timeline:core-stub/stub-core;
+
   export api;
 }
