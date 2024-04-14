@@ -207,53 +207,11 @@ for seek, there still exists 3 seconds of buffering,
 contributing to the connection induced rebuffering.
 
 
-```json
-result = heartbeats . toTimeline (eventTime = col ( " t "
-. select (TL_DurationWhere(
-    (TL_LatestEventToState( col ( "playerStateChange" )) == " buffer " ) &
-    TL_HasExisted( col ( "playerStateChange") == "play" ) &
-     ( ~ TL_HasExistedWithin( col ( "userAction" ) == "seek" , 5s )) &
-     (TL_LatestEventToState( col ( "cdnChange")) == "CDN1")
-   ). as ( "cirDuration" ))
-
-```
-
-```json
-TLHasExistedWithin(debit, 10 sec)
-               ---------------------------t11
---------------t1
-
-TL_LatestEventToState(lat_long)
-       --------t2         --------------t4
-------t1         --------t3
-
-(TL_LatestEventToState( col ( "transaction_type")) == "CDN1")
-        
-               -----------t3
---------------t1           ---------------t4
-
-select(TLDurationWhere(
-    (TL_LatestEventToState(col("transaction_type")) == "debit") &
-    
-)
-
-```
-
 ### A simple credit card transaction outlier detection
 
 ```rust
 TL_HasExistedWithin(TL_DurationInCurState(TL_LatestEventToState(col("lat_long")), col(duration) < 10)
 ```
-
-
-## Basic structure
-
-A driver exposing a mere run function for golem to initiate the execution of the timeline.
-It internally instantiate the timeline workflow by invoking the exported function in core component.
-core component further on various leaf and other composed components responsible for each node in the execution tree, such as `raw-event` component.
-
-For now, as a POC, we are focussing on the workflow and reiterating and getting it right, to further optimise as we go.
-
 
 ### Quick Start to spin up Golem Timeline with Golem OSS
 
