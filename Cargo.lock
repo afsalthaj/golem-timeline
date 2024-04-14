@@ -559,7 +559,6 @@ version = "0.0.1"
 dependencies = [
  "once_cell",
  "rand",
- "timeline-lib",
  "wit-bindgen",
 ]
 
@@ -688,6 +687,7 @@ dependencies = [
  "chrono",
  "futures",
  "golem-wasm-rpc",
+ "raw-events",
  "serde_json",
  "tokio",
  "wit-bindgen",

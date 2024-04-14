@@ -1,6 +1,8 @@
 use crate::bindings::exports::timeline::rawevents::api::{Event, Guest};
 
 mod bindings;
+pub mod raw_event;
+pub mod golem_event_value;
 
 struct Component;
 

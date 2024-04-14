@@ -1,7 +1,7 @@
 package timeline:rawevents;
 
 interface api {
-  hello: func() -> ();
+  run: func() -> ();
 }
 
 world rawevents {

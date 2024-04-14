@@ -1,11 +1,12 @@
+use raw_events::golem_event_value::GolemEventValue;
 use crate::state_dynamics_timeline::StateDynamicsTimeLine;
 use crate::timeline::TimeLine;
-use crate::value::Value;
+
 
 // The data that each worker needs to care about
 pub struct WorkerTimeLineData {
     pub key: WorkerKey,
-    pub timeline: TimeLine<Value>,
+    pub timeline: TimeLine<GolemEventValue>,
 }
 
 #[derive(Clone, PartialEq, Eq, Hash, Debug)]

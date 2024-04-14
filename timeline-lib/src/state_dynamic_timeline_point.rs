@@ -1,4 +1,3 @@
-use crate::value::Value;
 use crate::zip_result::ZipResult;
 
 // None represents, for the most of the time, future

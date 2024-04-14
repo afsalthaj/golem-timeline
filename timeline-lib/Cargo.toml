@@ -5,7 +5,7 @@ edition = "2021"
 
 [lib]
 path = "src/lib.rs"
-crate-type = ["cdylib"]
+crate-type = ["cdylib", "rlib"]
 
 [package.metadata.component.target]
 path = "wit"
@@ -16,6 +16,9 @@ world = "golem-timeline"
 [package.metadata.component.target.dependencies."golem:rpc"]
 path = "wit/deps/wasm-rpc"
 
+[package.metadata.component.target.dependencies."timeline:rawevents"]
+path = "wit/deps/raw-events"
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies.wit-bindgen]
@@ -24,6 +27,7 @@ features = ["realloc"]
 default-features = false
 
 [dependencies]
+raw-events = { path = "../raw-events" }
 tokio = "1.36.0"
 serde_json = "1.0.113"
 chrono = "0.4.33"
