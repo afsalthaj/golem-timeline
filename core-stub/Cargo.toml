@@ -1,33 +1,28 @@
 [package]
-name = "driver"
+name = "core-stub"
 edition = "2021"
 version = "0.0.1"
 
+[package.metadata.component]
+package = "timeline:core"
+
 [package.metadata.component.target]
-world = "driver"
+world = "wasm-rpc-stub-core"
 path = "wit"
-
-[package.metadata.component.target.dependencies."timeline:core-stub"]
-path = "wit/deps/timeline_core-stub"
-
-[package.metadata.component.target.dependencies."golem:rpc"]
-path = "wit/deps/wasm-rpc"
 
 [package.metadata.component.target.dependencies."timeline:raw-events"]
 path = "wit/deps/raw-events"
 
+[package.metadata.component.target.dependencies."golem:rpc"]
+path = "wit/deps/wasm-rpc"
+
 [package.metadata.component.target.dependencies."timeline:core"]
 path = "wit/deps/timeline_core"
 
-[dependencies]
-once_cell = "1.17.1"
-rand = "0.8.5"
-
-[dependencies.core]
-path = "../core"
-
-[dependencies.raw-events]
-path = "../raw-events"
+[dependencies.golem-wasm-rpc]
+version = "0.0.13"
+features = ["stub"]
+default-features = false
 
 [dependencies.wit-bindgen]
 version = "0.17.0"
@@ -38,3 +33,8 @@ default-features = false
 path = "src/lib.rs"
 crate-type = ["cdylib"]
 required-features = []
+
+[profile.release]
+opt-level = "s"
+lto = true
+strip = true

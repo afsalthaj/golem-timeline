@@ -1,0 +1,60 @@
+[config]
+default_to_workspace = false
+
+#[tasks.add-stub-dependency-core-driver]
+#args = ["stubgen", "add-stub-dependency", "--stub-wit-root", "core-stub/wit", "--dest-wit-root", "driver/wit", "--overwrite", "--update-cargo-toml"]
+#command = "golem-cli"
+#cwd = "."
+#dependencies = ["generate-core-stub"]
+
+[tasks.build]
+args = ["build"]
+command = "cargo-component"
+dependencies = ["clean"]
+
+[tasks.build-flow]
+dependencies = ["build", "post-build"]
+
+[tasks.build-release]
+args = ["build", "--release"]
+command = "cargo-component"
+dependencies = ["clean"]
+
+[tasks.clean]
+args = ["clean"]
+command = "cargo-component"
+
+[tasks.compose-driver]
+args = ["stubgen", "compose", "--source-wasm", "target/wasm32-wasi/debug/driver.wasm", "--stub-wasm", "target/wasm32-wasi/debug/core_stub.wasm", "--dest-wasm", "target/wasm32-wasi/debug/driver_composed.wasm"]
+command = "golem-cli"
+cwd = "."
+
+[tasks.compose-release-driver]
+args = ["stubgen", "compose", "--source-wasm", "target/wasm32-wasi/release/driver.wasm", "--stub-wasm", "target/wasm32-wasi/release/core_stub.wasm", "--dest-wasm", "target/wasm32-wasi/release/driver_composed.wasm"]
+command = "golem-cli"
+cwd = "."
+
+[tasks.default]
+alias = "build"
+
+#[tasks.generate-core-stub]
+#args = ["stubgen", "generate", "-s", "core/wit", "-d", "core-stub"]
+#command = "golem-cli"
+#cwd = "."
+
+[tasks.post-build]
+dependencies = ["compose-driver"]
+
+[tasks.post-build-release]
+dependencies = ["compose-release-driver"]
+
+#[tasks.regenerate-stubs]
+#dependencies = ["add-stub-dependency-core-driver"]
+
+[tasks.release-build-flow]
+dependencies = ["build-release", "post-build-release"]
+
+[tasks.test]
+args = ["test"]
+command = "cargo-component"
+dependencies = ["clean"]

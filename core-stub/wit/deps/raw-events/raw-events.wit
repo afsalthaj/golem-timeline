@@ -1,0 +1,26 @@
+package timeline:raw-events;
+
+interface api {
+
+  record event {
+    time: u64,
+    event: event-value
+  }
+
+  variant event-value {
+    string-value(string),
+    int-value(s64),
+    float-value(f64),
+    bool-value(bool),
+  }
+
+  add-event: func(order: event) -> ();
+
+  get-event: func(time: u64) -> event;
+
+  get-events: func() -> list<event>;
+}
+
+world raw-events {
+  export api;
+}

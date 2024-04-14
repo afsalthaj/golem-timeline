@@ -1,0 +1,27 @@
+package timeline:core-stub;
+
+interface stub-core {
+  use golem:rpc/types@0.1.0.{uri};
+  use timeline:core/api.{event-value};
+  use timeline:core/api.{event};
+  use timeline:core/api.{node-index};
+  use timeline:core/api.{timeline-primitive-op};
+  use timeline:core/api.{primitive-timeline};
+  use timeline:core/api.{timeline-primitive};
+  use timeline:core/api.{filter-op};
+  use timeline:core/api.{event-column-predicate-info};
+  use timeline:core/api.{filtered-timeline};
+  use timeline:core/api.{filtered-timeline-within};
+  use timeline:core/api.{timeline-node};
+  use timeline:core/api.{timeline-op};
+
+  resource api {
+    constructor(location: uri);
+    initialize-timeline: func(timeline: timeline-op);
+  }
+
+}
+
+world wasm-rpc-stub-core {
+  export stub-core;
+}
