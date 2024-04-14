@@ -5,6 +5,6 @@ struct Component;
 
 impl Guest for Component {
     fn run(value: String) {
-        todo!()
+        ()
     }
 }
