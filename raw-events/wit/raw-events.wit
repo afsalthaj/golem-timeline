@@ -1,23 +1,18 @@
 package timeline:rawevents;
 
 interface api {
-  record product-item {
-    product-id: string,
-    name: string,
-    price: float32,
-    quantity: u32,
+  use golem:timeline/api.{event-value};
+
+  record event {
+    time: u64,
+    event: event-value
   }
 
-  record order {
-    order-id: string,
-    items: list<product-item>,
-    total: float32,
-    timestamp: u64,
-  }
+  add-event: func(order: event) -> ();
 
-  add-order: func(order: order) -> ();
+  get-event: func(time: u64) -> event;
 
-  get-events: func() -> list<order>;
+  get-events: func() -> list<event>;
 }
 
 world rawevents {

@@ -548,6 +548,7 @@ version = "0.0.1"
 dependencies = [
  "once_cell",
  "rand",
+ "timeline-lib",
  "wit-bindgen",
 ]
 

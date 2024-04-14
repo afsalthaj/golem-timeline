@@ -31,9 +31,9 @@ interface api {
   }
 
   record filtered-timeline {
-     filter: filter-op,
-     node: node-index,
-     event-predicate: event-column-predicate-info,
+    filter: filter-op,
+    node: node-index,
+    event-predicate: event-column-predicate-info,
   }
 
   record filtered-timeline-within {
@@ -59,10 +59,10 @@ interface api {
   }
 
   variant event-value{
-     string-value(string),
-     int-value(s64),
-     float-value(f64),
-     bool-value(bool),
+    string-value(string),
+    int-value(s64),
+    float-value(f64),
+    bool-value(bool),
   }
 
   get-timelines: func() -> list<string>;
