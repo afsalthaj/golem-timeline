@@ -1,4 +1,4 @@
-use crate::bindings::exports::timeline::raw_events::api::{Event, Guest};
+use crate::bindings::exports::timeline::raw_events::api::{Event, Guest, WorkerId};
 
 mod bindings;
 pub mod raw_event;
@@ -21,6 +21,10 @@ fn with_state<T>(f: impl FnOnce(&mut State) -> T) -> T {
 }
 
 impl Guest for Component {
+    fn initialize(worker: WorkerId) {
+        dbg!("Initiating worker: {}", worker.name);
+    }
+
     fn add_event(order: Event) {
         with_state(|state| {
             state.orders.push(order);

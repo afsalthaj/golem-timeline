@@ -5,13 +5,14 @@ interface stub-core {
   use timeline:core/api.{event-value};
   use timeline:core/api.{event};
   use timeline:core/api.{node-index};
-  use timeline:core/api.{timeline-primitive-op};
-  use timeline:core/api.{primitive-timeline};
-  use timeline:core/api.{timeline-primitive};
-  use timeline:core/api.{filter-op};
+  use timeline:core/api.{worker-id};
+  use timeline:core/api.{timeline-classic-comparator};
+  use timeline:core/api.{timeline-classic};
+  use timeline:core/api.{timeline-classic-not};
+  use timeline:core/api.{timeline-specific-comparator};
   use timeline:core/api.{event-column-predicate-info};
-  use timeline:core/api.{filtered-timeline};
-  use timeline:core/api.{filtered-timeline-within};
+  use timeline:core/api.{timeline-specific};
+  use timeline:core/api.{timeline-specific-within};
   use timeline:core/api.{timeline-node};
   use timeline:core/api.{timeline-op};
 

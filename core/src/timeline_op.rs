@@ -1,9 +1,9 @@
 use std::fmt::Display;
 use crate::bindings::timeline::raw_events::api::EventValue as GolemEventValue;
-//use crate::bindings::exports::golem::timeline::api::{/*FilterOp, TimelineNode, TimelineOp as WitTimeLineOp, TimelinePrimitiveOp};
+//use crate::bindings::exports::golem::timeline::api::{/*FilterOp, TimelineNode, TimelineOp as WitTimeLineOp, TimeLineClassicComparator};
 use crate::event_predicate::{EventColumn, EventPredicate, EventValue};
 use crate::timeline::TimeLine;
-use crate::bindings::exports::timeline::core::api::{FilterOp, TimelineNode, TimelineOp as WitTimeLineOp, TimelinePrimitiveOp};
+use crate::bindings::exports::timeline::core::api::{TimelineSpecificComparator, TimelineNode, TimelineOp as WitTimeLineOp, TimelineClassicComparator};
 
 
 // In paper, it is referred as object DAG
@@ -13,17 +13,19 @@ use crate::bindings::exports::timeline::core::api::{FilterOp, TimelineNode, Time
 // Id annotation for each node
 // timeline-op Id + integer Id
 
+pub struct WorkerId(pub String);
+
 pub enum TimeLineOp {
     // Pretty much represents the event-timeline (not state dynamics) - source (through workerid) and collection
-    Leaf(), // A leaf node results in a component that exposes a function accepting event and storing it in a configurable buffer
-    EqualTo(Box<TimeLineOp>, GolemEventValue),
-    GreaterThan(Box<TimeLineOp>, GolemEventValue),
-    GreaterThanOrEqual(Box<TimeLineOp>, GolemEventValue),
-    LessThan(Box<TimeLineOp>, GolemEventValue),
-    LessThanOrEqual(Box<TimeLineOp>, GolemEventValue),
-    And(Box<TimeLineOp>, Box<TimeLineOp>),
-    Or(Box<TimeLineOp>, Box<TimeLineOp>),
-    Not(Box<TimeLineOp>),
+    Leaf(WorkerId), // A leaf node results in a component that exposes a function accepting event and storing it in a configurable buffer
+    EqualTo(WorkerId, Box<TimeLineOp>, GolemEventValue),
+    GreaterThan(WorkerId, Box<TimeLineOp>, GolemEventValue),
+    GreaterThanOrEqual(WorkerId, Box<TimeLineOp>, GolemEventValue),
+    LessThan(WorkerId, Box<TimeLineOp>, GolemEventValue),
+    LessThanOrEqual(WorkerId, Box<TimeLineOp>, GolemEventValue),
+    And(WorkerId, Box<TimeLineOp>, Box<TimeLineOp>),
+    Or(WorkerId, Box<TimeLineOp>, Box<TimeLineOp>),
+    Not(WorkerId, Box<TimeLineOp>),
 
     // Each o the below functions invokes a worker
     // Each worker is responsible for forgetting past beyond an extent
@@ -36,7 +38,7 @@ pub enum TimeLineOp {
     // Output
     // t1-t2: false
     // t2-t3: true
-    TlHasExisted(Box<TimeLineOp>, EventPredicate<GolemEventValue>),
+    TlHasExisted(WorkerId, Box<TimeLineOp>, EventPredicate<GolemEventValue>),
     // This is more of tracking a StateDynamic event, as a cumulative OR
     // Input
     // Duration: D = 4
@@ -48,7 +50,7 @@ pub enum TimeLineOp {
     // t3-t7: true
     // t7-t9: false
     // t9-t13: true
-    TlHasExistedWithin(Box<TimeLineOp>, EventPredicate<GolemEventValue>, u64),
+    TlHasExistedWithin(WorkerId, Box<TimeLineOp>, EventPredicate<GolemEventValue>, u64),
     // This is more or less making number of events to a very simple
     // timeline. Obviously this is corresponding to the events that are state dynamic in nature
     // t1 - t10 : CDN2
@@ -57,7 +59,7 @@ pub enum TimeLineOp {
     // Output
     // t1-t10: CDN2
     // t10-t12: CDN1
-    TlLatestEventToState(Box<TimeLineOp>, EventPredicate<GolemEventValue>),
+    TlLatestEventToState(WorkerId, Box<TimeLineOp>, EventPredicate<GolemEventValue>),
     // A Numerical Timeline of
     // the cumulative duration
     // where the state was True
@@ -70,7 +72,7 @@ pub enum TimeLineOp {
     // t3 - t8 : 5
     // t8 - t4 : 5
     // t14 - t20: 11
-    TlDurationWhere(Box<TimeLineOp>, EventPredicate<GolemEventValue>),
+    TlDurationWhere(WorkerId, Box<TimeLineOp>, EventPredicate<GolemEventValue>),
 
     // A Numerical Timeline of
     // the duration since the last
@@ -84,7 +86,7 @@ pub enum TimeLineOp {
     // t3- t8: 5
     // t8-t14: 6
     // t14- t20: 6
-    TlDurationInCurState(Box<TimeLineOp>, EventPredicate<GolemEventValue>),
+    TlDurationInCurState(WorkerId, Box<TimeLineOp>, EventPredicate<GolemEventValue>),
 }
 
 impl Display for TimeLineOp {
@@ -99,66 +101,25 @@ impl Display for TimeLineOp {
         }
 
         match self {
-            TimeLineOp::Leaf() => write!(f, "Leaf"),
-            TimeLineOp::EqualTo(tl, value) => write!(f, "EqualTo({}, {})", tl, text_of(value)),
-            TimeLineOp::GreaterThan(tl, value) => write!(f, "GreaterThan({}, {})", tl, text_of(value)),
-            TimeLineOp::GreaterThanOrEqual(tl, value) => write!(f, "GreaterThanOrEqual({}, {})", tl, text_of(value)),
-            TimeLineOp::LessThan(tl, value) => write!(f, "LessThan({}, {})", tl, text_of(value)),
-            TimeLineOp::LessThanOrEqual(tl, value) => write!(f, "LessThanOrEqual({}, {})", tl, text_of(value)),
-            TimeLineOp::And(tl1, tl2) => write!(f, "And({}, {})", tl1, tl2),
-            TimeLineOp::Or(tl1, tl2) => write!(f, "Or({}, {})", tl1, tl2),
-            TimeLineOp::Not(tl) => write!(f, "Not({})", tl),
-            TimeLineOp::TlHasExisted(tl, event_predicate) => write!(f, "TlHasExisted({}, {})", tl, event_predicate),
-            TimeLineOp::TlHasExistedWithin(tl, event_predicate, within_time) => write!(f, "TlHasExistedWithin({}, {}, {})", tl, event_predicate, within_time),
-            TimeLineOp::TlLatestEventToState(tl, event_predicate) => write!(f, "TlLatestEventToState({}, {})", tl, event_predicate),
-            TimeLineOp::TlDurationWhere(tl, event_predicate) => write!(f, "TlDurationWhere({}, {})", tl, event_predicate),
-            TimeLineOp::TlDurationInCurState(tl, event_predicate) => write!(f, "TlDurationInCurState({}, {})", tl, event_predicate),
+            TimeLineOp::Leaf(worker_id) => write!(f, "Leaf({})", worker_id.0),
+            TimeLineOp::EqualTo(worker_id, time_line, golem_event_value) => write!(f, "EqualTo({}, {}, {})", worker_id.0, time_line, text_of(golem_event_value)),
+            TimeLineOp::GreaterThan(worker_id, time_line, golem_event_value) => write!(f, "GreaterThan({}, {}, {})", worker_id.0, time_line, text_of(golem_event_value)),
+            TimeLineOp::GreaterThanOrEqual(worker_id, time_line, golem_event_value) => write!(f, "GreaterThanOrEqual({}, {}, {})", worker_id.0, time_line, text_of(golem_event_value)),
+            TimeLineOp::LessThan(worker_id, time_line, golem_event_value) => write!(f, "LessThan({}, {}, {})", worker_id.0, time_line, text_of(golem_event_value)),
+            TimeLineOp::LessThanOrEqual(worker_id, time_line, golem_event_value) => write!(f, "LessThanOrEqual({}, {}, {})", worker_id.0, time_line, text_of(golem_event_value)),
+            TimeLineOp::And(worker_id, time_line1, time_line2) => write!(f, "And({}, {}, {})", worker_id.0, time_line1, time_line2),
+            TimeLineOp::Or(worker_id, time_line1, time_line2) => write!(f, "Or({}, {}, {})", worker_id.0, time_line1, time_line2),
+            TimeLineOp::Not(worker_id, time_line) => write!(f, "Not({}, {})", worker_id.0, time_line),
+            TimeLineOp::TlHasExisted(worker_id, time_line, event_predicate) => write!(f, "TlHasExisted({}, {}, {})", worker_id.0, time_line, event_predicate),
+            TimeLineOp::TlHasExistedWithin(worker_id, time_line, event_predicate, within_time) => write!(f, "TlHasExistedWithin({}, {}, {}, {})", worker_id.0, time_line, event_predicate, within_time),
+            TimeLineOp::TlLatestEventToState(worker_id, time_line, event_predicate) => write!(f, "TlLatestEventToState({}, {}, {})", worker_id.0, time_line, event_predicate),
+            TimeLineOp::TlDurationWhere(worker_id, time_line, event_predicate) => write!(f, "TlDurationWhere({}, {}, {})", worker_id.0, time_line, event_predicate),
+            TimeLineOp::TlDurationInCurState(worker_id, time_line, event_predicate) => write!(f, "TlDurationInCurState({}, {}, {})", worker_id.0, time_line, event_predicate),
         }
     }
 }
 
 
-
-impl TimeLineOp {
-    fn is_boolean_timeline(&self) -> bool {
-        match self {
-            TimeLineOp::EqualTo(_, _) => true,
-            TimeLineOp::GreaterThan(_, _) => true,
-            TimeLineOp::LessThan(_, _) => true,
-            TimeLineOp::And(_, _) => true,
-            TimeLineOp::Or(_, _) => true,
-            TimeLineOp::Not(_) => true,
-            TimeLineOp::TlHasExisted(_, _) => true,
-            TimeLineOp::TlHasExistedWithin(_, _, _) => true,
-            TimeLineOp::TlLatestEventToState(_, _) => true,
-            _ => false,
-        }
-    }
-
-    fn evaluate(&self) -> TimeLine<GolemEventValue> {
-        unimplemented!("evaluate not implemented")
-    }
-
-    fn tl_has_existed(self, event_predicate: EventPredicate<GolemEventValue>) -> TimeLineOp {
-        TimeLineOp::TlHasExisted(Box::new(self), event_predicate)
-    }
-
-    fn tl_has_existed_within(self, event_predicate: EventPredicate<GolemEventValue>, within_time: u64) -> TimeLineOp {
-        TimeLineOp::TlHasExistedWithin(Box::new(self), event_predicate, within_time)
-    }
-
-    fn tl_latest_event_to_state(self, event_predicate: EventPredicate<GolemEventValue>) -> TimeLineOp {
-        TimeLineOp::TlLatestEventToState(Box::new(self), event_predicate)
-    }
-
-    fn tl_duration_where(self, event_predicate: EventPredicate<GolemEventValue>) -> TimeLineOp {
-        TimeLineOp::TlDurationWhere(Box::new(self), event_predicate)
-    }
-
-    fn tl_duration_in_cur_state(self, event_predicate: EventPredicate<GolemEventValue>) -> TimeLineOp {
-        TimeLineOp::TlDurationInCurState(Box::new(self), event_predicate)
-    }
-}
 
 impl From<WitTimeLineOp> for TimeLineOp {
     fn from(value: WitTimeLineOp) -> Self {
@@ -170,33 +131,38 @@ impl From<WitTimeLineOp> for TimeLineOp {
 
 fn build_tree(node: &TimelineNode, nodes: &[TimelineNode]) -> TimeLineOp {
     match node {
-        TimelineNode::Primitive(primitive_timeline) => {
-            let time_line = build_tree(&nodes[primitive_timeline.timeline as usize], nodes);
-            let golem_event_value: GolemEventValue = primitive_timeline.value.clone();
+        TimelineNode::Primitive(timeline_classic) => {
+            let time_line = build_tree(&nodes[timeline_classic.timeline as usize], nodes);
+            let golem_event_value: GolemEventValue = timeline_classic.value.clone();
+            let worker_id = WorkerId(timeline_classic.server.name.clone());
 
-            match primitive_timeline.op {
-                TimelinePrimitiveOp::GreaterThan => TimeLineOp::GreaterThan(Box::new(time_line), golem_event_value),
-                TimelinePrimitiveOp::GreaterThanEqual => TimeLineOp::GreaterThanOrEqual(Box::new(time_line), golem_event_value),
-                TimelinePrimitiveOp::LessThan => TimeLineOp::LessThan(Box::new(time_line), golem_event_value),
-                TimelinePrimitiveOp::LessThanEqual => TimeLineOp::LessThanOrEqual(Box::new(time_line), golem_event_value),
+            match timeline_classic.op {
+                TimelineClassicComparator::GreaterThan => TimeLineOp::GreaterThan(worker_id, Box::new(time_line), golem_event_value),
+                TimelineClassicComparator::GreaterThanEqual => TimeLineOp::GreaterThanOrEqual(worker_id, Box::new(time_line), golem_event_value),
+                TimelineClassicComparator::LessThan => TimeLineOp::LessThan(worker_id, Box::new(time_line), golem_event_value),
+                TimelineClassicComparator::LessThanEqual => TimeLineOp::LessThanOrEqual(worker_id, Box::new(time_line), golem_event_value),
             }
         }
-        TimelineNode::NotNode(node_index) => {
-            let time_line = build_tree(&nodes[*node_index as usize], nodes);
-            TimeLineOp::Not(Box::new(time_line))
+        TimelineNode::NotNode(timeline) => {
+            let time_line = build_tree(&nodes[timeline.timeline as usize], nodes);
+            let worker_id = WorkerId(timeline.server.name.clone());
+
+            TimeLineOp::Not(worker_id, Box::new(time_line))
         }
         TimelineNode::TlHasExisted(filtered_timeline) => {
             let time_line = build_tree(&nodes[filtered_timeline.node as usize], nodes);
             let event_value: EventValue<GolemEventValue> =  filtered_timeline.event_predicate.value.clone().into();
             let event_column = EventColumn(filtered_timeline.event_predicate.col_name.clone());
+            let worker_id = WorkerId(filtered_timeline.server.name.clone());
+
 
             let filter = match filtered_timeline.filter {
-                FilterOp::Equal => EventPredicate::Equals(event_column, event_value),
-                FilterOp::GreaterThan => EventPredicate::GreaterThan(event_column, event_value),
-                FilterOp::LessThan => EventPredicate::LessThan(event_column, event_value),
+                TimelineSpecificComparator::Equal => EventPredicate::Equals(event_column, event_value),
+                TimelineSpecificComparator::GreaterThan => EventPredicate::GreaterThan(event_column, event_value),
+                TimelineSpecificComparator::LessThan => EventPredicate::LessThan(event_column, event_value),
             };
 
-            TimeLineOp::TlHasExisted(Box::new(time_line), filter)
+            TimeLineOp::TlHasExisted(worker_id, Box::new(time_line), filter)
         }
 
         TimelineNode::TlHasExistedWithin(filtered_timeline) => {
@@ -204,41 +170,44 @@ fn build_tree(node: &TimelineNode, nodes: &[TimelineNode]) -> TimeLineOp {
             let event_value: EventValue<GolemEventValue> =  filtered_timeline.filtered.event_predicate.value.clone().into();
             let event_column = EventColumn(filtered_timeline.filtered.event_predicate.col_name.clone());
             let max_duration = filtered_timeline.time;
+            let worker_id = WorkerId(filtered_timeline.filtered.server.name.clone());
 
             let filter = match filtered_timeline.filtered.filter {
-                FilterOp::Equal => EventPredicate::Equals(event_column, event_value),
-                FilterOp::GreaterThan => EventPredicate::GreaterThan(event_column, event_value),
-                FilterOp::LessThan => EventPredicate::LessThan(event_column, event_value),
+                TimelineSpecificComparator::Equal => EventPredicate::Equals(event_column, event_value),
+                TimelineSpecificComparator::GreaterThan => EventPredicate::GreaterThan(event_column, event_value),
+                TimelineSpecificComparator::LessThan => EventPredicate::LessThan(event_column, event_value),
             };
 
-            TimeLineOp::TlHasExistedWithin(Box::new(time_line), filter, max_duration)
+            TimeLineOp::TlHasExistedWithin(worker_id, Box::new(time_line), filter, max_duration)
         }
         TimelineNode::TlDurationWhere(filtered_timeline) => {
             let time_line = build_tree(&nodes[filtered_timeline.node as usize], nodes);
             let event_value: EventValue<GolemEventValue> =  filtered_timeline.event_predicate.value.clone().into();
             let event_column = EventColumn(filtered_timeline.event_predicate.col_name.clone());
+            let worker_id = WorkerId(filtered_timeline.server.name.clone());
 
             let filter = match filtered_timeline.filter {
-                FilterOp::Equal => EventPredicate::Equals(event_column, event_value),
-                FilterOp::GreaterThan => EventPredicate::GreaterThan(event_column, event_value),
-                FilterOp::LessThan => EventPredicate::LessThan(event_column, event_value),
+                TimelineSpecificComparator::Equal => EventPredicate::Equals(event_column, event_value),
+                TimelineSpecificComparator::GreaterThan => EventPredicate::GreaterThan(event_column, event_value),
+                TimelineSpecificComparator::LessThan => EventPredicate::LessThan(event_column, event_value),
             };
 
-            TimeLineOp::TlDurationWhere(Box::new(time_line), filter)
+            TimeLineOp::TlDurationWhere(worker_id, Box::new(time_line), filter)
         }
         TimelineNode::TlDurationInCurState(filtered_timeline) => {
             let time_line = build_tree(&nodes[filtered_timeline.node as usize], nodes);
             let event_value: EventValue<GolemEventValue> =  filtered_timeline.event_predicate.value.clone().into();
             let event_column = EventColumn(filtered_timeline.event_predicate.col_name.clone());
+            let worker_id = WorkerId(filtered_timeline.server.name.clone());
 
             let filter = match filtered_timeline.filter {
-                FilterOp::Equal => EventPredicate::Equals(event_column, event_value),
-                FilterOp::GreaterThan => EventPredicate::GreaterThan(event_column, event_value),
-                FilterOp::LessThan => EventPredicate::LessThan(event_column, event_value),
+                TimelineSpecificComparator::Equal => EventPredicate::Equals(event_column, event_value),
+                TimelineSpecificComparator::GreaterThan => EventPredicate::GreaterThan(event_column, event_value),
+                TimelineSpecificComparator::LessThan => EventPredicate::LessThan(event_column, event_value),
             };
 
-            TimeLineOp::TlDurationInCurState(Box::new(time_line), filter)
+            TimeLineOp::TlDurationInCurState(worker_id, Box::new(time_line), filter)
         }
-        TimelineNode::Leaf(_) => TimeLineOp::Leaf(),
+        TimelineNode::Leaf(worker_id) => TimeLineOp::Leaf(WorkerId(worker_id.name.clone())),
     }
 }

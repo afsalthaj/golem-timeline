@@ -14,6 +14,12 @@ interface api {
     bool-value(bool),
   }
 
+  record worker-id {
+    name: string
+  }
+
+  initialize: func(worker: worker-id) ->() ;
+
   add-event: func(order: event) -> ();
 
   get-event: func(time: u64) -> event;

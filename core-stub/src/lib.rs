@@ -81,7 +81,9 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                         |case_builder| match &item {
                                             crate::bindings::timeline::core::api::TimelineNode::Leaf(
                                                 inner,
-                                            ) => case_builder.s32(*inner),
+                                            ) => {
+                                                case_builder.record().item().string(&inner.name).finish()
+                                            }
                                             crate::bindings::timeline::core::api::TimelineNode::Primitive(
                                                 inner,
                                             ) => {
@@ -90,16 +92,16 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                                     .item()
                                                     .enum_value(
                                                         match inner.op {
-                                                            crate::bindings::timeline::core::api::TimelinePrimitiveOp::GreaterThan => {
+                                                            crate::bindings::timeline::core::api::TimelineClassicComparator::GreaterThan => {
                                                                 0u32
                                                             }
-                                                            crate::bindings::timeline::core::api::TimelinePrimitiveOp::GreaterThanEqual => {
+                                                            crate::bindings::timeline::core::api::TimelineClassicComparator::GreaterThanEqual => {
                                                                 1u32
                                                             }
-                                                            crate::bindings::timeline::core::api::TimelinePrimitiveOp::LessThan => {
+                                                            crate::bindings::timeline::core::api::TimelineClassicComparator::LessThan => {
                                                                 2u32
                                                             }
-                                                            crate::bindings::timeline::core::api::TimelinePrimitiveOp::LessThanEqual => {
+                                                            crate::bindings::timeline::core::api::TimelineClassicComparator::LessThanEqual => {
                                                                 3u32
                                                             }
                                                         },
@@ -151,11 +153,27 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                                             ) => case_builder.bool(*inner),
                                                         },
                                                     )
+                                                    .item()
+                                                    .record()
+                                                    .item()
+                                                    .string(&inner.server.name)
+                                                    .finish()
                                                     .finish()
                                             }
                                             crate::bindings::timeline::core::api::TimelineNode::NotNode(
                                                 inner,
-                                            ) => case_builder.s32(*inner),
+                                            ) => {
+                                                case_builder
+                                                    .record()
+                                                    .item()
+                                                    .s32(inner.timeline)
+                                                    .item()
+                                                    .record()
+                                                    .item()
+                                                    .string(&inner.server.name)
+                                                    .finish()
+                                                    .finish()
+                                            }
                                             crate::bindings::timeline::core::api::TimelineNode::TlHasExisted(
                                                 inner,
                                             ) => {
@@ -164,13 +182,13 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                                     .item()
                                                     .enum_value(
                                                         match inner.filter {
-                                                            crate::bindings::timeline::core::api::FilterOp::Equal => {
+                                                            crate::bindings::timeline::core::api::TimelineSpecificComparator::Equal => {
                                                                 0u32
                                                             }
-                                                            crate::bindings::timeline::core::api::FilterOp::GreaterThan => {
+                                                            crate::bindings::timeline::core::api::TimelineSpecificComparator::GreaterThan => {
                                                                 1u32
                                                             }
-                                                            crate::bindings::timeline::core::api::FilterOp::LessThan => {
+                                                            crate::bindings::timeline::core::api::TimelineSpecificComparator::LessThan => {
                                                                 2u32
                                                             }
                                                         },
@@ -227,6 +245,11 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                                         },
                                                     )
                                                     .finish()
+                                                    .item()
+                                                    .record()
+                                                    .item()
+                                                    .string(&inner.server.name)
+                                                    .finish()
                                                     .finish()
                                             }
                                             crate::bindings::timeline::core::api::TimelineNode::TlHasExistedWithin(
@@ -239,13 +262,13 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                                     .item()
                                                     .enum_value(
                                                         match inner.filtered.filter {
-                                                            crate::bindings::timeline::core::api::FilterOp::Equal => {
+                                                            crate::bindings::timeline::core::api::TimelineSpecificComparator::Equal => {
                                                                 0u32
                                                             }
-                                                            crate::bindings::timeline::core::api::FilterOp::GreaterThan => {
+                                                            crate::bindings::timeline::core::api::TimelineSpecificComparator::GreaterThan => {
                                                                 1u32
                                                             }
-                                                            crate::bindings::timeline::core::api::FilterOp::LessThan => {
+                                                            crate::bindings::timeline::core::api::TimelineSpecificComparator::LessThan => {
                                                                 2u32
                                                             }
                                                         },
@@ -302,6 +325,11 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                                         },
                                                     )
                                                     .finish()
+                                                    .item()
+                                                    .record()
+                                                    .item()
+                                                    .string(&inner.filtered.server.name)
+                                                    .finish()
                                                     .finish()
                                                     .item()
                                                     .u64(inner.time)
@@ -315,13 +343,13 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                                     .item()
                                                     .enum_value(
                                                         match inner.filter {
-                                                            crate::bindings::timeline::core::api::FilterOp::Equal => {
+                                                            crate::bindings::timeline::core::api::TimelineSpecificComparator::Equal => {
                                                                 0u32
                                                             }
-                                                            crate::bindings::timeline::core::api::FilterOp::GreaterThan => {
+                                                            crate::bindings::timeline::core::api::TimelineSpecificComparator::GreaterThan => {
                                                                 1u32
                                                             }
-                                                            crate::bindings::timeline::core::api::FilterOp::LessThan => {
+                                                            crate::bindings::timeline::core::api::TimelineSpecificComparator::LessThan => {
                                                                 2u32
                                                             }
                                                         },
@@ -377,6 +405,11 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                                             ) => case_builder.bool(*inner),
                                                         },
                                                     )
+                                                    .finish()
+                                                    .item()
+                                                    .record()
+                                                    .item()
+                                                    .string(&inner.server.name)
                                                     .finish()
                                                     .finish()
                                             }
@@ -388,13 +421,13 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                                     .item()
                                                     .enum_value(
                                                         match inner.filter {
-                                                            crate::bindings::timeline::core::api::FilterOp::Equal => {
+                                                            crate::bindings::timeline::core::api::TimelineSpecificComparator::Equal => {
                                                                 0u32
                                                             }
-                                                            crate::bindings::timeline::core::api::FilterOp::GreaterThan => {
+                                                            crate::bindings::timeline::core::api::TimelineSpecificComparator::GreaterThan => {
                                                                 1u32
                                                             }
-                                                            crate::bindings::timeline::core::api::FilterOp::LessThan => {
+                                                            crate::bindings::timeline::core::api::TimelineSpecificComparator::LessThan => {
                                                                 2u32
                                                             }
                                                         },
@@ -450,6 +483,11 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                                             ) => case_builder.bool(*inner),
                                                         },
                                                     )
+                                                    .finish()
+                                                    .item()
+                                                    .record()
+                                                    .item()
+                                                    .string(&inner.server.name)
                                                     .finish()
                                                     .finish()
                                             }

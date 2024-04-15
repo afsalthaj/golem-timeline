@@ -10,46 +10,62 @@ interface api {
   }
 
   variant timeline-node {
-    leaf(s32),
-    primitive(primitive-timeline),
-    not-node(node-index),
-    tl-has-existed(filtered-timeline),
-    tl-has-existed-within(filtered-timeline-within),
-    tl-duration-where(filtered-timeline),
-    tl-duration-in-cur-state(filtered-timeline)
+    leaf(worker-id),
+    primitive(timeline-classic),
+    not-node(timeline-classic-not),
+    tl-has-existed(timeline-specific),
+    tl-has-existed-within(timeline-specific-within),
+    tl-duration-where(timeline-specific),
+    tl-duration-in-cur-state(timeline-specific)
   }
 
-  enum timeline-primitive-op {
+
+  record worker-id {
+    name: string
+  }
+
+  enum timeline-classic-comparator {
     greater-than,
     greater-than-equal,
     less-than,
     less-than-equal,
   }
 
-  record primitive-timeline {
-    op: timeline-primitive-op,
+  /// A  timeline-classic corresponds to classic timeline operations
+  // in the paper
+  // A primitive timeline is also maintained in a separate worker/server
+  record timeline-classic {
+    op: timeline-classic-comparator,
     timeline: node-index,
-    value: event-value
+    value: event-value,
+    server: worker-id
   }
 
-  record filtered-timeline {
-     filter: filter-op,
-     node: node-index,
-     event-predicate: event-column-predicate-info,
+  record timeline-classic-not {
+    timeline: node-index,
+    server: worker-id
   }
 
-  record filtered-timeline-within {
-    filtered: filtered-timeline,
+  // A filtered timeline is operation on state dynamic timelines
+  // applied with an event filter
+  // TLHasExistedWithIn(col("userAction" ) == "seek")
+  // seek and col("userAction) is event-column-predicate-info
+  // and == is filter-op
+  // A filtered timeline is also maintained in a separate worker/server
+  record timeline-specific {
+    filter: timeline-specific-comparator,
+    node: node-index,
+    event-predicate: event-column-predicate-info,
+    server: worker-id
+  }
+
+  record timeline-specific-within {
+    filtered: timeline-specific,
     time: u64,
   }
 
-  record timeline-primitive {
-    op: timeline-primitive-op,
-    ind: node-index,
-    value: event-value,
-  }
 
-  enum filter-op{
+  enum timeline-specific-comparator{
     equal,
     greater-than,
     less-than,
