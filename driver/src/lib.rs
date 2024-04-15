@@ -17,7 +17,7 @@ impl Guest for Component {
 
         let core = stub_core::Api::new(&uri);
         let timeline_op = TimelineOp {
-            nodes: vec![Leaf],
+            nodes: vec![Leaf(1)],
         };
 
         core.initialize_timeline(&timeline_op);

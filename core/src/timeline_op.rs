@@ -239,6 +239,6 @@ fn build_tree(node: &TimelineNode, nodes: &[TimelineNode]) -> TimeLineOp {
 
             TimeLineOp::TlDurationInCurState(Box::new(time_line), filter)
         }
-        TimelineNode::Leaf => TimeLineOp::Leaf(),
+        TimelineNode::Leaf(_) => TimeLineOp::Leaf(),
     }
 }

@@ -21,6 +21,7 @@ struct Component;
 
 impl Guest for Component {
     fn initialize_timeline(timeline: TimelineOp) {
+        dbg!(timeline);
        //let timeline: crate::timeline_op::TimeLineOp = timeline.into();
 
        // dbg!(timeline.to_string());

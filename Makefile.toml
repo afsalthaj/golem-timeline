@@ -1,16 +1,16 @@
 [config]
 default_to_workspace = false
 
-#[tasks.add-stub-dependency-core-driver]
-#args = ["stubgen", "add-stub-dependency", "--stub-wit-root", "core-stub/wit", "--dest-wit-root", "driver/wit", "--overwrite", "--update-cargo-toml"]
-#command = "golem-cli"
-#cwd = "."
-#dependencies = ["generate-core-stub"]
+[tasks.add-stub-dependency-core-driver]
+args = ["stubgen", "add-stub-dependency", "--stub-wit-root", "core-stub/wit", "--dest-wit-root", "driver/wit", "--overwrite", "--update-cargo-toml"]
+command = "golem-cli"
+cwd = "."
+dependencies = ["generate-core-stub"]
 
 [tasks.build]
 args = ["build"]
 command = "cargo-component"
-dependencies = ["clean"]
+dependencies = ["clean", "regenerate-stubs"]
 
 [tasks.build-flow]
 dependencies = ["build", "post-build"]
@@ -18,7 +18,7 @@ dependencies = ["build", "post-build"]
 [tasks.build-release]
 args = ["build", "--release"]
 command = "cargo-component"
-dependencies = ["clean"]
+dependencies = ["clean", "regenerate-stubs"]
 
 [tasks.clean]
 args = ["clean"]
@@ -37,10 +37,10 @@ cwd = "."
 [tasks.default]
 alias = "build"
 
-#[tasks.generate-core-stub]
-#args = ["stubgen", "generate", "-s", "core/wit", "-d", "core-stub"]
-#command = "golem-cli"
-#cwd = "."
+[tasks.generate-core-stub]
+args = ["stubgen", "generate", "-s", "core/wit", "-d", "core-stub"]
+command = "golem-cli"
+cwd = "."
 
 [tasks.post-build]
 dependencies = ["compose-driver"]
@@ -48,8 +48,8 @@ dependencies = ["compose-driver"]
 [tasks.post-build-release]
 dependencies = ["compose-release-driver"]
 
-#[tasks.regenerate-stubs]
-#dependencies = ["add-stub-dependency-core-driver"]
+[tasks.regenerate-stubs]
+dependencies = ["add-stub-dependency-core-driver"]
 
 [tasks.release-build-flow]
 dependencies = ["build-release", "post-build-release"]

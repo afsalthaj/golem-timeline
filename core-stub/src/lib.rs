@@ -33,9 +33,9 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                 item_builder
                                     .variant_fn(
                                         match &item {
-                                            crate::bindings::timeline::core::api::TimelineNode::Leaf => {
-                                                0u32
-                                            }
+                                            crate::bindings::timeline::core::api::TimelineNode::Leaf(
+                                                _,
+                                            ) => 0u32,
                                             crate::bindings::timeline::core::api::TimelineNode::Primitive(
                                                 _,
                                             ) => 1u32,
@@ -56,9 +56,9 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                             ) => 6u32,
                                         },
                                         match &item {
-                                            crate::bindings::timeline::core::api::TimelineNode::Leaf => {
-                                                true
-                                            }
+                                            crate::bindings::timeline::core::api::TimelineNode::Leaf(
+                                                _,
+                                            ) => false,
                                             crate::bindings::timeline::core::api::TimelineNode::Primitive(
                                                 _,
                                             ) => false,
@@ -79,9 +79,9 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                             ) => false,
                                         },
                                         |case_builder| match &item {
-                                            crate::bindings::timeline::core::api::TimelineNode::Leaf => {
-                                                unreachable!()
-                                            }
+                                            crate::bindings::timeline::core::api::TimelineNode::Leaf(
+                                                inner,
+                                            ) => case_builder.s32(*inner),
                                             crate::bindings::timeline::core::api::TimelineNode::Primitive(
                                                 inner,
                                             ) => {
