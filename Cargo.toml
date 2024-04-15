@@ -1,5 +1,5 @@
 [workspace]
-members = ["raw-events", "core", "driver", "core-stub"]
+members = ["raw-events", "core", "driver", "core-stub", "raw-events-stub"]
 resolver = "2"
 
 [profile.release]

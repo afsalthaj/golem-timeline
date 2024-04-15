@@ -42,6 +42,11 @@ args = ["stubgen", "generate", "-s", "core/wit", "-d", "core-stub"]
 command = "golem-cli"
 cwd = "."
 
+[tasks.gnenerate-raw-events-stub]
+args = ["stubgen", "generate", "-s", "raw-events/wit", "-d", "raw-events-stub"]
+command = "golem-cli"
+cwd = "."
+
 [tasks.post-build]
 dependencies = ["compose-driver"]
 

@@ -13,7 +13,7 @@ impl Guest for Component {
         let template_id = value;
 
         let uri = Uri {
-            value: format!("worker://{template_id}/{}", "raw-events"),
+            value: format!("worker://{template_id}/{}", "initialize-timeline"),
         };
 
         let core = stub_core::Api::new(&uri);

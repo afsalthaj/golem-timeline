@@ -219,7 +219,10 @@ This
 ```bash
 cargo component build
 
+## Composing driver wsm with core-stub
 golem-cli stubgen compose --source-wasm target/wasm32-wasi/debug/driver.wasm --stub-wasm target/wasm32-wasi/debug/core_stub.wasm --dest-wasm target/wasm32-wasi/debug/driver_composed.wasm
+## Composing core wasm with raw-events-stub (leaf-stub)
+golem-cli stubgen compose --source-wasm target/wasm32-wasi/debug/core.wasm --stub-wasm target/wasm32-wasi/debug/raw_events_stub.wasm --dest-wasm target/wasm32-wasi/debug/core_composed_leaf.wasm
 
 ## Spin up golem
 curl -O https://raw.githubusercontent.com/golemcloud/golem/main/docker-examples/docker-compose-sqlite.yaml -O  https://raw.githubusercontent.com/golemcloud/golem/main/docker-examples/.env

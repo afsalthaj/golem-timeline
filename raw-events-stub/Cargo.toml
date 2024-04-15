@@ -1,10 +1,13 @@
 [package]
-name = "core"
+name = "raw-events-stub"
 edition = "2021"
-version = "0.1.0"
+version = "0.0.1"
+
+[package.metadata.component]
+package = "timeline:raw-events"
 
 [package.metadata.component.target]
-world = "core"
+world = "wasm-rpc-stub-raw-events"
 path = "wit"
 
 [package.metadata.component.target.dependencies."timeline:raw-events"]
@@ -13,15 +16,10 @@ path = "wit/deps/timeline_raw-events"
 [package.metadata.component.target.dependencies."golem:rpc"]
 path = "wit/deps/wasm-rpc"
 
-[package.metadata.component.target.dependencies."timeline:raw-events-stub"]
-path = "wit/deps/timeline_raw-events-stub"
-
-[dependencies]
-bitflags = "2.4.2"
-chrono = "0.4.33"
-futures = "0.3.30"
-serde_json = "1.0.113"
-tokio = "1.36.0"
+[dependencies.golem-wasm-rpc]
+version = "0.0.13"
+features = ["stub"]
+default-features = false
 
 [dependencies.wit-bindgen]
 version = "0.17.0"
@@ -32,3 +30,8 @@ default-features = false
 path = "src/lib.rs"
 crate-type = ["cdylib"]
 required-features = []
+
+[profile.release]
+opt-level = "s"
+lto = true
+strip = true

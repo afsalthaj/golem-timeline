@@ -16,6 +16,10 @@ pub mod zip_result;
 use crate::bindings::exports::timeline::core::api::Guest;
 use crate::bindings::exports::timeline::core::api::*;
 use crate::timeline_op::{TimeLineOp as CoreTimeLineOp, TimeLineOp};
+use crate::bindings::timeline::raw_events_stub::stub_raw_events;
+use crate::bindings::golem::rpc::types::Uri;
+
+
 
 struct Component;
 
@@ -25,8 +29,21 @@ impl Guest for Component {
 
        let _ = match timeline {
            TimeLineOp::Leaf(worker_id) => {
-               dbg!("The worker-id is {}", worker_id.0);
+               let template_id = "template_id_of_raw_event";
+
+               let uri = Uri {
+                   value: format!("worker://{template_id}/{}", worker_id.0),
+               };
+
+               let core = stub_raw_events::Api::new(&uri);
+
+               core.initialize(&stub_raw_events::WorkerId{
+                     name: "worker_id".to_string(),
+                });
+
+               dbg!("Initialised raw_events");
            },
+
            TimeLineOp::EqualTo(_, _, _) => {}
            TimeLineOp::GreaterThan(_, _, _) => {}
            TimeLineOp::GreaterThanOrEqual(_, _, _) => {}
