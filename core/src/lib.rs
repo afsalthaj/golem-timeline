@@ -28,17 +28,18 @@ impl Guest for Component {
        let timeline: CoreTimeLineOp = timeline.into();
 
        let _ = match timeline {
-           TimeLineOp::Leaf(worker_id) => {
-               let template_id = "template_id_of_raw_event";
+           TimeLineOp::Leaf(server) => {
+               let template_id = server.template_id;
+               let worker_id = server.worker_id;
 
                let uri = Uri {
-                   value: format!("worker://{template_id}/{}", worker_id.0),
+                   value: format!("worker://{template_id}/{}", worker_id.clone()),
                };
 
                let core = stub_raw_events::Api::new(&uri);
 
                core.initialize(&stub_raw_events::WorkerId{
-                     name: "worker_id".to_string(),
+                     name: worker_id,
                 });
 
                dbg!("Initialised raw_events");

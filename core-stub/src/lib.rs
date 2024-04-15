@@ -82,7 +82,13 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                             crate::bindings::timeline::core::api::TimelineNode::Leaf(
                                                 inner,
                                             ) => {
-                                                case_builder.record().item().string(&inner.name).finish()
+                                                case_builder
+                                                    .record()
+                                                    .item()
+                                                    .string(&inner.worker_id)
+                                                    .item()
+                                                    .string(&inner.template_id)
+                                                    .finish()
                                             }
                                             crate::bindings::timeline::core::api::TimelineNode::Primitive(
                                                 inner,

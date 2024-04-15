@@ -13,6 +13,11 @@ path = "wit/deps/wasm-rpc"
 [package.metadata.component.target.dependencies."timeline:raw-events"]
 path = "wit/deps/raw-events"
 
+
+[package.metadata.component.target.dependencies."timeline:raw-events-stub"]
+path = "wit/deps/timeline_raw-events-stub"
+
+
 [package.metadata.component.target.dependencies."timeline:core-stub"]
 path = "wit/deps/timeline_core-stub"
 

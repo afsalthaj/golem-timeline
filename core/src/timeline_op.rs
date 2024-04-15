@@ -15,9 +15,14 @@ use crate::bindings::exports::timeline::core::api::{TimelineSpecificComparator, 
 
 pub struct WorkerId(pub String);
 
+pub struct Server {
+    pub worker_id: String,
+    pub template_id: String
+}
+
 pub enum TimeLineOp {
     // Pretty much represents the event-timeline (not state dynamics) - source (through workerid) and collection
-    Leaf(WorkerId), // A leaf node results in a component that exposes a function accepting event and storing it in a configurable buffer
+    Leaf(Server), // A leaf node results in a component that exposes a function accepting event and storing it in a configurable buffer
     EqualTo(WorkerId, Box<TimeLineOp>, GolemEventValue),
     GreaterThan(WorkerId, Box<TimeLineOp>, GolemEventValue),
     GreaterThanOrEqual(WorkerId, Box<TimeLineOp>, GolemEventValue),
@@ -101,7 +106,7 @@ impl Display for TimeLineOp {
         }
 
         match self {
-            TimeLineOp::Leaf(worker_id) => write!(f, "Leaf({})", worker_id.0),
+            TimeLineOp::Leaf(server) => write!(f, "Leaf({}.{})", server.template_id, server.worker_id),
             TimeLineOp::EqualTo(worker_id, time_line, golem_event_value) => write!(f, "EqualTo({}, {}, {})", worker_id.0, time_line, text_of(golem_event_value)),
             TimeLineOp::GreaterThan(worker_id, time_line, golem_event_value) => write!(f, "GreaterThan({}, {}, {})", worker_id.0, time_line, text_of(golem_event_value)),
             TimeLineOp::GreaterThanOrEqual(worker_id, time_line, golem_event_value) => write!(f, "GreaterThanOrEqual({}, {}, {})", worker_id.0, time_line, text_of(golem_event_value)),
@@ -208,6 +213,9 @@ fn build_tree(node: &TimelineNode, nodes: &[TimelineNode]) -> TimeLineOp {
 
             TimeLineOp::TlDurationInCurState(worker_id, Box::new(time_line), filter)
         }
-        TimelineNode::Leaf(worker_id) => TimeLineOp::Leaf(WorkerId(worker_id.name.clone())),
+        TimelineNode::Leaf(server) => TimeLineOp::Leaf(Server{
+            worker_id: server.worker_id.clone(),
+            template_id: server.template_id.clone()
+        }),
     }
 }

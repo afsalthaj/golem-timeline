@@ -2,7 +2,7 @@ use crate::bindings::exports::timeline::driver::api::Guest;
 use crate::bindings::golem::rpc::types::Uri;
 use crate::bindings::timeline::core::api::TimelineNode::Leaf;
 use crate::bindings::timeline::core::api::TimelineOp;
-use crate::bindings::timeline::core::api::WorkerId;
+use crate::bindings::timeline::core::api::{Server};
 use crate::bindings::timeline::core_stub::stub_core;
 
 mod bindings;
@@ -17,8 +17,10 @@ impl Guest for Component {
 
         let core = stub_core::Api::new(&uri);
         let timeline_op = TimelineOp {
-            nodes: vec![Leaf(WorkerId {
-                name : "leaf".to_string(),
+            nodes: vec![Leaf(Server {
+                template_id : leaf_template_id.to_string(),
+                worker_id: "raw-events-worker".to_string(),
+
             })],
         };
 

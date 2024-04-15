@@ -10,7 +10,7 @@ interface api {
   }
 
   variant timeline-node {
-    leaf(worker-id),
+    leaf(server),
     primitive(timeline-classic),
     not-node(timeline-classic-not),
     tl-has-existed(timeline-specific),
@@ -19,6 +19,10 @@ interface api {
     tl-duration-in-cur-state(timeline-specific)
   }
 
+  record server {
+    worker-id: string,
+    template-id: string
+  }
 
   record worker-id {
     name: string
