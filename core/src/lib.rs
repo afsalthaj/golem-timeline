@@ -21,7 +21,11 @@ struct Component;
 
 impl Guest for Component {
     fn initialize_timeline(timeline: TimelineOp) {
-       dbg!("Initiating timeline");
+       //let timeline: crate::timeline_op::TimeLineOp = timeline.into();
+
+       // dbg!(timeline.to_string());
+
+        dbg!("Excuted timeline remotely");
     }
 }
 

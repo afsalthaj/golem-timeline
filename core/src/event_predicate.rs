@@ -2,6 +2,7 @@ use std::fmt::Display;
 use crate::bindings::timeline::raw_events::api::EventValue as GolemEventValue;
 //use crate::bindings::exports::golem::timeline::api::FilterOp;
 //use crate::bindings::exports::golem::timeline::api::EventValue as WitEventValue;
+
 pub struct EventColumn(pub String);
 impl EventColumn {
     pub fn equal_to<T>(self, value: EventValue<T>) -> EventPredicate<T> {
@@ -17,22 +18,23 @@ impl EventColumn {
     }
 }
 
+// A much more generic structure that act as a new type and more safer to use across the core
+// Mostly decorated with raw-event component's actual EventValue
 pub struct EventValue<T> {
     pub value: T,
 }
 
-// impl From<crate::bindings::exports::golem::timeline::api::EventValue> for EventValue<GolemEventValue> {
-//     fn from(value: crate::bindings::exports::golem::timeline::api::EventValue) -> Self {
-//        let value: GolemEventValue =  match value {
-//            WitEventValue::StringValue(value) => GolemEventValue::StringValue(value),
-//            WitEventValue::IntValue(value) => GolemEventValue::IntValue(value),
-//            WitEventValue::BoolValue(value) => GolemEventValue::BooleanValue(value),
-//            WitEventValue::FloatValue(value) => GolemEventValue::FloatValue(value),
-//        };
-//
-//         value.into()
-//     }
-// }
+impl Display for EventValue<GolemEventValue> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match &self.value {
+            GolemEventValue::StringValue(value) => write!(f, "{}", value),
+            GolemEventValue::IntValue(value) => write!(f, "{}", value),
+            GolemEventValue::BoolValue(value) => write!(f, "{}", value),
+            GolemEventValue::FloatValue(value) => write!(f, "{}", value),
+        }
+    }
+}
+
 
 impl From<GolemEventValue> for EventValue<GolemEventValue> {
     fn from(value: GolemEventValue) -> Self {
@@ -71,6 +73,18 @@ pub enum EventPredicate<T> {
     LessThan(EventColumn, EventValue<T>),
     And(Box<EventPredicate<T>>, Box<EventPredicate<T>>),
     Or(Box<EventPredicate<T>>, Box<EventPredicate<T>>),
+}
+
+impl Display for EventPredicate<GolemEventValue> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            EventPredicate::Equals(column, value) => write!(f, "{} == {}", column.0, value),
+            EventPredicate::GreaterThan(column, value) => write!(f, "{} > {}", column.0, value),
+            EventPredicate::LessThan(column, value) => write!(f, "{} < {}", column.0, value),
+            EventPredicate::And(left, right) => write!(f, "{} && {}", left, right),
+            EventPredicate::Or(left, right) => write!(f, "{} || {}", left, right),
+        }
+    }
 }
 
 impl<T: Eq + PartialOrd> EventPredicate<T> {
