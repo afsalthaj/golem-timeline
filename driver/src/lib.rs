@@ -9,11 +9,10 @@ mod bindings;
 struct Component;
 
 impl Guest for Component {
-    fn run(value: String) {
-        let template_id = value;
+    fn run(core_template_id: String, leaf_template_id: String, event_to_state_tempalte_id: String) {
 
         let uri = Uri {
-            value: format!("worker://{template_id}/{}", "initialize-timeline"),
+            value: format!("worker://{core_template_id}/{}", "initialize-timeline"),
         };
 
         let core = stub_core::Api::new(&uri);
@@ -27,4 +26,6 @@ impl Guest for Component {
 
         dbg!("Timeline initialized");
     }
+
+
 }

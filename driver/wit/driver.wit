@@ -2,7 +2,7 @@ package timeline:driver;
 
 
 interface api {
-  run: func(value: string) -> ();
+  run: func(core-template-id: string, leaf-template-id: string, event-to-state-tempalte-id: string) -> ();
 }
 
 world driver {
