@@ -89,7 +89,6 @@ interface api {
 }
 
 world core {
-  import timeline:raw-events-stub/stub-raw-events;
   export api;
 }
 

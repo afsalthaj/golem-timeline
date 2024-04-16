@@ -232,16 +232,19 @@ docker-compose -f docker-compose-sqlite.yaml up
 ## Upload Templates
 
 ### The timeline engine, to say, keep a note of the template id, which we will use for the time being to initiate the function in the driver (below)
-golem-cli template add --template-name core target/wasm32-wasi/debug/core.wasm
+golem-cli template add --template-name core target/wasm32-wasi/debug/core_composed_leaf.wasm
+# templateid 1
 
 ### The raw-events processor component - will be initiated for most of the queries as it forms the base. There will be similar templates, but this is the most simplest one
 golem-cli template add --template-name raw-event target/wasm32-wasi/debug/raw_events.wasm
+# templateid 2
 
 ### The composed driver component - which is the a composite of the core-stub and the driver, to invoke the core functionality from the driver in a typesafe way
 golem-cli template add --template-name driver target/wasm32-wasi/debug/driver_composed.wasm
 
+
 ### Invoke the function in the driver
-golem-cli worker invoke-and-await  --template-name driver --worker-name first-try --function timeline:driver/api/run --parameters '["<template-id-of-core>"]'
+golem-cli worker invoke-and-await  --template-name driver --worker-name first-try --function timeline:driver/api/run --parameters '["<template-id-of-core>", ""<template-id-of-raw-event>", "dummy"]'
 
 
 
