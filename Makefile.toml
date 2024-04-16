@@ -7,6 +7,12 @@ command = "golem-cli"
 cwd = "."
 dependencies = ["generate-core-stub"]
 
+[tasks.add-stub-dependency-raw-events-core]
+args = ["stubgen", "add-stub-dependency", "--stub-wit-root", "raw-events-stub/wit", "--dest-wit-root", "core/wit", "--overwrite", "--update-cargo-toml"]
+command = "golem-cli"
+cwd = "."
+dependencies = ["generate-raw-events-stub"]
+
 [tasks.build]
 args = ["build"]
 command = "cargo-component"
@@ -34,6 +40,16 @@ args = ["stubgen", "compose", "--source-wasm", "target/wasm32-wasi/release/drive
 command = "golem-cli"
 cwd = "."
 
+[tasks.compose-core-with-raw-events]
+args = ["stubgen", "compose", "--source-wasm", "target/wasm32-wasi/debug/core.wasm", "--stub-wasm", "target/wasm32-wasi/debug/raw_events_stub..wasm", "--dest-wasm", "target/wasm32-wasi/debug/core_composed_leaf.wasm"]
+command = "golem-cli"
+cwd = "."
+
+[tasks.compose-release-core-with-raw-events]
+args = ["stubgen", "compose", "--source-wasm", "target/wasm32-wasi/release/core.wasm", "--stub-wasm", "target/wasm32-wasi/release/raw_events_stub..wasm", "--dest-wasm", "target/wasm32-wasi/release/core_composed_leaf.wasm"]
+command = "golem-cli"
+cwd = "."
+
 [tasks.default]
 alias = "build"
 
@@ -42,19 +58,20 @@ args = ["stubgen", "generate", "-s", "core/wit", "-d", "core-stub"]
 command = "golem-cli"
 cwd = "."
 
-[tasks.gnenerate-raw-events-stub]
+
+[tasks.generate-raw-events-stub]
 args = ["stubgen", "generate", "-s", "raw-events/wit", "-d", "raw-events-stub"]
 command = "golem-cli"
 cwd = "."
 
 [tasks.post-build]
-dependencies = ["compose-driver"]
+dependencies = ["compose-driver", "compose-core-with-raw-events"]
 
 [tasks.post-build-release]
-dependencies = ["compose-release-driver"]
+dependencies = ["compose-release-driver", "compose-release-core-with-raw-events"]
 
 [tasks.regenerate-stubs]
-dependencies = ["add-stub-dependency-core-driver"]
+dependencies = ["add-stub-dependency-core-driver", "add-stub-dependency-raw-events-core"]
 
 [tasks.release-build-flow]
 dependencies = ["build-release", "post-build-release"]
