@@ -42,12 +42,12 @@ interface api {
     op: timeline-classic-comparator,
     timeline: node-index,
     value: event-value,
-    server: worker-id
+    server: server
   }
 
   record timeline-classic-not {
     timeline: node-index,
-    server: worker-id
+    server: server
   }
 
   // A filtered timeline is operation on state dynamic timelines
@@ -60,7 +60,7 @@ interface api {
     filter: timeline-specific-comparator,
     node: node-index,
     event-predicate: event-column-predicate-info,
-    server: worker-id
+    server: server
   }
 
   record timeline-specific-within {
