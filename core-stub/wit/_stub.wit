@@ -6,14 +6,15 @@ interface stub-core {
   use timeline:core/api.{event};
   use timeline:core/api.{node-index};
   use timeline:core/api.{server};
+  use timeline:core/api.{timeline-with-server};
   use timeline:core/api.{worker-id};
-  use timeline:core/api.{timeline-classic-comparator};
-  use timeline:core/api.{timeline-classic};
-  use timeline:core/api.{timeline-classic-not};
-  use timeline:core/api.{timeline-specific-comparator};
-  use timeline:core/api.{event-column-predicate-info};
-  use timeline:core/api.{timeline-specific};
-  use timeline:core/api.{timeline-specific-within};
+  use timeline:core/api.{timeline-constant-comparator};
+  use timeline:core/api.{timeline-constant-compared};
+  use timeline:core/api.{timeline-negated};
+  use timeline:core/api.{event-predicate-op};
+  use timeline:core/api.{event-predicate};
+  use timeline:core/api.{timeline-with-event-predicate};
+  use timeline:core/api.{timeline-with-event-predicate-within};
   use timeline:core/api.{timeline-node};
   use timeline:core/api.{timeline-op};
 

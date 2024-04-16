@@ -3,7 +3,7 @@ use crate::bindings::timeline::raw_events::api::EventValue as GolemEventValue;
 //use crate::bindings::exports::golem::timeline::api::{/*FilterOp, TimelineNode, TimelineOp as WitTimeLineOp, TimeLineClassicComparator};
 use crate::event_predicate::{EventColumn, EventPredicate, EventValue};
 use crate::timeline::TimeLine;
-use crate::bindings::exports::timeline::core::api::{TimelineSpecificComparator, TimelineNode, TimelineOp as WitTimeLineOp, TimelineClassicComparator};
+use crate::bindings::exports::timeline::core::api::{EventPredicateOp, TimelineNode, TimelineOp as WitTimeLineOp, TimelineConstantComparator};
 
 
 // In paper, it is referred as object DAG
@@ -94,7 +94,7 @@ pub enum TimeLineOp {
     // t3 - t8 : 5
     // t8 - t4 : 5
     // t14 - t20: 11
-    TlDurationWhere(Server, Box<TimeLineOp>, EventPredicate<GolemEventValue>),
+    TlDurationWhere(Server, Box<TimeLineOp>),
 
     // A Numerical Timeline of
     // the duration since the last
@@ -108,7 +108,7 @@ pub enum TimeLineOp {
     // t3- t8: 5
     // t8-t14: 6
     // t14- t20: 6
-    TlDurationInCurState(Server, Box<TimeLineOp>, EventPredicate<GolemEventValue>),
+    TlDurationInCurState(Server, Box<TimeLineOp>),
 }
 
 impl TimeLineOp {
@@ -173,12 +173,12 @@ impl TimeLineOp {
                     servers.push(server.clone());
                     servers
                 }
-                TimeLineOp::TlDurationWhere(server, time_line, _) => {
+                TimeLineOp::TlDurationWhere(server, time_line) => {
                     let mut servers = servers_of(time_line);
                     servers.push(server.clone());
                     servers
                 }
-                TimeLineOp::TlDurationInCurState(server, timeline, _) => {
+                TimeLineOp::TlDurationInCurState(server, timeline) => {
                     let mut servers = servers_of(timeline);
                     servers.push(server.clone());
                     servers
@@ -214,8 +214,8 @@ impl Display for TimeLineOp {
             TimeLineOp::TlHasExisted(server, time_line, event_predicate) => write!(f, "TlHasExisted({}, {}, {})", server, time_line, event_predicate),
             TimeLineOp::TlHasExistedWithin(server, time_line, event_predicate, within_time) => write!(f, "TlHasExistedWithin({}, {}, {}, {})", server, time_line, event_predicate, within_time),
             TimeLineOp::TlLatestEventToState(server, time_line, event_predicate) => write!(f, "TlLatestEventToState({}, {}, {})", server, time_line, event_predicate),
-            TimeLineOp::TlDurationWhere(server, time_line, event_predicate) => write!(f, "TlDurationWhere({}, {}, {})", server, time_line, event_predicate),
-            TimeLineOp::TlDurationInCurState(server, time_line, event_predicate) => write!(f, "TlDurationInCurState({}, {}, {})", server, time_line, event_predicate),
+            TimeLineOp::TlDurationWhere(server, time_line) => write!(f, "TlDurationWhere({}, {})", server, time_line),
+            TimeLineOp::TlDurationInCurState(server, time_line) => write!(f, "TlDurationInCurState({}, {})", server, time_line),
         }
     }
 }
@@ -232,82 +232,63 @@ impl From<WitTimeLineOp> for TimeLineOp {
 
 fn build_tree(node: &TimelineNode, nodes: &[TimelineNode]) -> TimeLineOp {
     match node {
-        TimelineNode::Primitive(timeline_classic) => {
-            let time_line = build_tree(&nodes[timeline_classic.timeline as usize], nodes);
-            let golem_event_value: GolemEventValue = timeline_classic.value.clone();
-            let server: Server = timeline_classic.server.clone().into();
+        TimelineNode::TimelineComparison(timeline_constant_compared) => {
+            let time_line = build_tree(&nodes[timeline_constant_compared.timeline as usize], nodes);
+            let golem_event_value: GolemEventValue = timeline_constant_compared.value.clone();
+            let server: Server = timeline_constant_compared.server.clone().into();
 
-            match timeline_classic.op {
-                TimelineClassicComparator::GreaterThan => TimeLineOp::GreaterThan(server, Box::new(time_line), golem_event_value),
-                TimelineClassicComparator::GreaterThanEqual => TimeLineOp::GreaterThanOrEqual(server, Box::new(time_line), golem_event_value),
-                TimelineClassicComparator::LessThan => TimeLineOp::LessThan(server, Box::new(time_line), golem_event_value),
-                TimelineClassicComparator::LessThanEqual => TimeLineOp::LessThanOrEqual(server, Box::new(time_line), golem_event_value),
+            match timeline_constant_compared.op {
+                TimelineConstantComparator::GreaterThan => TimeLineOp::GreaterThan(server, Box::new(time_line), golem_event_value),
+                TimelineConstantComparator::GreaterThanEqual => TimeLineOp::GreaterThanOrEqual(server, Box::new(time_line), golem_event_value),
+                TimelineConstantComparator::LessThan => TimeLineOp::LessThan(server, Box::new(time_line), golem_event_value),
+                TimelineConstantComparator::LessThanEqual => TimeLineOp::LessThanOrEqual(server, Box::new(time_line), golem_event_value),
             }
         }
-        TimelineNode::NotNode(timeline) => {
-            let time_line = build_tree(&nodes[timeline.timeline as usize], nodes);
-            let server: Server = timeline.server.clone().into();
+        TimelineNode::TimelineNegation(timeline_negation) => {
+            let time_line = build_tree(&nodes[timeline_negation.timeline as usize], nodes);
+            let server: Server = timeline_negation.server.clone().into();
 
             TimeLineOp::Not(server, Box::new(time_line))
         }
-        TimelineNode::TlHasExisted(filtered_timeline) => {
-            let time_line = build_tree(&nodes[filtered_timeline.node as usize], nodes);
-            let event_value: EventValue<GolemEventValue> =  filtered_timeline.event_predicate.value.clone().into();
-            let event_column = EventColumn(filtered_timeline.event_predicate.col_name.clone());
-            let server: Server = filtered_timeline.server.clone().into();
+        TimelineNode::TlHasExisted(timeline_with_event_predicate) => {
+            let time_line = build_tree(&nodes[timeline_with_event_predicate.timeline as usize], nodes);
+            let event_value: EventValue<GolemEventValue> =  timeline_with_event_predicate.event_predicate.value.clone().into();
+            let event_column = EventColumn(timeline_with_event_predicate.event_predicate.col_name.clone());
+            let server: Server = timeline_with_event_predicate.server.clone().into();
 
 
-            let filter = match filtered_timeline.filter {
-                TimelineSpecificComparator::Equal => EventPredicate::Equals(event_column, event_value),
-                TimelineSpecificComparator::GreaterThan => EventPredicate::GreaterThan(event_column, event_value),
-                TimelineSpecificComparator::LessThan => EventPredicate::LessThan(event_column, event_value),
+            let filter = match timeline_with_event_predicate.event_predicate.op {
+                EventPredicateOp::Equal => EventPredicate::Equals(event_column, event_value),
+                EventPredicateOp::GreaterThan => EventPredicate::GreaterThan(event_column, event_value),
+                EventPredicateOp::LessThan => EventPredicate::LessThan(event_column, event_value),
             };
 
             TimeLineOp::TlHasExisted(server, Box::new(time_line), filter)
         }
 
-        TimelineNode::TlHasExistedWithin(filtered_timeline) => {
-            let time_line = build_tree(&nodes[filtered_timeline.filtered.node as usize], nodes);
-            let event_value: EventValue<GolemEventValue> =  filtered_timeline.filtered.event_predicate.value.clone().into();
-            let event_column = EventColumn(filtered_timeline.filtered.event_predicate.col_name.clone());
-            let max_duration = filtered_timeline.time;
-            let server: Server = filtered_timeline.filtered.server.clone().into();
+        TimelineNode::TlHasExistedWithin(tl_has_existed_within) => {
+            let time_line = build_tree(&nodes[tl_has_existed_within.filtered.timeline as usize], nodes);
+            let event_value: EventValue<GolemEventValue> =  tl_has_existed_within.filtered.event_predicate.value.clone().into();
+            let event_column = EventColumn(tl_has_existed_within.filtered.event_predicate.col_name.clone());
+            let max_duration = tl_has_existed_within.time;
+            let server: Server = tl_has_existed_within.filtered.server.clone().into();
 
-            let filter = match filtered_timeline.filtered.filter {
-                TimelineSpecificComparator::Equal => EventPredicate::Equals(event_column, event_value),
-                TimelineSpecificComparator::GreaterThan => EventPredicate::GreaterThan(event_column, event_value),
-                TimelineSpecificComparator::LessThan => EventPredicate::LessThan(event_column, event_value),
+            let filter = match tl_has_existed_within.filtered.event_predicate.op {
+                EventPredicateOp::Equal => EventPredicate::Equals(event_column, event_value),
+                EventPredicateOp::GreaterThan => EventPredicate::GreaterThan(event_column, event_value),
+                EventPredicateOp::LessThan => EventPredicate::LessThan(event_column, event_value),
             };
 
             TimeLineOp::TlHasExistedWithin(server, Box::new(time_line), filter, max_duration)
         }
-        TimelineNode::TlDurationWhere(filtered_timeline) => {
-            let time_line = build_tree(&nodes[filtered_timeline.node as usize], nodes);
-            let event_value: EventValue<GolemEventValue> =  filtered_timeline.event_predicate.value.clone().into();
-            let event_column = EventColumn(filtered_timeline.event_predicate.col_name.clone());
-            let server: Server = filtered_timeline.server.clone().into();
+        TimelineNode::TlDurationWhere(tl) => {
+            let time_line = build_tree(&nodes[tl.timeline.clone() as usize], nodes);
 
-            let filter = match filtered_timeline.filter {
-                TimelineSpecificComparator::Equal => EventPredicate::Equals(event_column, event_value),
-                TimelineSpecificComparator::GreaterThan => EventPredicate::GreaterThan(event_column, event_value),
-                TimelineSpecificComparator::LessThan => EventPredicate::LessThan(event_column, event_value),
-            };
-
-            TimeLineOp::TlDurationWhere(server, Box::new(time_line), filter)
+            TimeLineOp::TlDurationWhere(tl.server.clone().into(), Box::new(time_line))
         }
-        TimelineNode::TlDurationInCurState(filtered_timeline) => {
-            let time_line = build_tree(&nodes[filtered_timeline.node as usize], nodes);
-            let event_value: EventValue<GolemEventValue> =  filtered_timeline.event_predicate.value.clone().into();
-            let event_column = EventColumn(filtered_timeline.event_predicate.col_name.clone());
-            let server: Server = filtered_timeline.server.clone().into();
-
-            let filter = match filtered_timeline.filter {
-                TimelineSpecificComparator::Equal => EventPredicate::Equals(event_column, event_value),
-                TimelineSpecificComparator::GreaterThan => EventPredicate::GreaterThan(event_column, event_value),
-                TimelineSpecificComparator::LessThan => EventPredicate::LessThan(event_column, event_value),
-            };
-
-            TimeLineOp::TlDurationInCurState(server, Box::new(time_line), filter)
+        TimelineNode::TlDurationInCurState(tl) => {
+            let time_line = build_tree(&nodes[tl.timeline as usize], nodes);
+            TimeLineOp::TlDurationInCurState(tl.server.clone().into(), Box::new(time_line))
         }
         TimelineNode::Leaf(server) => TimeLineOp::Leaf(Server{
             worker_id: server.worker_id.clone(),

@@ -56,8 +56,8 @@ impl Guest for Component {
            TimeLineOp::TlHasExisted(_, _, _) => {}
            TimeLineOp::TlHasExistedWithin(_, _, _, _) => {}
            TimeLineOp::TlLatestEventToState(_, _, _) => {}
-           TimeLineOp::TlDurationWhere(_, _, _) => {}
-           TimeLineOp::TlDurationInCurState(_, _, _) => {}
+           TimeLineOp::TlDurationWhere(_, _) => {}
+           TimeLineOp::TlDurationInCurState(_, _) => {}
        };
 
         dbg!("Excuted timeline remotely");
