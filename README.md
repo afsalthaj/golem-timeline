@@ -215,7 +215,14 @@ TL_HasExistedWithin(TL_DurationInCurState(TL_LatestEventToState(col("lat_long"))
 
 ### Quick Start to spin up Golem Timeline with Golem OSS
 
-This
+Mostly all you need is:
+
+```bash
+cargo make build-flow
+```
+
+If above command is giving errors due to generated code, then most probably, do the required edits, to be followed by
+
 ```bash
 cargo component build
 
@@ -223,6 +230,13 @@ cargo component build
 golem-cli stubgen compose --source-wasm target/wasm32-wasi/debug/driver.wasm --stub-wasm target/wasm32-wasi/debug/core_stub.wasm --dest-wasm target/wasm32-wasi/debug/driver_composed.wasm
 ## Composing core wasm with raw-events-stub (leaf-stub)
 golem-cli stubgen compose --source-wasm target/wasm32-wasi/debug/core.wasm --stub-wasm target/wasm32-wasi/debug/raw_events_stub.wasm --dest-wasm target/wasm32-wasi/debug/core_composed_leaf.wasm
+```
+
+Essentially the above steps will build all that you need to later upload to Golem OSS, as given below
+
+```bash
+
+
 
 ## Spin up golem
 curl -O https://raw.githubusercontent.com/golemcloud/golem/main/docker-examples/docker-compose-sqlite.yaml -O  https://raw.githubusercontent.com/golemcloud/golem/main/docker-examples/.env
