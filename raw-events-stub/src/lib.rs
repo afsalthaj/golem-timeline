@@ -19,7 +19,7 @@ for Api {
     fn initialize(
         &self,
         worker: crate::bindings::timeline::raw_events::api::WorkerId,
-    ) -> () {
+    ) -> Result<String, String> {
         let result = self
             .rpc
             .invoke_and_await(
@@ -31,7 +31,33 @@ for Api {
                     "Failed to invoke remote {}", "timeline:raw-events/api/initialize"
                 ),
             );
-        ()
+        ({
+            let result = result
+                .tuple_element(0)
+                .expect("tuple not found")
+                .result()
+                .expect("result not found");
+            match result {
+                Ok(ok_value) => {
+                    Ok(
+                        ok_value
+                            .expect("result ok value not found")
+                            .string()
+                            .expect("string not found")
+                            .to_string(),
+                    )
+                }
+                Err(err_value) => {
+                    Err(
+                        err_value
+                            .expect("result err value not found")
+                            .string()
+                            .expect("string not found")
+                            .to_string(),
+                    )
+                }
+            }
+        })
     }
     fn add_event(&self, order: crate::bindings::timeline::raw_events::api::Event) -> () {
         let result = self

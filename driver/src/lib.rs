@@ -9,7 +9,7 @@ mod bindings;
 struct Component;
 
 impl Guest for Component {
-    fn run(core_template_id: String, leaf_template_id: String, event_to_state_tempalte_id: String) {
+    fn run(core_template_id: String, leaf_template_id: String, event_to_state_tempalte_id: String) -> Result<String, String> {
 
         let uri = Uri {
             value: format!("worker://{core_template_id}/{}", "initialize-timeline"),
@@ -24,10 +24,16 @@ impl Guest for Component {
             })],
         };
 
-        core.initialize_timeline(&timeline_op);
+        match core.initialize_timeline(&timeline_op) {
+            Ok(result) => {
+                dbg!("Driver Log: Timeline initialized");
+                Ok(result)
+            },
+            Err(error) => {
+                dbg!("Driver Log: Error initializing timeline");
+                Err(error)
+            },
+        }
 
-        dbg!("Timeline initialized");
     }
-
-
 }

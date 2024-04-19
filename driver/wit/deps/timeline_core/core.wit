@@ -16,10 +16,10 @@ interface api {
     tl-has-existed(timeline-with-event-predicate),
     tl-has-existed-within(timeline-with-event-predicate-within),
     tl-duration-where(timeline-with-server),
-     tl-duration-in-cur-state(timeline-with-server),
+    tl-duration-in-cur-state(timeline-with-server),
   }
 
-  record timeline-with-server {
+ record timeline-with-server {
     server: server,
     timeline: node-index
   }
@@ -33,6 +33,7 @@ interface api {
     name: string
   }
 
+  // Comparators used to compare a timeline with a constant
   enum timeline-constant-comparator {
     greater-than,
     greater-than-equal,
@@ -62,7 +63,7 @@ interface api {
   // and == is filter-op
   // A filtered timeline is also maintained in a separate worker/server
   record timeline-with-event-predicate {
-   timeline: node-index,
+    timeline: node-index,
     event-predicate: event-predicate,
     server: server
   }
@@ -85,10 +86,11 @@ interface api {
     op: event-predicate-op
   }
 
-  initialize-timeline: func(timeline: timeline-op) -> ();
+  initialize-timeline: func(timeline: timeline-op) -> result<string, string>;
 }
 
 world core {
+  import timeline:raw-events-stub/stub-raw-events;
   export api;
 }
 

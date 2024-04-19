@@ -20,7 +20,7 @@ interface stub-core {
 
   resource api {
     constructor(location: uri);
-    initialize-timeline: func(timeline: timeline-op);
+    initialize-timeline: func(timeline: timeline-op) -> result<string, string>;
   }
 
 }

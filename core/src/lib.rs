@@ -24,10 +24,10 @@ use crate::bindings::golem::rpc::types::Uri;
 struct Component;
 
 impl Guest for Component {
-    fn initialize_timeline(timeline: TimelineOp) {
+    fn initialize_timeline(timeline: TimelineOp) -> Result<String, String> {
        let timeline: CoreTimeLineOp = timeline.into();
 
-       let _ = match timeline {
+        match timeline {
            TimeLineOp::Leaf(server) => {
                let template_id = server.template_id;
                let worker_id = server.worker_id;
@@ -40,27 +40,23 @@ impl Guest for Component {
 
                core.initialize(&stub_raw_events::WorkerId{
                      name: worker_id,
-                });
-
-               dbg!("Initialised raw_events");
+                })
            },
 
-           TimeLineOp::EqualTo(_, _, _) => {}
-           TimeLineOp::GreaterThan(_, _, _) => {}
-           TimeLineOp::GreaterThanOrEqual(_, _, _) => {}
-           TimeLineOp::LessThan(_, _, _) => {}
-           TimeLineOp::LessThanOrEqual(_, _, _) => {}
-           TimeLineOp::And(_, _, _) => {}
-           TimeLineOp::Or(_, _, _) => {}
-           TimeLineOp::Not(_, _) => {}
-           TimeLineOp::TlHasExisted(_, _, _) => {}
-           TimeLineOp::TlHasExistedWithin(_, _, _, _) => {}
-           TimeLineOp::TlLatestEventToState(_, _, _) => {}
-           TimeLineOp::TlDurationWhere(_, _) => {}
-           TimeLineOp::TlDurationInCurState(_, _) => {}
-       };
-
-        dbg!("Excuted timeline remotely");
+           TimeLineOp::EqualTo(_, _, _) => Err("Not implemented".to_string()),
+           TimeLineOp::GreaterThan(_, _, _) => Err("Not implemented".to_string()),
+           TimeLineOp::GreaterThanOrEqual(_, _, _) => Err("Not implemented".to_string()),
+           TimeLineOp::LessThan(_, _, _) => Err("Not implemented".to_string()),
+           TimeLineOp::LessThanOrEqual(_, _, _) => Err("Not implemented".to_string()),
+           TimeLineOp::And(_, _, _) => Err("Not implemented".to_string()),
+           TimeLineOp::Or(_, _, _) => Err("Not implemented".to_string()),
+           TimeLineOp::Not(_, _) => Err("Not implemented".to_string()),
+           TimeLineOp::TlHasExisted(_, _, _) => Err("Not implemented".to_string()),
+           TimeLineOp::TlHasExistedWithin(_, _, _, _) => Err("Not implemented".to_string()),
+           TimeLineOp::TlLatestEventToState(_, _, _) => Err("Not implemented".to_string()),
+           TimeLineOp::TlDurationWhere(_, _) => Err("Not implemented".to_string()),
+           TimeLineOp::TlDurationInCurState(_, _) => Err("Not implemented".to_string()),
+       }
     }
 }
 

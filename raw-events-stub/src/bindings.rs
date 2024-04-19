@@ -846,669 +846,1068 @@ pub mod golem {
                     }
                   }
                 }
-                
-              }
-              
-            }
-          }
-          pub mod timeline {
-            pub mod raw_events {
-              
-              #[allow(clippy::all)]
-              pub mod api {
-                #[used]
-                #[doc(hidden)]
-                #[cfg(target_arch = "wasm32")]
-                static __FORCE_SECTION_REF: fn() = super::super::super::__link_section;
-                #[derive(Clone)]
-                pub enum EventValue{
-                  StringValue(wit_bindgen::rt::string::String),
-                  IntValue(i64),
-                  FloatValue(f64),
-                  BoolValue(bool),
-                }
-                impl ::core::fmt::Debug for EventValue {
-                  fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-                    match self {
-                      EventValue::StringValue(e) => {
-                        f.debug_tuple("EventValue::StringValue").field(e).finish()
-                      }
-                      EventValue::IntValue(e) => {
-                        f.debug_tuple("EventValue::IntValue").field(e).finish()
-                      }
-                      EventValue::FloatValue(e) => {
-                        f.debug_tuple("EventValue::FloatValue").field(e).finish()
-                      }
-                      EventValue::BoolValue(e) => {
-                        f.debug_tuple("EventValue::BoolValue").field(e).finish()
-                      }
-                    }
-                  }
-                }
-                #[derive(Clone)]
-                pub struct Event {
-                  pub time: u64,
-                  pub event: EventValue,
-                }
-                impl ::core::fmt::Debug for Event {
-                  fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-                    f.debug_struct("Event").field("time", &self.time).field("event", &self.event).finish()
-                  }
-                }
-                #[derive(Clone)]
-                pub struct WorkerId {
-                  pub name: wit_bindgen::rt::string::String,
-                }
-                impl ::core::fmt::Debug for WorkerId {
-                  fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-                    f.debug_struct("WorkerId").field("name", &self.name).finish()
-                  }
-                }
-                #[allow(unused_unsafe, clippy::all)]
-                pub fn initialize(worker: &WorkerId,){
-                  
-                  #[allow(unused_imports)]
-                  use wit_bindgen::rt::{alloc, vec::Vec, string::String};
-                  unsafe {
-                    let WorkerId{ name:name0, } = worker;
-                    let vec1 = name0;
-                    let ptr1 = vec1.as_ptr() as i32;
-                    let len1 = vec1.len() as i32;
+                impl WasmRpc {
+                  #[allow(unused_unsafe, clippy::all)]
+                  pub fn invoke(&self,function_name: &str,function_params: &[WitValue],) -> Result<(),RpcError>{
                     
-                    #[cfg(target_arch = "wasm32")]
-                    #[link(wasm_import_module = "timeline:raw-events/api")]
-                    extern "C" {
-                      #[link_name = "initialize"]
-                      fn wit_import(_: i32, _: i32, );
-                    }
-                    
-                    #[cfg(not(target_arch = "wasm32"))]
-                    fn wit_import(_: i32, _: i32, ){ unreachable!() }
-                    wit_import(ptr1, len1);
-                  }
-                }
-                #[allow(unused_unsafe, clippy::all)]
-                pub fn add_event(order: &Event,){
-                  
-                  #[allow(unused_imports)]
-                  use wit_bindgen::rt::{alloc, vec::Vec, string::String};
-                  unsafe {
-                    let Event{ time:time0, event:event0, } = order;
-                    let (result2_0,result2_1,result2_2,) = match event0 {
-                      EventValue::StringValue(e) => {
-                        let vec1 = e;
-                        let ptr1 = vec1.as_ptr() as i32;
-                        let len1 = vec1.len() as i32;
-                        
-                        (0i32, i64::from(ptr1), len1)
-                      },
-                      EventValue::IntValue(e) => (1i32, wit_bindgen::rt::as_i64(e), 0i32),
-                      EventValue::FloatValue(e) => (2i32, (wit_bindgen::rt::as_f64(e)).to_bits() as i64, 0i32),
-                      EventValue::BoolValue(e) => (3i32, i64::from(match e { true => 1, false => 0 }), 0i32),
-                    };
-                    
-                    #[cfg(target_arch = "wasm32")]
-                    #[link(wasm_import_module = "timeline:raw-events/api")]
-                    extern "C" {
-                      #[link_name = "add-event"]
-                      fn wit_import(_: i64, _: i32, _: i64, _: i32, );
-                    }
-                    
-                    #[cfg(not(target_arch = "wasm32"))]
-                    fn wit_import(_: i64, _: i32, _: i64, _: i32, ){ unreachable!() }
-                    wit_import(wit_bindgen::rt::as_i64(time0), result2_0, result2_1, result2_2);
-                  }
-                }
-                #[allow(unused_unsafe, clippy::all)]
-                pub fn get_event(time: u64,) -> Event{
-                  
-                  #[allow(unused_imports)]
-                  use wit_bindgen::rt::{alloc, vec::Vec, string::String};
-                  unsafe {
-                    
-                    #[repr(align(8))]
-                    struct RetArea([u8; 24]);
-                    let mut ret_area = ::core::mem::MaybeUninit::<RetArea>::uninit();
-                    let ptr0 = ret_area.as_mut_ptr() as i32;
-                    #[cfg(target_arch = "wasm32")]
-                    #[link(wasm_import_module = "timeline:raw-events/api")]
-                    extern "C" {
-                      #[link_name = "get-event"]
-                      fn wit_import(_: i64, _: i32, );
-                    }
-                    
-                    #[cfg(not(target_arch = "wasm32"))]
-                    fn wit_import(_: i64, _: i32, ){ unreachable!() }
-                    wit_import(wit_bindgen::rt::as_i64(time), ptr0);
-                    let l1 = *((ptr0 + 0) as *const i64);
-                    let l2 = i32::from(*((ptr0 + 8) as *const u8));
-                    let v9 = match l2 {
-                      0 => {
-                        let e9 = {
-                          let l3 = *((ptr0 + 16) as *const i32);
-                          let l4 = *((ptr0 + 20) as *const i32);
-                          let len5 = l4 as usize;
-                          let bytes5 = Vec::from_raw_parts(l3 as *mut _, len5, len5);
-                          
-                          wit_bindgen::rt::string_lift(bytes5)
-                        };
-                        EventValue::StringValue(e9)
-                      }
-                      1 => {
-                        let e9 = {
-                          let l6 = *((ptr0 + 16) as *const i64);
-                          
-                          l6
-                        };
-                        EventValue::IntValue(e9)
-                      }
-                      2 => {
-                        let e9 = {
-                          let l7 = *((ptr0 + 16) as *const f64);
-                          
-                          l7
-                        };
-                        EventValue::FloatValue(e9)
-                      }
-                      n => {
-                        debug_assert_eq!(n, 3, "invalid enum discriminant");
-                        let e9 = {
-                          let l8 = i32::from(*((ptr0 + 16) as *const u8));
-                          
-                          wit_bindgen::rt::bool_lift(l8 as u8)
-                        };
-                        EventValue::BoolValue(e9)
-                      }
-                    };
-                    Event{
-                      time: l1 as u64,
-                      event: v9,
-                    }
-                  }
-                }
-                #[allow(unused_unsafe, clippy::all)]
-                pub fn get_events() -> wit_bindgen::rt::vec::Vec::<Event>{
-                  
-                  #[allow(unused_imports)]
-                  use wit_bindgen::rt::{alloc, vec::Vec, string::String};
-                  unsafe {
-                    
-                    #[repr(align(4))]
-                    struct RetArea([u8; 8]);
-                    let mut ret_area = ::core::mem::MaybeUninit::<RetArea>::uninit();
-                    let ptr0 = ret_area.as_mut_ptr() as i32;
-                    #[cfg(target_arch = "wasm32")]
-                    #[link(wasm_import_module = "timeline:raw-events/api")]
-                    extern "C" {
-                      #[link_name = "get-events"]
-                      fn wit_import(_: i32, );
-                    }
-                    
-                    #[cfg(not(target_arch = "wasm32"))]
-                    fn wit_import(_: i32, ){ unreachable!() }
-                    wit_import(ptr0);
-                    let l1 = *((ptr0 + 0) as *const i32);
-                    let l2 = *((ptr0 + 4) as *const i32);
-                    let base12 = l1;
-                    let len12 = l2;
-                    let mut result12 = Vec::with_capacity(len12 as usize);
-                    for i in 0..len12 {
-                      let base = base12 + i * 24;
-                      let e12 = {
-                        let l3 = *((base + 0) as *const i64);
-                        let l4 = i32::from(*((base + 8) as *const u8));
-                        let v11 = match l4 {
-                          0 => {
-                            let e11 = {
-                              let l5 = *((base + 16) as *const i32);
-                              let l6 = *((base + 20) as *const i32);
-                              let len7 = l6 as usize;
-                              let bytes7 = Vec::from_raw_parts(l5 as *mut _, len7, len7);
-                              
-                              wit_bindgen::rt::string_lift(bytes7)
-                            };
-                            EventValue::StringValue(e11)
-                          }
-                          1 => {
-                            let e11 = {
-                              let l8 = *((base + 16) as *const i64);
-                              
-                              l8
-                            };
-                            EventValue::IntValue(e11)
-                          }
-                          2 => {
-                            let e11 = {
-                              let l9 = *((base + 16) as *const f64);
-                              
-                              l9
-                            };
-                            EventValue::FloatValue(e11)
-                          }
-                          n => {
-                            debug_assert_eq!(n, 3, "invalid enum discriminant");
-                            let e11 = {
-                              let l10 = i32::from(*((base + 16) as *const u8));
-                              
-                              wit_bindgen::rt::bool_lift(l10 as u8)
-                            };
-                            EventValue::BoolValue(e11)
-                          }
-                        };
-                        
-                        Event{
-                          time: l3 as u64,
-                          event: v11,
-                        }
-                      };
-                      result12.push(e12);
-                    }
-                    wit_bindgen::rt::dealloc(base12, (len12 as usize) * 24, 8);
-                    result12
-                  }
-                }
-                
-              }
-              
-            }
-          }
-          pub mod exports {
-            pub mod timeline {
-              pub mod raw_events_stub {
-                
-                #[allow(clippy::all)]
-                pub mod stub_raw_events {
-                  #[used]
-                  #[doc(hidden)]
-                  #[cfg(target_arch = "wasm32")]
-                  static __FORCE_SECTION_REF: fn() = super::super::super::super::__link_section;
-                  pub type Uri = super::super::super::super::golem::rpc::types::Uri;
-                  pub type Event = super::super::super::super::timeline::raw_events::api::Event;
-                  pub type WorkerId = super::super::super::super::timeline::raw_events::api::WorkerId;
-                  
-                  pub use super::super::super::super::super::Api as Api;
-                  const _: () = {
-                    #[doc(hidden)]
-                    #[export_name = "timeline:raw-events-stub/stub-raw-events#[dtor]api"]
-                    #[allow(non_snake_case)]
-                    unsafe extern "C" fn dtor(rep: usize) {
-                      wit_bindgen::rt::Resource::<Api>::dtor(rep)
-                    }
-                  };
-                  unsafe impl wit_bindgen::rt::RustResource for Api{
-                    unsafe fn new(_rep: usize) -> u32 {
-                      #[cfg(not(target_arch = "wasm32"))]
-                      unreachable!();
+                    #[allow(unused_imports)]
+                    use wit_bindgen::rt::{alloc, vec::Vec, string::String};
+                    unsafe {
+                      let mut cleanup_list = Vec::new();
                       
-                      #[cfg(target_arch = "wasm32")]
+                      #[repr(align(4))]
+                      struct RetArea([u8; 16]);
+                      let mut ret_area = ::core::mem::MaybeUninit::<RetArea>::uninit();
+                      let vec0 = function_name;
+                      let ptr0 = vec0.as_ptr() as i32;
+                      let len0 = vec0.len() as i32;
+                      let vec12 = function_params;
+                      let len12 = vec12.len() as i32;
+                      let layout12 = alloc::Layout::from_size_align_unchecked(vec12.len() * 8, 4);
+                      let result12 = if layout12.size() != 0
                       {
-                        #[link(wasm_import_module = "[export]timeline:raw-events-stub/stub-raw-events")]
-                        extern "C" {
-                          #[link_name = "[resource-new]api"]
-                          fn new(_: usize) -> u32;
-                        }
-                        new(_rep)
-                      }
-                    }
-                    
-                    unsafe fn rep(_handle: u32) -> usize {
-                      #[cfg(not(target_arch = "wasm32"))]
-                      unreachable!();
-                      
-                      #[cfg(target_arch = "wasm32")]
-                      {
-                        #[link(wasm_import_module = "[export]timeline:raw-events-stub/stub-raw-events")]
-                        extern "C" {
-                          #[link_name = "[resource-rep]api"]
-                          fn rep(_: u32) -> usize;
-                        }
-                        rep(_handle)
-                      }
-                    }
-                  }
-                  pub type OwnApi = wit_bindgen::rt::Resource<Api>;
-                  
-                  
-                  unsafe impl wit_bindgen::rt::WasmResource for Api{
-                    #[inline]
-                    unsafe fn drop(_handle: u32) {
-                      #[cfg(not(target_arch = "wasm32"))]
-                      unreachable!();
-                      
-                      #[cfg(target_arch = "wasm32")]
-                      {
-                        #[link(wasm_import_module = "[export]timeline:raw-events-stub/stub-raw-events")]
-                        extern "C" {
-                          #[link_name = "[resource-drop]api"]
-                          fn drop(_: u32);
-                        }
-                        
-                        drop(_handle);
-                      }
-                    }
-                  }
-                  
-                  const _: () = {
-                    
-                    #[doc(hidden)]
-                    #[export_name = "timeline:raw-events-stub/stub-raw-events#[constructor]api"]
-                    #[allow(non_snake_case)]
-                    unsafe extern "C" fn __export_constructor_api(arg0: i32,arg1: i32,) -> i32 {
-                      #[allow(unused_imports)]
-                      use wit_bindgen::rt::{alloc, vec::Vec, string::String};
-                      
-                      // Before executing any other code, use this function to run all static
-                      // constructors, if they have not yet been run. This is a hack required
-                      // to work around wasi-libc ctors calling import functions to initialize
-                      // the environment.
-                      //
-                      // This functionality will be removed once rust 1.69.0 is stable, at which
-                      // point wasi-libc will no longer have this behavior.
-                      //
-                      // See
-                      // https://github.com/bytecodealliance/preview2-prototyping/issues/99
-                      // for more details.
-                      #[cfg(target_arch="wasm32")]
-                      wit_bindgen::rt::run_ctors_once();
-                      
-                      let len0 = arg1 as usize;
-                      let bytes0 = Vec::from_raw_parts(arg0 as *mut _, len0, len0);
-                      let result1 = OwnApi::new(<_ApiImpl as GuestApi>::new(super::super::super::super::golem::rpc::types::Uri{
-                        value: wit_bindgen::rt::string_lift(bytes0),
-                      }));
-                      wit_bindgen::rt::Resource::into_handle(result1) as i32
-                    }
-                  };
-                  const _: () = {
-                    
-                    #[doc(hidden)]
-                    #[export_name = "timeline:raw-events-stub/stub-raw-events#[method]api.initialize"]
-                    #[allow(non_snake_case)]
-                    unsafe extern "C" fn __export_method_api_initialize(arg0: i32,arg1: i32,arg2: i32,) {
-                      #[allow(unused_imports)]
-                      use wit_bindgen::rt::{alloc, vec::Vec, string::String};
-                      
-                      // Before executing any other code, use this function to run all static
-                      // constructors, if they have not yet been run. This is a hack required
-                      // to work around wasi-libc ctors calling import functions to initialize
-                      // the environment.
-                      //
-                      // This functionality will be removed once rust 1.69.0 is stable, at which
-                      // point wasi-libc will no longer have this behavior.
-                      //
-                      // See
-                      // https://github.com/bytecodealliance/preview2-prototyping/issues/99
-                      // for more details.
-                      #[cfg(target_arch="wasm32")]
-                      wit_bindgen::rt::run_ctors_once();
-                      
-                      let len0 = arg2 as usize;
-                      let bytes0 = Vec::from_raw_parts(arg1 as *mut _, len0, len0);
-                      <_ApiImpl as GuestApi>::initialize(wit_bindgen::rt::Resource::<Api>::lift_borrow(arg0 as u32 as usize), super::super::super::super::timeline::raw_events::api::WorkerId{
-                        name: wit_bindgen::rt::string_lift(bytes0),
-                      });
-                    }
-                  };
-                  const _: () = {
-                    
-                    #[doc(hidden)]
-                    #[export_name = "timeline:raw-events-stub/stub-raw-events#[method]api.add-event"]
-                    #[allow(non_snake_case)]
-                    unsafe extern "C" fn __export_method_api_add_event(arg0: i32,arg1: i64,arg2: i32,arg3: i64,arg4: i32,) {
-                      #[allow(unused_imports)]
-                      use wit_bindgen::rt::{alloc, vec::Vec, string::String};
-                      
-                      // Before executing any other code, use this function to run all static
-                      // constructors, if they have not yet been run. This is a hack required
-                      // to work around wasi-libc ctors calling import functions to initialize
-                      // the environment.
-                      //
-                      // This functionality will be removed once rust 1.69.0 is stable, at which
-                      // point wasi-libc will no longer have this behavior.
-                      //
-                      // See
-                      // https://github.com/bytecodealliance/preview2-prototyping/issues/99
-                      // for more details.
-                      #[cfg(target_arch="wasm32")]
-                      wit_bindgen::rt::run_ctors_once();
-                      
-                      use super::super::super::super::timeline::raw_events::api::EventValue as V1;
-                      let v1 = match arg2 {
-                        0 => {
-                          let e1 = {
-                            let len0 = arg4 as usize;
-                            let bytes0 = Vec::from_raw_parts(arg3 as i32 as *mut _, len0, len0);
-                            
-                            wit_bindgen::rt::string_lift(bytes0)
-                          };
-                          V1::StringValue(e1)
-                        }
-                        1 => {
-                          let e1 = arg3;
-                          V1::IntValue(e1)
-                        }
-                        2 => {
-                          let e1 = f64::from_bits(arg3 as u64);
-                          V1::FloatValue(e1)
-                        }
-                        n => {
-                          debug_assert_eq!(n, 3, "invalid enum discriminant");
-                          let e1 = wit_bindgen::rt::bool_lift(arg3 as i32 as u8);
-                          V1::BoolValue(e1)
-                        }
-                      };
-                      <_ApiImpl as GuestApi>::add_event(wit_bindgen::rt::Resource::<Api>::lift_borrow(arg0 as u32 as usize), super::super::super::super::timeline::raw_events::api::Event{
-                        time: arg1 as u64,
-                        event: v1,
-                      });
-                    }
-                  };
-                  const _: () = {
-                    
-                    #[doc(hidden)]
-                    #[export_name = "timeline:raw-events-stub/stub-raw-events#[method]api.get-event"]
-                    #[allow(non_snake_case)]
-                    unsafe extern "C" fn __export_method_api_get_event(arg0: i32,arg1: i64,) -> i32 {
-                      #[allow(unused_imports)]
-                      use wit_bindgen::rt::{alloc, vec::Vec, string::String};
-                      
-                      // Before executing any other code, use this function to run all static
-                      // constructors, if they have not yet been run. This is a hack required
-                      // to work around wasi-libc ctors calling import functions to initialize
-                      // the environment.
-                      //
-                      // This functionality will be removed once rust 1.69.0 is stable, at which
-                      // point wasi-libc will no longer have this behavior.
-                      //
-                      // See
-                      // https://github.com/bytecodealliance/preview2-prototyping/issues/99
-                      // for more details.
-                      #[cfg(target_arch="wasm32")]
-                      wit_bindgen::rt::run_ctors_once();
-                      
-                      let result0 = <_ApiImpl as GuestApi>::get_event(wit_bindgen::rt::Resource::<Api>::lift_borrow(arg0 as u32 as usize), arg1 as u64);
-                      let ptr1 = _RET_AREA.0.as_mut_ptr() as i32;
-                      let super::super::super::super::timeline::raw_events::api::Event{ time:time2, event:event2, } = result0;
-                      *((ptr1 + 0) as *mut i64) = wit_bindgen::rt::as_i64(time2);
-                      use super::super::super::super::timeline::raw_events::api::EventValue as V4;
-                      match event2 {
-                        V4::StringValue(e) => {
-                          *((ptr1 + 8) as *mut u8) = (0i32) as u8;
-                          let vec3 = (e.into_bytes()).into_boxed_slice();
-                          let ptr3 = vec3.as_ptr() as i32;
-                          let len3 = vec3.len() as i32;
-                          ::core::mem::forget(vec3);
-                          *((ptr1 + 20) as *mut i32) = len3;
-                          *((ptr1 + 16) as *mut i32) = ptr3;
-                        },
-                        V4::IntValue(e) => {
-                          *((ptr1 + 8) as *mut u8) = (1i32) as u8;
-                          *((ptr1 + 16) as *mut i64) = wit_bindgen::rt::as_i64(e);
-                        },
-                        V4::FloatValue(e) => {
-                          *((ptr1 + 8) as *mut u8) = (2i32) as u8;
-                          *((ptr1 + 16) as *mut f64) = wit_bindgen::rt::as_f64(e);
-                        },
-                        V4::BoolValue(e) => {
-                          *((ptr1 + 8) as *mut u8) = (3i32) as u8;
-                          *((ptr1 + 16) as *mut u8) = (match e { true => 1, false => 0 }) as u8;
-                        },
-                      }
-                      ptr1
-                    }
-                    
-                    const _: () = {
-                      #[doc(hidden)]
-                      #[export_name = "cabi_post_timeline:raw-events-stub/stub-raw-events#[method]api.get-event"]
-                      #[allow(non_snake_case)]
-                      unsafe extern "C" fn __post_return_method_api_get_event(arg0: i32,) {
-                        let l0 = i32::from(*((arg0 + 8) as *const u8));
-                        match l0 {
-                          0 => {
-                            let l1 = *((arg0 + 16) as *const i32);
-                            let l2 = *((arg0 + 20) as *const i32);
-                            wit_bindgen::rt::dealloc(l1, (l2) as usize, 1);
-                          },
-                          1 => (),
-                          2 => (),
-                          _ => (),
-                        }
-                      }
-                    };
-                  };
-                  const _: () = {
-                    
-                    #[doc(hidden)]
-                    #[export_name = "timeline:raw-events-stub/stub-raw-events#[method]api.get-events"]
-                    #[allow(non_snake_case)]
-                    unsafe extern "C" fn __export_method_api_get_events(arg0: i32,) -> i32 {
-                      #[allow(unused_imports)]
-                      use wit_bindgen::rt::{alloc, vec::Vec, string::String};
-                      
-                      // Before executing any other code, use this function to run all static
-                      // constructors, if they have not yet been run. This is a hack required
-                      // to work around wasi-libc ctors calling import functions to initialize
-                      // the environment.
-                      //
-                      // This functionality will be removed once rust 1.69.0 is stable, at which
-                      // point wasi-libc will no longer have this behavior.
-                      //
-                      // See
-                      // https://github.com/bytecodealliance/preview2-prototyping/issues/99
-                      // for more details.
-                      #[cfg(target_arch="wasm32")]
-                      wit_bindgen::rt::run_ctors_once();
-                      
-                      let result0 = <_ApiImpl as GuestApi>::get_events(wit_bindgen::rt::Resource::<Api>::lift_borrow(arg0 as u32 as usize));
-                      let ptr1 = _RET_AREA.0.as_mut_ptr() as i32;
-                      let vec5 = result0;
-                      let len5 = vec5.len() as i32;
-                      let layout5 = alloc::Layout::from_size_align_unchecked(vec5.len() * 24, 8);
-                      let result5 = if layout5.size() != 0
-                      {
-                        let ptr = alloc::alloc(layout5);
+                        let ptr = alloc::alloc(layout12);
                         if ptr.is_null()
                         {
-                          alloc::handle_alloc_error(layout5);
+                          alloc::handle_alloc_error(layout12);
                         }
                         ptr
                       }else {{
                         ::core::ptr::null_mut()
                       }};
-                      for (i, e) in vec5.into_iter().enumerate() {
-                        let base = result5 as i32 + (i as i32) * 24;
+                      for (i, e) in vec12.into_iter().enumerate() {
+                        let base = result12 as i32 + (i as i32) * 8;
                         {
-                          let super::super::super::super::timeline::raw_events::api::Event{ time:time2, event:event2, } = e;
-                          *((base + 0) as *mut i64) = wit_bindgen::rt::as_i64(time2);
-                          use super::super::super::super::timeline::raw_events::api::EventValue as V4;
-                          match event2 {
-                            V4::StringValue(e) => {
-                              *((base + 8) as *mut u8) = (0i32) as u8;
-                              let vec3 = (e.into_bytes()).into_boxed_slice();
-                              let ptr3 = vec3.as_ptr() as i32;
-                              let len3 = vec3.len() as i32;
-                              ::core::mem::forget(vec3);
-                              *((base + 20) as *mut i32) = len3;
-                              *((base + 16) as *mut i32) = ptr3;
-                            },
-                            V4::IntValue(e) => {
-                              *((base + 8) as *mut u8) = (1i32) as u8;
-                              *((base + 16) as *mut i64) = wit_bindgen::rt::as_i64(e);
-                            },
-                            V4::FloatValue(e) => {
-                              *((base + 8) as *mut u8) = (2i32) as u8;
-                              *((base + 16) as *mut f64) = wit_bindgen::rt::as_f64(e);
-                            },
-                            V4::BoolValue(e) => {
-                              *((base + 8) as *mut u8) = (3i32) as u8;
-                              *((base + 16) as *mut u8) = (match e { true => 1, false => 0 }) as u8;
-                            },
-                          }
-                        }
-                      }
-                      *((ptr1 + 4) as *mut i32) = len5;
-                      *((ptr1 + 0) as *mut i32) = result5 as i32;
-                      ptr1
-                    }
-                    
-                    const _: () = {
-                      #[doc(hidden)]
-                      #[export_name = "cabi_post_timeline:raw-events-stub/stub-raw-events#[method]api.get-events"]
-                      #[allow(non_snake_case)]
-                      unsafe extern "C" fn __post_return_method_api_get_events(arg0: i32,) {
-                        let l3 = *((arg0 + 0) as *const i32);
-                        let l4 = *((arg0 + 4) as *const i32);
-                        let base5 = l3;
-                        let len5 = l4;
-                        for i in 0..len5 {
-                          let base = base5 + i *24;
+                          let WitValue{ nodes:nodes1, } = e;
+                          let vec11 = nodes1;
+                          let len11 = vec11.len() as i32;
+                          let layout11 = alloc::Layout::from_size_align_unchecked(vec11.len() * 24, 8);
+                          let result11 = if layout11.size() != 0
                           {
-                            let l0 = i32::from(*((base + 8) as *const u8));
-                            match l0 {
-                              0 => {
-                                let l1 = *((base + 16) as *const i32);
-                                let l2 = *((base + 20) as *const i32);
-                                wit_bindgen::rt::dealloc(l1, (l2) as usize, 1);
-                              },
-                              1 => (),
-                              2 => (),
-                              _ => (),
+                            let ptr = alloc::alloc(layout11);
+                            if ptr.is_null()
+                            {
+                              alloc::handle_alloc_error(layout11);
+                            }
+                            ptr
+                          }else {{
+                            ::core::ptr::null_mut()
+                          }};
+                          for (i, e) in vec11.into_iter().enumerate() {
+                            let base = result11 as i32 + (i as i32) * 24;
+                            {
+                              match e {
+                                WitNode::RecordValue(e) => {
+                                  *((base + 0) as *mut u8) = (0i32) as u8;
+                                  let vec2 = e;
+                                  let ptr2 = vec2.as_ptr() as i32;
+                                  let len2 = vec2.len() as i32;
+                                  *((base + 12) as *mut i32) = len2;
+                                  *((base + 8) as *mut i32) = ptr2;
+                                },
+                                WitNode::VariantValue(e) => {
+                                  *((base + 0) as *mut u8) = (1i32) as u8;
+                                  let (t3_0, t3_1, ) = e;
+                                  *((base + 8) as *mut i32) = wit_bindgen::rt::as_i32(t3_0);
+                                  match t3_1 {
+                                    Some(e) => {
+                                      *((base + 12) as *mut u8) = (1i32) as u8;
+                                      *((base + 16) as *mut i32) = wit_bindgen::rt::as_i32(e);
+                                    },
+                                    None => {
+                                      {
+                                        *((base + 12) as *mut u8) = (0i32) as u8;
+                                      }
+                                    },
+                                  };},
+                                  WitNode::EnumValue(e) => {
+                                    *((base + 0) as *mut u8) = (2i32) as u8;
+                                    *((base + 8) as *mut i32) = wit_bindgen::rt::as_i32(e);
+                                  },
+                                  WitNode::FlagsValue(e) => {
+                                    *((base + 0) as *mut u8) = (3i32) as u8;
+                                    let vec4 = e;
+                                    let len4 = vec4.len() as i32;
+                                    let layout4 = alloc::Layout::from_size_align_unchecked(vec4.len() * 1, 1);
+                                    let result4 = if layout4.size() != 0
+                                    {
+                                      let ptr = alloc::alloc(layout4);
+                                      if ptr.is_null()
+                                      {
+                                        alloc::handle_alloc_error(layout4);
+                                      }
+                                      ptr
+                                    }else {{
+                                      ::core::ptr::null_mut()
+                                    }};
+                                    for (i, e) in vec4.into_iter().enumerate() {
+                                      let base = result4 as i32 + (i as i32) * 1;
+                                      {
+                                        *((base + 0) as *mut u8) = (match e { true => 1, false => 0 }) as u8;
+                                      }
+                                    }
+                                    *((base + 12) as *mut i32) = len4;
+                                    *((base + 8) as *mut i32) = result4 as i32;
+                                    cleanup_list.extend_from_slice(&[(result4, layout4),]);
+                                  },
+                                  WitNode::TupleValue(e) => {
+                                    *((base + 0) as *mut u8) = (4i32) as u8;
+                                    let vec5 = e;
+                                    let ptr5 = vec5.as_ptr() as i32;
+                                    let len5 = vec5.len() as i32;
+                                    *((base + 12) as *mut i32) = len5;
+                                    *((base + 8) as *mut i32) = ptr5;
+                                  },
+                                  WitNode::ListValue(e) => {
+                                    *((base + 0) as *mut u8) = (5i32) as u8;
+                                    let vec6 = e;
+                                    let ptr6 = vec6.as_ptr() as i32;
+                                    let len6 = vec6.len() as i32;
+                                    *((base + 12) as *mut i32) = len6;
+                                    *((base + 8) as *mut i32) = ptr6;
+                                  },
+                                  WitNode::OptionValue(e) => {
+                                    *((base + 0) as *mut u8) = (6i32) as u8;
+                                    match e {
+                                      Some(e) => {
+                                        *((base + 8) as *mut u8) = (1i32) as u8;
+                                        *((base + 12) as *mut i32) = wit_bindgen::rt::as_i32(e);
+                                      },
+                                      None => {
+                                        {
+                                          *((base + 8) as *mut u8) = (0i32) as u8;
+                                        }
+                                      },
+                                    };},
+                                    WitNode::ResultValue(e) => {
+                                      *((base + 0) as *mut u8) = (7i32) as u8;
+                                      match e {
+                                        Ok(e) => { {
+                                          *((base + 8) as *mut u8) = (0i32) as u8;
+                                          match e {
+                                            Some(e) => {
+                                              *((base + 12) as *mut u8) = (1i32) as u8;
+                                              *((base + 16) as *mut i32) = wit_bindgen::rt::as_i32(e);
+                                            },
+                                            None => {
+                                              {
+                                                *((base + 12) as *mut u8) = (0i32) as u8;
+                                              }
+                                            },
+                                          };} },
+                                          Err(e) => { {
+                                            *((base + 8) as *mut u8) = (1i32) as u8;
+                                            match e {
+                                              Some(e) => {
+                                                *((base + 12) as *mut u8) = (1i32) as u8;
+                                                *((base + 16) as *mut i32) = wit_bindgen::rt::as_i32(e);
+                                              },
+                                              None => {
+                                                {
+                                                  *((base + 12) as *mut u8) = (0i32) as u8;
+                                                }
+                                              },
+                                            };} },
+                                          };},
+                                          WitNode::PrimU8(e) => {
+                                            *((base + 0) as *mut u8) = (8i32) as u8;
+                                            *((base + 8) as *mut u8) = (wit_bindgen::rt::as_i32(e)) as u8;
+                                          },
+                                          WitNode::PrimU16(e) => {
+                                            *((base + 0) as *mut u8) = (9i32) as u8;
+                                            *((base + 8) as *mut u16) = (wit_bindgen::rt::as_i32(e)) as u16;
+                                          },
+                                          WitNode::PrimU32(e) => {
+                                            *((base + 0) as *mut u8) = (10i32) as u8;
+                                            *((base + 8) as *mut i32) = wit_bindgen::rt::as_i32(e);
+                                          },
+                                          WitNode::PrimU64(e) => {
+                                            *((base + 0) as *mut u8) = (11i32) as u8;
+                                            *((base + 8) as *mut i64) = wit_bindgen::rt::as_i64(e);
+                                          },
+                                          WitNode::PrimS8(e) => {
+                                            *((base + 0) as *mut u8) = (12i32) as u8;
+                                            *((base + 8) as *mut u8) = (wit_bindgen::rt::as_i32(e)) as u8;
+                                          },
+                                          WitNode::PrimS16(e) => {
+                                            *((base + 0) as *mut u8) = (13i32) as u8;
+                                            *((base + 8) as *mut u16) = (wit_bindgen::rt::as_i32(e)) as u16;
+                                          },
+                                          WitNode::PrimS32(e) => {
+                                            *((base + 0) as *mut u8) = (14i32) as u8;
+                                            *((base + 8) as *mut i32) = wit_bindgen::rt::as_i32(e);
+                                          },
+                                          WitNode::PrimS64(e) => {
+                                            *((base + 0) as *mut u8) = (15i32) as u8;
+                                            *((base + 8) as *mut i64) = wit_bindgen::rt::as_i64(e);
+                                          },
+                                          WitNode::PrimFloat32(e) => {
+                                            *((base + 0) as *mut u8) = (16i32) as u8;
+                                            *((base + 8) as *mut f32) = wit_bindgen::rt::as_f32(e);
+                                          },
+                                          WitNode::PrimFloat64(e) => {
+                                            *((base + 0) as *mut u8) = (17i32) as u8;
+                                            *((base + 8) as *mut f64) = wit_bindgen::rt::as_f64(e);
+                                          },
+                                          WitNode::PrimChar(e) => {
+                                            *((base + 0) as *mut u8) = (18i32) as u8;
+                                            *((base + 8) as *mut i32) = wit_bindgen::rt::as_i32(e);
+                                          },
+                                          WitNode::PrimBool(e) => {
+                                            *((base + 0) as *mut u8) = (19i32) as u8;
+                                            *((base + 8) as *mut u8) = (match e { true => 1, false => 0 }) as u8;
+                                          },
+                                          WitNode::PrimString(e) => {
+                                            *((base + 0) as *mut u8) = (20i32) as u8;
+                                            let vec7 = e;
+                                            let ptr7 = vec7.as_ptr() as i32;
+                                            let len7 = vec7.len() as i32;
+                                            *((base + 12) as *mut i32) = len7;
+                                            *((base + 8) as *mut i32) = ptr7;
+                                          },
+                                          WitNode::Handle(e) => {
+                                            *((base + 0) as *mut u8) = (21i32) as u8;
+                                            let (t8_0, t8_1, ) = e;
+                                            let Uri{ value:value9, } = t8_0;
+                                            let vec10 = value9;
+                                            let ptr10 = vec10.as_ptr() as i32;
+                                            let len10 = vec10.len() as i32;
+                                            *((base + 12) as *mut i32) = len10;
+                                            *((base + 8) as *mut i32) = ptr10;
+                                            *((base + 16) as *mut i64) = wit_bindgen::rt::as_i64(t8_1);
+                                          },
+                                        }
+                                      }
+                                    }
+                                    *((base + 4) as *mut i32) = len11;
+                                    *((base + 0) as *mut i32) = result11 as i32;
+                                    cleanup_list.extend_from_slice(&[(result11, layout11),]);
+                                  }
+                                }
+                                let ptr13 = ret_area.as_mut_ptr() as i32;
+                                #[cfg(target_arch = "wasm32")]
+                                #[link(wasm_import_module = "golem:rpc/types@0.1.0")]
+                                extern "C" {
+                                  #[link_name = "[method]wasm-rpc.invoke"]
+                                  fn wit_import(_: i32, _: i32, _: i32, _: i32, _: i32, _: i32, );
+                                }
+                                
+                                #[cfg(not(target_arch = "wasm32"))]
+                                fn wit_import(_: i32, _: i32, _: i32, _: i32, _: i32, _: i32, ){ unreachable!() }
+                                wit_import((self).handle() as i32, ptr0, len0, result12 as i32, len12, ptr13);
+                                let l14 = i32::from(*((ptr13 + 0) as *const u8));
+                                if layout12.size() != 0 {
+                                  alloc::dealloc(result12, layout12);
+                                }
+                                for (ptr, layout) in cleanup_list {
+                                  
+                                  if layout.size() != 0 {
+                                    
+                                    alloc::dealloc(ptr, layout);
+                                    
+                                  }
+                                  
+                                }
+                                match l14 {
+                                  0 => {
+                                    let e = ();
+                                    Ok(e)
+                                  }
+                                  1 => {
+                                    let e = {
+                                      let l15 = i32::from(*((ptr13 + 4) as *const u8));
+                                      let v28 = match l15 {
+                                        0 => {
+                                          let e28 = {
+                                            let l16 = *((ptr13 + 8) as *const i32);
+                                            let l17 = *((ptr13 + 12) as *const i32);
+                                            let len18 = l17 as usize;
+                                            let bytes18 = Vec::from_raw_parts(l16 as *mut _, len18, len18);
+                                            
+                                            wit_bindgen::rt::string_lift(bytes18)
+                                          };
+                                          RpcError::ProtocolError(e28)
+                                        }
+                                        1 => {
+                                          let e28 = {
+                                            let l19 = *((ptr13 + 8) as *const i32);
+                                            let l20 = *((ptr13 + 12) as *const i32);
+                                            let len21 = l20 as usize;
+                                            let bytes21 = Vec::from_raw_parts(l19 as *mut _, len21, len21);
+                                            
+                                            wit_bindgen::rt::string_lift(bytes21)
+                                          };
+                                          RpcError::Denied(e28)
+                                        }
+                                        2 => {
+                                          let e28 = {
+                                            let l22 = *((ptr13 + 8) as *const i32);
+                                            let l23 = *((ptr13 + 12) as *const i32);
+                                            let len24 = l23 as usize;
+                                            let bytes24 = Vec::from_raw_parts(l22 as *mut _, len24, len24);
+                                            
+                                            wit_bindgen::rt::string_lift(bytes24)
+                                          };
+                                          RpcError::NotFound(e28)
+                                        }
+                                        n => {
+                                          debug_assert_eq!(n, 3, "invalid enum discriminant");
+                                          let e28 = {
+                                            let l25 = *((ptr13 + 8) as *const i32);
+                                            let l26 = *((ptr13 + 12) as *const i32);
+                                            let len27 = l26 as usize;
+                                            let bytes27 = Vec::from_raw_parts(l25 as *mut _, len27, len27);
+                                            
+                                            wit_bindgen::rt::string_lift(bytes27)
+                                          };
+                                          RpcError::RemoteInternalError(e28)
+                                        }
+                                      };
+                                      
+                                      v28
+                                    };
+                                    Err(e)
+                                  }
+                                  _ => wit_bindgen::rt::invalid_enum_discriminant(),
+                                }
+                              }
                             }
                           }
+                          
                         }
-                        wit_bindgen::rt::dealloc(base5, (len5 as usize) * 24, 8);
+                        
                       }
-                    };
-                  };
-                  use super::super::super::super::super::Api as _ApiImpl;
-                  pub trait GuestApi {
-                    fn new(location: Uri,) -> Self;
-                    fn initialize(&self,worker: WorkerId,);
-                    fn add_event(&self,order: Event,);
-                    fn get_event(&self,time: u64,) -> Event;
-                    fn get_events(&self,) -> wit_bindgen::rt::vec::Vec::<Event>;
-                  }
-                  
-                  #[allow(unused_imports)]
-                  use wit_bindgen::rt::{alloc, vec::Vec, string::String};
-                  
-                  #[repr(align(8))]
-                  struct _RetArea([u8; 24]);
-                  static mut _RET_AREA: _RetArea = _RetArea([0; 24]);
-                  
-                }
-                
-              }
-            }
-          }
-          
-          #[cfg(target_arch = "wasm32")]
-          #[link_section = "component-type:wasm-rpc-stub-raw-events"]
-          #[doc(hidden)]
-          pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 2658] = [3, 0, 24, 119, 97, 115, 109, 45, 114, 112, 99, 45, 115, 116, 117, 98, 45, 114, 97, 119, 45, 101, 118, 101, 110, 116, 115, 0, 97, 115, 109, 13, 0, 1, 0, 7, 192, 8, 1, 65, 10, 1, 66, 18, 1, 122, 4, 0, 10, 110, 111, 100, 101, 45, 105, 110, 100, 101, 120, 3, 0, 0, 1, 114, 1, 5, 118, 97, 108, 117, 101, 115, 4, 0, 3, 117, 114, 105, 3, 0, 2, 1, 112, 1, 1, 107, 1, 1, 111, 2, 121, 5, 1, 112, 127, 1, 106, 1, 5, 1, 5, 1, 111, 2, 3, 119, 1, 113, 22, 12, 114, 101, 99, 111, 114, 100, 45, 118, 97, 108, 117, 101, 1, 4, 0, 13, 118, 97, 114, 105, 97, 110, 116, 45, 118, 97, 108, 117, 101, 1, 6, 0, 10, 101, 110, 117, 109, 45, 118, 97, 108, 117, 101, 1, 121, 0, 11, 102, 108, 97, 103, 115, 45, 118, 97, 108, 117, 101, 1, 7, 0, 11, 116, 117, 112, 108, 101, 45, 118, 97, 108, 117, 101, 1, 4, 0, 10, 108, 105, 115, 116, 45, 118, 97, 108, 117, 101, 1, 4, 0, 12, 111, 112, 116, 105, 111, 110, 45, 118, 97, 108, 117, 101, 1, 5, 0, 12, 114, 101, 115, 117, 108, 116, 45, 118, 97, 108, 117, 101, 1, 8, 0, 7, 112, 114, 105, 109, 45, 117, 56, 1, 125, 0, 8, 112, 114, 105, 109, 45, 117, 49, 54, 1, 123, 0, 8, 112, 114, 105, 109, 45, 117, 51, 50, 1, 121, 0, 8, 112, 114, 105, 109, 45, 117, 54, 52, 1, 119, 0, 7, 112, 114, 105, 109, 45, 115, 56, 1, 126, 0, 8, 112, 114, 105, 109, 45, 115, 49, 54, 1, 124, 0, 8, 112, 114, 105, 109, 45, 115, 51, 50, 1, 122, 0, 8, 112, 114, 105, 109, 45, 115, 54, 52, 1, 120, 0, 12, 112, 114, 105, 109, 45, 102, 108, 111, 97, 116, 51, 50, 1, 118, 0, 12, 112, 114, 105, 109, 45, 102, 108, 111, 97, 116, 54, 52, 1, 117, 0, 9, 112, 114, 105, 109, 45, 99, 104, 97, 114, 1, 116, 0, 9, 112, 114, 105, 109, 45, 98, 111, 111, 108, 1, 127, 0, 11, 112, 114, 105, 109, 45, 115, 116, 114, 105, 110, 103, 1, 115, 0, 6, 104, 97, 110, 100, 108, 101, 1, 9, 0, 4, 0, 8, 119, 105, 116, 45, 110, 111, 100, 101, 3, 0, 10, 1, 112, 11, 1, 114, 1, 5, 110, 111, 100, 101, 115, 12, 4, 0, 9, 119, 105, 116, 45, 118, 97, 108, 117, 101, 3, 0, 13, 1, 113, 4, 14, 112, 114, 111, 116, 111, 99, 111, 108, 45, 101, 114, 114, 111, 114, 1, 115, 0, 6, 100, 101, 110, 105, 101, 100, 1, 115, 0, 9, 110, 111, 116, 45, 102, 111, 117, 110, 100, 1, 115, 0, 21, 114, 101, 109, 111, 116, 101, 45, 105, 110, 116, 101, 114, 110, 97, 108, 45, 101, 114, 114, 111, 114, 1, 115, 0, 4, 0, 9, 114, 112, 99, 45, 101, 114, 114, 111, 114, 3, 0, 15, 4, 0, 8, 119, 97, 115, 109, 45, 114, 112, 99, 3, 1, 3, 1, 21, 103, 111, 108, 101, 109, 58, 114, 112, 99, 47, 116, 121, 112, 101, 115, 64, 48, 46, 49, 46, 48, 5, 0, 1, 66, 6, 1, 113, 4, 12, 115, 116, 114, 105, 110, 103, 45, 118, 97, 108, 117, 101, 1, 115, 0, 9, 105, 110, 116, 45, 118, 97, 108, 117, 101, 1, 120, 0, 11, 102, 108, 111, 97, 116, 45, 118, 97, 108, 117, 101, 1, 117, 0, 10, 98, 111, 111, 108, 45, 118, 97, 108, 117, 101, 1, 127, 0, 4, 0, 11, 101, 118, 101, 110, 116, 45, 118, 97, 108, 117, 101, 3, 0, 0, 1, 114, 2, 4, 116, 105, 109, 101, 119, 5, 101, 118, 101, 110, 116, 1, 4, 0, 5, 101, 118, 101, 110, 116, 3, 0, 2, 1, 114, 1, 4, 110, 97, 109, 101, 115, 4, 0, 9, 119, 111, 114, 107, 101, 114, 45, 105, 100, 3, 0, 4, 3, 1, 23, 116, 105, 109, 101, 108, 105, 110, 101, 58, 114, 97, 119, 45, 101, 118, 101, 110, 116, 115, 47, 97, 112, 105, 5, 1, 2, 3, 0, 0, 3, 117, 114, 105, 2, 3, 0, 1, 11, 101, 118, 101, 110, 116, 45, 118, 97, 108, 117, 101, 2, 3, 0, 1, 5, 101, 118, 101, 110, 116, 2, 3, 0, 1, 9, 119, 111, 114, 107, 101, 114, 45, 105, 100, 1, 66, 22, 2, 3, 2, 1, 2, 4, 0, 3, 117, 114, 105, 3, 0, 0, 2, 3, 2, 1, 3, 4, 0, 11, 101, 118, 101, 110, 116, 45, 118, 97, 108, 117, 101, 3, 0, 2, 2, 3, 2, 1, 4, 4, 0, 5, 101, 118, 101, 110, 116, 3, 0, 4, 2, 3, 2, 1, 5, 4, 0, 9, 119, 111, 114, 107, 101, 114, 45, 105, 100, 3, 0, 6, 4, 0, 3, 97, 112, 105, 3, 1, 1, 105, 8, 1, 64, 1, 8, 108, 111, 99, 97, 116, 105, 111, 110, 1, 0, 9, 4, 0, 16, 91, 99, 111, 110, 115, 116, 114, 117, 99, 116, 111, 114, 93, 97, 112, 105, 1, 10, 1, 104, 8, 1, 64, 2, 4, 115, 101, 108, 102, 11, 6, 119, 111, 114, 107, 101, 114, 7, 1, 0, 4, 0, 22, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 105, 110, 105, 116, 105, 97, 108, 105, 122, 101, 1, 12, 1, 64, 2, 4, 115, 101, 108, 102, 11, 5, 111, 114, 100, 101, 114, 5, 1, 0, 4, 0, 21, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 97, 100, 100, 45, 101, 118, 101, 110, 116, 1, 13, 1, 64, 2, 4, 115, 101, 108, 102, 11, 4, 116, 105, 109, 101, 119, 0, 5, 4, 0, 21, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 103, 101, 116, 45, 101, 118, 101, 110, 116, 1, 14, 1, 112, 5, 1, 64, 1, 4, 115, 101, 108, 102, 11, 0, 15, 4, 0, 22, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 103, 101, 116, 45, 101, 118, 101, 110, 116, 115, 1, 16, 4, 1, 40, 116, 105, 109, 101, 108, 105, 110, 101, 58, 114, 97, 119, 45, 101, 118, 101, 110, 116, 115, 45, 115, 116, 117, 98, 47, 115, 116, 117, 98, 45, 114, 97, 119, 45, 101, 118, 101, 110, 116, 115, 5, 6, 11, 21, 1, 0, 15, 115, 116, 117, 98, 45, 114, 97, 119, 45, 101, 118, 101, 110, 116, 115, 3, 0, 0, 7, 232, 10, 1, 65, 2, 1, 65, 10, 1, 66, 26, 1, 122, 4, 0, 10, 110, 111, 100, 101, 45, 105, 110, 100, 101, 120, 3, 0, 0, 1, 114, 1, 5, 118, 97, 108, 117, 101, 115, 4, 0, 3, 117, 114, 105, 3, 0, 2, 1, 112, 1, 1, 107, 1, 1, 111, 2, 121, 5, 1, 112, 127, 1, 106, 1, 5, 1, 5, 1, 111, 2, 3, 119, 1, 113, 22, 12, 114, 101, 99, 111, 114, 100, 45, 118, 97, 108, 117, 101, 1, 4, 0, 13, 118, 97, 114, 105, 97, 110, 116, 45, 118, 97, 108, 117, 101, 1, 6, 0, 10, 101, 110, 117, 109, 45, 118, 97, 108, 117, 101, 1, 121, 0, 11, 102, 108, 97, 103, 115, 45, 118, 97, 108, 117, 101, 1, 7, 0, 11, 116, 117, 112, 108, 101, 45, 118, 97, 108, 117, 101, 1, 4, 0, 10, 108, 105, 115, 116, 45, 118, 97, 108, 117, 101, 1, 4, 0, 12, 111, 112, 116, 105, 111, 110, 45, 118, 97, 108, 117, 101, 1, 5, 0, 12, 114, 101, 115, 117, 108, 116, 45, 118, 97, 108, 117, 101, 1, 8, 0, 7, 112, 114, 105, 109, 45, 117, 56, 1, 125, 0, 8, 112, 114, 105, 109, 45, 117, 49, 54, 1, 123, 0, 8, 112, 114, 105, 109, 45, 117, 51, 50, 1, 121, 0, 8, 112, 114, 105, 109, 45, 117, 54, 52, 1, 119, 0, 7, 112, 114, 105, 109, 45, 115, 56, 1, 126, 0, 8, 112, 114, 105, 109, 45, 115, 49, 54, 1, 124, 0, 8, 112, 114, 105, 109, 45, 115, 51, 50, 1, 122, 0, 8, 112, 114, 105, 109, 45, 115, 54, 52, 1, 120, 0, 12, 112, 114, 105, 109, 45, 102, 108, 111, 97, 116, 51, 50, 1, 118, 0, 12, 112, 114, 105, 109, 45, 102, 108, 111, 97, 116, 54, 52, 1, 117, 0, 9, 112, 114, 105, 109, 45, 99, 104, 97, 114, 1, 116, 0, 9, 112, 114, 105, 109, 45, 98, 111, 111, 108, 1, 127, 0, 11, 112, 114, 105, 109, 45, 115, 116, 114, 105, 110, 103, 1, 115, 0, 6, 104, 97, 110, 100, 108, 101, 1, 9, 0, 4, 0, 8, 119, 105, 116, 45, 110, 111, 100, 101, 3, 0, 10, 1, 112, 11, 1, 114, 1, 5, 110, 111, 100, 101, 115, 12, 4, 0, 9, 119, 105, 116, 45, 118, 97, 108, 117, 101, 3, 0, 13, 1, 113, 4, 14, 112, 114, 111, 116, 111, 99, 111, 108, 45, 101, 114, 114, 111, 114, 1, 115, 0, 6, 100, 101, 110, 105, 101, 100, 1, 115, 0, 9, 110, 111, 116, 45, 102, 111, 117, 110, 100, 1, 115, 0, 21, 114, 101, 109, 111, 116, 101, 45, 105, 110, 116, 101, 114, 110, 97, 108, 45, 101, 114, 114, 111, 114, 1, 115, 0, 4, 0, 9, 114, 112, 99, 45, 101, 114, 114, 111, 114, 3, 0, 15, 4, 0, 8, 119, 97, 115, 109, 45, 114, 112, 99, 3, 1, 1, 105, 17, 1, 64, 1, 8, 108, 111, 99, 97, 116, 105, 111, 110, 3, 0, 18, 4, 0, 21, 91, 99, 111, 110, 115, 116, 114, 117, 99, 116, 111, 114, 93, 119, 97, 115, 109, 45, 114, 112, 99, 1, 19, 1, 104, 17, 1, 112, 14, 1, 106, 1, 14, 1, 16, 1, 64, 3, 4, 115, 101, 108, 102, 20, 13, 102, 117, 110, 99, 116, 105, 111, 110, 45, 110, 97, 109, 101, 115, 15, 102, 117, 110, 99, 116, 105, 111, 110, 45, 112, 97, 114, 97, 109, 115, 21, 0, 22, 4, 0, 33, 91, 109, 101, 116, 104, 111, 100, 93, 119, 97, 115, 109, 45, 114, 112, 99, 46, 105, 110, 118, 111, 107, 101, 45, 97, 110, 100, 45, 97, 119, 97, 105, 116, 1, 23, 3, 1, 21, 103, 111, 108, 101, 109, 58, 114, 112, 99, 47, 116, 121, 112, 101, 115, 64, 48, 46, 49, 46, 48, 5, 0, 1, 66, 15, 1, 113, 4, 12, 115, 116, 114, 105, 110, 103, 45, 118, 97, 108, 117, 101, 1, 115, 0, 9, 105, 110, 116, 45, 118, 97, 108, 117, 101, 1, 120, 0, 11, 102, 108, 111, 97, 116, 45, 118, 97, 108, 117, 101, 1, 117, 0, 10, 98, 111, 111, 108, 45, 118, 97, 108, 117, 101, 1, 127, 0, 4, 0, 11, 101, 118, 101, 110, 116, 45, 118, 97, 108, 117, 101, 3, 0, 0, 1, 114, 2, 4, 116, 105, 109, 101, 119, 5, 101, 118, 101, 110, 116, 1, 4, 0, 5, 101, 118, 101, 110, 116, 3, 0, 2, 1, 114, 1, 4, 110, 97, 109, 101, 115, 4, 0, 9, 119, 111, 114, 107, 101, 114, 45, 105, 100, 3, 0, 4, 1, 64, 1, 6, 119, 111, 114, 107, 101, 114, 5, 1, 0, 4, 0, 10, 105, 110, 105, 116, 105, 97, 108, 105, 122, 101, 1, 6, 1, 64, 1, 5, 111, 114, 100, 101, 114, 3, 1, 0, 4, 0, 9, 97, 100, 100, 45, 101, 118, 101, 110, 116, 1, 7, 1, 64, 1, 4, 116, 105, 109, 101, 119, 0, 3, 4, 0, 9, 103, 101, 116, 45, 101, 118, 101, 110, 116, 1, 8, 1, 112, 3, 1, 64, 0, 0, 9, 4, 0, 10, 103, 101, 116, 45, 101, 118, 101, 110, 116, 115, 1, 10, 3, 1, 23, 116, 105, 109, 101, 108, 105, 110, 101, 58, 114, 97, 119, 45, 101, 118, 101, 110, 116, 115, 47, 97, 112, 105, 5, 1, 2, 3, 0, 0, 3, 117, 114, 105, 2, 3, 0, 1, 11, 101, 118, 101, 110, 116, 45, 118, 97, 108, 117, 101, 2, 3, 0, 1, 5, 101, 118, 101, 110, 116, 2, 3, 0, 1, 9, 119, 111, 114, 107, 101, 114, 45, 105, 100, 1, 66, 22, 2, 3, 2, 1, 2, 4, 0, 3, 117, 114, 105, 3, 0, 0, 2, 3, 2, 1, 3, 4, 0, 11, 101, 118, 101, 110, 116, 45, 118, 97, 108, 117, 101, 3, 0, 2, 2, 3, 2, 1, 4, 4, 0, 5, 101, 118, 101, 110, 116, 3, 0, 4, 2, 3, 2, 1, 5, 4, 0, 9, 119, 111, 114, 107, 101, 114, 45, 105, 100, 3, 0, 6, 4, 0, 3, 97, 112, 105, 3, 1, 1, 105, 8, 1, 64, 1, 8, 108, 111, 99, 97, 116, 105, 111, 110, 1, 0, 9, 4, 0, 16, 91, 99, 111, 110, 115, 116, 114, 117, 99, 116, 111, 114, 93, 97, 112, 105, 1, 10, 1, 104, 8, 1, 64, 2, 4, 115, 101, 108, 102, 11, 6, 119, 111, 114, 107, 101, 114, 7, 1, 0, 4, 0, 22, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 105, 110, 105, 116, 105, 97, 108, 105, 122, 101, 1, 12, 1, 64, 2, 4, 115, 101, 108, 102, 11, 5, 111, 114, 100, 101, 114, 5, 1, 0, 4, 0, 21, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 97, 100, 100, 45, 101, 118, 101, 110, 116, 1, 13, 1, 64, 2, 4, 115, 101, 108, 102, 11, 4, 116, 105, 109, 101, 119, 0, 5, 4, 0, 21, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 103, 101, 116, 45, 101, 118, 101, 110, 116, 1, 14, 1, 112, 5, 1, 64, 1, 4, 115, 101, 108, 102, 11, 0, 15, 4, 0, 22, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 103, 101, 116, 45, 101, 118, 101, 110, 116, 115, 1, 16, 4, 1, 40, 116, 105, 109, 101, 108, 105, 110, 101, 58, 114, 97, 119, 45, 101, 118, 101, 110, 116, 115, 45, 115, 116, 117, 98, 47, 115, 116, 117, 98, 45, 114, 97, 119, 45, 101, 118, 101, 110, 116, 115, 5, 6, 4, 1, 49, 116, 105, 109, 101, 108, 105, 110, 101, 58, 114, 97, 119, 45, 101, 118, 101, 110, 116, 115, 45, 115, 116, 117, 98, 47, 119, 97, 115, 109, 45, 114, 112, 99, 45, 115, 116, 117, 98, 45, 114, 97, 119, 45, 101, 118, 101, 110, 116, 115, 4, 0, 11, 30, 1, 0, 24, 119, 97, 115, 109, 45, 114, 112, 99, 45, 115, 116, 117, 98, 45, 114, 97, 119, 45, 101, 118, 101, 110, 116, 115, 3, 2, 0, 0, 16, 12, 112, 97, 99, 107, 97, 103, 101, 45, 100, 111, 99, 115, 0, 123, 125, 0, 70, 9, 112, 114, 111, 100, 117, 99, 101, 114, 115, 1, 12, 112, 114, 111, 99, 101, 115, 115, 101, 100, 45, 98, 121, 2, 13, 119, 105, 116, 45, 99, 111, 109, 112, 111, 110, 101, 110, 116, 6, 48, 46, 49, 56, 46, 50, 16, 119, 105, 116, 45, 98, 105, 110, 100, 103, 101, 110, 45, 114, 117, 115, 116, 6, 48, 46, 49, 54, 46, 48];
-          
-          #[inline(never)]
-          #[doc(hidden)]
-          #[cfg(target_arch = "wasm32")]
-          pub fn __link_section() {}
-          
+                    }
+                    pub mod timeline {
+                      pub mod raw_events {
+                        
+                        #[allow(clippy::all)]
+                        pub mod api {
+                          #[used]
+                          #[doc(hidden)]
+                          #[cfg(target_arch = "wasm32")]
+                          static __FORCE_SECTION_REF: fn() = super::super::super::__link_section;
+                          #[derive(Clone)]
+                          pub enum EventValue{
+                            StringValue(wit_bindgen::rt::string::String),
+                            IntValue(i64),
+                            FloatValue(f64),
+                            BoolValue(bool),
+                          }
+                          impl ::core::fmt::Debug for EventValue {
+                            fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+                              match self {
+                                EventValue::StringValue(e) => {
+                                  f.debug_tuple("EventValue::StringValue").field(e).finish()
+                                }
+                                EventValue::IntValue(e) => {
+                                  f.debug_tuple("EventValue::IntValue").field(e).finish()
+                                }
+                                EventValue::FloatValue(e) => {
+                                  f.debug_tuple("EventValue::FloatValue").field(e).finish()
+                                }
+                                EventValue::BoolValue(e) => {
+                                  f.debug_tuple("EventValue::BoolValue").field(e).finish()
+                                }
+                              }
+                            }
+                          }
+                          #[derive(Clone)]
+                          pub struct Event {
+                            pub time: u64,
+                            pub event: EventValue,
+                          }
+                          impl ::core::fmt::Debug for Event {
+                            fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+                              f.debug_struct("Event").field("time", &self.time).field("event", &self.event).finish()
+                            }
+                          }
+                          #[derive(Clone)]
+                          pub struct WorkerId {
+                            pub name: wit_bindgen::rt::string::String,
+                          }
+                          impl ::core::fmt::Debug for WorkerId {
+                            fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+                              f.debug_struct("WorkerId").field("name", &self.name).finish()
+                            }
+                          }
+                          #[allow(unused_unsafe, clippy::all)]
+                          pub fn initialize(worker: &WorkerId,) -> Result<wit_bindgen::rt::string::String,wit_bindgen::rt::string::String>{
+                            
+                            #[allow(unused_imports)]
+                            use wit_bindgen::rt::{alloc, vec::Vec, string::String};
+                            unsafe {
+                              
+                              #[repr(align(4))]
+                              struct RetArea([u8; 12]);
+                              let mut ret_area = ::core::mem::MaybeUninit::<RetArea>::uninit();
+                              let WorkerId{ name:name0, } = worker;
+                              let vec1 = name0;
+                              let ptr1 = vec1.as_ptr() as i32;
+                              let len1 = vec1.len() as i32;
+                              let ptr2 = ret_area.as_mut_ptr() as i32;
+                              #[cfg(target_arch = "wasm32")]
+                              #[link(wasm_import_module = "timeline:raw-events/api")]
+                              extern "C" {
+                                #[link_name = "initialize"]
+                                fn wit_import(_: i32, _: i32, _: i32, );
+                              }
+                              
+                              #[cfg(not(target_arch = "wasm32"))]
+                              fn wit_import(_: i32, _: i32, _: i32, ){ unreachable!() }
+                              wit_import(ptr1, len1, ptr2);
+                              let l3 = i32::from(*((ptr2 + 0) as *const u8));
+                              match l3 {
+                                0 => {
+                                  let e = {
+                                    let l4 = *((ptr2 + 4) as *const i32);
+                                    let l5 = *((ptr2 + 8) as *const i32);
+                                    let len6 = l5 as usize;
+                                    let bytes6 = Vec::from_raw_parts(l4 as *mut _, len6, len6);
+                                    
+                                    wit_bindgen::rt::string_lift(bytes6)
+                                  };
+                                  Ok(e)
+                                }
+                                1 => {
+                                  let e = {
+                                    let l7 = *((ptr2 + 4) as *const i32);
+                                    let l8 = *((ptr2 + 8) as *const i32);
+                                    let len9 = l8 as usize;
+                                    let bytes9 = Vec::from_raw_parts(l7 as *mut _, len9, len9);
+                                    
+                                    wit_bindgen::rt::string_lift(bytes9)
+                                  };
+                                  Err(e)
+                                }
+                                _ => wit_bindgen::rt::invalid_enum_discriminant(),
+                              }
+                            }
+                          }
+                          #[allow(unused_unsafe, clippy::all)]
+                          pub fn add_event(order: &Event,){
+                            
+                            #[allow(unused_imports)]
+                            use wit_bindgen::rt::{alloc, vec::Vec, string::String};
+                            unsafe {
+                              let Event{ time:time0, event:event0, } = order;
+                              let (result2_0,result2_1,result2_2,) = match event0 {
+                                EventValue::StringValue(e) => {
+                                  let vec1 = e;
+                                  let ptr1 = vec1.as_ptr() as i32;
+                                  let len1 = vec1.len() as i32;
+                                  
+                                  (0i32, i64::from(ptr1), len1)
+                                },
+                                EventValue::IntValue(e) => (1i32, wit_bindgen::rt::as_i64(e), 0i32),
+                                EventValue::FloatValue(e) => (2i32, (wit_bindgen::rt::as_f64(e)).to_bits() as i64, 0i32),
+                                EventValue::BoolValue(e) => (3i32, i64::from(match e { true => 1, false => 0 }), 0i32),
+                              };
+                              
+                              #[cfg(target_arch = "wasm32")]
+                              #[link(wasm_import_module = "timeline:raw-events/api")]
+                              extern "C" {
+                                #[link_name = "add-event"]
+                                fn wit_import(_: i64, _: i32, _: i64, _: i32, );
+                              }
+                              
+                              #[cfg(not(target_arch = "wasm32"))]
+                              fn wit_import(_: i64, _: i32, _: i64, _: i32, ){ unreachable!() }
+                              wit_import(wit_bindgen::rt::as_i64(time0), result2_0, result2_1, result2_2);
+                            }
+                          }
+                          #[allow(unused_unsafe, clippy::all)]
+                          pub fn get_event(time: u64,) -> Event{
+                            
+                            #[allow(unused_imports)]
+                            use wit_bindgen::rt::{alloc, vec::Vec, string::String};
+                            unsafe {
+                              
+                              #[repr(align(8))]
+                              struct RetArea([u8; 24]);
+                              let mut ret_area = ::core::mem::MaybeUninit::<RetArea>::uninit();
+                              let ptr0 = ret_area.as_mut_ptr() as i32;
+                              #[cfg(target_arch = "wasm32")]
+                              #[link(wasm_import_module = "timeline:raw-events/api")]
+                              extern "C" {
+                                #[link_name = "get-event"]
+                                fn wit_import(_: i64, _: i32, );
+                              }
+                              
+                              #[cfg(not(target_arch = "wasm32"))]
+                              fn wit_import(_: i64, _: i32, ){ unreachable!() }
+                              wit_import(wit_bindgen::rt::as_i64(time), ptr0);
+                              let l1 = *((ptr0 + 0) as *const i64);
+                              let l2 = i32::from(*((ptr0 + 8) as *const u8));
+                              let v9 = match l2 {
+                                0 => {
+                                  let e9 = {
+                                    let l3 = *((ptr0 + 16) as *const i32);
+                                    let l4 = *((ptr0 + 20) as *const i32);
+                                    let len5 = l4 as usize;
+                                    let bytes5 = Vec::from_raw_parts(l3 as *mut _, len5, len5);
+                                    
+                                    wit_bindgen::rt::string_lift(bytes5)
+                                  };
+                                  EventValue::StringValue(e9)
+                                }
+                                1 => {
+                                  let e9 = {
+                                    let l6 = *((ptr0 + 16) as *const i64);
+                                    
+                                    l6
+                                  };
+                                  EventValue::IntValue(e9)
+                                }
+                                2 => {
+                                  let e9 = {
+                                    let l7 = *((ptr0 + 16) as *const f64);
+                                    
+                                    l7
+                                  };
+                                  EventValue::FloatValue(e9)
+                                }
+                                n => {
+                                  debug_assert_eq!(n, 3, "invalid enum discriminant");
+                                  let e9 = {
+                                    let l8 = i32::from(*((ptr0 + 16) as *const u8));
+                                    
+                                    wit_bindgen::rt::bool_lift(l8 as u8)
+                                  };
+                                  EventValue::BoolValue(e9)
+                                }
+                              };
+                              Event{
+                                time: l1 as u64,
+                                event: v9,
+                              }
+                            }
+                          }
+                          #[allow(unused_unsafe, clippy::all)]
+                          pub fn get_events() -> wit_bindgen::rt::vec::Vec::<Event>{
+                            
+                            #[allow(unused_imports)]
+                            use wit_bindgen::rt::{alloc, vec::Vec, string::String};
+                            unsafe {
+                              
+                              #[repr(align(4))]
+                              struct RetArea([u8; 8]);
+                              let mut ret_area = ::core::mem::MaybeUninit::<RetArea>::uninit();
+                              let ptr0 = ret_area.as_mut_ptr() as i32;
+                              #[cfg(target_arch = "wasm32")]
+                              #[link(wasm_import_module = "timeline:raw-events/api")]
+                              extern "C" {
+                                #[link_name = "get-events"]
+                                fn wit_import(_: i32, );
+                              }
+                              
+                              #[cfg(not(target_arch = "wasm32"))]
+                              fn wit_import(_: i32, ){ unreachable!() }
+                              wit_import(ptr0);
+                              let l1 = *((ptr0 + 0) as *const i32);
+                              let l2 = *((ptr0 + 4) as *const i32);
+                              let base12 = l1;
+                              let len12 = l2;
+                              let mut result12 = Vec::with_capacity(len12 as usize);
+                              for i in 0..len12 {
+                                let base = base12 + i * 24;
+                                let e12 = {
+                                  let l3 = *((base + 0) as *const i64);
+                                  let l4 = i32::from(*((base + 8) as *const u8));
+                                  let v11 = match l4 {
+                                    0 => {
+                                      let e11 = {
+                                        let l5 = *((base + 16) as *const i32);
+                                        let l6 = *((base + 20) as *const i32);
+                                        let len7 = l6 as usize;
+                                        let bytes7 = Vec::from_raw_parts(l5 as *mut _, len7, len7);
+                                        
+                                        wit_bindgen::rt::string_lift(bytes7)
+                                      };
+                                      EventValue::StringValue(e11)
+                                    }
+                                    1 => {
+                                      let e11 = {
+                                        let l8 = *((base + 16) as *const i64);
+                                        
+                                        l8
+                                      };
+                                      EventValue::IntValue(e11)
+                                    }
+                                    2 => {
+                                      let e11 = {
+                                        let l9 = *((base + 16) as *const f64);
+                                        
+                                        l9
+                                      };
+                                      EventValue::FloatValue(e11)
+                                    }
+                                    n => {
+                                      debug_assert_eq!(n, 3, "invalid enum discriminant");
+                                      let e11 = {
+                                        let l10 = i32::from(*((base + 16) as *const u8));
+                                        
+                                        wit_bindgen::rt::bool_lift(l10 as u8)
+                                      };
+                                      EventValue::BoolValue(e11)
+                                    }
+                                  };
+                                  
+                                  Event{
+                                    time: l3 as u64,
+                                    event: v11,
+                                  }
+                                };
+                                result12.push(e12);
+                              }
+                              wit_bindgen::rt::dealloc(base12, (len12 as usize) * 24, 8);
+                              result12
+                            }
+                          }
+                          
+                        }
+                        
+                      }
+                    }
+                    pub mod exports {
+                      pub mod timeline {
+                        pub mod raw_events_stub {
+                          
+                          #[allow(clippy::all)]
+                          pub mod stub_raw_events {
+                            #[used]
+                            #[doc(hidden)]
+                            #[cfg(target_arch = "wasm32")]
+                            static __FORCE_SECTION_REF: fn() = super::super::super::super::__link_section;
+                            pub type Uri = super::super::super::super::golem::rpc::types::Uri;
+                            pub type Event = super::super::super::super::timeline::raw_events::api::Event;
+                            pub type WorkerId = super::super::super::super::timeline::raw_events::api::WorkerId;
+                            
+                            pub use super::super::super::super::super::Api as Api;
+                            const _: () = {
+                              #[doc(hidden)]
+                              #[export_name = "timeline:raw-events-stub/stub-raw-events#[dtor]api"]
+                              #[allow(non_snake_case)]
+                              unsafe extern "C" fn dtor(rep: usize) {
+                                wit_bindgen::rt::Resource::<Api>::dtor(rep)
+                              }
+                            };
+                            unsafe impl wit_bindgen::rt::RustResource for Api{
+                              unsafe fn new(_rep: usize) -> u32 {
+                                #[cfg(not(target_arch = "wasm32"))]
+                                unreachable!();
+                                
+                                #[cfg(target_arch = "wasm32")]
+                                {
+                                  #[link(wasm_import_module = "[export]timeline:raw-events-stub/stub-raw-events")]
+                                  extern "C" {
+                                    #[link_name = "[resource-new]api"]
+                                    fn new(_: usize) -> u32;
+                                  }
+                                  new(_rep)
+                                }
+                              }
+                              
+                              unsafe fn rep(_handle: u32) -> usize {
+                                #[cfg(not(target_arch = "wasm32"))]
+                                unreachable!();
+                                
+                                #[cfg(target_arch = "wasm32")]
+                                {
+                                  #[link(wasm_import_module = "[export]timeline:raw-events-stub/stub-raw-events")]
+                                  extern "C" {
+                                    #[link_name = "[resource-rep]api"]
+                                    fn rep(_: u32) -> usize;
+                                  }
+                                  rep(_handle)
+                                }
+                              }
+                            }
+                            pub type OwnApi = wit_bindgen::rt::Resource<Api>;
+                            
+                            
+                            unsafe impl wit_bindgen::rt::WasmResource for Api{
+                              #[inline]
+                              unsafe fn drop(_handle: u32) {
+                                #[cfg(not(target_arch = "wasm32"))]
+                                unreachable!();
+                                
+                                #[cfg(target_arch = "wasm32")]
+                                {
+                                  #[link(wasm_import_module = "[export]timeline:raw-events-stub/stub-raw-events")]
+                                  extern "C" {
+                                    #[link_name = "[resource-drop]api"]
+                                    fn drop(_: u32);
+                                  }
+                                  
+                                  drop(_handle);
+                                }
+                              }
+                            }
+                            
+                            const _: () = {
+                              
+                              #[doc(hidden)]
+                              #[export_name = "timeline:raw-events-stub/stub-raw-events#[constructor]api"]
+                              #[allow(non_snake_case)]
+                              unsafe extern "C" fn __export_constructor_api(arg0: i32,arg1: i32,) -> i32 {
+                                #[allow(unused_imports)]
+                                use wit_bindgen::rt::{alloc, vec::Vec, string::String};
+                                
+                                // Before executing any other code, use this function to run all static
+                                // constructors, if they have not yet been run. This is a hack required
+                                // to work around wasi-libc ctors calling import functions to initialize
+                                // the environment.
+                                //
+                                // This functionality will be removed once rust 1.69.0 is stable, at which
+                                // point wasi-libc will no longer have this behavior.
+                                //
+                                // See
+                                // https://github.com/bytecodealliance/preview2-prototyping/issues/99
+                                // for more details.
+                                #[cfg(target_arch="wasm32")]
+                                wit_bindgen::rt::run_ctors_once();
+                                
+                                let len0 = arg1 as usize;
+                                let bytes0 = Vec::from_raw_parts(arg0 as *mut _, len0, len0);
+                                let result1 = OwnApi::new(<_ApiImpl as GuestApi>::new(super::super::super::super::golem::rpc::types::Uri{
+                                  value: wit_bindgen::rt::string_lift(bytes0),
+                                }));
+                                wit_bindgen::rt::Resource::into_handle(result1) as i32
+                              }
+                            };
+                            const _: () = {
+                              
+                              #[doc(hidden)]
+                              #[export_name = "timeline:raw-events-stub/stub-raw-events#[method]api.initialize"]
+                              #[allow(non_snake_case)]
+                              unsafe extern "C" fn __export_method_api_initialize(arg0: i32,arg1: i32,arg2: i32,) -> i32 {
+                                #[allow(unused_imports)]
+                                use wit_bindgen::rt::{alloc, vec::Vec, string::String};
+                                
+                                // Before executing any other code, use this function to run all static
+                                // constructors, if they have not yet been run. This is a hack required
+                                // to work around wasi-libc ctors calling import functions to initialize
+                                // the environment.
+                                //
+                                // This functionality will be removed once rust 1.69.0 is stable, at which
+                                // point wasi-libc will no longer have this behavior.
+                                //
+                                // See
+                                // https://github.com/bytecodealliance/preview2-prototyping/issues/99
+                                // for more details.
+                                #[cfg(target_arch="wasm32")]
+                                wit_bindgen::rt::run_ctors_once();
+                                
+                                let len0 = arg2 as usize;
+                                let bytes0 = Vec::from_raw_parts(arg1 as *mut _, len0, len0);
+                                let result1 = <_ApiImpl as GuestApi>::initialize(wit_bindgen::rt::Resource::<Api>::lift_borrow(arg0 as u32 as usize), super::super::super::super::timeline::raw_events::api::WorkerId{
+                                  name: wit_bindgen::rt::string_lift(bytes0),
+                                });
+                                let ptr2 = _RET_AREA.0.as_mut_ptr() as i32;
+                                match result1 {
+                                  Ok(e) => { {
+                                    *((ptr2 + 0) as *mut u8) = (0i32) as u8;
+                                    let vec3 = (e.into_bytes()).into_boxed_slice();
+                                    let ptr3 = vec3.as_ptr() as i32;
+                                    let len3 = vec3.len() as i32;
+                                    ::core::mem::forget(vec3);
+                                    *((ptr2 + 8) as *mut i32) = len3;
+                                    *((ptr2 + 4) as *mut i32) = ptr3;
+                                  } },
+                                  Err(e) => { {
+                                    *((ptr2 + 0) as *mut u8) = (1i32) as u8;
+                                    let vec4 = (e.into_bytes()).into_boxed_slice();
+                                    let ptr4 = vec4.as_ptr() as i32;
+                                    let len4 = vec4.len() as i32;
+                                    ::core::mem::forget(vec4);
+                                    *((ptr2 + 8) as *mut i32) = len4;
+                                    *((ptr2 + 4) as *mut i32) = ptr4;
+                                  } },
+                                };ptr2
+                              }
+                              
+                              const _: () = {
+                                #[doc(hidden)]
+                                #[export_name = "cabi_post_timeline:raw-events-stub/stub-raw-events#[method]api.initialize"]
+                                #[allow(non_snake_case)]
+                                unsafe extern "C" fn __post_return_method_api_initialize(arg0: i32,) {
+                                  let l0 = i32::from(*((arg0 + 0) as *const u8));
+                                  match l0 {
+                                    0 => {
+                                      let l1 = *((arg0 + 4) as *const i32);
+                                      let l2 = *((arg0 + 8) as *const i32);
+                                      wit_bindgen::rt::dealloc(l1, (l2) as usize, 1);
+                                    },
+                                    _ => {
+                                      let l3 = *((arg0 + 4) as *const i32);
+                                      let l4 = *((arg0 + 8) as *const i32);
+                                      wit_bindgen::rt::dealloc(l3, (l4) as usize, 1);
+                                    },
+                                  }
+                                }
+                              };
+                            };
+                            const _: () = {
+                              
+                              #[doc(hidden)]
+                              #[export_name = "timeline:raw-events-stub/stub-raw-events#[method]api.add-event"]
+                              #[allow(non_snake_case)]
+                              unsafe extern "C" fn __export_method_api_add_event(arg0: i32,arg1: i64,arg2: i32,arg3: i64,arg4: i32,) {
+                                #[allow(unused_imports)]
+                                use wit_bindgen::rt::{alloc, vec::Vec, string::String};
+                                
+                                // Before executing any other code, use this function to run all static
+                                // constructors, if they have not yet been run. This is a hack required
+                                // to work around wasi-libc ctors calling import functions to initialize
+                                // the environment.
+                                //
+                                // This functionality will be removed once rust 1.69.0 is stable, at which
+                                // point wasi-libc will no longer have this behavior.
+                                //
+                                // See
+                                // https://github.com/bytecodealliance/preview2-prototyping/issues/99
+                                // for more details.
+                                #[cfg(target_arch="wasm32")]
+                                wit_bindgen::rt::run_ctors_once();
+                                
+                                use super::super::super::super::timeline::raw_events::api::EventValue as V1;
+                                let v1 = match arg2 {
+                                  0 => {
+                                    let e1 = {
+                                      let len0 = arg4 as usize;
+                                      let bytes0 = Vec::from_raw_parts(arg3 as i32 as *mut _, len0, len0);
+                                      
+                                      wit_bindgen::rt::string_lift(bytes0)
+                                    };
+                                    V1::StringValue(e1)
+                                  }
+                                  1 => {
+                                    let e1 = arg3;
+                                    V1::IntValue(e1)
+                                  }
+                                  2 => {
+                                    let e1 = f64::from_bits(arg3 as u64);
+                                    V1::FloatValue(e1)
+                                  }
+                                  n => {
+                                    debug_assert_eq!(n, 3, "invalid enum discriminant");
+                                    let e1 = wit_bindgen::rt::bool_lift(arg3 as i32 as u8);
+                                    V1::BoolValue(e1)
+                                  }
+                                };
+                                <_ApiImpl as GuestApi>::add_event(wit_bindgen::rt::Resource::<Api>::lift_borrow(arg0 as u32 as usize), super::super::super::super::timeline::raw_events::api::Event{
+                                  time: arg1 as u64,
+                                  event: v1,
+                                });
+                              }
+                            };
+                            const _: () = {
+                              
+                              #[doc(hidden)]
+                              #[export_name = "timeline:raw-events-stub/stub-raw-events#[method]api.get-event"]
+                              #[allow(non_snake_case)]
+                              unsafe extern "C" fn __export_method_api_get_event(arg0: i32,arg1: i64,) -> i32 {
+                                #[allow(unused_imports)]
+                                use wit_bindgen::rt::{alloc, vec::Vec, string::String};
+                                
+                                // Before executing any other code, use this function to run all static
+                                // constructors, if they have not yet been run. This is a hack required
+                                // to work around wasi-libc ctors calling import functions to initialize
+                                // the environment.
+                                //
+                                // This functionality will be removed once rust 1.69.0 is stable, at which
+                                // point wasi-libc will no longer have this behavior.
+                                //
+                                // See
+                                // https://github.com/bytecodealliance/preview2-prototyping/issues/99
+                                // for more details.
+                                #[cfg(target_arch="wasm32")]
+                                wit_bindgen::rt::run_ctors_once();
+                                
+                                let result0 = <_ApiImpl as GuestApi>::get_event(wit_bindgen::rt::Resource::<Api>::lift_borrow(arg0 as u32 as usize), arg1 as u64);
+                                let ptr1 = _RET_AREA.0.as_mut_ptr() as i32;
+                                let super::super::super::super::timeline::raw_events::api::Event{ time:time2, event:event2, } = result0;
+                                *((ptr1 + 0) as *mut i64) = wit_bindgen::rt::as_i64(time2);
+                                use super::super::super::super::timeline::raw_events::api::EventValue as V4;
+                                match event2 {
+                                  V4::StringValue(e) => {
+                                    *((ptr1 + 8) as *mut u8) = (0i32) as u8;
+                                    let vec3 = (e.into_bytes()).into_boxed_slice();
+                                    let ptr3 = vec3.as_ptr() as i32;
+                                    let len3 = vec3.len() as i32;
+                                    ::core::mem::forget(vec3);
+                                    *((ptr1 + 20) as *mut i32) = len3;
+                                    *((ptr1 + 16) as *mut i32) = ptr3;
+                                  },
+                                  V4::IntValue(e) => {
+                                    *((ptr1 + 8) as *mut u8) = (1i32) as u8;
+                                    *((ptr1 + 16) as *mut i64) = wit_bindgen::rt::as_i64(e);
+                                  },
+                                  V4::FloatValue(e) => {
+                                    *((ptr1 + 8) as *mut u8) = (2i32) as u8;
+                                    *((ptr1 + 16) as *mut f64) = wit_bindgen::rt::as_f64(e);
+                                  },
+                                  V4::BoolValue(e) => {
+                                    *((ptr1 + 8) as *mut u8) = (3i32) as u8;
+                                    *((ptr1 + 16) as *mut u8) = (match e { true => 1, false => 0 }) as u8;
+                                  },
+                                }
+                                ptr1
+                              }
+                              
+                              const _: () = {
+                                #[doc(hidden)]
+                                #[export_name = "cabi_post_timeline:raw-events-stub/stub-raw-events#[method]api.get-event"]
+                                #[allow(non_snake_case)]
+                                unsafe extern "C" fn __post_return_method_api_get_event(arg0: i32,) {
+                                  let l0 = i32::from(*((arg0 + 8) as *const u8));
+                                  match l0 {
+                                    0 => {
+                                      let l1 = *((arg0 + 16) as *const i32);
+                                      let l2 = *((arg0 + 20) as *const i32);
+                                      wit_bindgen::rt::dealloc(l1, (l2) as usize, 1);
+                                    },
+                                    1 => (),
+                                    2 => (),
+                                    _ => (),
+                                  }
+                                }
+                              };
+                            };
+                            const _: () = {
+                              
+                              #[doc(hidden)]
+                              #[export_name = "timeline:raw-events-stub/stub-raw-events#[method]api.get-events"]
+                              #[allow(non_snake_case)]
+                              unsafe extern "C" fn __export_method_api_get_events(arg0: i32,) -> i32 {
+                                #[allow(unused_imports)]
+                                use wit_bindgen::rt::{alloc, vec::Vec, string::String};
+                                
+                                // Before executing any other code, use this function to run all static
+                                // constructors, if they have not yet been run. This is a hack required
+                                // to work around wasi-libc ctors calling import functions to initialize
+                                // the environment.
+                                //
+                                // This functionality will be removed once rust 1.69.0 is stable, at which
+                                // point wasi-libc will no longer have this behavior.
+                                //
+                                // See
+                                // https://github.com/bytecodealliance/preview2-prototyping/issues/99
+                                // for more details.
+                                #[cfg(target_arch="wasm32")]
+                                wit_bindgen::rt::run_ctors_once();
+                                
+                                let result0 = <_ApiImpl as GuestApi>::get_events(wit_bindgen::rt::Resource::<Api>::lift_borrow(arg0 as u32 as usize));
+                                let ptr1 = _RET_AREA.0.as_mut_ptr() as i32;
+                                let vec5 = result0;
+                                let len5 = vec5.len() as i32;
+                                let layout5 = alloc::Layout::from_size_align_unchecked(vec5.len() * 24, 8);
+                                let result5 = if layout5.size() != 0
+                                {
+                                  let ptr = alloc::alloc(layout5);
+                                  if ptr.is_null()
+                                  {
+                                    alloc::handle_alloc_error(layout5);
+                                  }
+                                  ptr
+                                }else {{
+                                  ::core::ptr::null_mut()
+                                }};
+                                for (i, e) in vec5.into_iter().enumerate() {
+                                  let base = result5 as i32 + (i as i32) * 24;
+                                  {
+                                    let super::super::super::super::timeline::raw_events::api::Event{ time:time2, event:event2, } = e;
+                                    *((base + 0) as *mut i64) = wit_bindgen::rt::as_i64(time2);
+                                    use super::super::super::super::timeline::raw_events::api::EventValue as V4;
+                                    match event2 {
+                                      V4::StringValue(e) => {
+                                        *((base + 8) as *mut u8) = (0i32) as u8;
+                                        let vec3 = (e.into_bytes()).into_boxed_slice();
+                                        let ptr3 = vec3.as_ptr() as i32;
+                                        let len3 = vec3.len() as i32;
+                                        ::core::mem::forget(vec3);
+                                        *((base + 20) as *mut i32) = len3;
+                                        *((base + 16) as *mut i32) = ptr3;
+                                      },
+                                      V4::IntValue(e) => {
+                                        *((base + 8) as *mut u8) = (1i32) as u8;
+                                        *((base + 16) as *mut i64) = wit_bindgen::rt::as_i64(e);
+                                      },
+                                      V4::FloatValue(e) => {
+                                        *((base + 8) as *mut u8) = (2i32) as u8;
+                                        *((base + 16) as *mut f64) = wit_bindgen::rt::as_f64(e);
+                                      },
+                                      V4::BoolValue(e) => {
+                                        *((base + 8) as *mut u8) = (3i32) as u8;
+                                        *((base + 16) as *mut u8) = (match e { true => 1, false => 0 }) as u8;
+                                      },
+                                    }
+                                  }
+                                }
+                                *((ptr1 + 4) as *mut i32) = len5;
+                                *((ptr1 + 0) as *mut i32) = result5 as i32;
+                                ptr1
+                              }
+                              
+                              const _: () = {
+                                #[doc(hidden)]
+                                #[export_name = "cabi_post_timeline:raw-events-stub/stub-raw-events#[method]api.get-events"]
+                                #[allow(non_snake_case)]
+                                unsafe extern "C" fn __post_return_method_api_get_events(arg0: i32,) {
+                                  let l3 = *((arg0 + 0) as *const i32);
+                                  let l4 = *((arg0 + 4) as *const i32);
+                                  let base5 = l3;
+                                  let len5 = l4;
+                                  for i in 0..len5 {
+                                    let base = base5 + i *24;
+                                    {
+                                      let l0 = i32::from(*((base + 8) as *const u8));
+                                      match l0 {
+                                        0 => {
+                                          let l1 = *((base + 16) as *const i32);
+                                          let l2 = *((base + 20) as *const i32);
+                                          wit_bindgen::rt::dealloc(l1, (l2) as usize, 1);
+                                        },
+                                        1 => (),
+                                        2 => (),
+                                        _ => (),
+                                      }
+                                    }
+                                  }
+                                  wit_bindgen::rt::dealloc(base5, (len5 as usize) * 24, 8);
+                                }
+                              };
+                            };
+                            use super::super::super::super::super::Api as _ApiImpl;
+                            pub trait GuestApi {
+                              fn new(location: Uri,) -> Self;
+                              fn initialize(&self,worker: WorkerId,) -> Result<wit_bindgen::rt::string::String,wit_bindgen::rt::string::String>;
+                              fn add_event(&self,order: Event,);
+                              fn get_event(&self,time: u64,) -> Event;
+                              fn get_events(&self,) -> wit_bindgen::rt::vec::Vec::<Event>;
+                            }
+                            
+                            #[allow(unused_imports)]
+                            use wit_bindgen::rt::{alloc, vec::Vec, string::String};
+                            
+                            #[repr(align(8))]
+                            struct _RetArea([u8; 24]);
+                            static mut _RET_AREA: _RetArea = _RetArea([0; 24]);
+                            
+                          }
+                          
+                        }
+                      }
+                    }
+                    
+                    #[cfg(target_arch = "wasm32")]
+                    #[link_section = "component-type:wasm-rpc-stub-raw-events"]
+                    #[doc(hidden)]
+                    pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 2752] = [3, 0, 24, 119, 97, 115, 109, 45, 114, 112, 99, 45, 115, 116, 117, 98, 45, 114, 97, 119, 45, 101, 118, 101, 110, 116, 115, 0, 97, 115, 109, 13, 0, 1, 0, 7, 198, 8, 1, 65, 10, 1, 66, 18, 1, 122, 4, 0, 10, 110, 111, 100, 101, 45, 105, 110, 100, 101, 120, 3, 0, 0, 1, 114, 1, 5, 118, 97, 108, 117, 101, 115, 4, 0, 3, 117, 114, 105, 3, 0, 2, 1, 112, 1, 1, 107, 1, 1, 111, 2, 121, 5, 1, 112, 127, 1, 106, 1, 5, 1, 5, 1, 111, 2, 3, 119, 1, 113, 22, 12, 114, 101, 99, 111, 114, 100, 45, 118, 97, 108, 117, 101, 1, 4, 0, 13, 118, 97, 114, 105, 97, 110, 116, 45, 118, 97, 108, 117, 101, 1, 6, 0, 10, 101, 110, 117, 109, 45, 118, 97, 108, 117, 101, 1, 121, 0, 11, 102, 108, 97, 103, 115, 45, 118, 97, 108, 117, 101, 1, 7, 0, 11, 116, 117, 112, 108, 101, 45, 118, 97, 108, 117, 101, 1, 4, 0, 10, 108, 105, 115, 116, 45, 118, 97, 108, 117, 101, 1, 4, 0, 12, 111, 112, 116, 105, 111, 110, 45, 118, 97, 108, 117, 101, 1, 5, 0, 12, 114, 101, 115, 117, 108, 116, 45, 118, 97, 108, 117, 101, 1, 8, 0, 7, 112, 114, 105, 109, 45, 117, 56, 1, 125, 0, 8, 112, 114, 105, 109, 45, 117, 49, 54, 1, 123, 0, 8, 112, 114, 105, 109, 45, 117, 51, 50, 1, 121, 0, 8, 112, 114, 105, 109, 45, 117, 54, 52, 1, 119, 0, 7, 112, 114, 105, 109, 45, 115, 56, 1, 126, 0, 8, 112, 114, 105, 109, 45, 115, 49, 54, 1, 124, 0, 8, 112, 114, 105, 109, 45, 115, 51, 50, 1, 122, 0, 8, 112, 114, 105, 109, 45, 115, 54, 52, 1, 120, 0, 12, 112, 114, 105, 109, 45, 102, 108, 111, 97, 116, 51, 50, 1, 118, 0, 12, 112, 114, 105, 109, 45, 102, 108, 111, 97, 116, 54, 52, 1, 117, 0, 9, 112, 114, 105, 109, 45, 99, 104, 97, 114, 1, 116, 0, 9, 112, 114, 105, 109, 45, 98, 111, 111, 108, 1, 127, 0, 11, 112, 114, 105, 109, 45, 115, 116, 114, 105, 110, 103, 1, 115, 0, 6, 104, 97, 110, 100, 108, 101, 1, 9, 0, 4, 0, 8, 119, 105, 116, 45, 110, 111, 100, 101, 3, 0, 10, 1, 112, 11, 1, 114, 1, 5, 110, 111, 100, 101, 115, 12, 4, 0, 9, 119, 105, 116, 45, 118, 97, 108, 117, 101, 3, 0, 13, 1, 113, 4, 14, 112, 114, 111, 116, 111, 99, 111, 108, 45, 101, 114, 114, 111, 114, 1, 115, 0, 6, 100, 101, 110, 105, 101, 100, 1, 115, 0, 9, 110, 111, 116, 45, 102, 111, 117, 110, 100, 1, 115, 0, 21, 114, 101, 109, 111, 116, 101, 45, 105, 110, 116, 101, 114, 110, 97, 108, 45, 101, 114, 114, 111, 114, 1, 115, 0, 4, 0, 9, 114, 112, 99, 45, 101, 114, 114, 111, 114, 3, 0, 15, 4, 0, 8, 119, 97, 115, 109, 45, 114, 112, 99, 3, 1, 3, 1, 21, 103, 111, 108, 101, 109, 58, 114, 112, 99, 47, 116, 121, 112, 101, 115, 64, 48, 46, 49, 46, 48, 5, 0, 1, 66, 6, 1, 113, 4, 12, 115, 116, 114, 105, 110, 103, 45, 118, 97, 108, 117, 101, 1, 115, 0, 9, 105, 110, 116, 45, 118, 97, 108, 117, 101, 1, 120, 0, 11, 102, 108, 111, 97, 116, 45, 118, 97, 108, 117, 101, 1, 117, 0, 10, 98, 111, 111, 108, 45, 118, 97, 108, 117, 101, 1, 127, 0, 4, 0, 11, 101, 118, 101, 110, 116, 45, 118, 97, 108, 117, 101, 3, 0, 0, 1, 114, 2, 4, 116, 105, 109, 101, 119, 5, 101, 118, 101, 110, 116, 1, 4, 0, 5, 101, 118, 101, 110, 116, 3, 0, 2, 1, 114, 1, 4, 110, 97, 109, 101, 115, 4, 0, 9, 119, 111, 114, 107, 101, 114, 45, 105, 100, 3, 0, 4, 3, 1, 23, 116, 105, 109, 101, 108, 105, 110, 101, 58, 114, 97, 119, 45, 101, 118, 101, 110, 116, 115, 47, 97, 112, 105, 5, 1, 2, 3, 0, 0, 3, 117, 114, 105, 2, 3, 0, 1, 11, 101, 118, 101, 110, 116, 45, 118, 97, 108, 117, 101, 2, 3, 0, 1, 5, 101, 118, 101, 110, 116, 2, 3, 0, 1, 9, 119, 111, 114, 107, 101, 114, 45, 105, 100, 1, 66, 23, 2, 3, 2, 1, 2, 4, 0, 3, 117, 114, 105, 3, 0, 0, 2, 3, 2, 1, 3, 4, 0, 11, 101, 118, 101, 110, 116, 45, 118, 97, 108, 117, 101, 3, 0, 2, 2, 3, 2, 1, 4, 4, 0, 5, 101, 118, 101, 110, 116, 3, 0, 4, 2, 3, 2, 1, 5, 4, 0, 9, 119, 111, 114, 107, 101, 114, 45, 105, 100, 3, 0, 6, 4, 0, 3, 97, 112, 105, 3, 1, 1, 105, 8, 1, 64, 1, 8, 108, 111, 99, 97, 116, 105, 111, 110, 1, 0, 9, 4, 0, 16, 91, 99, 111, 110, 115, 116, 114, 117, 99, 116, 111, 114, 93, 97, 112, 105, 1, 10, 1, 104, 8, 1, 106, 1, 115, 1, 115, 1, 64, 2, 4, 115, 101, 108, 102, 11, 6, 119, 111, 114, 107, 101, 114, 7, 0, 12, 4, 0, 22, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 105, 110, 105, 116, 105, 97, 108, 105, 122, 101, 1, 13, 1, 64, 2, 4, 115, 101, 108, 102, 11, 5, 111, 114, 100, 101, 114, 5, 1, 0, 4, 0, 21, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 97, 100, 100, 45, 101, 118, 101, 110, 116, 1, 14, 1, 64, 2, 4, 115, 101, 108, 102, 11, 4, 116, 105, 109, 101, 119, 0, 5, 4, 0, 21, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 103, 101, 116, 45, 101, 118, 101, 110, 116, 1, 15, 1, 112, 5, 1, 64, 1, 4, 115, 101, 108, 102, 11, 0, 16, 4, 0, 22, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 103, 101, 116, 45, 101, 118, 101, 110, 116, 115, 1, 17, 4, 1, 40, 116, 105, 109, 101, 108, 105, 110, 101, 58, 114, 97, 119, 45, 101, 118, 101, 110, 116, 115, 45, 115, 116, 117, 98, 47, 115, 116, 117, 98, 45, 114, 97, 119, 45, 101, 118, 101, 110, 116, 115, 5, 6, 11, 21, 1, 0, 15, 115, 116, 117, 98, 45, 114, 97, 119, 45, 101, 118, 101, 110, 116, 115, 3, 0, 0, 7, 192, 11, 1, 65, 2, 1, 65, 10, 1, 66, 29, 1, 122, 4, 0, 10, 110, 111, 100, 101, 45, 105, 110, 100, 101, 120, 3, 0, 0, 1, 114, 1, 5, 118, 97, 108, 117, 101, 115, 4, 0, 3, 117, 114, 105, 3, 0, 2, 1, 112, 1, 1, 107, 1, 1, 111, 2, 121, 5, 1, 112, 127, 1, 106, 1, 5, 1, 5, 1, 111, 2, 3, 119, 1, 113, 22, 12, 114, 101, 99, 111, 114, 100, 45, 118, 97, 108, 117, 101, 1, 4, 0, 13, 118, 97, 114, 105, 97, 110, 116, 45, 118, 97, 108, 117, 101, 1, 6, 0, 10, 101, 110, 117, 109, 45, 118, 97, 108, 117, 101, 1, 121, 0, 11, 102, 108, 97, 103, 115, 45, 118, 97, 108, 117, 101, 1, 7, 0, 11, 116, 117, 112, 108, 101, 45, 118, 97, 108, 117, 101, 1, 4, 0, 10, 108, 105, 115, 116, 45, 118, 97, 108, 117, 101, 1, 4, 0, 12, 111, 112, 116, 105, 111, 110, 45, 118, 97, 108, 117, 101, 1, 5, 0, 12, 114, 101, 115, 117, 108, 116, 45, 118, 97, 108, 117, 101, 1, 8, 0, 7, 112, 114, 105, 109, 45, 117, 56, 1, 125, 0, 8, 112, 114, 105, 109, 45, 117, 49, 54, 1, 123, 0, 8, 112, 114, 105, 109, 45, 117, 51, 50, 1, 121, 0, 8, 112, 114, 105, 109, 45, 117, 54, 52, 1, 119, 0, 7, 112, 114, 105, 109, 45, 115, 56, 1, 126, 0, 8, 112, 114, 105, 109, 45, 115, 49, 54, 1, 124, 0, 8, 112, 114, 105, 109, 45, 115, 51, 50, 1, 122, 0, 8, 112, 114, 105, 109, 45, 115, 54, 52, 1, 120, 0, 12, 112, 114, 105, 109, 45, 102, 108, 111, 97, 116, 51, 50, 1, 118, 0, 12, 112, 114, 105, 109, 45, 102, 108, 111, 97, 116, 54, 52, 1, 117, 0, 9, 112, 114, 105, 109, 45, 99, 104, 97, 114, 1, 116, 0, 9, 112, 114, 105, 109, 45, 98, 111, 111, 108, 1, 127, 0, 11, 112, 114, 105, 109, 45, 115, 116, 114, 105, 110, 103, 1, 115, 0, 6, 104, 97, 110, 100, 108, 101, 1, 9, 0, 4, 0, 8, 119, 105, 116, 45, 110, 111, 100, 101, 3, 0, 10, 1, 112, 11, 1, 114, 1, 5, 110, 111, 100, 101, 115, 12, 4, 0, 9, 119, 105, 116, 45, 118, 97, 108, 117, 101, 3, 0, 13, 1, 113, 4, 14, 112, 114, 111, 116, 111, 99, 111, 108, 45, 101, 114, 114, 111, 114, 1, 115, 0, 6, 100, 101, 110, 105, 101, 100, 1, 115, 0, 9, 110, 111, 116, 45, 102, 111, 117, 110, 100, 1, 115, 0, 21, 114, 101, 109, 111, 116, 101, 45, 105, 110, 116, 101, 114, 110, 97, 108, 45, 101, 114, 114, 111, 114, 1, 115, 0, 4, 0, 9, 114, 112, 99, 45, 101, 114, 114, 111, 114, 3, 0, 15, 4, 0, 8, 119, 97, 115, 109, 45, 114, 112, 99, 3, 1, 1, 105, 17, 1, 64, 1, 8, 108, 111, 99, 97, 116, 105, 111, 110, 3, 0, 18, 4, 0, 21, 91, 99, 111, 110, 115, 116, 114, 117, 99, 116, 111, 114, 93, 119, 97, 115, 109, 45, 114, 112, 99, 1, 19, 1, 104, 17, 1, 112, 14, 1, 106, 1, 14, 1, 16, 1, 64, 3, 4, 115, 101, 108, 102, 20, 13, 102, 117, 110, 99, 116, 105, 111, 110, 45, 110, 97, 109, 101, 115, 15, 102, 117, 110, 99, 116, 105, 111, 110, 45, 112, 97, 114, 97, 109, 115, 21, 0, 22, 4, 0, 33, 91, 109, 101, 116, 104, 111, 100, 93, 119, 97, 115, 109, 45, 114, 112, 99, 46, 105, 110, 118, 111, 107, 101, 45, 97, 110, 100, 45, 97, 119, 97, 105, 116, 1, 23, 1, 106, 0, 1, 16, 1, 64, 3, 4, 115, 101, 108, 102, 20, 13, 102, 117, 110, 99, 116, 105, 111, 110, 45, 110, 97, 109, 101, 115, 15, 102, 117, 110, 99, 116, 105, 111, 110, 45, 112, 97, 114, 97, 109, 115, 21, 0, 24, 4, 0, 23, 91, 109, 101, 116, 104, 111, 100, 93, 119, 97, 115, 109, 45, 114, 112, 99, 46, 105, 110, 118, 111, 107, 101, 1, 25, 3, 1, 21, 103, 111, 108, 101, 109, 58, 114, 112, 99, 47, 116, 121, 112, 101, 115, 64, 48, 46, 49, 46, 48, 5, 0, 1, 66, 16, 1, 113, 4, 12, 115, 116, 114, 105, 110, 103, 45, 118, 97, 108, 117, 101, 1, 115, 0, 9, 105, 110, 116, 45, 118, 97, 108, 117, 101, 1, 120, 0, 11, 102, 108, 111, 97, 116, 45, 118, 97, 108, 117, 101, 1, 117, 0, 10, 98, 111, 111, 108, 45, 118, 97, 108, 117, 101, 1, 127, 0, 4, 0, 11, 101, 118, 101, 110, 116, 45, 118, 97, 108, 117, 101, 3, 0, 0, 1, 114, 2, 4, 116, 105, 109, 101, 119, 5, 101, 118, 101, 110, 116, 1, 4, 0, 5, 101, 118, 101, 110, 116, 3, 0, 2, 1, 114, 1, 4, 110, 97, 109, 101, 115, 4, 0, 9, 119, 111, 114, 107, 101, 114, 45, 105, 100, 3, 0, 4, 1, 106, 1, 115, 1, 115, 1, 64, 1, 6, 119, 111, 114, 107, 101, 114, 5, 0, 6, 4, 0, 10, 105, 110, 105, 116, 105, 97, 108, 105, 122, 101, 1, 7, 1, 64, 1, 5, 111, 114, 100, 101, 114, 3, 1, 0, 4, 0, 9, 97, 100, 100, 45, 101, 118, 101, 110, 116, 1, 8, 1, 64, 1, 4, 116, 105, 109, 101, 119, 0, 3, 4, 0, 9, 103, 101, 116, 45, 101, 118, 101, 110, 116, 1, 9, 1, 112, 3, 1, 64, 0, 0, 10, 4, 0, 10, 103, 101, 116, 45, 101, 118, 101, 110, 116, 115, 1, 11, 3, 1, 23, 116, 105, 109, 101, 108, 105, 110, 101, 58, 114, 97, 119, 45, 101, 118, 101, 110, 116, 115, 47, 97, 112, 105, 5, 1, 2, 3, 0, 0, 3, 117, 114, 105, 2, 3, 0, 1, 11, 101, 118, 101, 110, 116, 45, 118, 97, 108, 117, 101, 2, 3, 0, 1, 5, 101, 118, 101, 110, 116, 2, 3, 0, 1, 9, 119, 111, 114, 107, 101, 114, 45, 105, 100, 1, 66, 23, 2, 3, 2, 1, 2, 4, 0, 3, 117, 114, 105, 3, 0, 0, 2, 3, 2, 1, 3, 4, 0, 11, 101, 118, 101, 110, 116, 45, 118, 97, 108, 117, 101, 3, 0, 2, 2, 3, 2, 1, 4, 4, 0, 5, 101, 118, 101, 110, 116, 3, 0, 4, 2, 3, 2, 1, 5, 4, 0, 9, 119, 111, 114, 107, 101, 114, 45, 105, 100, 3, 0, 6, 4, 0, 3, 97, 112, 105, 3, 1, 1, 105, 8, 1, 64, 1, 8, 108, 111, 99, 97, 116, 105, 111, 110, 1, 0, 9, 4, 0, 16, 91, 99, 111, 110, 115, 116, 114, 117, 99, 116, 111, 114, 93, 97, 112, 105, 1, 10, 1, 104, 8, 1, 106, 1, 115, 1, 115, 1, 64, 2, 4, 115, 101, 108, 102, 11, 6, 119, 111, 114, 107, 101, 114, 7, 0, 12, 4, 0, 22, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 105, 110, 105, 116, 105, 97, 108, 105, 122, 101, 1, 13, 1, 64, 2, 4, 115, 101, 108, 102, 11, 5, 111, 114, 100, 101, 114, 5, 1, 0, 4, 0, 21, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 97, 100, 100, 45, 101, 118, 101, 110, 116, 1, 14, 1, 64, 2, 4, 115, 101, 108, 102, 11, 4, 116, 105, 109, 101, 119, 0, 5, 4, 0, 21, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 103, 101, 116, 45, 101, 118, 101, 110, 116, 1, 15, 1, 112, 5, 1, 64, 1, 4, 115, 101, 108, 102, 11, 0, 16, 4, 0, 22, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 103, 101, 116, 45, 101, 118, 101, 110, 116, 115, 1, 17, 4, 1, 40, 116, 105, 109, 101, 108, 105, 110, 101, 58, 114, 97, 119, 45, 101, 118, 101, 110, 116, 115, 45, 115, 116, 117, 98, 47, 115, 116, 117, 98, 45, 114, 97, 119, 45, 101, 118, 101, 110, 116, 115, 5, 6, 4, 1, 49, 116, 105, 109, 101, 108, 105, 110, 101, 58, 114, 97, 119, 45, 101, 118, 101, 110, 116, 115, 45, 115, 116, 117, 98, 47, 119, 97, 115, 109, 45, 114, 112, 99, 45, 115, 116, 117, 98, 45, 114, 97, 119, 45, 101, 118, 101, 110, 116, 115, 4, 0, 11, 30, 1, 0, 24, 119, 97, 115, 109, 45, 114, 112, 99, 45, 115, 116, 117, 98, 45, 114, 97, 119, 45, 101, 118, 101, 110, 116, 115, 3, 2, 0, 0, 16, 12, 112, 97, 99, 107, 97, 103, 101, 45, 100, 111, 99, 115, 0, 123, 125, 0, 70, 9, 112, 114, 111, 100, 117, 99, 101, 114, 115, 1, 12, 112, 114, 111, 99, 101, 115, 115, 101, 100, 45, 98, 121, 2, 13, 119, 105, 116, 45, 99, 111, 109, 112, 111, 110, 101, 110, 116, 6, 48, 46, 49, 56, 46, 50, 16, 119, 105, 116, 45, 98, 105, 110, 100, 103, 101, 110, 45, 114, 117, 115, 116, 6, 48, 46, 49, 54, 46, 48];
+                    
+                    #[inline(never)]
+                    #[doc(hidden)]
+                    #[cfg(target_arch = "wasm32")]
+                    pub fn __link_section() {}
+                    

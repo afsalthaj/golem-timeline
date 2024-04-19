@@ -294,9 +294,9 @@ checksum = "4271d37baee1b8c7e4b708028c57d816cf9d2434acb33a549475f78c181f6253"
 
 [[package]]
 name = "golem-wasm-rpc"
-version = "0.0.13"
+version = "0.0.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c003f6c9b2d632caf4ada88eea0773b09ce863f54d86b66239b81613b4e8bd98"
+checksum = "11fda52eb0859da479202712a3f06f723981bbef39d5c91a0738fffac49ecf9a"
 dependencies = [
  "prost-build",
  "wit-bindgen",

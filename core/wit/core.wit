@@ -86,7 +86,7 @@ interface api {
     op: event-predicate-op
   }
 
-  initialize-timeline: func(timeline: timeline-op) -> ();
+  initialize-timeline: func(timeline: timeline-op) -> result<string, string>;
 }
 
 world core {

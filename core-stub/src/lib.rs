@@ -18,7 +18,7 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
     fn initialize_timeline(
         &self,
         timeline: crate::bindings::timeline::core::api::TimelineOp,
-    ) -> () {
+    ) -> Result<String, String> {
         let result = self
             .rpc
             .invoke_and_await(
@@ -393,6 +393,32 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                     "Failed to invoke remote {}", "timeline:core/api/initialize-timeline"
                 ),
             );
-        ()
+        ({
+            let result = result
+                .tuple_element(0)
+                .expect("tuple not found")
+                .result()
+                .expect("result not found");
+            match result {
+                Ok(ok_value) => {
+                    Ok(
+                        ok_value
+                            .expect("result ok value not found")
+                            .string()
+                            .expect("string not found")
+                            .to_string(),
+                    )
+                }
+                Err(err_value) => {
+                    Err(
+                        err_value
+                            .expect("result err value not found")
+                            .string()
+                            .expect("string not found")
+                            .to_string(),
+                    )
+                }
+            }
+        })
     }
 }

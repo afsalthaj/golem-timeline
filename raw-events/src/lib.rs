@@ -21,8 +21,9 @@ fn with_state<T>(f: impl FnOnce(&mut State) -> T) -> T {
 }
 
 impl Guest for Component {
-    fn initialize(worker: WorkerId) {
-        dbg!("Initiating worker: {}", worker.name);
+    fn initialize(worker: WorkerId) -> Result<String, String> {
+        dbg!("Initiating raw events: {}", worker.name);
+        Ok("Succeeded".to_string())
     }
 
     fn add_event(order: Event) {

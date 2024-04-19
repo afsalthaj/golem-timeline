@@ -846,1127 +846,1564 @@ pub mod golem {
                     }
                   }
                 }
-                
-              }
-              
-            }
-          }
-          pub mod timeline {
-            pub mod core {
-              
-              #[allow(clippy::all)]
-              pub mod api {
-                #[used]
-                #[doc(hidden)]
-                #[cfg(target_arch = "wasm32")]
-                static __FORCE_SECTION_REF: fn() = super::super::super::__link_section;
-                pub type EventValue = super::super::super::timeline::raw_events::api::EventValue;
-                pub type NodeIndex = i32;
-                #[derive(Clone)]
-                pub struct Server {
-                  pub worker_id: wit_bindgen::rt::string::String,
-                  pub template_id: wit_bindgen::rt::string::String,
-                }
-                impl ::core::fmt::Debug for Server {
-                  fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-                    f.debug_struct("Server").field("worker-id", &self.worker_id).field("template-id", &self.template_id).finish()
-                  }
-                }
-                #[derive(Clone)]
-                pub struct TimelineWithServer {
-                  pub server: Server,
-                  pub timeline: NodeIndex,
-                }
-                impl ::core::fmt::Debug for TimelineWithServer {
-                  fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-                    f.debug_struct("TimelineWithServer").field("server", &self.server).field("timeline", &self.timeline).finish()
-                  }
-                }
-                #[repr(u8)]
-                #[derive(Clone, Copy, Eq, PartialEq)]
-                pub enum TimelineConstantComparator {
-                  GreaterThan,
-                  GreaterThanEqual,
-                  LessThan,
-                  LessThanEqual,
-                }
-                impl ::core::fmt::Debug for TimelineConstantComparator {
-                  fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-                    match self {
-                      TimelineConstantComparator::GreaterThan => {
-                        f.debug_tuple("TimelineConstantComparator::GreaterThan").finish()
-                      }
-                      TimelineConstantComparator::GreaterThanEqual => {
-                        f.debug_tuple("TimelineConstantComparator::GreaterThanEqual").finish()
-                      }
-                      TimelineConstantComparator::LessThan => {
-                        f.debug_tuple("TimelineConstantComparator::LessThan").finish()
-                      }
-                      TimelineConstantComparator::LessThanEqual => {
-                        f.debug_tuple("TimelineConstantComparator::LessThanEqual").finish()
-                      }
-                    }
-                  }
-                }
-                
-                impl TimelineConstantComparator{
-                  pub(crate) unsafe fn _lift(val: u8) -> TimelineConstantComparator{
-                    if !cfg!(debug_assertions) {
-                      return ::core::mem::transmute(val);
-                    }
-                    
-                    match val {
-                      0 => TimelineConstantComparator::GreaterThan,
-                      1 => TimelineConstantComparator::GreaterThanEqual,
-                      2 => TimelineConstantComparator::LessThan,
-                      3 => TimelineConstantComparator::LessThanEqual,
-                      
-                      _ => panic!("invalid enum discriminant"),
-                    }
-                  }
-                }
-                
-                /// A  timeline-constant-compared corresponds to classic timeline operations
-                /// in the paper
-                /// A primitive timeline is also maintained in a separate worker/server
-                #[derive(Clone)]
-                pub struct TimelineConstantCompared {
-                  pub op: TimelineConstantComparator,
-                  pub timeline: NodeIndex,
-                  pub value: EventValue,
-                  pub server: Server,
-                }
-                impl ::core::fmt::Debug for TimelineConstantCompared {
-                  fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-                    f.debug_struct("TimelineConstantCompared").field("op", &self.op).field("timeline", &self.timeline).field("value", &self.value).field("server", &self.server).finish()
-                  }
-                }
-                #[derive(Clone)]
-                pub struct TimelineNegated {
-                  pub timeline: NodeIndex,
-                  pub server: Server,
-                }
-                impl ::core::fmt::Debug for TimelineNegated {
-                  fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-                    f.debug_struct("TimelineNegated").field("timeline", &self.timeline).field("server", &self.server).finish()
-                  }
-                }
-                #[repr(u8)]
-                #[derive(Clone, Copy, Eq, PartialEq)]
-                pub enum EventPredicateOp {
-                  Equal,
-                  GreaterThan,
-                  LessThan,
-                }
-                impl ::core::fmt::Debug for EventPredicateOp {
-                  fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-                    match self {
-                      EventPredicateOp::Equal => {
-                        f.debug_tuple("EventPredicateOp::Equal").finish()
-                      }
-                      EventPredicateOp::GreaterThan => {
-                        f.debug_tuple("EventPredicateOp::GreaterThan").finish()
-                      }
-                      EventPredicateOp::LessThan => {
-                        f.debug_tuple("EventPredicateOp::LessThan").finish()
-                      }
-                    }
-                  }
-                }
-                
-                impl EventPredicateOp{
-                  pub(crate) unsafe fn _lift(val: u8) -> EventPredicateOp{
-                    if !cfg!(debug_assertions) {
-                      return ::core::mem::transmute(val);
-                    }
-                    
-                    match val {
-                      0 => EventPredicateOp::Equal,
-                      1 => EventPredicateOp::GreaterThan,
-                      2 => EventPredicateOp::LessThan,
-                      
-                      _ => panic!("invalid enum discriminant"),
-                    }
-                  }
-                }
-                
-                #[derive(Clone)]
-                pub struct EventPredicate {
-                  pub col_name: wit_bindgen::rt::string::String,
-                  pub value: EventValue,
-                  pub op: EventPredicateOp,
-                }
-                impl ::core::fmt::Debug for EventPredicate {
-                  fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-                    f.debug_struct("EventPredicate").field("col-name", &self.col_name).field("value", &self.value).field("op", &self.op).finish()
-                  }
-                }
-                /// A filtered timeline is operation on state dynamic timelines
-                /// applied with an event filter
-                /// TLHasExistedWithIn(col("userAction" ) == "seek")
-                /// seek and col("userAction) is event-predicate
-                /// and == is filter-op
-                /// A filtered timeline is also maintained in a separate worker/server
-                #[derive(Clone)]
-                pub struct TimelineWithEventPredicate {
-                  pub timeline: NodeIndex,
-                  pub event_predicate: EventPredicate,
-                  pub server: Server,
-                }
-                impl ::core::fmt::Debug for TimelineWithEventPredicate {
-                  fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-                    f.debug_struct("TimelineWithEventPredicate").field("timeline", &self.timeline).field("event-predicate", &self.event_predicate).field("server", &self.server).finish()
-                  }
-                }
-                #[derive(Clone)]
-                pub struct TimelineWithEventPredicateWithin {
-                  pub filtered: TimelineWithEventPredicate,
-                  pub time: u64,
-                }
-                impl ::core::fmt::Debug for TimelineWithEventPredicateWithin {
-                  fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-                    f.debug_struct("TimelineWithEventPredicateWithin").field("filtered", &self.filtered).field("time", &self.time).finish()
-                  }
-                }
-                #[derive(Clone)]
-                pub enum TimelineNode{
-                  Leaf(Server),
-                  TimelineComparison(TimelineConstantCompared),
-                  TimelineNegation(TimelineNegated),
-                  TlHasExisted(TimelineWithEventPredicate),
-                  TlHasExistedWithin(TimelineWithEventPredicateWithin),
-                  TlDurationWhere(TimelineWithServer),
-                  TlDurationInCurState(TimelineWithServer),
-                }
-                impl ::core::fmt::Debug for TimelineNode {
-                  fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-                    match self {
-                      TimelineNode::Leaf(e) => {
-                        f.debug_tuple("TimelineNode::Leaf").field(e).finish()
-                      }
-                      TimelineNode::TimelineComparison(e) => {
-                        f.debug_tuple("TimelineNode::TimelineComparison").field(e).finish()
-                      }
-                      TimelineNode::TimelineNegation(e) => {
-                        f.debug_tuple("TimelineNode::TimelineNegation").field(e).finish()
-                      }
-                      TimelineNode::TlHasExisted(e) => {
-                        f.debug_tuple("TimelineNode::TlHasExisted").field(e).finish()
-                      }
-                      TimelineNode::TlHasExistedWithin(e) => {
-                        f.debug_tuple("TimelineNode::TlHasExistedWithin").field(e).finish()
-                      }
-                      TimelineNode::TlDurationWhere(e) => {
-                        f.debug_tuple("TimelineNode::TlDurationWhere").field(e).finish()
-                      }
-                      TimelineNode::TlDurationInCurState(e) => {
-                        f.debug_tuple("TimelineNode::TlDurationInCurState").field(e).finish()
-                      }
-                    }
-                  }
-                }
-                #[derive(Clone)]
-                pub struct TimelineOp {
-                  pub nodes: wit_bindgen::rt::vec::Vec::<TimelineNode>,
-                }
-                impl ::core::fmt::Debug for TimelineOp {
-                  fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-                    f.debug_struct("TimelineOp").field("nodes", &self.nodes).finish()
-                  }
-                }
-                #[allow(unused_unsafe, clippy::all)]
-                pub fn initialize_timeline(timeline: &TimelineOp,){
-                  
-                  #[allow(unused_imports)]
-                  use wit_bindgen::rt::{alloc, vec::Vec, string::String};
-                  unsafe {
-                    let TimelineOp{ nodes:nodes0, } = timeline;
-                    let vec39 = nodes0;
-                    let len39 = vec39.len() as i32;
-                    let layout39 = alloc::Layout::from_size_align_unchecked(vec39.len() * 72, 8);
-                    let result39 = if layout39.size() != 0
-                    {
-                      let ptr = alloc::alloc(layout39);
-                      if ptr.is_null()
-                      {
-                        alloc::handle_alloc_error(layout39);
-                      }
-                      ptr
-                    }else {{
-                      ::core::ptr::null_mut()
-                    }};
-                    for (i, e) in vec39.into_iter().enumerate() {
-                      let base = result39 as i32 + (i as i32) * 72;
-                      {
-                        match e {
-                          TimelineNode::Leaf(e) => {
-                            *((base + 0) as *mut u8) = (0i32) as u8;
-                            let Server{ worker_id:worker_id1, template_id:template_id1, } = e;
-                            let vec2 = worker_id1;
-                            let ptr2 = vec2.as_ptr() as i32;
-                            let len2 = vec2.len() as i32;
-                            *((base + 12) as *mut i32) = len2;
-                            *((base + 8) as *mut i32) = ptr2;
-                            let vec3 = template_id1;
-                            let ptr3 = vec3.as_ptr() as i32;
-                            let len3 = vec3.len() as i32;
-                            *((base + 20) as *mut i32) = len3;
-                            *((base + 16) as *mut i32) = ptr3;
-                          },
-                          TimelineNode::TimelineComparison(e) => {
-                            *((base + 0) as *mut u8) = (1i32) as u8;
-                            let TimelineConstantCompared{ op:op4, timeline:timeline4, value:value4, server:server4, } = e;
-                            *((base + 8) as *mut u8) = (op4.clone() as i32) as u8;
-                            *((base + 12) as *mut i32) = wit_bindgen::rt::as_i32(timeline4);
-                            use super::super::super::timeline::raw_events::api::EventValue as V6;
-                            match value4 {
-                              V6::StringValue(e) => {
-                                *((base + 16) as *mut u8) = (0i32) as u8;
-                                let vec5 = e;
-                                let ptr5 = vec5.as_ptr() as i32;
-                                let len5 = vec5.len() as i32;
-                                *((base + 28) as *mut i32) = len5;
-                                *((base + 24) as *mut i32) = ptr5;
-                              },
-                              V6::IntValue(e) => {
-                                *((base + 16) as *mut u8) = (1i32) as u8;
-                                *((base + 24) as *mut i64) = wit_bindgen::rt::as_i64(e);
-                              },
-                              V6::FloatValue(e) => {
-                                *((base + 16) as *mut u8) = (2i32) as u8;
-                                *((base + 24) as *mut f64) = wit_bindgen::rt::as_f64(e);
-                              },
-                              V6::BoolValue(e) => {
-                                *((base + 16) as *mut u8) = (3i32) as u8;
-                                *((base + 24) as *mut u8) = (match e { true => 1, false => 0 }) as u8;
-                              },
-                            }
-                            let Server{ worker_id:worker_id7, template_id:template_id7, } = server4;
-                            let vec8 = worker_id7;
-                            let ptr8 = vec8.as_ptr() as i32;
-                            let len8 = vec8.len() as i32;
-                            *((base + 36) as *mut i32) = len8;
-                            *((base + 32) as *mut i32) = ptr8;
-                            let vec9 = template_id7;
-                            let ptr9 = vec9.as_ptr() as i32;
-                            let len9 = vec9.len() as i32;
-                            *((base + 44) as *mut i32) = len9;
-                            *((base + 40) as *mut i32) = ptr9;
-                          },
-                          TimelineNode::TimelineNegation(e) => {
-                            *((base + 0) as *mut u8) = (2i32) as u8;
-                            let TimelineNegated{ timeline:timeline10, server:server10, } = e;
-                            *((base + 8) as *mut i32) = wit_bindgen::rt::as_i32(timeline10);
-                            let Server{ worker_id:worker_id11, template_id:template_id11, } = server10;
-                            let vec12 = worker_id11;
-                            let ptr12 = vec12.as_ptr() as i32;
-                            let len12 = vec12.len() as i32;
-                            *((base + 16) as *mut i32) = len12;
-                            *((base + 12) as *mut i32) = ptr12;
-                            let vec13 = template_id11;
-                            let ptr13 = vec13.as_ptr() as i32;
-                            let len13 = vec13.len() as i32;
-                            *((base + 24) as *mut i32) = len13;
-                            *((base + 20) as *mut i32) = ptr13;
-                          },
-                          TimelineNode::TlHasExisted(e) => {
-                            *((base + 0) as *mut u8) = (3i32) as u8;
-                            let TimelineWithEventPredicate{ timeline:timeline14, event_predicate:event_predicate14, server:server14, } = e;
-                            *((base + 8) as *mut i32) = wit_bindgen::rt::as_i32(timeline14);
-                            let EventPredicate{ col_name:col_name15, value:value15, op:op15, } = event_predicate14;
-                            let vec16 = col_name15;
-                            let ptr16 = vec16.as_ptr() as i32;
-                            let len16 = vec16.len() as i32;
-                            *((base + 20) as *mut i32) = len16;
-                            *((base + 16) as *mut i32) = ptr16;
-                            use super::super::super::timeline::raw_events::api::EventValue as V18;
-                            match value15 {
-                              V18::StringValue(e) => {
-                                *((base + 24) as *mut u8) = (0i32) as u8;
-                                let vec17 = e;
-                                let ptr17 = vec17.as_ptr() as i32;
-                                let len17 = vec17.len() as i32;
-                                *((base + 36) as *mut i32) = len17;
-                                *((base + 32) as *mut i32) = ptr17;
-                              },
-                              V18::IntValue(e) => {
-                                *((base + 24) as *mut u8) = (1i32) as u8;
-                                *((base + 32) as *mut i64) = wit_bindgen::rt::as_i64(e);
-                              },
-                              V18::FloatValue(e) => {
-                                *((base + 24) as *mut u8) = (2i32) as u8;
-                                *((base + 32) as *mut f64) = wit_bindgen::rt::as_f64(e);
-                              },
-                              V18::BoolValue(e) => {
-                                *((base + 24) as *mut u8) = (3i32) as u8;
-                                *((base + 32) as *mut u8) = (match e { true => 1, false => 0 }) as u8;
-                              },
-                            }
-                            *((base + 40) as *mut u8) = (op15.clone() as i32) as u8;
-                            let Server{ worker_id:worker_id19, template_id:template_id19, } = server14;
-                            let vec20 = worker_id19;
-                            let ptr20 = vec20.as_ptr() as i32;
-                            let len20 = vec20.len() as i32;
-                            *((base + 52) as *mut i32) = len20;
-                            *((base + 48) as *mut i32) = ptr20;
-                            let vec21 = template_id19;
-                            let ptr21 = vec21.as_ptr() as i32;
-                            let len21 = vec21.len() as i32;
-                            *((base + 60) as *mut i32) = len21;
-                            *((base + 56) as *mut i32) = ptr21;
-                          },
-                          TimelineNode::TlHasExistedWithin(e) => {
-                            *((base + 0) as *mut u8) = (4i32) as u8;
-                            let TimelineWithEventPredicateWithin{ filtered:filtered22, time:time22, } = e;
-                            let TimelineWithEventPredicate{ timeline:timeline23, event_predicate:event_predicate23, server:server23, } = filtered22;
-                            *((base + 8) as *mut i32) = wit_bindgen::rt::as_i32(timeline23);
-                            let EventPredicate{ col_name:col_name24, value:value24, op:op24, } = event_predicate23;
-                            let vec25 = col_name24;
-                            let ptr25 = vec25.as_ptr() as i32;
-                            let len25 = vec25.len() as i32;
-                            *((base + 20) as *mut i32) = len25;
-                            *((base + 16) as *mut i32) = ptr25;
-                            use super::super::super::timeline::raw_events::api::EventValue as V27;
-                            match value24 {
-                              V27::StringValue(e) => {
-                                *((base + 24) as *mut u8) = (0i32) as u8;
-                                let vec26 = e;
-                                let ptr26 = vec26.as_ptr() as i32;
-                                let len26 = vec26.len() as i32;
-                                *((base + 36) as *mut i32) = len26;
-                                *((base + 32) as *mut i32) = ptr26;
-                              },
-                              V27::IntValue(e) => {
-                                *((base + 24) as *mut u8) = (1i32) as u8;
-                                *((base + 32) as *mut i64) = wit_bindgen::rt::as_i64(e);
-                              },
-                              V27::FloatValue(e) => {
-                                *((base + 24) as *mut u8) = (2i32) as u8;
-                                *((base + 32) as *mut f64) = wit_bindgen::rt::as_f64(e);
-                              },
-                              V27::BoolValue(e) => {
-                                *((base + 24) as *mut u8) = (3i32) as u8;
-                                *((base + 32) as *mut u8) = (match e { true => 1, false => 0 }) as u8;
-                              },
-                            }
-                            *((base + 40) as *mut u8) = (op24.clone() as i32) as u8;
-                            let Server{ worker_id:worker_id28, template_id:template_id28, } = server23;
-                            let vec29 = worker_id28;
-                            let ptr29 = vec29.as_ptr() as i32;
-                            let len29 = vec29.len() as i32;
-                            *((base + 52) as *mut i32) = len29;
-                            *((base + 48) as *mut i32) = ptr29;
-                            let vec30 = template_id28;
-                            let ptr30 = vec30.as_ptr() as i32;
-                            let len30 = vec30.len() as i32;
-                            *((base + 60) as *mut i32) = len30;
-                            *((base + 56) as *mut i32) = ptr30;
-                            *((base + 64) as *mut i64) = wit_bindgen::rt::as_i64(time22);
-                          },
-                          TimelineNode::TlDurationWhere(e) => {
-                            *((base + 0) as *mut u8) = (5i32) as u8;
-                            let TimelineWithServer{ server:server31, timeline:timeline31, } = e;
-                            let Server{ worker_id:worker_id32, template_id:template_id32, } = server31;
-                            let vec33 = worker_id32;
-                            let ptr33 = vec33.as_ptr() as i32;
-                            let len33 = vec33.len() as i32;
-                            *((base + 12) as *mut i32) = len33;
-                            *((base + 8) as *mut i32) = ptr33;
-                            let vec34 = template_id32;
-                            let ptr34 = vec34.as_ptr() as i32;
-                            let len34 = vec34.len() as i32;
-                            *((base + 20) as *mut i32) = len34;
-                            *((base + 16) as *mut i32) = ptr34;
-                            *((base + 24) as *mut i32) = wit_bindgen::rt::as_i32(timeline31);
-                          },
-                          TimelineNode::TlDurationInCurState(e) => {
-                            *((base + 0) as *mut u8) = (6i32) as u8;
-                            let TimelineWithServer{ server:server35, timeline:timeline35, } = e;
-                            let Server{ worker_id:worker_id36, template_id:template_id36, } = server35;
-                            let vec37 = worker_id36;
-                            let ptr37 = vec37.as_ptr() as i32;
-                            let len37 = vec37.len() as i32;
-                            *((base + 12) as *mut i32) = len37;
-                            *((base + 8) as *mut i32) = ptr37;
-                            let vec38 = template_id36;
-                            let ptr38 = vec38.as_ptr() as i32;
-                            let len38 = vec38.len() as i32;
-                            *((base + 20) as *mut i32) = len38;
-                            *((base + 16) as *mut i32) = ptr38;
-                            *((base + 24) as *mut i32) = wit_bindgen::rt::as_i32(timeline35);
-                          },
-                        }
-                      }
-                    }
-                    
-                    #[cfg(target_arch = "wasm32")]
-                    #[link(wasm_import_module = "timeline:core/api")]
-                    extern "C" {
-                      #[link_name = "initialize-timeline"]
-                      fn wit_import(_: i32, _: i32, );
-                    }
-                    
-                    #[cfg(not(target_arch = "wasm32"))]
-                    fn wit_import(_: i32, _: i32, ){ unreachable!() }
-                    wit_import(result39 as i32, len39);
-                    if layout39.size() != 0 {
-                      alloc::dealloc(result39, layout39);
-                    }
-                  }
-                }
-                
-              }
-              
-            }
-            pub mod core_stub {
-              
-              #[allow(clippy::all)]
-              pub mod stub_core {
-                #[used]
-                #[doc(hidden)]
-                #[cfg(target_arch = "wasm32")]
-                static __FORCE_SECTION_REF: fn() = super::super::super::__link_section;
-                pub type Uri = super::super::super::golem::rpc::types::Uri;
-                pub type TimelineOp = super::super::super::timeline::core::api::TimelineOp;
-                
-                #[derive(Debug)]
-                #[repr(transparent)]
-                pub struct Api{
-                  handle: wit_bindgen::rt::Resource<Api>,
-                }
-                
-                impl Api{
-                  #[doc(hidden)]
-                  pub unsafe fn from_handle(handle: u32) -> Self {
-                    Self {
-                      handle: wit_bindgen::rt::Resource::from_handle(handle),
-                    }
-                  }
-                  
-                  #[doc(hidden)]
-                  pub fn into_handle(self) -> u32 {
-                    wit_bindgen::rt::Resource::into_handle(self.handle)
-                  }
-                  
-                  #[doc(hidden)]
-                  pub fn handle(&self) -> u32 {
-                    wit_bindgen::rt::Resource::handle(&self.handle)
-                  }
-                }
-                
-                
-                unsafe impl wit_bindgen::rt::WasmResource for Api{
-                  #[inline]
-                  unsafe fn drop(_handle: u32) {
-                    #[cfg(not(target_arch = "wasm32"))]
-                    unreachable!();
-                    
-                    #[cfg(target_arch = "wasm32")]
-                    {
-                      #[link(wasm_import_module = "timeline:core-stub/stub-core")]
-                      extern "C" {
-                        #[link_name = "[resource-drop]api"]
-                        fn drop(_: u32);
-                      }
-                      
-                      drop(_handle);
-                    }
-                  }
-                }
-                
-                impl Api {
+                impl WasmRpc {
                   #[allow(unused_unsafe, clippy::all)]
-                  pub fn new(location: &Uri,) -> Self{
+                  pub fn invoke(&self,function_name: &str,function_params: &[WitValue],) -> Result<(),RpcError>{
                     
                     #[allow(unused_imports)]
                     use wit_bindgen::rt::{alloc, vec::Vec, string::String};
                     unsafe {
-                      let super::super::super::golem::rpc::types::Uri{ value:value0, } = location;
-                      let vec1 = value0;
-                      let ptr1 = vec1.as_ptr() as i32;
-                      let len1 = vec1.len() as i32;
+                      let mut cleanup_list = Vec::new();
                       
-                      #[cfg(target_arch = "wasm32")]
-                      #[link(wasm_import_module = "timeline:core-stub/stub-core")]
-                      extern "C" {
-                        #[link_name = "[constructor]api"]
-                        fn wit_import(_: i32, _: i32, ) -> i32;
-                      }
-                      
-                      #[cfg(not(target_arch = "wasm32"))]
-                      fn wit_import(_: i32, _: i32, ) -> i32{ unreachable!() }
-                      let ret = wit_import(ptr1, len1);
-                      Api::from_handle(ret as u32)
-                    }
-                  }
-                }
-                impl Api {
-                  #[allow(unused_unsafe, clippy::all)]
-                  pub fn initialize_timeline(&self,timeline: &TimelineOp,){
-                    
-                    #[allow(unused_imports)]
-                    use wit_bindgen::rt::{alloc, vec::Vec, string::String};
-                    unsafe {
-                      let super::super::super::timeline::core::api::TimelineOp{ nodes:nodes0, } = timeline;
-                      let vec40 = nodes0;
-                      let len40 = vec40.len() as i32;
-                      let layout40 = alloc::Layout::from_size_align_unchecked(vec40.len() * 72, 8);
-                      let result40 = if layout40.size() != 0
+                      #[repr(align(4))]
+                      struct RetArea([u8; 16]);
+                      let mut ret_area = ::core::mem::MaybeUninit::<RetArea>::uninit();
+                      let vec0 = function_name;
+                      let ptr0 = vec0.as_ptr() as i32;
+                      let len0 = vec0.len() as i32;
+                      let vec12 = function_params;
+                      let len12 = vec12.len() as i32;
+                      let layout12 = alloc::Layout::from_size_align_unchecked(vec12.len() * 8, 4);
+                      let result12 = if layout12.size() != 0
                       {
-                        let ptr = alloc::alloc(layout40);
+                        let ptr = alloc::alloc(layout12);
                         if ptr.is_null()
                         {
-                          alloc::handle_alloc_error(layout40);
+                          alloc::handle_alloc_error(layout12);
                         }
                         ptr
                       }else {{
                         ::core::ptr::null_mut()
                       }};
-                      for (i, e) in vec40.into_iter().enumerate() {
-                        let base = result40 as i32 + (i as i32) * 72;
+                      for (i, e) in vec12.into_iter().enumerate() {
+                        let base = result12 as i32 + (i as i32) * 8;
                         {
-                          use super::super::super::timeline::core::api::TimelineNode as V39;
-                          match e {
-                            V39::Leaf(e) => {
-                              *((base + 0) as *mut u8) = (0i32) as u8;
-                              let super::super::super::timeline::core::api::Server{ worker_id:worker_id1, template_id:template_id1, } = e;
-                              let vec2 = worker_id1;
-                              let ptr2 = vec2.as_ptr() as i32;
-                              let len2 = vec2.len() as i32;
-                              *((base + 12) as *mut i32) = len2;
-                              *((base + 8) as *mut i32) = ptr2;
-                              let vec3 = template_id1;
-                              let ptr3 = vec3.as_ptr() as i32;
-                              let len3 = vec3.len() as i32;
-                              *((base + 20) as *mut i32) = len3;
-                              *((base + 16) as *mut i32) = ptr3;
-                            },
-                            V39::TimelineComparison(e) => {
-                              *((base + 0) as *mut u8) = (1i32) as u8;
-                              let super::super::super::timeline::core::api::TimelineConstantCompared{ op:op4, timeline:timeline4, value:value4, server:server4, } = e;
-                              *((base + 8) as *mut u8) = (op4.clone() as i32) as u8;
-                              *((base + 12) as *mut i32) = wit_bindgen::rt::as_i32(timeline4);
-                              use super::super::super::timeline::raw_events::api::EventValue as V6;
-                              match value4 {
-                                V6::StringValue(e) => {
-                                  *((base + 16) as *mut u8) = (0i32) as u8;
-                                  let vec5 = e;
-                                  let ptr5 = vec5.as_ptr() as i32;
-                                  let len5 = vec5.len() as i32;
-                                  *((base + 28) as *mut i32) = len5;
-                                  *((base + 24) as *mut i32) = ptr5;
+                          let WitValue{ nodes:nodes1, } = e;
+                          let vec11 = nodes1;
+                          let len11 = vec11.len() as i32;
+                          let layout11 = alloc::Layout::from_size_align_unchecked(vec11.len() * 24, 8);
+                          let result11 = if layout11.size() != 0
+                          {
+                            let ptr = alloc::alloc(layout11);
+                            if ptr.is_null()
+                            {
+                              alloc::handle_alloc_error(layout11);
+                            }
+                            ptr
+                          }else {{
+                            ::core::ptr::null_mut()
+                          }};
+                          for (i, e) in vec11.into_iter().enumerate() {
+                            let base = result11 as i32 + (i as i32) * 24;
+                            {
+                              match e {
+                                WitNode::RecordValue(e) => {
+                                  *((base + 0) as *mut u8) = (0i32) as u8;
+                                  let vec2 = e;
+                                  let ptr2 = vec2.as_ptr() as i32;
+                                  let len2 = vec2.len() as i32;
+                                  *((base + 12) as *mut i32) = len2;
+                                  *((base + 8) as *mut i32) = ptr2;
                                 },
-                                V6::IntValue(e) => {
-                                  *((base + 16) as *mut u8) = (1i32) as u8;
-                                  *((base + 24) as *mut i64) = wit_bindgen::rt::as_i64(e);
-                                },
-                                V6::FloatValue(e) => {
-                                  *((base + 16) as *mut u8) = (2i32) as u8;
-                                  *((base + 24) as *mut f64) = wit_bindgen::rt::as_f64(e);
-                                },
-                                V6::BoolValue(e) => {
-                                  *((base + 16) as *mut u8) = (3i32) as u8;
-                                  *((base + 24) as *mut u8) = (match e { true => 1, false => 0 }) as u8;
-                                },
+                                WitNode::VariantValue(e) => {
+                                  *((base + 0) as *mut u8) = (1i32) as u8;
+                                  let (t3_0, t3_1, ) = e;
+                                  *((base + 8) as *mut i32) = wit_bindgen::rt::as_i32(t3_0);
+                                  match t3_1 {
+                                    Some(e) => {
+                                      *((base + 12) as *mut u8) = (1i32) as u8;
+                                      *((base + 16) as *mut i32) = wit_bindgen::rt::as_i32(e);
+                                    },
+                                    None => {
+                                      {
+                                        *((base + 12) as *mut u8) = (0i32) as u8;
+                                      }
+                                    },
+                                  };},
+                                  WitNode::EnumValue(e) => {
+                                    *((base + 0) as *mut u8) = (2i32) as u8;
+                                    *((base + 8) as *mut i32) = wit_bindgen::rt::as_i32(e);
+                                  },
+                                  WitNode::FlagsValue(e) => {
+                                    *((base + 0) as *mut u8) = (3i32) as u8;
+                                    let vec4 = e;
+                                    let len4 = vec4.len() as i32;
+                                    let layout4 = alloc::Layout::from_size_align_unchecked(vec4.len() * 1, 1);
+                                    let result4 = if layout4.size() != 0
+                                    {
+                                      let ptr = alloc::alloc(layout4);
+                                      if ptr.is_null()
+                                      {
+                                        alloc::handle_alloc_error(layout4);
+                                      }
+                                      ptr
+                                    }else {{
+                                      ::core::ptr::null_mut()
+                                    }};
+                                    for (i, e) in vec4.into_iter().enumerate() {
+                                      let base = result4 as i32 + (i as i32) * 1;
+                                      {
+                                        *((base + 0) as *mut u8) = (match e { true => 1, false => 0 }) as u8;
+                                      }
+                                    }
+                                    *((base + 12) as *mut i32) = len4;
+                                    *((base + 8) as *mut i32) = result4 as i32;
+                                    cleanup_list.extend_from_slice(&[(result4, layout4),]);
+                                  },
+                                  WitNode::TupleValue(e) => {
+                                    *((base + 0) as *mut u8) = (4i32) as u8;
+                                    let vec5 = e;
+                                    let ptr5 = vec5.as_ptr() as i32;
+                                    let len5 = vec5.len() as i32;
+                                    *((base + 12) as *mut i32) = len5;
+                                    *((base + 8) as *mut i32) = ptr5;
+                                  },
+                                  WitNode::ListValue(e) => {
+                                    *((base + 0) as *mut u8) = (5i32) as u8;
+                                    let vec6 = e;
+                                    let ptr6 = vec6.as_ptr() as i32;
+                                    let len6 = vec6.len() as i32;
+                                    *((base + 12) as *mut i32) = len6;
+                                    *((base + 8) as *mut i32) = ptr6;
+                                  },
+                                  WitNode::OptionValue(e) => {
+                                    *((base + 0) as *mut u8) = (6i32) as u8;
+                                    match e {
+                                      Some(e) => {
+                                        *((base + 8) as *mut u8) = (1i32) as u8;
+                                        *((base + 12) as *mut i32) = wit_bindgen::rt::as_i32(e);
+                                      },
+                                      None => {
+                                        {
+                                          *((base + 8) as *mut u8) = (0i32) as u8;
+                                        }
+                                      },
+                                    };},
+                                    WitNode::ResultValue(e) => {
+                                      *((base + 0) as *mut u8) = (7i32) as u8;
+                                      match e {
+                                        Ok(e) => { {
+                                          *((base + 8) as *mut u8) = (0i32) as u8;
+                                          match e {
+                                            Some(e) => {
+                                              *((base + 12) as *mut u8) = (1i32) as u8;
+                                              *((base + 16) as *mut i32) = wit_bindgen::rt::as_i32(e);
+                                            },
+                                            None => {
+                                              {
+                                                *((base + 12) as *mut u8) = (0i32) as u8;
+                                              }
+                                            },
+                                          };} },
+                                          Err(e) => { {
+                                            *((base + 8) as *mut u8) = (1i32) as u8;
+                                            match e {
+                                              Some(e) => {
+                                                *((base + 12) as *mut u8) = (1i32) as u8;
+                                                *((base + 16) as *mut i32) = wit_bindgen::rt::as_i32(e);
+                                              },
+                                              None => {
+                                                {
+                                                  *((base + 12) as *mut u8) = (0i32) as u8;
+                                                }
+                                              },
+                                            };} },
+                                          };},
+                                          WitNode::PrimU8(e) => {
+                                            *((base + 0) as *mut u8) = (8i32) as u8;
+                                            *((base + 8) as *mut u8) = (wit_bindgen::rt::as_i32(e)) as u8;
+                                          },
+                                          WitNode::PrimU16(e) => {
+                                            *((base + 0) as *mut u8) = (9i32) as u8;
+                                            *((base + 8) as *mut u16) = (wit_bindgen::rt::as_i32(e)) as u16;
+                                          },
+                                          WitNode::PrimU32(e) => {
+                                            *((base + 0) as *mut u8) = (10i32) as u8;
+                                            *((base + 8) as *mut i32) = wit_bindgen::rt::as_i32(e);
+                                          },
+                                          WitNode::PrimU64(e) => {
+                                            *((base + 0) as *mut u8) = (11i32) as u8;
+                                            *((base + 8) as *mut i64) = wit_bindgen::rt::as_i64(e);
+                                          },
+                                          WitNode::PrimS8(e) => {
+                                            *((base + 0) as *mut u8) = (12i32) as u8;
+                                            *((base + 8) as *mut u8) = (wit_bindgen::rt::as_i32(e)) as u8;
+                                          },
+                                          WitNode::PrimS16(e) => {
+                                            *((base + 0) as *mut u8) = (13i32) as u8;
+                                            *((base + 8) as *mut u16) = (wit_bindgen::rt::as_i32(e)) as u16;
+                                          },
+                                          WitNode::PrimS32(e) => {
+                                            *((base + 0) as *mut u8) = (14i32) as u8;
+                                            *((base + 8) as *mut i32) = wit_bindgen::rt::as_i32(e);
+                                          },
+                                          WitNode::PrimS64(e) => {
+                                            *((base + 0) as *mut u8) = (15i32) as u8;
+                                            *((base + 8) as *mut i64) = wit_bindgen::rt::as_i64(e);
+                                          },
+                                          WitNode::PrimFloat32(e) => {
+                                            *((base + 0) as *mut u8) = (16i32) as u8;
+                                            *((base + 8) as *mut f32) = wit_bindgen::rt::as_f32(e);
+                                          },
+                                          WitNode::PrimFloat64(e) => {
+                                            *((base + 0) as *mut u8) = (17i32) as u8;
+                                            *((base + 8) as *mut f64) = wit_bindgen::rt::as_f64(e);
+                                          },
+                                          WitNode::PrimChar(e) => {
+                                            *((base + 0) as *mut u8) = (18i32) as u8;
+                                            *((base + 8) as *mut i32) = wit_bindgen::rt::as_i32(e);
+                                          },
+                                          WitNode::PrimBool(e) => {
+                                            *((base + 0) as *mut u8) = (19i32) as u8;
+                                            *((base + 8) as *mut u8) = (match e { true => 1, false => 0 }) as u8;
+                                          },
+                                          WitNode::PrimString(e) => {
+                                            *((base + 0) as *mut u8) = (20i32) as u8;
+                                            let vec7 = e;
+                                            let ptr7 = vec7.as_ptr() as i32;
+                                            let len7 = vec7.len() as i32;
+                                            *((base + 12) as *mut i32) = len7;
+                                            *((base + 8) as *mut i32) = ptr7;
+                                          },
+                                          WitNode::Handle(e) => {
+                                            *((base + 0) as *mut u8) = (21i32) as u8;
+                                            let (t8_0, t8_1, ) = e;
+                                            let Uri{ value:value9, } = t8_0;
+                                            let vec10 = value9;
+                                            let ptr10 = vec10.as_ptr() as i32;
+                                            let len10 = vec10.len() as i32;
+                                            *((base + 12) as *mut i32) = len10;
+                                            *((base + 8) as *mut i32) = ptr10;
+                                            *((base + 16) as *mut i64) = wit_bindgen::rt::as_i64(t8_1);
+                                          },
+                                        }
+                                      }
+                                    }
+                                    *((base + 4) as *mut i32) = len11;
+                                    *((base + 0) as *mut i32) = result11 as i32;
+                                    cleanup_list.extend_from_slice(&[(result11, layout11),]);
+                                  }
+                                }
+                                let ptr13 = ret_area.as_mut_ptr() as i32;
+                                #[cfg(target_arch = "wasm32")]
+                                #[link(wasm_import_module = "golem:rpc/types@0.1.0")]
+                                extern "C" {
+                                  #[link_name = "[method]wasm-rpc.invoke"]
+                                  fn wit_import(_: i32, _: i32, _: i32, _: i32, _: i32, _: i32, );
+                                }
+                                
+                                #[cfg(not(target_arch = "wasm32"))]
+                                fn wit_import(_: i32, _: i32, _: i32, _: i32, _: i32, _: i32, ){ unreachable!() }
+                                wit_import((self).handle() as i32, ptr0, len0, result12 as i32, len12, ptr13);
+                                let l14 = i32::from(*((ptr13 + 0) as *const u8));
+                                if layout12.size() != 0 {
+                                  alloc::dealloc(result12, layout12);
+                                }
+                                for (ptr, layout) in cleanup_list {
+                                  
+                                  if layout.size() != 0 {
+                                    
+                                    alloc::dealloc(ptr, layout);
+                                    
+                                  }
+                                  
+                                }
+                                match l14 {
+                                  0 => {
+                                    let e = ();
+                                    Ok(e)
+                                  }
+                                  1 => {
+                                    let e = {
+                                      let l15 = i32::from(*((ptr13 + 4) as *const u8));
+                                      let v28 = match l15 {
+                                        0 => {
+                                          let e28 = {
+                                            let l16 = *((ptr13 + 8) as *const i32);
+                                            let l17 = *((ptr13 + 12) as *const i32);
+                                            let len18 = l17 as usize;
+                                            let bytes18 = Vec::from_raw_parts(l16 as *mut _, len18, len18);
+                                            
+                                            wit_bindgen::rt::string_lift(bytes18)
+                                          };
+                                          RpcError::ProtocolError(e28)
+                                        }
+                                        1 => {
+                                          let e28 = {
+                                            let l19 = *((ptr13 + 8) as *const i32);
+                                            let l20 = *((ptr13 + 12) as *const i32);
+                                            let len21 = l20 as usize;
+                                            let bytes21 = Vec::from_raw_parts(l19 as *mut _, len21, len21);
+                                            
+                                            wit_bindgen::rt::string_lift(bytes21)
+                                          };
+                                          RpcError::Denied(e28)
+                                        }
+                                        2 => {
+                                          let e28 = {
+                                            let l22 = *((ptr13 + 8) as *const i32);
+                                            let l23 = *((ptr13 + 12) as *const i32);
+                                            let len24 = l23 as usize;
+                                            let bytes24 = Vec::from_raw_parts(l22 as *mut _, len24, len24);
+                                            
+                                            wit_bindgen::rt::string_lift(bytes24)
+                                          };
+                                          RpcError::NotFound(e28)
+                                        }
+                                        n => {
+                                          debug_assert_eq!(n, 3, "invalid enum discriminant");
+                                          let e28 = {
+                                            let l25 = *((ptr13 + 8) as *const i32);
+                                            let l26 = *((ptr13 + 12) as *const i32);
+                                            let len27 = l26 as usize;
+                                            let bytes27 = Vec::from_raw_parts(l25 as *mut _, len27, len27);
+                                            
+                                            wit_bindgen::rt::string_lift(bytes27)
+                                          };
+                                          RpcError::RemoteInternalError(e28)
+                                        }
+                                      };
+                                      
+                                      v28
+                                    };
+                                    Err(e)
+                                  }
+                                  _ => wit_bindgen::rt::invalid_enum_discriminant(),
+                                }
                               }
-                              let super::super::super::timeline::core::api::Server{ worker_id:worker_id7, template_id:template_id7, } = server4;
-                              let vec8 = worker_id7;
-                              let ptr8 = vec8.as_ptr() as i32;
-                              let len8 = vec8.len() as i32;
-                              *((base + 36) as *mut i32) = len8;
-                              *((base + 32) as *mut i32) = ptr8;
-                              let vec9 = template_id7;
-                              let ptr9 = vec9.as_ptr() as i32;
-                              let len9 = vec9.len() as i32;
-                              *((base + 44) as *mut i32) = len9;
-                              *((base + 40) as *mut i32) = ptr9;
-                            },
-                            V39::TimelineNegation(e) => {
-                              *((base + 0) as *mut u8) = (2i32) as u8;
-                              let super::super::super::timeline::core::api::TimelineNegated{ timeline:timeline10, server:server10, } = e;
-                              *((base + 8) as *mut i32) = wit_bindgen::rt::as_i32(timeline10);
-                              let super::super::super::timeline::core::api::Server{ worker_id:worker_id11, template_id:template_id11, } = server10;
-                              let vec12 = worker_id11;
-                              let ptr12 = vec12.as_ptr() as i32;
-                              let len12 = vec12.len() as i32;
-                              *((base + 16) as *mut i32) = len12;
-                              *((base + 12) as *mut i32) = ptr12;
-                              let vec13 = template_id11;
-                              let ptr13 = vec13.as_ptr() as i32;
-                              let len13 = vec13.len() as i32;
-                              *((base + 24) as *mut i32) = len13;
-                              *((base + 20) as *mut i32) = ptr13;
-                            },
-                            V39::TlHasExisted(e) => {
-                              *((base + 0) as *mut u8) = (3i32) as u8;
-                              let super::super::super::timeline::core::api::TimelineWithEventPredicate{ timeline:timeline14, event_predicate:event_predicate14, server:server14, } = e;
-                              *((base + 8) as *mut i32) = wit_bindgen::rt::as_i32(timeline14);
-                              let super::super::super::timeline::core::api::EventPredicate{ col_name:col_name15, value:value15, op:op15, } = event_predicate14;
-                              let vec16 = col_name15;
-                              let ptr16 = vec16.as_ptr() as i32;
-                              let len16 = vec16.len() as i32;
-                              *((base + 20) as *mut i32) = len16;
-                              *((base + 16) as *mut i32) = ptr16;
-                              use super::super::super::timeline::raw_events::api::EventValue as V18;
-                              match value15 {
-                                V18::StringValue(e) => {
-                                  *((base + 24) as *mut u8) = (0i32) as u8;
-                                  let vec17 = e;
-                                  let ptr17 = vec17.as_ptr() as i32;
-                                  let len17 = vec17.len() as i32;
-                                  *((base + 36) as *mut i32) = len17;
-                                  *((base + 32) as *mut i32) = ptr17;
-                                },
-                                V18::IntValue(e) => {
-                                  *((base + 24) as *mut u8) = (1i32) as u8;
-                                  *((base + 32) as *mut i64) = wit_bindgen::rt::as_i64(e);
-                                },
-                                V18::FloatValue(e) => {
-                                  *((base + 24) as *mut u8) = (2i32) as u8;
-                                  *((base + 32) as *mut f64) = wit_bindgen::rt::as_f64(e);
-                                },
-                                V18::BoolValue(e) => {
-                                  *((base + 24) as *mut u8) = (3i32) as u8;
-                                  *((base + 32) as *mut u8) = (match e { true => 1, false => 0 }) as u8;
-                                },
-                              }
-                              *((base + 40) as *mut u8) = (op15.clone() as i32) as u8;
-                              let super::super::super::timeline::core::api::Server{ worker_id:worker_id19, template_id:template_id19, } = server14;
-                              let vec20 = worker_id19;
-                              let ptr20 = vec20.as_ptr() as i32;
-                              let len20 = vec20.len() as i32;
-                              *((base + 52) as *mut i32) = len20;
-                              *((base + 48) as *mut i32) = ptr20;
-                              let vec21 = template_id19;
-                              let ptr21 = vec21.as_ptr() as i32;
-                              let len21 = vec21.len() as i32;
-                              *((base + 60) as *mut i32) = len21;
-                              *((base + 56) as *mut i32) = ptr21;
-                            },
-                            V39::TlHasExistedWithin(e) => {
-                              *((base + 0) as *mut u8) = (4i32) as u8;
-                              let super::super::super::timeline::core::api::TimelineWithEventPredicateWithin{ filtered:filtered22, time:time22, } = e;
-                              let super::super::super::timeline::core::api::TimelineWithEventPredicate{ timeline:timeline23, event_predicate:event_predicate23, server:server23, } = filtered22;
-                              *((base + 8) as *mut i32) = wit_bindgen::rt::as_i32(timeline23);
-                              let super::super::super::timeline::core::api::EventPredicate{ col_name:col_name24, value:value24, op:op24, } = event_predicate23;
-                              let vec25 = col_name24;
-                              let ptr25 = vec25.as_ptr() as i32;
-                              let len25 = vec25.len() as i32;
-                              *((base + 20) as *mut i32) = len25;
-                              *((base + 16) as *mut i32) = ptr25;
-                              use super::super::super::timeline::raw_events::api::EventValue as V27;
-                              match value24 {
-                                V27::StringValue(e) => {
-                                  *((base + 24) as *mut u8) = (0i32) as u8;
-                                  let vec26 = e;
-                                  let ptr26 = vec26.as_ptr() as i32;
-                                  let len26 = vec26.len() as i32;
-                                  *((base + 36) as *mut i32) = len26;
-                                  *((base + 32) as *mut i32) = ptr26;
-                                },
-                                V27::IntValue(e) => {
-                                  *((base + 24) as *mut u8) = (1i32) as u8;
-                                  *((base + 32) as *mut i64) = wit_bindgen::rt::as_i64(e);
-                                },
-                                V27::FloatValue(e) => {
-                                  *((base + 24) as *mut u8) = (2i32) as u8;
-                                  *((base + 32) as *mut f64) = wit_bindgen::rt::as_f64(e);
-                                },
-                                V27::BoolValue(e) => {
-                                  *((base + 24) as *mut u8) = (3i32) as u8;
-                                  *((base + 32) as *mut u8) = (match e { true => 1, false => 0 }) as u8;
-                                },
-                              }
-                              *((base + 40) as *mut u8) = (op24.clone() as i32) as u8;
-                              let super::super::super::timeline::core::api::Server{ worker_id:worker_id28, template_id:template_id28, } = server23;
-                              let vec29 = worker_id28;
-                              let ptr29 = vec29.as_ptr() as i32;
-                              let len29 = vec29.len() as i32;
-                              *((base + 52) as *mut i32) = len29;
-                              *((base + 48) as *mut i32) = ptr29;
-                              let vec30 = template_id28;
-                              let ptr30 = vec30.as_ptr() as i32;
-                              let len30 = vec30.len() as i32;
-                              *((base + 60) as *mut i32) = len30;
-                              *((base + 56) as *mut i32) = ptr30;
-                              *((base + 64) as *mut i64) = wit_bindgen::rt::as_i64(time22);
-                            },
-                            V39::TlDurationWhere(e) => {
-                              *((base + 0) as *mut u8) = (5i32) as u8;
-                              let super::super::super::timeline::core::api::TimelineWithServer{ server:server31, timeline:timeline31, } = e;
-                              let super::super::super::timeline::core::api::Server{ worker_id:worker_id32, template_id:template_id32, } = server31;
-                              let vec33 = worker_id32;
-                              let ptr33 = vec33.as_ptr() as i32;
-                              let len33 = vec33.len() as i32;
-                              *((base + 12) as *mut i32) = len33;
-                              *((base + 8) as *mut i32) = ptr33;
-                              let vec34 = template_id32;
-                              let ptr34 = vec34.as_ptr() as i32;
-                              let len34 = vec34.len() as i32;
-                              *((base + 20) as *mut i32) = len34;
-                              *((base + 16) as *mut i32) = ptr34;
-                              *((base + 24) as *mut i32) = wit_bindgen::rt::as_i32(timeline31);
-                            },
-                            V39::TlDurationInCurState(e) => {
-                              *((base + 0) as *mut u8) = (6i32) as u8;
-                              let super::super::super::timeline::core::api::TimelineWithServer{ server:server35, timeline:timeline35, } = e;
-                              let super::super::super::timeline::core::api::Server{ worker_id:worker_id36, template_id:template_id36, } = server35;
-                              let vec37 = worker_id36;
-                              let ptr37 = vec37.as_ptr() as i32;
-                              let len37 = vec37.len() as i32;
-                              *((base + 12) as *mut i32) = len37;
-                              *((base + 8) as *mut i32) = ptr37;
-                              let vec38 = template_id36;
-                              let ptr38 = vec38.as_ptr() as i32;
-                              let len38 = vec38.len() as i32;
-                              *((base + 20) as *mut i32) = len38;
-                              *((base + 16) as *mut i32) = ptr38;
-                              *((base + 24) as *mut i32) = wit_bindgen::rt::as_i32(timeline35);
-                            },
+                            }
                           }
+                          
+                        }
+                        
+                      }
+                    }
+                    pub mod timeline {
+                      pub mod core {
+                        
+                        #[allow(clippy::all)]
+                        pub mod api {
+                          #[used]
+                          #[doc(hidden)]
+                          #[cfg(target_arch = "wasm32")]
+                          static __FORCE_SECTION_REF: fn() = super::super::super::__link_section;
+                          pub type EventValue = super::super::super::timeline::raw_events::api::EventValue;
+                          pub type NodeIndex = i32;
+                          #[derive(Clone)]
+                          pub struct Server {
+                            pub worker_id: wit_bindgen::rt::string::String,
+                            pub template_id: wit_bindgen::rt::string::String,
+                          }
+                          impl ::core::fmt::Debug for Server {
+                            fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+                              f.debug_struct("Server").field("worker-id", &self.worker_id).field("template-id", &self.template_id).finish()
+                            }
+                          }
+                          #[derive(Clone)]
+                          pub struct TimelineWithServer {
+                            pub server: Server,
+                            pub timeline: NodeIndex,
+                          }
+                          impl ::core::fmt::Debug for TimelineWithServer {
+                            fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+                              f.debug_struct("TimelineWithServer").field("server", &self.server).field("timeline", &self.timeline).finish()
+                            }
+                          }
+                          /// Comparators used to compare a timeline with a constant
+                          #[repr(u8)]
+                          #[derive(Clone, Copy, Eq, PartialEq)]
+                          pub enum TimelineConstantComparator {
+                            GreaterThan,
+                            GreaterThanEqual,
+                            LessThan,
+                            LessThanEqual,
+                          }
+                          impl ::core::fmt::Debug for TimelineConstantComparator {
+                            fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+                              match self {
+                                TimelineConstantComparator::GreaterThan => {
+                                  f.debug_tuple("TimelineConstantComparator::GreaterThan").finish()
+                                }
+                                TimelineConstantComparator::GreaterThanEqual => {
+                                  f.debug_tuple("TimelineConstantComparator::GreaterThanEqual").finish()
+                                }
+                                TimelineConstantComparator::LessThan => {
+                                  f.debug_tuple("TimelineConstantComparator::LessThan").finish()
+                                }
+                                TimelineConstantComparator::LessThanEqual => {
+                                  f.debug_tuple("TimelineConstantComparator::LessThanEqual").finish()
+                                }
+                              }
+                            }
+                          }
+                          
+                          impl TimelineConstantComparator{
+                            pub(crate) unsafe fn _lift(val: u8) -> TimelineConstantComparator{
+                              if !cfg!(debug_assertions) {
+                                return ::core::mem::transmute(val);
+                              }
+                              
+                              match val {
+                                0 => TimelineConstantComparator::GreaterThan,
+                                1 => TimelineConstantComparator::GreaterThanEqual,
+                                2 => TimelineConstantComparator::LessThan,
+                                3 => TimelineConstantComparator::LessThanEqual,
+                                
+                                _ => panic!("invalid enum discriminant"),
+                              }
+                            }
+                          }
+                          
+                          /// A  timeline-constant-compared corresponds to classic timeline operations
+                          /// in the paper
+                          /// A primitive timeline is also maintained in a separate worker/server
+                          #[derive(Clone)]
+                          pub struct TimelineConstantCompared {
+                            pub op: TimelineConstantComparator,
+                            pub timeline: NodeIndex,
+                            pub value: EventValue,
+                            pub server: Server,
+                          }
+                          impl ::core::fmt::Debug for TimelineConstantCompared {
+                            fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+                              f.debug_struct("TimelineConstantCompared").field("op", &self.op).field("timeline", &self.timeline).field("value", &self.value).field("server", &self.server).finish()
+                            }
+                          }
+                          #[derive(Clone)]
+                          pub struct TimelineNegated {
+                            pub timeline: NodeIndex,
+                            pub server: Server,
+                          }
+                          impl ::core::fmt::Debug for TimelineNegated {
+                            fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+                              f.debug_struct("TimelineNegated").field("timeline", &self.timeline).field("server", &self.server).finish()
+                            }
+                          }
+                          #[repr(u8)]
+                          #[derive(Clone, Copy, Eq, PartialEq)]
+                          pub enum EventPredicateOp {
+                            Equal,
+                            GreaterThan,
+                            LessThan,
+                          }
+                          impl ::core::fmt::Debug for EventPredicateOp {
+                            fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+                              match self {
+                                EventPredicateOp::Equal => {
+                                  f.debug_tuple("EventPredicateOp::Equal").finish()
+                                }
+                                EventPredicateOp::GreaterThan => {
+                                  f.debug_tuple("EventPredicateOp::GreaterThan").finish()
+                                }
+                                EventPredicateOp::LessThan => {
+                                  f.debug_tuple("EventPredicateOp::LessThan").finish()
+                                }
+                              }
+                            }
+                          }
+                          
+                          impl EventPredicateOp{
+                            pub(crate) unsafe fn _lift(val: u8) -> EventPredicateOp{
+                              if !cfg!(debug_assertions) {
+                                return ::core::mem::transmute(val);
+                              }
+                              
+                              match val {
+                                0 => EventPredicateOp::Equal,
+                                1 => EventPredicateOp::GreaterThan,
+                                2 => EventPredicateOp::LessThan,
+                                
+                                _ => panic!("invalid enum discriminant"),
+                              }
+                            }
+                          }
+                          
+                          #[derive(Clone)]
+                          pub struct EventPredicate {
+                            pub col_name: wit_bindgen::rt::string::String,
+                            pub value: EventValue,
+                            pub op: EventPredicateOp,
+                          }
+                          impl ::core::fmt::Debug for EventPredicate {
+                            fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+                              f.debug_struct("EventPredicate").field("col-name", &self.col_name).field("value", &self.value).field("op", &self.op).finish()
+                            }
+                          }
+                          /// A filtered timeline is operation on state dynamic timelines
+                          /// applied with an event filter
+                          /// TLHasExistedWithIn(col("userAction" ) == "seek")
+                          /// seek and col("userAction) is event-predicate
+                          /// and == is filter-op
+                          /// A filtered timeline is also maintained in a separate worker/server
+                          #[derive(Clone)]
+                          pub struct TimelineWithEventPredicate {
+                            pub timeline: NodeIndex,
+                            pub event_predicate: EventPredicate,
+                            pub server: Server,
+                          }
+                          impl ::core::fmt::Debug for TimelineWithEventPredicate {
+                            fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+                              f.debug_struct("TimelineWithEventPredicate").field("timeline", &self.timeline).field("event-predicate", &self.event_predicate).field("server", &self.server).finish()
+                            }
+                          }
+                          #[derive(Clone)]
+                          pub struct TimelineWithEventPredicateWithin {
+                            pub filtered: TimelineWithEventPredicate,
+                            pub time: u64,
+                          }
+                          impl ::core::fmt::Debug for TimelineWithEventPredicateWithin {
+                            fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+                              f.debug_struct("TimelineWithEventPredicateWithin").field("filtered", &self.filtered).field("time", &self.time).finish()
+                            }
+                          }
+                          #[derive(Clone)]
+                          pub enum TimelineNode{
+                            Leaf(Server),
+                            TimelineComparison(TimelineConstantCompared),
+                            TimelineNegation(TimelineNegated),
+                            TlHasExisted(TimelineWithEventPredicate),
+                            TlHasExistedWithin(TimelineWithEventPredicateWithin),
+                            TlDurationWhere(TimelineWithServer),
+                            TlDurationInCurState(TimelineWithServer),
+                          }
+                          impl ::core::fmt::Debug for TimelineNode {
+                            fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+                              match self {
+                                TimelineNode::Leaf(e) => {
+                                  f.debug_tuple("TimelineNode::Leaf").field(e).finish()
+                                }
+                                TimelineNode::TimelineComparison(e) => {
+                                  f.debug_tuple("TimelineNode::TimelineComparison").field(e).finish()
+                                }
+                                TimelineNode::TimelineNegation(e) => {
+                                  f.debug_tuple("TimelineNode::TimelineNegation").field(e).finish()
+                                }
+                                TimelineNode::TlHasExisted(e) => {
+                                  f.debug_tuple("TimelineNode::TlHasExisted").field(e).finish()
+                                }
+                                TimelineNode::TlHasExistedWithin(e) => {
+                                  f.debug_tuple("TimelineNode::TlHasExistedWithin").field(e).finish()
+                                }
+                                TimelineNode::TlDurationWhere(e) => {
+                                  f.debug_tuple("TimelineNode::TlDurationWhere").field(e).finish()
+                                }
+                                TimelineNode::TlDurationInCurState(e) => {
+                                  f.debug_tuple("TimelineNode::TlDurationInCurState").field(e).finish()
+                                }
+                              }
+                            }
+                          }
+                          #[derive(Clone)]
+                          pub struct TimelineOp {
+                            pub nodes: wit_bindgen::rt::vec::Vec::<TimelineNode>,
+                          }
+                          impl ::core::fmt::Debug for TimelineOp {
+                            fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+                              f.debug_struct("TimelineOp").field("nodes", &self.nodes).finish()
+                            }
+                          }
+                          #[allow(unused_unsafe, clippy::all)]
+                          pub fn initialize_timeline(timeline: &TimelineOp,) -> Result<wit_bindgen::rt::string::String,wit_bindgen::rt::string::String>{
+                            
+                            #[allow(unused_imports)]
+                            use wit_bindgen::rt::{alloc, vec::Vec, string::String};
+                            unsafe {
+                              
+                              #[repr(align(4))]
+                              struct RetArea([u8; 12]);
+                              let mut ret_area = ::core::mem::MaybeUninit::<RetArea>::uninit();
+                              let TimelineOp{ nodes:nodes0, } = timeline;
+                              let vec39 = nodes0;
+                              let len39 = vec39.len() as i32;
+                              let layout39 = alloc::Layout::from_size_align_unchecked(vec39.len() * 72, 8);
+                              let result39 = if layout39.size() != 0
+                              {
+                                let ptr = alloc::alloc(layout39);
+                                if ptr.is_null()
+                                {
+                                  alloc::handle_alloc_error(layout39);
+                                }
+                                ptr
+                              }else {{
+                                ::core::ptr::null_mut()
+                              }};
+                              for (i, e) in vec39.into_iter().enumerate() {
+                                let base = result39 as i32 + (i as i32) * 72;
+                                {
+                                  match e {
+                                    TimelineNode::Leaf(e) => {
+                                      *((base + 0) as *mut u8) = (0i32) as u8;
+                                      let Server{ worker_id:worker_id1, template_id:template_id1, } = e;
+                                      let vec2 = worker_id1;
+                                      let ptr2 = vec2.as_ptr() as i32;
+                                      let len2 = vec2.len() as i32;
+                                      *((base + 12) as *mut i32) = len2;
+                                      *((base + 8) as *mut i32) = ptr2;
+                                      let vec3 = template_id1;
+                                      let ptr3 = vec3.as_ptr() as i32;
+                                      let len3 = vec3.len() as i32;
+                                      *((base + 20) as *mut i32) = len3;
+                                      *((base + 16) as *mut i32) = ptr3;
+                                    },
+                                    TimelineNode::TimelineComparison(e) => {
+                                      *((base + 0) as *mut u8) = (1i32) as u8;
+                                      let TimelineConstantCompared{ op:op4, timeline:timeline4, value:value4, server:server4, } = e;
+                                      *((base + 8) as *mut u8) = (op4.clone() as i32) as u8;
+                                      *((base + 12) as *mut i32) = wit_bindgen::rt::as_i32(timeline4);
+                                      use super::super::super::timeline::raw_events::api::EventValue as V6;
+                                      match value4 {
+                                        V6::StringValue(e) => {
+                                          *((base + 16) as *mut u8) = (0i32) as u8;
+                                          let vec5 = e;
+                                          let ptr5 = vec5.as_ptr() as i32;
+                                          let len5 = vec5.len() as i32;
+                                          *((base + 28) as *mut i32) = len5;
+                                          *((base + 24) as *mut i32) = ptr5;
+                                        },
+                                        V6::IntValue(e) => {
+                                          *((base + 16) as *mut u8) = (1i32) as u8;
+                                          *((base + 24) as *mut i64) = wit_bindgen::rt::as_i64(e);
+                                        },
+                                        V6::FloatValue(e) => {
+                                          *((base + 16) as *mut u8) = (2i32) as u8;
+                                          *((base + 24) as *mut f64) = wit_bindgen::rt::as_f64(e);
+                                        },
+                                        V6::BoolValue(e) => {
+                                          *((base + 16) as *mut u8) = (3i32) as u8;
+                                          *((base + 24) as *mut u8) = (match e { true => 1, false => 0 }) as u8;
+                                        },
+                                      }
+                                      let Server{ worker_id:worker_id7, template_id:template_id7, } = server4;
+                                      let vec8 = worker_id7;
+                                      let ptr8 = vec8.as_ptr() as i32;
+                                      let len8 = vec8.len() as i32;
+                                      *((base + 36) as *mut i32) = len8;
+                                      *((base + 32) as *mut i32) = ptr8;
+                                      let vec9 = template_id7;
+                                      let ptr9 = vec9.as_ptr() as i32;
+                                      let len9 = vec9.len() as i32;
+                                      *((base + 44) as *mut i32) = len9;
+                                      *((base + 40) as *mut i32) = ptr9;
+                                    },
+                                    TimelineNode::TimelineNegation(e) => {
+                                      *((base + 0) as *mut u8) = (2i32) as u8;
+                                      let TimelineNegated{ timeline:timeline10, server:server10, } = e;
+                                      *((base + 8) as *mut i32) = wit_bindgen::rt::as_i32(timeline10);
+                                      let Server{ worker_id:worker_id11, template_id:template_id11, } = server10;
+                                      let vec12 = worker_id11;
+                                      let ptr12 = vec12.as_ptr() as i32;
+                                      let len12 = vec12.len() as i32;
+                                      *((base + 16) as *mut i32) = len12;
+                                      *((base + 12) as *mut i32) = ptr12;
+                                      let vec13 = template_id11;
+                                      let ptr13 = vec13.as_ptr() as i32;
+                                      let len13 = vec13.len() as i32;
+                                      *((base + 24) as *mut i32) = len13;
+                                      *((base + 20) as *mut i32) = ptr13;
+                                    },
+                                    TimelineNode::TlHasExisted(e) => {
+                                      *((base + 0) as *mut u8) = (3i32) as u8;
+                                      let TimelineWithEventPredicate{ timeline:timeline14, event_predicate:event_predicate14, server:server14, } = e;
+                                      *((base + 8) as *mut i32) = wit_bindgen::rt::as_i32(timeline14);
+                                      let EventPredicate{ col_name:col_name15, value:value15, op:op15, } = event_predicate14;
+                                      let vec16 = col_name15;
+                                      let ptr16 = vec16.as_ptr() as i32;
+                                      let len16 = vec16.len() as i32;
+                                      *((base + 20) as *mut i32) = len16;
+                                      *((base + 16) as *mut i32) = ptr16;
+                                      use super::super::super::timeline::raw_events::api::EventValue as V18;
+                                      match value15 {
+                                        V18::StringValue(e) => {
+                                          *((base + 24) as *mut u8) = (0i32) as u8;
+                                          let vec17 = e;
+                                          let ptr17 = vec17.as_ptr() as i32;
+                                          let len17 = vec17.len() as i32;
+                                          *((base + 36) as *mut i32) = len17;
+                                          *((base + 32) as *mut i32) = ptr17;
+                                        },
+                                        V18::IntValue(e) => {
+                                          *((base + 24) as *mut u8) = (1i32) as u8;
+                                          *((base + 32) as *mut i64) = wit_bindgen::rt::as_i64(e);
+                                        },
+                                        V18::FloatValue(e) => {
+                                          *((base + 24) as *mut u8) = (2i32) as u8;
+                                          *((base + 32) as *mut f64) = wit_bindgen::rt::as_f64(e);
+                                        },
+                                        V18::BoolValue(e) => {
+                                          *((base + 24) as *mut u8) = (3i32) as u8;
+                                          *((base + 32) as *mut u8) = (match e { true => 1, false => 0 }) as u8;
+                                        },
+                                      }
+                                      *((base + 40) as *mut u8) = (op15.clone() as i32) as u8;
+                                      let Server{ worker_id:worker_id19, template_id:template_id19, } = server14;
+                                      let vec20 = worker_id19;
+                                      let ptr20 = vec20.as_ptr() as i32;
+                                      let len20 = vec20.len() as i32;
+                                      *((base + 52) as *mut i32) = len20;
+                                      *((base + 48) as *mut i32) = ptr20;
+                                      let vec21 = template_id19;
+                                      let ptr21 = vec21.as_ptr() as i32;
+                                      let len21 = vec21.len() as i32;
+                                      *((base + 60) as *mut i32) = len21;
+                                      *((base + 56) as *mut i32) = ptr21;
+                                    },
+                                    TimelineNode::TlHasExistedWithin(e) => {
+                                      *((base + 0) as *mut u8) = (4i32) as u8;
+                                      let TimelineWithEventPredicateWithin{ filtered:filtered22, time:time22, } = e;
+                                      let TimelineWithEventPredicate{ timeline:timeline23, event_predicate:event_predicate23, server:server23, } = filtered22;
+                                      *((base + 8) as *mut i32) = wit_bindgen::rt::as_i32(timeline23);
+                                      let EventPredicate{ col_name:col_name24, value:value24, op:op24, } = event_predicate23;
+                                      let vec25 = col_name24;
+                                      let ptr25 = vec25.as_ptr() as i32;
+                                      let len25 = vec25.len() as i32;
+                                      *((base + 20) as *mut i32) = len25;
+                                      *((base + 16) as *mut i32) = ptr25;
+                                      use super::super::super::timeline::raw_events::api::EventValue as V27;
+                                      match value24 {
+                                        V27::StringValue(e) => {
+                                          *((base + 24) as *mut u8) = (0i32) as u8;
+                                          let vec26 = e;
+                                          let ptr26 = vec26.as_ptr() as i32;
+                                          let len26 = vec26.len() as i32;
+                                          *((base + 36) as *mut i32) = len26;
+                                          *((base + 32) as *mut i32) = ptr26;
+                                        },
+                                        V27::IntValue(e) => {
+                                          *((base + 24) as *mut u8) = (1i32) as u8;
+                                          *((base + 32) as *mut i64) = wit_bindgen::rt::as_i64(e);
+                                        },
+                                        V27::FloatValue(e) => {
+                                          *((base + 24) as *mut u8) = (2i32) as u8;
+                                          *((base + 32) as *mut f64) = wit_bindgen::rt::as_f64(e);
+                                        },
+                                        V27::BoolValue(e) => {
+                                          *((base + 24) as *mut u8) = (3i32) as u8;
+                                          *((base + 32) as *mut u8) = (match e { true => 1, false => 0 }) as u8;
+                                        },
+                                      }
+                                      *((base + 40) as *mut u8) = (op24.clone() as i32) as u8;
+                                      let Server{ worker_id:worker_id28, template_id:template_id28, } = server23;
+                                      let vec29 = worker_id28;
+                                      let ptr29 = vec29.as_ptr() as i32;
+                                      let len29 = vec29.len() as i32;
+                                      *((base + 52) as *mut i32) = len29;
+                                      *((base + 48) as *mut i32) = ptr29;
+                                      let vec30 = template_id28;
+                                      let ptr30 = vec30.as_ptr() as i32;
+                                      let len30 = vec30.len() as i32;
+                                      *((base + 60) as *mut i32) = len30;
+                                      *((base + 56) as *mut i32) = ptr30;
+                                      *((base + 64) as *mut i64) = wit_bindgen::rt::as_i64(time22);
+                                    },
+                                    TimelineNode::TlDurationWhere(e) => {
+                                      *((base + 0) as *mut u8) = (5i32) as u8;
+                                      let TimelineWithServer{ server:server31, timeline:timeline31, } = e;
+                                      let Server{ worker_id:worker_id32, template_id:template_id32, } = server31;
+                                      let vec33 = worker_id32;
+                                      let ptr33 = vec33.as_ptr() as i32;
+                                      let len33 = vec33.len() as i32;
+                                      *((base + 12) as *mut i32) = len33;
+                                      *((base + 8) as *mut i32) = ptr33;
+                                      let vec34 = template_id32;
+                                      let ptr34 = vec34.as_ptr() as i32;
+                                      let len34 = vec34.len() as i32;
+                                      *((base + 20) as *mut i32) = len34;
+                                      *((base + 16) as *mut i32) = ptr34;
+                                      *((base + 24) as *mut i32) = wit_bindgen::rt::as_i32(timeline31);
+                                    },
+                                    TimelineNode::TlDurationInCurState(e) => {
+                                      *((base + 0) as *mut u8) = (6i32) as u8;
+                                      let TimelineWithServer{ server:server35, timeline:timeline35, } = e;
+                                      let Server{ worker_id:worker_id36, template_id:template_id36, } = server35;
+                                      let vec37 = worker_id36;
+                                      let ptr37 = vec37.as_ptr() as i32;
+                                      let len37 = vec37.len() as i32;
+                                      *((base + 12) as *mut i32) = len37;
+                                      *((base + 8) as *mut i32) = ptr37;
+                                      let vec38 = template_id36;
+                                      let ptr38 = vec38.as_ptr() as i32;
+                                      let len38 = vec38.len() as i32;
+                                      *((base + 20) as *mut i32) = len38;
+                                      *((base + 16) as *mut i32) = ptr38;
+                                      *((base + 24) as *mut i32) = wit_bindgen::rt::as_i32(timeline35);
+                                    },
+                                  }
+                                }
+                              }
+                              let ptr40 = ret_area.as_mut_ptr() as i32;
+                              #[cfg(target_arch = "wasm32")]
+                              #[link(wasm_import_module = "timeline:core/api")]
+                              extern "C" {
+                                #[link_name = "initialize-timeline"]
+                                fn wit_import(_: i32, _: i32, _: i32, );
+                              }
+                              
+                              #[cfg(not(target_arch = "wasm32"))]
+                              fn wit_import(_: i32, _: i32, _: i32, ){ unreachable!() }
+                              wit_import(result39 as i32, len39, ptr40);
+                              let l41 = i32::from(*((ptr40 + 0) as *const u8));
+                              if layout39.size() != 0 {
+                                alloc::dealloc(result39, layout39);
+                              }
+                              match l41 {
+                                0 => {
+                                  let e = {
+                                    let l42 = *((ptr40 + 4) as *const i32);
+                                    let l43 = *((ptr40 + 8) as *const i32);
+                                    let len44 = l43 as usize;
+                                    let bytes44 = Vec::from_raw_parts(l42 as *mut _, len44, len44);
+                                    
+                                    wit_bindgen::rt::string_lift(bytes44)
+                                  };
+                                  Ok(e)
+                                }
+                                1 => {
+                                  let e = {
+                                    let l45 = *((ptr40 + 4) as *const i32);
+                                    let l46 = *((ptr40 + 8) as *const i32);
+                                    let len47 = l46 as usize;
+                                    let bytes47 = Vec::from_raw_parts(l45 as *mut _, len47, len47);
+                                    
+                                    wit_bindgen::rt::string_lift(bytes47)
+                                  };
+                                  Err(e)
+                                }
+                                _ => wit_bindgen::rt::invalid_enum_discriminant(),
+                              }
+                            }
+                          }
+                          
+                        }
+                        
+                      }
+                      pub mod core_stub {
+                        
+                        #[allow(clippy::all)]
+                        pub mod stub_core {
+                          #[used]
+                          #[doc(hidden)]
+                          #[cfg(target_arch = "wasm32")]
+                          static __FORCE_SECTION_REF: fn() = super::super::super::__link_section;
+                          pub type Uri = super::super::super::golem::rpc::types::Uri;
+                          pub type TimelineOp = super::super::super::timeline::core::api::TimelineOp;
+                          
+                          #[derive(Debug)]
+                          #[repr(transparent)]
+                          pub struct Api{
+                            handle: wit_bindgen::rt::Resource<Api>,
+                          }
+                          
+                          impl Api{
+                            #[doc(hidden)]
+                            pub unsafe fn from_handle(handle: u32) -> Self {
+                              Self {
+                                handle: wit_bindgen::rt::Resource::from_handle(handle),
+                              }
+                            }
+                            
+                            #[doc(hidden)]
+                            pub fn into_handle(self) -> u32 {
+                              wit_bindgen::rt::Resource::into_handle(self.handle)
+                            }
+                            
+                            #[doc(hidden)]
+                            pub fn handle(&self) -> u32 {
+                              wit_bindgen::rt::Resource::handle(&self.handle)
+                            }
+                          }
+                          
+                          
+                          unsafe impl wit_bindgen::rt::WasmResource for Api{
+                            #[inline]
+                            unsafe fn drop(_handle: u32) {
+                              #[cfg(not(target_arch = "wasm32"))]
+                              unreachable!();
+                              
+                              #[cfg(target_arch = "wasm32")]
+                              {
+                                #[link(wasm_import_module = "timeline:core-stub/stub-core")]
+                                extern "C" {
+                                  #[link_name = "[resource-drop]api"]
+                                  fn drop(_: u32);
+                                }
+                                
+                                drop(_handle);
+                              }
+                            }
+                          }
+                          
+                          impl Api {
+                            #[allow(unused_unsafe, clippy::all)]
+                            pub fn new(location: &Uri,) -> Self{
+                              
+                              #[allow(unused_imports)]
+                              use wit_bindgen::rt::{alloc, vec::Vec, string::String};
+                              unsafe {
+                                let super::super::super::golem::rpc::types::Uri{ value:value0, } = location;
+                                let vec1 = value0;
+                                let ptr1 = vec1.as_ptr() as i32;
+                                let len1 = vec1.len() as i32;
+                                
+                                #[cfg(target_arch = "wasm32")]
+                                #[link(wasm_import_module = "timeline:core-stub/stub-core")]
+                                extern "C" {
+                                  #[link_name = "[constructor]api"]
+                                  fn wit_import(_: i32, _: i32, ) -> i32;
+                                }
+                                
+                                #[cfg(not(target_arch = "wasm32"))]
+                                fn wit_import(_: i32, _: i32, ) -> i32{ unreachable!() }
+                                let ret = wit_import(ptr1, len1);
+                                Api::from_handle(ret as u32)
+                              }
+                            }
+                          }
+                          impl Api {
+                            #[allow(unused_unsafe, clippy::all)]
+                            pub fn initialize_timeline(&self,timeline: &TimelineOp,) -> Result<wit_bindgen::rt::string::String,wit_bindgen::rt::string::String>{
+                              
+                              #[allow(unused_imports)]
+                              use wit_bindgen::rt::{alloc, vec::Vec, string::String};
+                              unsafe {
+                                
+                                #[repr(align(4))]
+                                struct RetArea([u8; 12]);
+                                let mut ret_area = ::core::mem::MaybeUninit::<RetArea>::uninit();
+                                let super::super::super::timeline::core::api::TimelineOp{ nodes:nodes0, } = timeline;
+                                let vec40 = nodes0;
+                                let len40 = vec40.len() as i32;
+                                let layout40 = alloc::Layout::from_size_align_unchecked(vec40.len() * 72, 8);
+                                let result40 = if layout40.size() != 0
+                                {
+                                  let ptr = alloc::alloc(layout40);
+                                  if ptr.is_null()
+                                  {
+                                    alloc::handle_alloc_error(layout40);
+                                  }
+                                  ptr
+                                }else {{
+                                  ::core::ptr::null_mut()
+                                }};
+                                for (i, e) in vec40.into_iter().enumerate() {
+                                  let base = result40 as i32 + (i as i32) * 72;
+                                  {
+                                    use super::super::super::timeline::core::api::TimelineNode as V39;
+                                    match e {
+                                      V39::Leaf(e) => {
+                                        *((base + 0) as *mut u8) = (0i32) as u8;
+                                        let super::super::super::timeline::core::api::Server{ worker_id:worker_id1, template_id:template_id1, } = e;
+                                        let vec2 = worker_id1;
+                                        let ptr2 = vec2.as_ptr() as i32;
+                                        let len2 = vec2.len() as i32;
+                                        *((base + 12) as *mut i32) = len2;
+                                        *((base + 8) as *mut i32) = ptr2;
+                                        let vec3 = template_id1;
+                                        let ptr3 = vec3.as_ptr() as i32;
+                                        let len3 = vec3.len() as i32;
+                                        *((base + 20) as *mut i32) = len3;
+                                        *((base + 16) as *mut i32) = ptr3;
+                                      },
+                                      V39::TimelineComparison(e) => {
+                                        *((base + 0) as *mut u8) = (1i32) as u8;
+                                        let super::super::super::timeline::core::api::TimelineConstantCompared{ op:op4, timeline:timeline4, value:value4, server:server4, } = e;
+                                        *((base + 8) as *mut u8) = (op4.clone() as i32) as u8;
+                                        *((base + 12) as *mut i32) = wit_bindgen::rt::as_i32(timeline4);
+                                        use super::super::super::timeline::raw_events::api::EventValue as V6;
+                                        match value4 {
+                                          V6::StringValue(e) => {
+                                            *((base + 16) as *mut u8) = (0i32) as u8;
+                                            let vec5 = e;
+                                            let ptr5 = vec5.as_ptr() as i32;
+                                            let len5 = vec5.len() as i32;
+                                            *((base + 28) as *mut i32) = len5;
+                                            *((base + 24) as *mut i32) = ptr5;
+                                          },
+                                          V6::IntValue(e) => {
+                                            *((base + 16) as *mut u8) = (1i32) as u8;
+                                            *((base + 24) as *mut i64) = wit_bindgen::rt::as_i64(e);
+                                          },
+                                          V6::FloatValue(e) => {
+                                            *((base + 16) as *mut u8) = (2i32) as u8;
+                                            *((base + 24) as *mut f64) = wit_bindgen::rt::as_f64(e);
+                                          },
+                                          V6::BoolValue(e) => {
+                                            *((base + 16) as *mut u8) = (3i32) as u8;
+                                            *((base + 24) as *mut u8) = (match e { true => 1, false => 0 }) as u8;
+                                          },
+                                        }
+                                        let super::super::super::timeline::core::api::Server{ worker_id:worker_id7, template_id:template_id7, } = server4;
+                                        let vec8 = worker_id7;
+                                        let ptr8 = vec8.as_ptr() as i32;
+                                        let len8 = vec8.len() as i32;
+                                        *((base + 36) as *mut i32) = len8;
+                                        *((base + 32) as *mut i32) = ptr8;
+                                        let vec9 = template_id7;
+                                        let ptr9 = vec9.as_ptr() as i32;
+                                        let len9 = vec9.len() as i32;
+                                        *((base + 44) as *mut i32) = len9;
+                                        *((base + 40) as *mut i32) = ptr9;
+                                      },
+                                      V39::TimelineNegation(e) => {
+                                        *((base + 0) as *mut u8) = (2i32) as u8;
+                                        let super::super::super::timeline::core::api::TimelineNegated{ timeline:timeline10, server:server10, } = e;
+                                        *((base + 8) as *mut i32) = wit_bindgen::rt::as_i32(timeline10);
+                                        let super::super::super::timeline::core::api::Server{ worker_id:worker_id11, template_id:template_id11, } = server10;
+                                        let vec12 = worker_id11;
+                                        let ptr12 = vec12.as_ptr() as i32;
+                                        let len12 = vec12.len() as i32;
+                                        *((base + 16) as *mut i32) = len12;
+                                        *((base + 12) as *mut i32) = ptr12;
+                                        let vec13 = template_id11;
+                                        let ptr13 = vec13.as_ptr() as i32;
+                                        let len13 = vec13.len() as i32;
+                                        *((base + 24) as *mut i32) = len13;
+                                        *((base + 20) as *mut i32) = ptr13;
+                                      },
+                                      V39::TlHasExisted(e) => {
+                                        *((base + 0) as *mut u8) = (3i32) as u8;
+                                        let super::super::super::timeline::core::api::TimelineWithEventPredicate{ timeline:timeline14, event_predicate:event_predicate14, server:server14, } = e;
+                                        *((base + 8) as *mut i32) = wit_bindgen::rt::as_i32(timeline14);
+                                        let super::super::super::timeline::core::api::EventPredicate{ col_name:col_name15, value:value15, op:op15, } = event_predicate14;
+                                        let vec16 = col_name15;
+                                        let ptr16 = vec16.as_ptr() as i32;
+                                        let len16 = vec16.len() as i32;
+                                        *((base + 20) as *mut i32) = len16;
+                                        *((base + 16) as *mut i32) = ptr16;
+                                        use super::super::super::timeline::raw_events::api::EventValue as V18;
+                                        match value15 {
+                                          V18::StringValue(e) => {
+                                            *((base + 24) as *mut u8) = (0i32) as u8;
+                                            let vec17 = e;
+                                            let ptr17 = vec17.as_ptr() as i32;
+                                            let len17 = vec17.len() as i32;
+                                            *((base + 36) as *mut i32) = len17;
+                                            *((base + 32) as *mut i32) = ptr17;
+                                          },
+                                          V18::IntValue(e) => {
+                                            *((base + 24) as *mut u8) = (1i32) as u8;
+                                            *((base + 32) as *mut i64) = wit_bindgen::rt::as_i64(e);
+                                          },
+                                          V18::FloatValue(e) => {
+                                            *((base + 24) as *mut u8) = (2i32) as u8;
+                                            *((base + 32) as *mut f64) = wit_bindgen::rt::as_f64(e);
+                                          },
+                                          V18::BoolValue(e) => {
+                                            *((base + 24) as *mut u8) = (3i32) as u8;
+                                            *((base + 32) as *mut u8) = (match e { true => 1, false => 0 }) as u8;
+                                          },
+                                        }
+                                        *((base + 40) as *mut u8) = (op15.clone() as i32) as u8;
+                                        let super::super::super::timeline::core::api::Server{ worker_id:worker_id19, template_id:template_id19, } = server14;
+                                        let vec20 = worker_id19;
+                                        let ptr20 = vec20.as_ptr() as i32;
+                                        let len20 = vec20.len() as i32;
+                                        *((base + 52) as *mut i32) = len20;
+                                        *((base + 48) as *mut i32) = ptr20;
+                                        let vec21 = template_id19;
+                                        let ptr21 = vec21.as_ptr() as i32;
+                                        let len21 = vec21.len() as i32;
+                                        *((base + 60) as *mut i32) = len21;
+                                        *((base + 56) as *mut i32) = ptr21;
+                                      },
+                                      V39::TlHasExistedWithin(e) => {
+                                        *((base + 0) as *mut u8) = (4i32) as u8;
+                                        let super::super::super::timeline::core::api::TimelineWithEventPredicateWithin{ filtered:filtered22, time:time22, } = e;
+                                        let super::super::super::timeline::core::api::TimelineWithEventPredicate{ timeline:timeline23, event_predicate:event_predicate23, server:server23, } = filtered22;
+                                        *((base + 8) as *mut i32) = wit_bindgen::rt::as_i32(timeline23);
+                                        let super::super::super::timeline::core::api::EventPredicate{ col_name:col_name24, value:value24, op:op24, } = event_predicate23;
+                                        let vec25 = col_name24;
+                                        let ptr25 = vec25.as_ptr() as i32;
+                                        let len25 = vec25.len() as i32;
+                                        *((base + 20) as *mut i32) = len25;
+                                        *((base + 16) as *mut i32) = ptr25;
+                                        use super::super::super::timeline::raw_events::api::EventValue as V27;
+                                        match value24 {
+                                          V27::StringValue(e) => {
+                                            *((base + 24) as *mut u8) = (0i32) as u8;
+                                            let vec26 = e;
+                                            let ptr26 = vec26.as_ptr() as i32;
+                                            let len26 = vec26.len() as i32;
+                                            *((base + 36) as *mut i32) = len26;
+                                            *((base + 32) as *mut i32) = ptr26;
+                                          },
+                                          V27::IntValue(e) => {
+                                            *((base + 24) as *mut u8) = (1i32) as u8;
+                                            *((base + 32) as *mut i64) = wit_bindgen::rt::as_i64(e);
+                                          },
+                                          V27::FloatValue(e) => {
+                                            *((base + 24) as *mut u8) = (2i32) as u8;
+                                            *((base + 32) as *mut f64) = wit_bindgen::rt::as_f64(e);
+                                          },
+                                          V27::BoolValue(e) => {
+                                            *((base + 24) as *mut u8) = (3i32) as u8;
+                                            *((base + 32) as *mut u8) = (match e { true => 1, false => 0 }) as u8;
+                                          },
+                                        }
+                                        *((base + 40) as *mut u8) = (op24.clone() as i32) as u8;
+                                        let super::super::super::timeline::core::api::Server{ worker_id:worker_id28, template_id:template_id28, } = server23;
+                                        let vec29 = worker_id28;
+                                        let ptr29 = vec29.as_ptr() as i32;
+                                        let len29 = vec29.len() as i32;
+                                        *((base + 52) as *mut i32) = len29;
+                                        *((base + 48) as *mut i32) = ptr29;
+                                        let vec30 = template_id28;
+                                        let ptr30 = vec30.as_ptr() as i32;
+                                        let len30 = vec30.len() as i32;
+                                        *((base + 60) as *mut i32) = len30;
+                                        *((base + 56) as *mut i32) = ptr30;
+                                        *((base + 64) as *mut i64) = wit_bindgen::rt::as_i64(time22);
+                                      },
+                                      V39::TlDurationWhere(e) => {
+                                        *((base + 0) as *mut u8) = (5i32) as u8;
+                                        let super::super::super::timeline::core::api::TimelineWithServer{ server:server31, timeline:timeline31, } = e;
+                                        let super::super::super::timeline::core::api::Server{ worker_id:worker_id32, template_id:template_id32, } = server31;
+                                        let vec33 = worker_id32;
+                                        let ptr33 = vec33.as_ptr() as i32;
+                                        let len33 = vec33.len() as i32;
+                                        *((base + 12) as *mut i32) = len33;
+                                        *((base + 8) as *mut i32) = ptr33;
+                                        let vec34 = template_id32;
+                                        let ptr34 = vec34.as_ptr() as i32;
+                                        let len34 = vec34.len() as i32;
+                                        *((base + 20) as *mut i32) = len34;
+                                        *((base + 16) as *mut i32) = ptr34;
+                                        *((base + 24) as *mut i32) = wit_bindgen::rt::as_i32(timeline31);
+                                      },
+                                      V39::TlDurationInCurState(e) => {
+                                        *((base + 0) as *mut u8) = (6i32) as u8;
+                                        let super::super::super::timeline::core::api::TimelineWithServer{ server:server35, timeline:timeline35, } = e;
+                                        let super::super::super::timeline::core::api::Server{ worker_id:worker_id36, template_id:template_id36, } = server35;
+                                        let vec37 = worker_id36;
+                                        let ptr37 = vec37.as_ptr() as i32;
+                                        let len37 = vec37.len() as i32;
+                                        *((base + 12) as *mut i32) = len37;
+                                        *((base + 8) as *mut i32) = ptr37;
+                                        let vec38 = template_id36;
+                                        let ptr38 = vec38.as_ptr() as i32;
+                                        let len38 = vec38.len() as i32;
+                                        *((base + 20) as *mut i32) = len38;
+                                        *((base + 16) as *mut i32) = ptr38;
+                                        *((base + 24) as *mut i32) = wit_bindgen::rt::as_i32(timeline35);
+                                      },
+                                    }
+                                  }
+                                }
+                                let ptr41 = ret_area.as_mut_ptr() as i32;
+                                #[cfg(target_arch = "wasm32")]
+                                #[link(wasm_import_module = "timeline:core-stub/stub-core")]
+                                extern "C" {
+                                  #[link_name = "[method]api.initialize-timeline"]
+                                  fn wit_import(_: i32, _: i32, _: i32, _: i32, );
+                                }
+                                
+                                #[cfg(not(target_arch = "wasm32"))]
+                                fn wit_import(_: i32, _: i32, _: i32, _: i32, ){ unreachable!() }
+                                wit_import((self).handle() as i32, result40 as i32, len40, ptr41);
+                                let l42 = i32::from(*((ptr41 + 0) as *const u8));
+                                if layout40.size() != 0 {
+                                  alloc::dealloc(result40, layout40);
+                                }
+                                match l42 {
+                                  0 => {
+                                    let e = {
+                                      let l43 = *((ptr41 + 4) as *const i32);
+                                      let l44 = *((ptr41 + 8) as *const i32);
+                                      let len45 = l44 as usize;
+                                      let bytes45 = Vec::from_raw_parts(l43 as *mut _, len45, len45);
+                                      
+                                      wit_bindgen::rt::string_lift(bytes45)
+                                    };
+                                    Ok(e)
+                                  }
+                                  1 => {
+                                    let e = {
+                                      let l46 = *((ptr41 + 4) as *const i32);
+                                      let l47 = *((ptr41 + 8) as *const i32);
+                                      let len48 = l47 as usize;
+                                      let bytes48 = Vec::from_raw_parts(l46 as *mut _, len48, len48);
+                                      
+                                      wit_bindgen::rt::string_lift(bytes48)
+                                    };
+                                    Err(e)
+                                  }
+                                  _ => wit_bindgen::rt::invalid_enum_discriminant(),
+                                }
+                              }
+                            }
+                          }
+                          
+                        }
+                        
+                      }
+                      pub mod raw_events {
+                        
+                        #[allow(clippy::all)]
+                        pub mod api {
+                          #[used]
+                          #[doc(hidden)]
+                          #[cfg(target_arch = "wasm32")]
+                          static __FORCE_SECTION_REF: fn() = super::super::super::__link_section;
+                          #[derive(Clone)]
+                          pub enum EventValue{
+                            StringValue(wit_bindgen::rt::string::String),
+                            IntValue(i64),
+                            FloatValue(f64),
+                            BoolValue(bool),
+                          }
+                          impl ::core::fmt::Debug for EventValue {
+                            fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+                              match self {
+                                EventValue::StringValue(e) => {
+                                  f.debug_tuple("EventValue::StringValue").field(e).finish()
+                                }
+                                EventValue::IntValue(e) => {
+                                  f.debug_tuple("EventValue::IntValue").field(e).finish()
+                                }
+                                EventValue::FloatValue(e) => {
+                                  f.debug_tuple("EventValue::FloatValue").field(e).finish()
+                                }
+                                EventValue::BoolValue(e) => {
+                                  f.debug_tuple("EventValue::BoolValue").field(e).finish()
+                                }
+                              }
+                            }
+                          }
+                          #[derive(Clone)]
+                          pub struct Event {
+                            pub time: u64,
+                            pub event: EventValue,
+                          }
+                          impl ::core::fmt::Debug for Event {
+                            fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+                              f.debug_struct("Event").field("time", &self.time).field("event", &self.event).finish()
+                            }
+                          }
+                          #[derive(Clone)]
+                          pub struct WorkerId {
+                            pub name: wit_bindgen::rt::string::String,
+                          }
+                          impl ::core::fmt::Debug for WorkerId {
+                            fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+                              f.debug_struct("WorkerId").field("name", &self.name).finish()
+                            }
+                          }
+                          #[allow(unused_unsafe, clippy::all)]
+                          pub fn initialize(worker: &WorkerId,){
+                            
+                            #[allow(unused_imports)]
+                            use wit_bindgen::rt::{alloc, vec::Vec, string::String};
+                            unsafe {
+                              let WorkerId{ name:name0, } = worker;
+                              let vec1 = name0;
+                              let ptr1 = vec1.as_ptr() as i32;
+                              let len1 = vec1.len() as i32;
+                              
+                              #[cfg(target_arch = "wasm32")]
+                              #[link(wasm_import_module = "timeline:raw-events/api")]
+                              extern "C" {
+                                #[link_name = "initialize"]
+                                fn wit_import(_: i32, _: i32, );
+                              }
+                              
+                              #[cfg(not(target_arch = "wasm32"))]
+                              fn wit_import(_: i32, _: i32, ){ unreachable!() }
+                              wit_import(ptr1, len1);
+                            }
+                          }
+                          #[allow(unused_unsafe, clippy::all)]
+                          pub fn add_event(order: &Event,){
+                            
+                            #[allow(unused_imports)]
+                            use wit_bindgen::rt::{alloc, vec::Vec, string::String};
+                            unsafe {
+                              let Event{ time:time0, event:event0, } = order;
+                              let (result2_0,result2_1,result2_2,) = match event0 {
+                                EventValue::StringValue(e) => {
+                                  let vec1 = e;
+                                  let ptr1 = vec1.as_ptr() as i32;
+                                  let len1 = vec1.len() as i32;
+                                  
+                                  (0i32, i64::from(ptr1), len1)
+                                },
+                                EventValue::IntValue(e) => (1i32, wit_bindgen::rt::as_i64(e), 0i32),
+                                EventValue::FloatValue(e) => (2i32, (wit_bindgen::rt::as_f64(e)).to_bits() as i64, 0i32),
+                                EventValue::BoolValue(e) => (3i32, i64::from(match e { true => 1, false => 0 }), 0i32),
+                              };
+                              
+                              #[cfg(target_arch = "wasm32")]
+                              #[link(wasm_import_module = "timeline:raw-events/api")]
+                              extern "C" {
+                                #[link_name = "add-event"]
+                                fn wit_import(_: i64, _: i32, _: i64, _: i32, );
+                              }
+                              
+                              #[cfg(not(target_arch = "wasm32"))]
+                              fn wit_import(_: i64, _: i32, _: i64, _: i32, ){ unreachable!() }
+                              wit_import(wit_bindgen::rt::as_i64(time0), result2_0, result2_1, result2_2);
+                            }
+                          }
+                          #[allow(unused_unsafe, clippy::all)]
+                          pub fn get_event(time: u64,) -> Event{
+                            
+                            #[allow(unused_imports)]
+                            use wit_bindgen::rt::{alloc, vec::Vec, string::String};
+                            unsafe {
+                              
+                              #[repr(align(8))]
+                              struct RetArea([u8; 24]);
+                              let mut ret_area = ::core::mem::MaybeUninit::<RetArea>::uninit();
+                              let ptr0 = ret_area.as_mut_ptr() as i32;
+                              #[cfg(target_arch = "wasm32")]
+                              #[link(wasm_import_module = "timeline:raw-events/api")]
+                              extern "C" {
+                                #[link_name = "get-event"]
+                                fn wit_import(_: i64, _: i32, );
+                              }
+                              
+                              #[cfg(not(target_arch = "wasm32"))]
+                              fn wit_import(_: i64, _: i32, ){ unreachable!() }
+                              wit_import(wit_bindgen::rt::as_i64(time), ptr0);
+                              let l1 = *((ptr0 + 0) as *const i64);
+                              let l2 = i32::from(*((ptr0 + 8) as *const u8));
+                              let v9 = match l2 {
+                                0 => {
+                                  let e9 = {
+                                    let l3 = *((ptr0 + 16) as *const i32);
+                                    let l4 = *((ptr0 + 20) as *const i32);
+                                    let len5 = l4 as usize;
+                                    let bytes5 = Vec::from_raw_parts(l3 as *mut _, len5, len5);
+                                    
+                                    wit_bindgen::rt::string_lift(bytes5)
+                                  };
+                                  EventValue::StringValue(e9)
+                                }
+                                1 => {
+                                  let e9 = {
+                                    let l6 = *((ptr0 + 16) as *const i64);
+                                    
+                                    l6
+                                  };
+                                  EventValue::IntValue(e9)
+                                }
+                                2 => {
+                                  let e9 = {
+                                    let l7 = *((ptr0 + 16) as *const f64);
+                                    
+                                    l7
+                                  };
+                                  EventValue::FloatValue(e9)
+                                }
+                                n => {
+                                  debug_assert_eq!(n, 3, "invalid enum discriminant");
+                                  let e9 = {
+                                    let l8 = i32::from(*((ptr0 + 16) as *const u8));
+                                    
+                                    wit_bindgen::rt::bool_lift(l8 as u8)
+                                  };
+                                  EventValue::BoolValue(e9)
+                                }
+                              };
+                              Event{
+                                time: l1 as u64,
+                                event: v9,
+                              }
+                            }
+                          }
+                          #[allow(unused_unsafe, clippy::all)]
+                          pub fn get_events() -> wit_bindgen::rt::vec::Vec::<Event>{
+                            
+                            #[allow(unused_imports)]
+                            use wit_bindgen::rt::{alloc, vec::Vec, string::String};
+                            unsafe {
+                              
+                              #[repr(align(4))]
+                              struct RetArea([u8; 8]);
+                              let mut ret_area = ::core::mem::MaybeUninit::<RetArea>::uninit();
+                              let ptr0 = ret_area.as_mut_ptr() as i32;
+                              #[cfg(target_arch = "wasm32")]
+                              #[link(wasm_import_module = "timeline:raw-events/api")]
+                              extern "C" {
+                                #[link_name = "get-events"]
+                                fn wit_import(_: i32, );
+                              }
+                              
+                              #[cfg(not(target_arch = "wasm32"))]
+                              fn wit_import(_: i32, ){ unreachable!() }
+                              wit_import(ptr0);
+                              let l1 = *((ptr0 + 0) as *const i32);
+                              let l2 = *((ptr0 + 4) as *const i32);
+                              let base12 = l1;
+                              let len12 = l2;
+                              let mut result12 = Vec::with_capacity(len12 as usize);
+                              for i in 0..len12 {
+                                let base = base12 + i * 24;
+                                let e12 = {
+                                  let l3 = *((base + 0) as *const i64);
+                                  let l4 = i32::from(*((base + 8) as *const u8));
+                                  let v11 = match l4 {
+                                    0 => {
+                                      let e11 = {
+                                        let l5 = *((base + 16) as *const i32);
+                                        let l6 = *((base + 20) as *const i32);
+                                        let len7 = l6 as usize;
+                                        let bytes7 = Vec::from_raw_parts(l5 as *mut _, len7, len7);
+                                        
+                                        wit_bindgen::rt::string_lift(bytes7)
+                                      };
+                                      EventValue::StringValue(e11)
+                                    }
+                                    1 => {
+                                      let e11 = {
+                                        let l8 = *((base + 16) as *const i64);
+                                        
+                                        l8
+                                      };
+                                      EventValue::IntValue(e11)
+                                    }
+                                    2 => {
+                                      let e11 = {
+                                        let l9 = *((base + 16) as *const f64);
+                                        
+                                        l9
+                                      };
+                                      EventValue::FloatValue(e11)
+                                    }
+                                    n => {
+                                      debug_assert_eq!(n, 3, "invalid enum discriminant");
+                                      let e11 = {
+                                        let l10 = i32::from(*((base + 16) as *const u8));
+                                        
+                                        wit_bindgen::rt::bool_lift(l10 as u8)
+                                      };
+                                      EventValue::BoolValue(e11)
+                                    }
+                                  };
+                                  
+                                  Event{
+                                    time: l3 as u64,
+                                    event: v11,
+                                  }
+                                };
+                                result12.push(e12);
+                              }
+                              wit_bindgen::rt::dealloc(base12, (len12 as usize) * 24, 8);
+                              result12
+                            }
+                          }
+                          
+                        }
+                        
+                      }
+                    }
+                    pub mod exports {
+                      pub mod timeline {
+                        pub mod driver {
+                          
+                          #[allow(clippy::all)]
+                          pub mod api {
+                            #[used]
+                            #[doc(hidden)]
+                            #[cfg(target_arch = "wasm32")]
+                            static __FORCE_SECTION_REF: fn() = super::super::super::super::__link_section;
+                            const _: () = {
+                              
+                              #[doc(hidden)]
+                              #[export_name = "timeline:driver/api#run"]
+                              #[allow(non_snake_case)]
+                              unsafe extern "C" fn __export_run(arg0: i32,arg1: i32,arg2: i32,arg3: i32,arg4: i32,arg5: i32,) -> i32 {
+                                #[allow(unused_imports)]
+                                use wit_bindgen::rt::{alloc, vec::Vec, string::String};
+                                
+                                // Before executing any other code, use this function to run all static
+                                // constructors, if they have not yet been run. This is a hack required
+                                // to work around wasi-libc ctors calling import functions to initialize
+                                // the environment.
+                                //
+                                // This functionality will be removed once rust 1.69.0 is stable, at which
+                                // point wasi-libc will no longer have this behavior.
+                                //
+                                // See
+                                // https://github.com/bytecodealliance/preview2-prototyping/issues/99
+                                // for more details.
+                                #[cfg(target_arch="wasm32")]
+                                wit_bindgen::rt::run_ctors_once();
+                                
+                                let len0 = arg1 as usize;
+                                let bytes0 = Vec::from_raw_parts(arg0 as *mut _, len0, len0);
+                                let len1 = arg3 as usize;
+                                let bytes1 = Vec::from_raw_parts(arg2 as *mut _, len1, len1);
+                                let len2 = arg5 as usize;
+                                let bytes2 = Vec::from_raw_parts(arg4 as *mut _, len2, len2);
+                                let result3 = <_GuestImpl as Guest>::run(wit_bindgen::rt::string_lift(bytes0), wit_bindgen::rt::string_lift(bytes1), wit_bindgen::rt::string_lift(bytes2));
+                                let ptr4 = _RET_AREA.0.as_mut_ptr() as i32;
+                                match result3 {
+                                  Ok(e) => { {
+                                    *((ptr4 + 0) as *mut u8) = (0i32) as u8;
+                                    let vec5 = (e.into_bytes()).into_boxed_slice();
+                                    let ptr5 = vec5.as_ptr() as i32;
+                                    let len5 = vec5.len() as i32;
+                                    ::core::mem::forget(vec5);
+                                    *((ptr4 + 8) as *mut i32) = len5;
+                                    *((ptr4 + 4) as *mut i32) = ptr5;
+                                  } },
+                                  Err(e) => { {
+                                    *((ptr4 + 0) as *mut u8) = (1i32) as u8;
+                                    let vec6 = (e.into_bytes()).into_boxed_slice();
+                                    let ptr6 = vec6.as_ptr() as i32;
+                                    let len6 = vec6.len() as i32;
+                                    ::core::mem::forget(vec6);
+                                    *((ptr4 + 8) as *mut i32) = len6;
+                                    *((ptr4 + 4) as *mut i32) = ptr6;
+                                  } },
+                                };ptr4
+                              }
+                              
+                              const _: () = {
+                                #[doc(hidden)]
+                                #[export_name = "cabi_post_timeline:driver/api#run"]
+                                #[allow(non_snake_case)]
+                                unsafe extern "C" fn __post_return_run(arg0: i32,) {
+                                  let l0 = i32::from(*((arg0 + 0) as *const u8));
+                                  match l0 {
+                                    0 => {
+                                      let l1 = *((arg0 + 4) as *const i32);
+                                      let l2 = *((arg0 + 8) as *const i32);
+                                      wit_bindgen::rt::dealloc(l1, (l2) as usize, 1);
+                                    },
+                                    _ => {
+                                      let l3 = *((arg0 + 4) as *const i32);
+                                      let l4 = *((arg0 + 8) as *const i32);
+                                      wit_bindgen::rt::dealloc(l3, (l4) as usize, 1);
+                                    },
+                                  }
+                                }
+                              };
+                            };
+                            use super::super::super::super::super::Component as _GuestImpl;
+                            pub trait Guest {
+                              fn run(core_template_id: wit_bindgen::rt::string::String,leaf_template_id: wit_bindgen::rt::string::String,event_to_state_tempalte_id: wit_bindgen::rt::string::String,) -> Result<wit_bindgen::rt::string::String,wit_bindgen::rt::string::String>;
+                            }
+                            
+                            #[allow(unused_imports)]
+                            use wit_bindgen::rt::{alloc, vec::Vec, string::String};
+                            
+                            #[repr(align(4))]
+                            struct _RetArea([u8; 12]);
+                            static mut _RET_AREA: _RetArea = _RetArea([0; 12]);
+                            
+                          }
+                          
                         }
                       }
-                      
-                      #[cfg(target_arch = "wasm32")]
-                      #[link(wasm_import_module = "timeline:core-stub/stub-core")]
-                      extern "C" {
-                        #[link_name = "[method]api.initialize-timeline"]
-                        fn wit_import(_: i32, _: i32, _: i32, );
-                      }
-                      
-                      #[cfg(not(target_arch = "wasm32"))]
-                      fn wit_import(_: i32, _: i32, _: i32, ){ unreachable!() }
-                      wit_import((self).handle() as i32, result40 as i32, len40);
-                      if layout40.size() != 0 {
-                        alloc::dealloc(result40, layout40);
-                      }
                     }
-                  }
-                }
-                
-              }
-              
-            }
-            pub mod raw_events {
-              
-              #[allow(clippy::all)]
-              pub mod api {
-                #[used]
-                #[doc(hidden)]
-                #[cfg(target_arch = "wasm32")]
-                static __FORCE_SECTION_REF: fn() = super::super::super::__link_section;
-                #[derive(Clone)]
-                pub enum EventValue{
-                  StringValue(wit_bindgen::rt::string::String),
-                  IntValue(i64),
-                  FloatValue(f64),
-                  BoolValue(bool),
-                }
-                impl ::core::fmt::Debug for EventValue {
-                  fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-                    match self {
-                      EventValue::StringValue(e) => {
-                        f.debug_tuple("EventValue::StringValue").field(e).finish()
-                      }
-                      EventValue::IntValue(e) => {
-                        f.debug_tuple("EventValue::IntValue").field(e).finish()
-                      }
-                      EventValue::FloatValue(e) => {
-                        f.debug_tuple("EventValue::FloatValue").field(e).finish()
-                      }
-                      EventValue::BoolValue(e) => {
-                        f.debug_tuple("EventValue::BoolValue").field(e).finish()
-                      }
-                    }
-                  }
-                }
-                #[derive(Clone)]
-                pub struct Event {
-                  pub time: u64,
-                  pub event: EventValue,
-                }
-                impl ::core::fmt::Debug for Event {
-                  fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-                    f.debug_struct("Event").field("time", &self.time).field("event", &self.event).finish()
-                  }
-                }
-                #[derive(Clone)]
-                pub struct WorkerId {
-                  pub name: wit_bindgen::rt::string::String,
-                }
-                impl ::core::fmt::Debug for WorkerId {
-                  fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-                    f.debug_struct("WorkerId").field("name", &self.name).finish()
-                  }
-                }
-                #[allow(unused_unsafe, clippy::all)]
-                pub fn initialize(worker: &WorkerId,){
-                  
-                  #[allow(unused_imports)]
-                  use wit_bindgen::rt::{alloc, vec::Vec, string::String};
-                  unsafe {
-                    let WorkerId{ name:name0, } = worker;
-                    let vec1 = name0;
-                    let ptr1 = vec1.as_ptr() as i32;
-                    let len1 = vec1.len() as i32;
                     
                     #[cfg(target_arch = "wasm32")]
-                    #[link(wasm_import_module = "timeline:raw-events/api")]
-                    extern "C" {
-                      #[link_name = "initialize"]
-                      fn wit_import(_: i32, _: i32, );
-                    }
-                    
-                    #[cfg(not(target_arch = "wasm32"))]
-                    fn wit_import(_: i32, _: i32, ){ unreachable!() }
-                    wit_import(ptr1, len1);
-                  }
-                }
-                #[allow(unused_unsafe, clippy::all)]
-                pub fn add_event(order: &Event,){
-                  
-                  #[allow(unused_imports)]
-                  use wit_bindgen::rt::{alloc, vec::Vec, string::String};
-                  unsafe {
-                    let Event{ time:time0, event:event0, } = order;
-                    let (result2_0,result2_1,result2_2,) = match event0 {
-                      EventValue::StringValue(e) => {
-                        let vec1 = e;
-                        let ptr1 = vec1.as_ptr() as i32;
-                        let len1 = vec1.len() as i32;
-                        
-                        (0i32, i64::from(ptr1), len1)
-                      },
-                      EventValue::IntValue(e) => (1i32, wit_bindgen::rt::as_i64(e), 0i32),
-                      EventValue::FloatValue(e) => (2i32, (wit_bindgen::rt::as_f64(e)).to_bits() as i64, 0i32),
-                      EventValue::BoolValue(e) => (3i32, i64::from(match e { true => 1, false => 0 }), 0i32),
-                    };
-                    
-                    #[cfg(target_arch = "wasm32")]
-                    #[link(wasm_import_module = "timeline:raw-events/api")]
-                    extern "C" {
-                      #[link_name = "add-event"]
-                      fn wit_import(_: i64, _: i32, _: i64, _: i32, );
-                    }
-                    
-                    #[cfg(not(target_arch = "wasm32"))]
-                    fn wit_import(_: i64, _: i32, _: i64, _: i32, ){ unreachable!() }
-                    wit_import(wit_bindgen::rt::as_i64(time0), result2_0, result2_1, result2_2);
-                  }
-                }
-                #[allow(unused_unsafe, clippy::all)]
-                pub fn get_event(time: u64,) -> Event{
-                  
-                  #[allow(unused_imports)]
-                  use wit_bindgen::rt::{alloc, vec::Vec, string::String};
-                  unsafe {
-                    
-                    #[repr(align(8))]
-                    struct RetArea([u8; 24]);
-                    let mut ret_area = ::core::mem::MaybeUninit::<RetArea>::uninit();
-                    let ptr0 = ret_area.as_mut_ptr() as i32;
-                    #[cfg(target_arch = "wasm32")]
-                    #[link(wasm_import_module = "timeline:raw-events/api")]
-                    extern "C" {
-                      #[link_name = "get-event"]
-                      fn wit_import(_: i64, _: i32, );
-                    }
-                    
-                    #[cfg(not(target_arch = "wasm32"))]
-                    fn wit_import(_: i64, _: i32, ){ unreachable!() }
-                    wit_import(wit_bindgen::rt::as_i64(time), ptr0);
-                    let l1 = *((ptr0 + 0) as *const i64);
-                    let l2 = i32::from(*((ptr0 + 8) as *const u8));
-                    let v9 = match l2 {
-                      0 => {
-                        let e9 = {
-                          let l3 = *((ptr0 + 16) as *const i32);
-                          let l4 = *((ptr0 + 20) as *const i32);
-                          let len5 = l4 as usize;
-                          let bytes5 = Vec::from_raw_parts(l3 as *mut _, len5, len5);
-                          
-                          wit_bindgen::rt::string_lift(bytes5)
-                        };
-                        EventValue::StringValue(e9)
-                      }
-                      1 => {
-                        let e9 = {
-                          let l6 = *((ptr0 + 16) as *const i64);
-                          
-                          l6
-                        };
-                        EventValue::IntValue(e9)
-                      }
-                      2 => {
-                        let e9 = {
-                          let l7 = *((ptr0 + 16) as *const f64);
-                          
-                          l7
-                        };
-                        EventValue::FloatValue(e9)
-                      }
-                      n => {
-                        debug_assert_eq!(n, 3, "invalid enum discriminant");
-                        let e9 = {
-                          let l8 = i32::from(*((ptr0 + 16) as *const u8));
-                          
-                          wit_bindgen::rt::bool_lift(l8 as u8)
-                        };
-                        EventValue::BoolValue(e9)
-                      }
-                    };
-                    Event{
-                      time: l1 as u64,
-                      event: v9,
-                    }
-                  }
-                }
-                #[allow(unused_unsafe, clippy::all)]
-                pub fn get_events() -> wit_bindgen::rt::vec::Vec::<Event>{
-                  
-                  #[allow(unused_imports)]
-                  use wit_bindgen::rt::{alloc, vec::Vec, string::String};
-                  unsafe {
-                    
-                    #[repr(align(4))]
-                    struct RetArea([u8; 8]);
-                    let mut ret_area = ::core::mem::MaybeUninit::<RetArea>::uninit();
-                    let ptr0 = ret_area.as_mut_ptr() as i32;
-                    #[cfg(target_arch = "wasm32")]
-                    #[link(wasm_import_module = "timeline:raw-events/api")]
-                    extern "C" {
-                      #[link_name = "get-events"]
-                      fn wit_import(_: i32, );
-                    }
-                    
-                    #[cfg(not(target_arch = "wasm32"))]
-                    fn wit_import(_: i32, ){ unreachable!() }
-                    wit_import(ptr0);
-                    let l1 = *((ptr0 + 0) as *const i32);
-                    let l2 = *((ptr0 + 4) as *const i32);
-                    let base12 = l1;
-                    let len12 = l2;
-                    let mut result12 = Vec::with_capacity(len12 as usize);
-                    for i in 0..len12 {
-                      let base = base12 + i * 24;
-                      let e12 = {
-                        let l3 = *((base + 0) as *const i64);
-                        let l4 = i32::from(*((base + 8) as *const u8));
-                        let v11 = match l4 {
-                          0 => {
-                            let e11 = {
-                              let l5 = *((base + 16) as *const i32);
-                              let l6 = *((base + 20) as *const i32);
-                              let len7 = l6 as usize;
-                              let bytes7 = Vec::from_raw_parts(l5 as *mut _, len7, len7);
-                              
-                              wit_bindgen::rt::string_lift(bytes7)
-                            };
-                            EventValue::StringValue(e11)
-                          }
-                          1 => {
-                            let e11 = {
-                              let l8 = *((base + 16) as *const i64);
-                              
-                              l8
-                            };
-                            EventValue::IntValue(e11)
-                          }
-                          2 => {
-                            let e11 = {
-                              let l9 = *((base + 16) as *const f64);
-                              
-                              l9
-                            };
-                            EventValue::FloatValue(e11)
-                          }
-                          n => {
-                            debug_assert_eq!(n, 3, "invalid enum discriminant");
-                            let e11 = {
-                              let l10 = i32::from(*((base + 16) as *const u8));
-                              
-                              wit_bindgen::rt::bool_lift(l10 as u8)
-                            };
-                            EventValue::BoolValue(e11)
-                          }
-                        };
-                        
-                        Event{
-                          time: l3 as u64,
-                          event: v11,
-                        }
-                      };
-                      result12.push(e12);
-                    }
-                    wit_bindgen::rt::dealloc(base12, (len12 as usize) * 24, 8);
-                    result12
-                  }
-                }
-                
-              }
-              
-            }
-          }
-          pub mod exports {
-            pub mod timeline {
-              pub mod driver {
-                
-                #[allow(clippy::all)]
-                pub mod api {
-                  #[used]
-                  #[doc(hidden)]
-                  #[cfg(target_arch = "wasm32")]
-                  static __FORCE_SECTION_REF: fn() = super::super::super::super::__link_section;
-                  const _: () = {
-                    
+                    #[link_section = "component-type:driver"]
                     #[doc(hidden)]
-                    #[export_name = "timeline:driver/api#run"]
-                    #[allow(non_snake_case)]
-                    unsafe extern "C" fn __export_run(arg0: i32,arg1: i32,arg2: i32,arg3: i32,arg4: i32,arg5: i32,) {
-                      #[allow(unused_imports)]
-                      use wit_bindgen::rt::{alloc, vec::Vec, string::String};
-                      
-                      // Before executing any other code, use this function to run all static
-                      // constructors, if they have not yet been run. This is a hack required
-                      // to work around wasi-libc ctors calling import functions to initialize
-                      // the environment.
-                      //
-                      // This functionality will be removed once rust 1.69.0 is stable, at which
-                      // point wasi-libc will no longer have this behavior.
-                      //
-                      // See
-                      // https://github.com/bytecodealliance/preview2-prototyping/issues/99
-                      // for more details.
-                      #[cfg(target_arch="wasm32")]
-                      wit_bindgen::rt::run_ctors_once();
-                      
-                      let len0 = arg1 as usize;
-                      let bytes0 = Vec::from_raw_parts(arg0 as *mut _, len0, len0);
-                      let len1 = arg3 as usize;
-                      let bytes1 = Vec::from_raw_parts(arg2 as *mut _, len1, len1);
-                      let len2 = arg5 as usize;
-                      let bytes2 = Vec::from_raw_parts(arg4 as *mut _, len2, len2);
-                      <_GuestImpl as Guest>::run(wit_bindgen::rt::string_lift(bytes0), wit_bindgen::rt::string_lift(bytes1), wit_bindgen::rt::string_lift(bytes2));
-                    }
-                  };
-                  use super::super::super::super::super::Component as _GuestImpl;
-                  pub trait Guest {
-                    fn run(core_template_id: wit_bindgen::rt::string::String,leaf_template_id: wit_bindgen::rt::string::String,event_to_state_tempalte_id: wit_bindgen::rt::string::String,);
-                  }
-                  
-                }
-                
-              }
-            }
-          }
-          
-          #[cfg(target_arch = "wasm32")]
-          #[link_section = "component-type:driver"]
-          #[doc(hidden)]
-          pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 3029] = [3, 0, 6, 100, 114, 105, 118, 101, 114, 0, 97, 115, 109, 13, 0, 1, 0, 7, 107, 1, 65, 2, 1, 66, 2, 1, 64, 3, 16, 99, 111, 114, 101, 45, 116, 101, 109, 112, 108, 97, 116, 101, 45, 105, 100, 115, 16, 108, 101, 97, 102, 45, 116, 101, 109, 112, 108, 97, 116, 101, 45, 105, 100, 115, 26, 101, 118, 101, 110, 116, 45, 116, 111, 45, 115, 116, 97, 116, 101, 45, 116, 101, 109, 112, 97, 108, 116, 101, 45, 105, 100, 115, 1, 0, 4, 0, 3, 114, 117, 110, 1, 0, 4, 1, 19, 116, 105, 109, 101, 108, 105, 110, 101, 58, 100, 114, 105, 118, 101, 114, 47, 97, 112, 105, 5, 0, 11, 9, 1, 0, 3, 97, 112, 105, 3, 0, 0, 7, 225, 21, 1, 65, 2, 1, 65, 26, 1, 66, 26, 1, 122, 4, 0, 10, 110, 111, 100, 101, 45, 105, 110, 100, 101, 120, 3, 0, 0, 1, 114, 1, 5, 118, 97, 108, 117, 101, 115, 4, 0, 3, 117, 114, 105, 3, 0, 2, 1, 112, 1, 1, 107, 1, 1, 111, 2, 121, 5, 1, 112, 127, 1, 106, 1, 5, 1, 5, 1, 111, 2, 3, 119, 1, 113, 22, 12, 114, 101, 99, 111, 114, 100, 45, 118, 97, 108, 117, 101, 1, 4, 0, 13, 118, 97, 114, 105, 97, 110, 116, 45, 118, 97, 108, 117, 101, 1, 6, 0, 10, 101, 110, 117, 109, 45, 118, 97, 108, 117, 101, 1, 121, 0, 11, 102, 108, 97, 103, 115, 45, 118, 97, 108, 117, 101, 1, 7, 0, 11, 116, 117, 112, 108, 101, 45, 118, 97, 108, 117, 101, 1, 4, 0, 10, 108, 105, 115, 116, 45, 118, 97, 108, 117, 101, 1, 4, 0, 12, 111, 112, 116, 105, 111, 110, 45, 118, 97, 108, 117, 101, 1, 5, 0, 12, 114, 101, 115, 117, 108, 116, 45, 118, 97, 108, 117, 101, 1, 8, 0, 7, 112, 114, 105, 109, 45, 117, 56, 1, 125, 0, 8, 112, 114, 105, 109, 45, 117, 49, 54, 1, 123, 0, 8, 112, 114, 105, 109, 45, 117, 51, 50, 1, 121, 0, 8, 112, 114, 105, 109, 45, 117, 54, 52, 1, 119, 0, 7, 112, 114, 105, 109, 45, 115, 56, 1, 126, 0, 8, 112, 114, 105, 109, 45, 115, 49, 54, 1, 124, 0, 8, 112, 114, 105, 109, 45, 115, 51, 50, 1, 122, 0, 8, 112, 114, 105, 109, 45, 115, 54, 52, 1, 120, 0, 12, 112, 114, 105, 109, 45, 102, 108, 111, 97, 116, 51, 50, 1, 118, 0, 12, 112, 114, 105, 109, 45, 102, 108, 111, 97, 116, 54, 52, 1, 117, 0, 9, 112, 114, 105, 109, 45, 99, 104, 97, 114, 1, 116, 0, 9, 112, 114, 105, 109, 45, 98, 111, 111, 108, 1, 127, 0, 11, 112, 114, 105, 109, 45, 115, 116, 114, 105, 110, 103, 1, 115, 0, 6, 104, 97, 110, 100, 108, 101, 1, 9, 0, 4, 0, 8, 119, 105, 116, 45, 110, 111, 100, 101, 3, 0, 10, 1, 112, 11, 1, 114, 1, 5, 110, 111, 100, 101, 115, 12, 4, 0, 9, 119, 105, 116, 45, 118, 97, 108, 117, 101, 3, 0, 13, 1, 113, 4, 14, 112, 114, 111, 116, 111, 99, 111, 108, 45, 101, 114, 114, 111, 114, 1, 115, 0, 6, 100, 101, 110, 105, 101, 100, 1, 115, 0, 9, 110, 111, 116, 45, 102, 111, 117, 110, 100, 1, 115, 0, 21, 114, 101, 109, 111, 116, 101, 45, 105, 110, 116, 101, 114, 110, 97, 108, 45, 101, 114, 114, 111, 114, 1, 115, 0, 4, 0, 9, 114, 112, 99, 45, 101, 114, 114, 111, 114, 3, 0, 15, 4, 0, 8, 119, 97, 115, 109, 45, 114, 112, 99, 3, 1, 1, 105, 17, 1, 64, 1, 8, 108, 111, 99, 97, 116, 105, 111, 110, 3, 0, 18, 4, 0, 21, 91, 99, 111, 110, 115, 116, 114, 117, 99, 116, 111, 114, 93, 119, 97, 115, 109, 45, 114, 112, 99, 1, 19, 1, 104, 17, 1, 112, 14, 1, 106, 1, 14, 1, 16, 1, 64, 3, 4, 115, 101, 108, 102, 20, 13, 102, 117, 110, 99, 116, 105, 111, 110, 45, 110, 97, 109, 101, 115, 15, 102, 117, 110, 99, 116, 105, 111, 110, 45, 112, 97, 114, 97, 109, 115, 21, 0, 22, 4, 0, 33, 91, 109, 101, 116, 104, 111, 100, 93, 119, 97, 115, 109, 45, 114, 112, 99, 46, 105, 110, 118, 111, 107, 101, 45, 97, 110, 100, 45, 97, 119, 97, 105, 116, 1, 23, 3, 1, 21, 103, 111, 108, 101, 109, 58, 114, 112, 99, 47, 116, 121, 112, 101, 115, 64, 48, 46, 49, 46, 48, 5, 0, 1, 66, 15, 1, 113, 4, 12, 115, 116, 114, 105, 110, 103, 45, 118, 97, 108, 117, 101, 1, 115, 0, 9, 105, 110, 116, 45, 118, 97, 108, 117, 101, 1, 120, 0, 11, 102, 108, 111, 97, 116, 45, 118, 97, 108, 117, 101, 1, 117, 0, 10, 98, 111, 111, 108, 45, 118, 97, 108, 117, 101, 1, 127, 0, 4, 0, 11, 101, 118, 101, 110, 116, 45, 118, 97, 108, 117, 101, 3, 0, 0, 1, 114, 2, 4, 116, 105, 109, 101, 119, 5, 101, 118, 101, 110, 116, 1, 4, 0, 5, 101, 118, 101, 110, 116, 3, 0, 2, 1, 114, 1, 4, 110, 97, 109, 101, 115, 4, 0, 9, 119, 111, 114, 107, 101, 114, 45, 105, 100, 3, 0, 4, 1, 64, 1, 6, 119, 111, 114, 107, 101, 114, 5, 1, 0, 4, 0, 10, 105, 110, 105, 116, 105, 97, 108, 105, 122, 101, 1, 6, 1, 64, 1, 5, 111, 114, 100, 101, 114, 3, 1, 0, 4, 0, 9, 97, 100, 100, 45, 101, 118, 101, 110, 116, 1, 7, 1, 64, 1, 4, 116, 105, 109, 101, 119, 0, 3, 4, 0, 9, 103, 101, 116, 45, 101, 118, 101, 110, 116, 1, 8, 1, 112, 3, 1, 64, 0, 0, 9, 4, 0, 10, 103, 101, 116, 45, 101, 118, 101, 110, 116, 115, 1, 10, 3, 1, 23, 116, 105, 109, 101, 108, 105, 110, 101, 58, 114, 97, 119, 45, 101, 118, 101, 110, 116, 115, 47, 97, 112, 105, 5, 1, 2, 3, 0, 1, 11, 101, 118, 101, 110, 116, 45, 118, 97, 108, 117, 101, 2, 3, 0, 1, 5, 101, 118, 101, 110, 116, 1, 66, 33, 2, 3, 2, 1, 2, 4, 0, 11, 101, 118, 101, 110, 116, 45, 118, 97, 108, 117, 101, 3, 0, 0, 2, 3, 2, 1, 3, 4, 0, 5, 101, 118, 101, 110, 116, 3, 0, 2, 1, 122, 4, 0, 10, 110, 111, 100, 101, 45, 105, 110, 100, 101, 120, 3, 0, 4, 1, 114, 2, 9, 119, 111, 114, 107, 101, 114, 45, 105, 100, 115, 11, 116, 101, 109, 112, 108, 97, 116, 101, 45, 105, 100, 115, 4, 0, 6, 115, 101, 114, 118, 101, 114, 3, 0, 6, 1, 114, 2, 6, 115, 101, 114, 118, 101, 114, 7, 8, 116, 105, 109, 101, 108, 105, 110, 101, 5, 4, 0, 20, 116, 105, 109, 101, 108, 105, 110, 101, 45, 119, 105, 116, 104, 45, 115, 101, 114, 118, 101, 114, 3, 0, 8, 1, 114, 1, 4, 110, 97, 109, 101, 115, 4, 0, 9, 119, 111, 114, 107, 101, 114, 45, 105, 100, 3, 0, 10, 1, 109, 4, 12, 103, 114, 101, 97, 116, 101, 114, 45, 116, 104, 97, 110, 18, 103, 114, 101, 97, 116, 101, 114, 45, 116, 104, 97, 110, 45, 101, 113, 117, 97, 108, 9, 108, 101, 115, 115, 45, 116, 104, 97, 110, 15, 108, 101, 115, 115, 45, 116, 104, 97, 110, 45, 101, 113, 117, 97, 108, 4, 0, 28, 116, 105, 109, 101, 108, 105, 110, 101, 45, 99, 111, 110, 115, 116, 97, 110, 116, 45, 99, 111, 109, 112, 97, 114, 97, 116, 111, 114, 3, 0, 12, 1, 114, 4, 2, 111, 112, 13, 8, 116, 105, 109, 101, 108, 105, 110, 101, 5, 5, 118, 97, 108, 117, 101, 1, 6, 115, 101, 114, 118, 101, 114, 7, 4, 0, 26, 116, 105, 109, 101, 108, 105, 110, 101, 45, 99, 111, 110, 115, 116, 97, 110, 116, 45, 99, 111, 109, 112, 97, 114, 101, 100, 3, 0, 14, 1, 114, 2, 8, 116, 105, 109, 101, 108, 105, 110, 101, 5, 6, 115, 101, 114, 118, 101, 114, 7, 4, 0, 16, 116, 105, 109, 101, 108, 105, 110, 101, 45, 110, 101, 103, 97, 116, 101, 100, 3, 0, 16, 1, 109, 3, 5, 101, 113, 117, 97, 108, 12, 103, 114, 101, 97, 116, 101, 114, 45, 116, 104, 97, 110, 9, 108, 101, 115, 115, 45, 116, 104, 97, 110, 4, 0, 18, 101, 118, 101, 110, 116, 45, 112, 114, 101, 100, 105, 99, 97, 116, 101, 45, 111, 112, 3, 0, 18, 1, 114, 3, 8, 99, 111, 108, 45, 110, 97, 109, 101, 115, 5, 118, 97, 108, 117, 101, 1, 2, 111, 112, 19, 4, 0, 15, 101, 118, 101, 110, 116, 45, 112, 114, 101, 100, 105, 99, 97, 116, 101, 3, 0, 20, 1, 114, 3, 8, 116, 105, 109, 101, 108, 105, 110, 101, 5, 15, 101, 118, 101, 110, 116, 45, 112, 114, 101, 100, 105, 99, 97, 116, 101, 21, 6, 115, 101, 114, 118, 101, 114, 7, 4, 0, 29, 116, 105, 109, 101, 108, 105, 110, 101, 45, 119, 105, 116, 104, 45, 101, 118, 101, 110, 116, 45, 112, 114, 101, 100, 105, 99, 97, 116, 101, 3, 0, 22, 1, 114, 2, 8, 102, 105, 108, 116, 101, 114, 101, 100, 23, 4, 116, 105, 109, 101, 119, 4, 0, 36, 116, 105, 109, 101, 108, 105, 110, 101, 45, 119, 105, 116, 104, 45, 101, 118, 101, 110, 116, 45, 112, 114, 101, 100, 105, 99, 97, 116, 101, 45, 119, 105, 116, 104, 105, 110, 3, 0, 24, 1, 113, 7, 4, 108, 101, 97, 102, 1, 7, 0, 19, 116, 105, 109, 101, 108, 105, 110, 101, 45, 99, 111, 109, 112, 97, 114, 105, 115, 111, 110, 1, 15, 0, 17, 116, 105, 109, 101, 108, 105, 110, 101, 45, 110, 101, 103, 97, 116, 105, 111, 110, 1, 17, 0, 14, 116, 108, 45, 104, 97, 115, 45, 101, 120, 105, 115, 116, 101, 100, 1, 23, 0, 21, 116, 108, 45, 104, 97, 115, 45, 101, 120, 105, 115, 116, 101, 100, 45, 119, 105, 116, 104, 105, 110, 1, 25, 0, 17, 116, 108, 45, 100, 117, 114, 97, 116, 105, 111, 110, 45, 119, 104, 101, 114, 101, 1, 9, 0, 24, 116, 108, 45, 100, 117, 114, 97, 116, 105, 111, 110, 45, 105, 110, 45, 99, 117, 114, 45, 115, 116, 97, 116, 101, 1, 9, 0, 4, 0, 13, 116, 105, 109, 101, 108, 105, 110, 101, 45, 110, 111, 100, 101, 3, 0, 26, 1, 112, 27, 1, 114, 1, 5, 110, 111, 100, 101, 115, 28, 4, 0, 11, 116, 105, 109, 101, 108, 105, 110, 101, 45, 111, 112, 3, 0, 29, 1, 64, 1, 8, 116, 105, 109, 101, 108, 105, 110, 101, 30, 1, 0, 4, 0, 19, 105, 110, 105, 116, 105, 97, 108, 105, 122, 101, 45, 116, 105, 109, 101, 108, 105, 110, 101, 1, 31, 3, 1, 17, 116, 105, 109, 101, 108, 105, 110, 101, 58, 99, 111, 114, 101, 47, 97, 112, 105, 5, 4, 2, 3, 0, 0, 3, 117, 114, 105, 2, 3, 0, 2, 11, 101, 118, 101, 110, 116, 45, 118, 97, 108, 117, 101, 2, 3, 0, 2, 5, 101, 118, 101, 110, 116, 2, 3, 0, 2, 10, 110, 111, 100, 101, 45, 105, 110, 100, 101, 120, 2, 3, 0, 2, 9, 119, 111, 114, 107, 101, 114, 45, 105, 100, 2, 3, 0, 2, 28, 116, 105, 109, 101, 108, 105, 110, 101, 45, 99, 111, 110, 115, 116, 97, 110, 116, 45, 99, 111, 109, 112, 97, 114, 97, 116, 111, 114, 2, 3, 0, 2, 26, 116, 105, 109, 101, 108, 105, 110, 101, 45, 99, 111, 110, 115, 116, 97, 110, 116, 45, 99, 111, 109, 112, 97, 114, 101, 100, 2, 3, 0, 2, 16, 116, 105, 109, 101, 108, 105, 110, 101, 45, 110, 101, 103, 97, 116, 101, 100, 2, 3, 0, 2, 18, 101, 118, 101, 110, 116, 45, 112, 114, 101, 100, 105, 99, 97, 116, 101, 45, 111, 112, 2, 3, 0, 2, 15, 101, 118, 101, 110, 116, 45, 112, 114, 101, 100, 105, 99, 97, 116, 101, 2, 3, 0, 2, 29, 116, 105, 109, 101, 108, 105, 110, 101, 45, 119, 105, 116, 104, 45, 101, 118, 101, 110, 116, 45, 112, 114, 101, 100, 105, 99, 97, 116, 101, 2, 3, 0, 2, 36, 116, 105, 109, 101, 108, 105, 110, 101, 45, 119, 105, 116, 104, 45, 101, 118, 101, 110, 116, 45, 112, 114, 101, 100, 105, 99, 97, 116, 101, 45, 119, 105, 116, 104, 105, 110, 2, 3, 0, 2, 13, 116, 105, 109, 101, 108, 105, 110, 101, 45, 110, 111, 100, 101, 2, 3, 0, 2, 11, 116, 105, 109, 101, 108, 105, 110, 101, 45, 111, 112, 1, 66, 35, 2, 3, 2, 1, 5, 4, 0, 3, 117, 114, 105, 3, 0, 0, 2, 3, 2, 1, 6, 4, 0, 11, 101, 118, 101, 110, 116, 45, 118, 97, 108, 117, 101, 3, 0, 2, 2, 3, 2, 1, 7, 4, 0, 5, 101, 118, 101, 110, 116, 3, 0, 4, 2, 3, 2, 1, 8, 4, 0, 10, 110, 111, 100, 101, 45, 105, 110, 100, 101, 120, 3, 0, 6, 2, 3, 2, 1, 9, 4, 0, 9, 119, 111, 114, 107, 101, 114, 45, 105, 100, 3, 0, 8, 2, 3, 2, 1, 10, 4, 0, 28, 116, 105, 109, 101, 108, 105, 110, 101, 45, 99, 111, 110, 115, 116, 97, 110, 116, 45, 99, 111, 109, 112, 97, 114, 97, 116, 111, 114, 3, 0, 10, 2, 3, 2, 1, 11, 4, 0, 26, 116, 105, 109, 101, 108, 105, 110, 101, 45, 99, 111, 110, 115, 116, 97, 110, 116, 45, 99, 111, 109, 112, 97, 114, 101, 100, 3, 0, 12, 2, 3, 2, 1, 12, 4, 0, 16, 116, 105, 109, 101, 108, 105, 110, 101, 45, 110, 101, 103, 97, 116, 101, 100, 3, 0, 14, 2, 3, 2, 1, 13, 4, 0, 18, 101, 118, 101, 110, 116, 45, 112, 114, 101, 100, 105, 99, 97, 116, 101, 45, 111, 112, 3, 0, 16, 2, 3, 2, 1, 14, 4, 0, 15, 101, 118, 101, 110, 116, 45, 112, 114, 101, 100, 105, 99, 97, 116, 101, 3, 0, 18, 2, 3, 2, 1, 15, 4, 0, 29, 116, 105, 109, 101, 108, 105, 110, 101, 45, 119, 105, 116, 104, 45, 101, 118, 101, 110, 116, 45, 112, 114, 101, 100, 105, 99, 97, 116, 101, 3, 0, 20, 2, 3, 2, 1, 16, 4, 0, 36, 116, 105, 109, 101, 108, 105, 110, 101, 45, 119, 105, 116, 104, 45, 101, 118, 101, 110, 116, 45, 112, 114, 101, 100, 105, 99, 97, 116, 101, 45, 119, 105, 116, 104, 105, 110, 3, 0, 22, 2, 3, 2, 1, 17, 4, 0, 13, 116, 105, 109, 101, 108, 105, 110, 101, 45, 110, 111, 100, 101, 3, 0, 24, 2, 3, 2, 1, 18, 4, 0, 11, 116, 105, 109, 101, 108, 105, 110, 101, 45, 111, 112, 3, 0, 26, 4, 0, 3, 97, 112, 105, 3, 1, 1, 105, 28, 1, 64, 1, 8, 108, 111, 99, 97, 116, 105, 111, 110, 1, 0, 29, 4, 0, 16, 91, 99, 111, 110, 115, 116, 114, 117, 99, 116, 111, 114, 93, 97, 112, 105, 1, 30, 1, 104, 28, 1, 64, 2, 4, 115, 101, 108, 102, 31, 8, 116, 105, 109, 101, 108, 105, 110, 101, 27, 1, 0, 4, 0, 31, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 105, 110, 105, 116, 105, 97, 108, 105, 122, 101, 45, 116, 105, 109, 101, 108, 105, 110, 101, 1, 32, 3, 1, 28, 116, 105, 109, 101, 108, 105, 110, 101, 58, 99, 111, 114, 101, 45, 115, 116, 117, 98, 47, 115, 116, 117, 98, 45, 99, 111, 114, 101, 5, 19, 1, 66, 2, 1, 64, 3, 16, 99, 111, 114, 101, 45, 116, 101, 109, 112, 108, 97, 116, 101, 45, 105, 100, 115, 16, 108, 101, 97, 102, 45, 116, 101, 109, 112, 108, 97, 116, 101, 45, 105, 100, 115, 26, 101, 118, 101, 110, 116, 45, 116, 111, 45, 115, 116, 97, 116, 101, 45, 116, 101, 109, 112, 97, 108, 116, 101, 45, 105, 100, 115, 1, 0, 4, 0, 3, 114, 117, 110, 1, 0, 4, 1, 19, 116, 105, 109, 101, 108, 105, 110, 101, 58, 100, 114, 105, 118, 101, 114, 47, 97, 112, 105, 5, 20, 4, 1, 22, 116, 105, 109, 101, 108, 105, 110, 101, 58, 100, 114, 105, 118, 101, 114, 47, 100, 114, 105, 118, 101, 114, 4, 0, 11, 12, 1, 0, 6, 100, 114, 105, 118, 101, 114, 3, 2, 0, 0, 16, 12, 112, 97, 99, 107, 97, 103, 101, 45, 100, 111, 99, 115, 0, 123, 125, 0, 70, 9, 112, 114, 111, 100, 117, 99, 101, 114, 115, 1, 12, 112, 114, 111, 99, 101, 115, 115, 101, 100, 45, 98, 121, 2, 13, 119, 105, 116, 45, 99, 111, 109, 112, 111, 110, 101, 110, 116, 6, 48, 46, 49, 56, 46, 50, 16, 119, 105, 116, 45, 98, 105, 110, 100, 103, 101, 110, 45, 114, 117, 115, 116, 6, 48, 46, 49, 54, 46, 48];
-          
-          #[inline(never)]
-          #[doc(hidden)]
-          #[cfg(target_arch = "wasm32")]
-          pub fn __link_section() {}
-          
+                    pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 3213] = [3, 0, 6, 100, 114, 105, 118, 101, 114, 0, 97, 115, 109, 13, 0, 1, 0, 7, 113, 1, 65, 2, 1, 66, 3, 1, 106, 1, 115, 1, 115, 1, 64, 3, 16, 99, 111, 114, 101, 45, 116, 101, 109, 112, 108, 97, 116, 101, 45, 105, 100, 115, 16, 108, 101, 97, 102, 45, 116, 101, 109, 112, 108, 97, 116, 101, 45, 105, 100, 115, 26, 101, 118, 101, 110, 116, 45, 116, 111, 45, 115, 116, 97, 116, 101, 45, 116, 101, 109, 112, 97, 108, 116, 101, 45, 105, 100, 115, 0, 0, 4, 0, 3, 114, 117, 110, 1, 1, 4, 1, 19, 116, 105, 109, 101, 108, 105, 110, 101, 58, 100, 114, 105, 118, 101, 114, 47, 97, 112, 105, 5, 0, 11, 9, 1, 0, 3, 97, 112, 105, 3, 0, 0, 7, 147, 23, 1, 65, 2, 1, 65, 28, 1, 66, 29, 1, 122, 4, 0, 10, 110, 111, 100, 101, 45, 105, 110, 100, 101, 120, 3, 0, 0, 1, 114, 1, 5, 118, 97, 108, 117, 101, 115, 4, 0, 3, 117, 114, 105, 3, 0, 2, 1, 112, 1, 1, 107, 1, 1, 111, 2, 121, 5, 1, 112, 127, 1, 106, 1, 5, 1, 5, 1, 111, 2, 3, 119, 1, 113, 22, 12, 114, 101, 99, 111, 114, 100, 45, 118, 97, 108, 117, 101, 1, 4, 0, 13, 118, 97, 114, 105, 97, 110, 116, 45, 118, 97, 108, 117, 101, 1, 6, 0, 10, 101, 110, 117, 109, 45, 118, 97, 108, 117, 101, 1, 121, 0, 11, 102, 108, 97, 103, 115, 45, 118, 97, 108, 117, 101, 1, 7, 0, 11, 116, 117, 112, 108, 101, 45, 118, 97, 108, 117, 101, 1, 4, 0, 10, 108, 105, 115, 116, 45, 118, 97, 108, 117, 101, 1, 4, 0, 12, 111, 112, 116, 105, 111, 110, 45, 118, 97, 108, 117, 101, 1, 5, 0, 12, 114, 101, 115, 117, 108, 116, 45, 118, 97, 108, 117, 101, 1, 8, 0, 7, 112, 114, 105, 109, 45, 117, 56, 1, 125, 0, 8, 112, 114, 105, 109, 45, 117, 49, 54, 1, 123, 0, 8, 112, 114, 105, 109, 45, 117, 51, 50, 1, 121, 0, 8, 112, 114, 105, 109, 45, 117, 54, 52, 1, 119, 0, 7, 112, 114, 105, 109, 45, 115, 56, 1, 126, 0, 8, 112, 114, 105, 109, 45, 115, 49, 54, 1, 124, 0, 8, 112, 114, 105, 109, 45, 115, 51, 50, 1, 122, 0, 8, 112, 114, 105, 109, 45, 115, 54, 52, 1, 120, 0, 12, 112, 114, 105, 109, 45, 102, 108, 111, 97, 116, 51, 50, 1, 118, 0, 12, 112, 114, 105, 109, 45, 102, 108, 111, 97, 116, 54, 52, 1, 117, 0, 9, 112, 114, 105, 109, 45, 99, 104, 97, 114, 1, 116, 0, 9, 112, 114, 105, 109, 45, 98, 111, 111, 108, 1, 127, 0, 11, 112, 114, 105, 109, 45, 115, 116, 114, 105, 110, 103, 1, 115, 0, 6, 104, 97, 110, 100, 108, 101, 1, 9, 0, 4, 0, 8, 119, 105, 116, 45, 110, 111, 100, 101, 3, 0, 10, 1, 112, 11, 1, 114, 1, 5, 110, 111, 100, 101, 115, 12, 4, 0, 9, 119, 105, 116, 45, 118, 97, 108, 117, 101, 3, 0, 13, 1, 113, 4, 14, 112, 114, 111, 116, 111, 99, 111, 108, 45, 101, 114, 114, 111, 114, 1, 115, 0, 6, 100, 101, 110, 105, 101, 100, 1, 115, 0, 9, 110, 111, 116, 45, 102, 111, 117, 110, 100, 1, 115, 0, 21, 114, 101, 109, 111, 116, 101, 45, 105, 110, 116, 101, 114, 110, 97, 108, 45, 101, 114, 114, 111, 114, 1, 115, 0, 4, 0, 9, 114, 112, 99, 45, 101, 114, 114, 111, 114, 3, 0, 15, 4, 0, 8, 119, 97, 115, 109, 45, 114, 112, 99, 3, 1, 1, 105, 17, 1, 64, 1, 8, 108, 111, 99, 97, 116, 105, 111, 110, 3, 0, 18, 4, 0, 21, 91, 99, 111, 110, 115, 116, 114, 117, 99, 116, 111, 114, 93, 119, 97, 115, 109, 45, 114, 112, 99, 1, 19, 1, 104, 17, 1, 112, 14, 1, 106, 1, 14, 1, 16, 1, 64, 3, 4, 115, 101, 108, 102, 20, 13, 102, 117, 110, 99, 116, 105, 111, 110, 45, 110, 97, 109, 101, 115, 15, 102, 117, 110, 99, 116, 105, 111, 110, 45, 112, 97, 114, 97, 109, 115, 21, 0, 22, 4, 0, 33, 91, 109, 101, 116, 104, 111, 100, 93, 119, 97, 115, 109, 45, 114, 112, 99, 46, 105, 110, 118, 111, 107, 101, 45, 97, 110, 100, 45, 97, 119, 97, 105, 116, 1, 23, 1, 106, 0, 1, 16, 1, 64, 3, 4, 115, 101, 108, 102, 20, 13, 102, 117, 110, 99, 116, 105, 111, 110, 45, 110, 97, 109, 101, 115, 15, 102, 117, 110, 99, 116, 105, 111, 110, 45, 112, 97, 114, 97, 109, 115, 21, 0, 24, 4, 0, 23, 91, 109, 101, 116, 104, 111, 100, 93, 119, 97, 115, 109, 45, 114, 112, 99, 46, 105, 110, 118, 111, 107, 101, 1, 25, 3, 1, 21, 103, 111, 108, 101, 109, 58, 114, 112, 99, 47, 116, 121, 112, 101, 115, 64, 48, 46, 49, 46, 48, 5, 0, 1, 66, 15, 1, 113, 4, 12, 115, 116, 114, 105, 110, 103, 45, 118, 97, 108, 117, 101, 1, 115, 0, 9, 105, 110, 116, 45, 118, 97, 108, 117, 101, 1, 120, 0, 11, 102, 108, 111, 97, 116, 45, 118, 97, 108, 117, 101, 1, 117, 0, 10, 98, 111, 111, 108, 45, 118, 97, 108, 117, 101, 1, 127, 0, 4, 0, 11, 101, 118, 101, 110, 116, 45, 118, 97, 108, 117, 101, 3, 0, 0, 1, 114, 2, 4, 116, 105, 109, 101, 119, 5, 101, 118, 101, 110, 116, 1, 4, 0, 5, 101, 118, 101, 110, 116, 3, 0, 2, 1, 114, 1, 4, 110, 97, 109, 101, 115, 4, 0, 9, 119, 111, 114, 107, 101, 114, 45, 105, 100, 3, 0, 4, 1, 64, 1, 6, 119, 111, 114, 107, 101, 114, 5, 1, 0, 4, 0, 10, 105, 110, 105, 116, 105, 97, 108, 105, 122, 101, 1, 6, 1, 64, 1, 5, 111, 114, 100, 101, 114, 3, 1, 0, 4, 0, 9, 97, 100, 100, 45, 101, 118, 101, 110, 116, 1, 7, 1, 64, 1, 4, 116, 105, 109, 101, 119, 0, 3, 4, 0, 9, 103, 101, 116, 45, 101, 118, 101, 110, 116, 1, 8, 1, 112, 3, 1, 64, 0, 0, 9, 4, 0, 10, 103, 101, 116, 45, 101, 118, 101, 110, 116, 115, 1, 10, 3, 1, 23, 116, 105, 109, 101, 108, 105, 110, 101, 58, 114, 97, 119, 45, 101, 118, 101, 110, 116, 115, 47, 97, 112, 105, 5, 1, 2, 3, 0, 1, 11, 101, 118, 101, 110, 116, 45, 118, 97, 108, 117, 101, 2, 3, 0, 1, 5, 101, 118, 101, 110, 116, 1, 66, 34, 2, 3, 2, 1, 2, 4, 0, 11, 101, 118, 101, 110, 116, 45, 118, 97, 108, 117, 101, 3, 0, 0, 2, 3, 2, 1, 3, 4, 0, 5, 101, 118, 101, 110, 116, 3, 0, 2, 1, 122, 4, 0, 10, 110, 111, 100, 101, 45, 105, 110, 100, 101, 120, 3, 0, 4, 1, 114, 2, 9, 119, 111, 114, 107, 101, 114, 45, 105, 100, 115, 11, 116, 101, 109, 112, 108, 97, 116, 101, 45, 105, 100, 115, 4, 0, 6, 115, 101, 114, 118, 101, 114, 3, 0, 6, 1, 114, 2, 6, 115, 101, 114, 118, 101, 114, 7, 8, 116, 105, 109, 101, 108, 105, 110, 101, 5, 4, 0, 20, 116, 105, 109, 101, 108, 105, 110, 101, 45, 119, 105, 116, 104, 45, 115, 101, 114, 118, 101, 114, 3, 0, 8, 1, 114, 1, 4, 110, 97, 109, 101, 115, 4, 0, 9, 119, 111, 114, 107, 101, 114, 45, 105, 100, 3, 0, 10, 1, 109, 4, 12, 103, 114, 101, 97, 116, 101, 114, 45, 116, 104, 97, 110, 18, 103, 114, 101, 97, 116, 101, 114, 45, 116, 104, 97, 110, 45, 101, 113, 117, 97, 108, 9, 108, 101, 115, 115, 45, 116, 104, 97, 110, 15, 108, 101, 115, 115, 45, 116, 104, 97, 110, 45, 101, 113, 117, 97, 108, 4, 0, 28, 116, 105, 109, 101, 108, 105, 110, 101, 45, 99, 111, 110, 115, 116, 97, 110, 116, 45, 99, 111, 109, 112, 97, 114, 97, 116, 111, 114, 3, 0, 12, 1, 114, 4, 2, 111, 112, 13, 8, 116, 105, 109, 101, 108, 105, 110, 101, 5, 5, 118, 97, 108, 117, 101, 1, 6, 115, 101, 114, 118, 101, 114, 7, 4, 0, 26, 116, 105, 109, 101, 108, 105, 110, 101, 45, 99, 111, 110, 115, 116, 97, 110, 116, 45, 99, 111, 109, 112, 97, 114, 101, 100, 3, 0, 14, 1, 114, 2, 8, 116, 105, 109, 101, 108, 105, 110, 101, 5, 6, 115, 101, 114, 118, 101, 114, 7, 4, 0, 16, 116, 105, 109, 101, 108, 105, 110, 101, 45, 110, 101, 103, 97, 116, 101, 100, 3, 0, 16, 1, 109, 3, 5, 101, 113, 117, 97, 108, 12, 103, 114, 101, 97, 116, 101, 114, 45, 116, 104, 97, 110, 9, 108, 101, 115, 115, 45, 116, 104, 97, 110, 4, 0, 18, 101, 118, 101, 110, 116, 45, 112, 114, 101, 100, 105, 99, 97, 116, 101, 45, 111, 112, 3, 0, 18, 1, 114, 3, 8, 99, 111, 108, 45, 110, 97, 109, 101, 115, 5, 118, 97, 108, 117, 101, 1, 2, 111, 112, 19, 4, 0, 15, 101, 118, 101, 110, 116, 45, 112, 114, 101, 100, 105, 99, 97, 116, 101, 3, 0, 20, 1, 114, 3, 8, 116, 105, 109, 101, 108, 105, 110, 101, 5, 15, 101, 118, 101, 110, 116, 45, 112, 114, 101, 100, 105, 99, 97, 116, 101, 21, 6, 115, 101, 114, 118, 101, 114, 7, 4, 0, 29, 116, 105, 109, 101, 108, 105, 110, 101, 45, 119, 105, 116, 104, 45, 101, 118, 101, 110, 116, 45, 112, 114, 101, 100, 105, 99, 97, 116, 101, 3, 0, 22, 1, 114, 2, 8, 102, 105, 108, 116, 101, 114, 101, 100, 23, 4, 116, 105, 109, 101, 119, 4, 0, 36, 116, 105, 109, 101, 108, 105, 110, 101, 45, 119, 105, 116, 104, 45, 101, 118, 101, 110, 116, 45, 112, 114, 101, 100, 105, 99, 97, 116, 101, 45, 119, 105, 116, 104, 105, 110, 3, 0, 24, 1, 113, 7, 4, 108, 101, 97, 102, 1, 7, 0, 19, 116, 105, 109, 101, 108, 105, 110, 101, 45, 99, 111, 109, 112, 97, 114, 105, 115, 111, 110, 1, 15, 0, 17, 116, 105, 109, 101, 108, 105, 110, 101, 45, 110, 101, 103, 97, 116, 105, 111, 110, 1, 17, 0, 14, 116, 108, 45, 104, 97, 115, 45, 101, 120, 105, 115, 116, 101, 100, 1, 23, 0, 21, 116, 108, 45, 104, 97, 115, 45, 101, 120, 105, 115, 116, 101, 100, 45, 119, 105, 116, 104, 105, 110, 1, 25, 0, 17, 116, 108, 45, 100, 117, 114, 97, 116, 105, 111, 110, 45, 119, 104, 101, 114, 101, 1, 9, 0, 24, 116, 108, 45, 100, 117, 114, 97, 116, 105, 111, 110, 45, 105, 110, 45, 99, 117, 114, 45, 115, 116, 97, 116, 101, 1, 9, 0, 4, 0, 13, 116, 105, 109, 101, 108, 105, 110, 101, 45, 110, 111, 100, 101, 3, 0, 26, 1, 112, 27, 1, 114, 1, 5, 110, 111, 100, 101, 115, 28, 4, 0, 11, 116, 105, 109, 101, 108, 105, 110, 101, 45, 111, 112, 3, 0, 29, 1, 106, 1, 115, 1, 115, 1, 64, 1, 8, 116, 105, 109, 101, 108, 105, 110, 101, 30, 0, 31, 4, 0, 19, 105, 110, 105, 116, 105, 97, 108, 105, 122, 101, 45, 116, 105, 109, 101, 108, 105, 110, 101, 1, 32, 3, 1, 17, 116, 105, 109, 101, 108, 105, 110, 101, 58, 99, 111, 114, 101, 47, 97, 112, 105, 5, 4, 2, 3, 0, 0, 3, 117, 114, 105, 2, 3, 0, 2, 11, 101, 118, 101, 110, 116, 45, 118, 97, 108, 117, 101, 2, 3, 0, 2, 5, 101, 118, 101, 110, 116, 2, 3, 0, 2, 10, 110, 111, 100, 101, 45, 105, 110, 100, 101, 120, 2, 3, 0, 2, 6, 115, 101, 114, 118, 101, 114, 2, 3, 0, 2, 20, 116, 105, 109, 101, 108, 105, 110, 101, 45, 119, 105, 116, 104, 45, 115, 101, 114, 118, 101, 114, 2, 3, 0, 2, 9, 119, 111, 114, 107, 101, 114, 45, 105, 100, 2, 3, 0, 2, 28, 116, 105, 109, 101, 108, 105, 110, 101, 45, 99, 111, 110, 115, 116, 97, 110, 116, 45, 99, 111, 109, 112, 97, 114, 97, 116, 111, 114, 2, 3, 0, 2, 26, 116, 105, 109, 101, 108, 105, 110, 101, 45, 99, 111, 110, 115, 116, 97, 110, 116, 45, 99, 111, 109, 112, 97, 114, 101, 100, 2, 3, 0, 2, 16, 116, 105, 109, 101, 108, 105, 110, 101, 45, 110, 101, 103, 97, 116, 101, 100, 2, 3, 0, 2, 18, 101, 118, 101, 110, 116, 45, 112, 114, 101, 100, 105, 99, 97, 116, 101, 45, 111, 112, 2, 3, 0, 2, 15, 101, 118, 101, 110, 116, 45, 112, 114, 101, 100, 105, 99, 97, 116, 101, 2, 3, 0, 2, 29, 116, 105, 109, 101, 108, 105, 110, 101, 45, 119, 105, 116, 104, 45, 101, 118, 101, 110, 116, 45, 112, 114, 101, 100, 105, 99, 97, 116, 101, 2, 3, 0, 2, 36, 116, 105, 109, 101, 108, 105, 110, 101, 45, 119, 105, 116, 104, 45, 101, 118, 101, 110, 116, 45, 112, 114, 101, 100, 105, 99, 97, 116, 101, 45, 119, 105, 116, 104, 105, 110, 2, 3, 0, 2, 13, 116, 105, 109, 101, 108, 105, 110, 101, 45, 110, 111, 100, 101, 2, 3, 0, 2, 11, 116, 105, 109, 101, 108, 105, 110, 101, 45, 111, 112, 1, 66, 40, 2, 3, 2, 1, 5, 4, 0, 3, 117, 114, 105, 3, 0, 0, 2, 3, 2, 1, 6, 4, 0, 11, 101, 118, 101, 110, 116, 45, 118, 97, 108, 117, 101, 3, 0, 2, 2, 3, 2, 1, 7, 4, 0, 5, 101, 118, 101, 110, 116, 3, 0, 4, 2, 3, 2, 1, 8, 4, 0, 10, 110, 111, 100, 101, 45, 105, 110, 100, 101, 120, 3, 0, 6, 2, 3, 2, 1, 9, 4, 0, 6, 115, 101, 114, 118, 101, 114, 3, 0, 8, 2, 3, 2, 1, 10, 4, 0, 20, 116, 105, 109, 101, 108, 105, 110, 101, 45, 119, 105, 116, 104, 45, 115, 101, 114, 118, 101, 114, 3, 0, 10, 2, 3, 2, 1, 11, 4, 0, 9, 119, 111, 114, 107, 101, 114, 45, 105, 100, 3, 0, 12, 2, 3, 2, 1, 12, 4, 0, 28, 116, 105, 109, 101, 108, 105, 110, 101, 45, 99, 111, 110, 115, 116, 97, 110, 116, 45, 99, 111, 109, 112, 97, 114, 97, 116, 111, 114, 3, 0, 14, 2, 3, 2, 1, 13, 4, 0, 26, 116, 105, 109, 101, 108, 105, 110, 101, 45, 99, 111, 110, 115, 116, 97, 110, 116, 45, 99, 111, 109, 112, 97, 114, 101, 100, 3, 0, 16, 2, 3, 2, 1, 14, 4, 0, 16, 116, 105, 109, 101, 108, 105, 110, 101, 45, 110, 101, 103, 97, 116, 101, 100, 3, 0, 18, 2, 3, 2, 1, 15, 4, 0, 18, 101, 118, 101, 110, 116, 45, 112, 114, 101, 100, 105, 99, 97, 116, 101, 45, 111, 112, 3, 0, 20, 2, 3, 2, 1, 16, 4, 0, 15, 101, 118, 101, 110, 116, 45, 112, 114, 101, 100, 105, 99, 97, 116, 101, 3, 0, 22, 2, 3, 2, 1, 17, 4, 0, 29, 116, 105, 109, 101, 108, 105, 110, 101, 45, 119, 105, 116, 104, 45, 101, 118, 101, 110, 116, 45, 112, 114, 101, 100, 105, 99, 97, 116, 101, 3, 0, 24, 2, 3, 2, 1, 18, 4, 0, 36, 116, 105, 109, 101, 108, 105, 110, 101, 45, 119, 105, 116, 104, 45, 101, 118, 101, 110, 116, 45, 112, 114, 101, 100, 105, 99, 97, 116, 101, 45, 119, 105, 116, 104, 105, 110, 3, 0, 26, 2, 3, 2, 1, 19, 4, 0, 13, 116, 105, 109, 101, 108, 105, 110, 101, 45, 110, 111, 100, 101, 3, 0, 28, 2, 3, 2, 1, 20, 4, 0, 11, 116, 105, 109, 101, 108, 105, 110, 101, 45, 111, 112, 3, 0, 30, 4, 0, 3, 97, 112, 105, 3, 1, 1, 105, 32, 1, 64, 1, 8, 108, 111, 99, 97, 116, 105, 111, 110, 1, 0, 33, 4, 0, 16, 91, 99, 111, 110, 115, 116, 114, 117, 99, 116, 111, 114, 93, 97, 112, 105, 1, 34, 1, 104, 32, 1, 106, 1, 115, 1, 115, 1, 64, 2, 4, 115, 101, 108, 102, 35, 8, 116, 105, 109, 101, 108, 105, 110, 101, 31, 0, 36, 4, 0, 31, 91, 109, 101, 116, 104, 111, 100, 93, 97, 112, 105, 46, 105, 110, 105, 116, 105, 97, 108, 105, 122, 101, 45, 116, 105, 109, 101, 108, 105, 110, 101, 1, 37, 3, 1, 28, 116, 105, 109, 101, 108, 105, 110, 101, 58, 99, 111, 114, 101, 45, 115, 116, 117, 98, 47, 115, 116, 117, 98, 45, 99, 111, 114, 101, 5, 21, 1, 66, 3, 1, 106, 1, 115, 1, 115, 1, 64, 3, 16, 99, 111, 114, 101, 45, 116, 101, 109, 112, 108, 97, 116, 101, 45, 105, 100, 115, 16, 108, 101, 97, 102, 45, 116, 101, 109, 112, 108, 97, 116, 101, 45, 105, 100, 115, 26, 101, 118, 101, 110, 116, 45, 116, 111, 45, 115, 116, 97, 116, 101, 45, 116, 101, 109, 112, 97, 108, 116, 101, 45, 105, 100, 115, 0, 0, 4, 0, 3, 114, 117, 110, 1, 1, 4, 1, 19, 116, 105, 109, 101, 108, 105, 110, 101, 58, 100, 114, 105, 118, 101, 114, 47, 97, 112, 105, 5, 22, 4, 1, 22, 116, 105, 109, 101, 108, 105, 110, 101, 58, 100, 114, 105, 118, 101, 114, 47, 100, 114, 105, 118, 101, 114, 4, 0, 11, 12, 1, 0, 6, 100, 114, 105, 118, 101, 114, 3, 2, 0, 0, 16, 12, 112, 97, 99, 107, 97, 103, 101, 45, 100, 111, 99, 115, 0, 123, 125, 0, 70, 9, 112, 114, 111, 100, 117, 99, 101, 114, 115, 1, 12, 112, 114, 111, 99, 101, 115, 115, 101, 100, 45, 98, 121, 2, 13, 119, 105, 116, 45, 99, 111, 109, 112, 111, 110, 101, 110, 116, 6, 48, 46, 49, 56, 46, 50, 16, 119, 105, 116, 45, 98, 105, 110, 100, 103, 101, 110, 45, 114, 117, 115, 116, 6, 48, 46, 49, 54, 46, 48];
+                    
+                    #[inline(never)]
+                    #[doc(hidden)]
+                    #[cfg(target_arch = "wasm32")]
+                    pub fn __link_section() {}
+                    
