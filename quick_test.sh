@@ -16,9 +16,9 @@ output3=$(golem-cli template add --template-name "$driver_with_core_template_nam
 driver_template_id=$(echo "$output3" | awk '/templateId:/ {print $2}')
 
 echo "Template IDs:"
-echo "Core Composed: $core_composed"
-echo "Raw Events: $raw_events"
-echo "Driver: $driver"
+echo "Core Composed: $core_composed_template_id"
+echo "Raw Events: $raw_events_template_id"
+echo "Driver: $driver_template_id"
 
 # Construct the command with properly formatted parameters
 command="golem-cli worker invoke-and-await --template-id \"$driver_template_id\" --worker-name first-try --function timeline:driver/api/run --parameters '[\"$core_composed_template_id\", \"$raw_events_template_id\", \"dummy\"]'"
@@ -32,9 +32,9 @@ eval $command
 
 echo "A sample invocation succeeded!"
 
-json_template='{
+api_definition='{
   "id": "golem-timeline",
-  "version": "0.0.1",
+  "version": "REPLACE_VERSION",
   "routes": [
     {
       "method": "Get",
@@ -45,19 +45,35 @@ json_template='{
         "workerId": "first-try",
         "functionName": "timeline:driver/api/run",
         "functionParams": ["REPLACE_CORE_COMPOSED", "REPLACE_RAW_EVENTS", "dummy"],
-        "response" : "${worker.response}"
+        "response" : "${ { body: worker.response, status: 200 } }"
       }
     }
   ]
 }'
 
 # Replace placeholders with actual values
-json_template="${json_template/REPLACE_DRIVER_TEMPLATE_ID/$driver_template_id}"
-json_template="${json_template/REPLACE_CORE_COMPOSED/$core_composed_template_id}"
-json_template="${json_template/REPLACE_RAW_EVENTS/$raw_events_template_id}"
+api_definition="${api_definition/REPLACE_VERSION/$current_epoch}"
+api_definition="${api_definition/REPLACE_DRIVER_TEMPLATE_ID/$driver_template_id}"
+api_definition="${api_definition/REPLACE_CORE_COMPOSED/$core_composed_template_id}"
+api_definition="${api_definition/REPLACE_RAW_EVENTS/$raw_events_template_id}"
 
-echo $json_template
+echo $api_definition
 
 echo "Registering API definition with Golem..."
-curl -X POST http://localhost:9881/v1/api/definitions -H "Content-Type: application/json" -d "$json_template"
+curl -X POST http://localhost:9881/v1/api/definitions -H "Content-Type: application/json" -d "$api_definition"
 
+echo ""
+echo "API definition registered!"
+
+deployment='{
+   "apiDefinitionId": "golem-timeline",
+   "version": "REPLACE_VERSION",
+   "site": "localhost:9006"
+}'
+
+deployment="${deployment/REPLACE_VERSION/$current_epoch}"
+
+curl -X PUT http://localhost:9881/v1/api/deployments -H "Content-Type: application/json"  -d "$deployment"
+
+echo ""
+echo "Deployment succeeded!"
