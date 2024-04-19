@@ -147,7 +147,7 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                                         |case_builder| match &inner.value {
                                                             crate::bindings::timeline::raw_events::api::EventValue::StringValue(
                                                                 inner,
-                                                            ) => case_builder.string(&inner),
+                                                            ) => case_builder.string(inner),
                                                             crate::bindings::timeline::raw_events::api::EventValue::IntValue(
                                                                 inner,
                                                             ) => case_builder.s64(*inner),
@@ -228,7 +228,7 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                                         |case_builder| match &inner.event_predicate.value {
                                                             crate::bindings::timeline::raw_events::api::EventValue::StringValue(
                                                                 inner,
-                                                            ) => case_builder.string(&inner),
+                                                            ) => case_builder.string(inner),
                                                             crate::bindings::timeline::raw_events::api::EventValue::IntValue(
                                                                 inner,
                                                             ) => case_builder.s64(*inner),
@@ -310,7 +310,7 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                                         |case_builder| match &inner.filtered.event_predicate.value {
                                                             crate::bindings::timeline::raw_events::api::EventValue::StringValue(
                                                                 inner,
-                                                            ) => case_builder.string(&inner),
+                                                            ) => case_builder.string(inner),
                                                             crate::bindings::timeline::raw_events::api::EventValue::IntValue(
                                                                 inner,
                                                             ) => case_builder.s64(*inner),

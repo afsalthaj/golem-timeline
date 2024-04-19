@@ -41,12 +41,12 @@ command = "golem-cli"
 cwd = "."
 
 [tasks.compose-core-with-raw-events]
-args = ["stubgen", "compose", "--source-wasm", "target/wasm32-wasi/debug/core.wasm", "--stub-wasm", "target/wasm32-wasi/debug/raw_events_stub..wasm", "--dest-wasm", "target/wasm32-wasi/debug/core_composed_leaf.wasm"]
+args = ["stubgen", "compose", "--source-wasm", "target/wasm32-wasi/debug/core.wasm", "--stub-wasm", "target/wasm32-wasi/debug/raw_events_stub.wasm", "--dest-wasm", "target/wasm32-wasi/debug/core_composed_leaf.wasm"]
 command = "golem-cli"
 cwd = "."
 
 [tasks.compose-release-core-with-raw-events]
-args = ["stubgen", "compose", "--source-wasm", "target/wasm32-wasi/release/core.wasm", "--stub-wasm", "target/wasm32-wasi/release/raw_events_stub..wasm", "--dest-wasm", "target/wasm32-wasi/release/core_composed_leaf.wasm"]
+args = ["stubgen", "compose", "--source-wasm", "target/wasm32-wasi/release/core.wasm", "--stub-wasm", "target/wasm32-wasi/release/raw_events_stub.wasm", "--dest-wasm", "target/wasm32-wasi/release/core_composed_leaf.wasm"]
 command = "golem-cli"
 cwd = "."
 

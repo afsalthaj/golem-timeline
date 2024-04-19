@@ -102,7 +102,7 @@ for Api {
                             |case_builder| match &order.event {
                                 crate::bindings::timeline::raw_events::api::EventValue::StringValue(
                                     inner,
-                                ) => case_builder.string(&inner),
+                                ) => case_builder.string(inner),
                                 crate::bindings::timeline::raw_events::api::EventValue::IntValue(
                                     inner,
                                 ) => case_builder.s64(*inner),
