@@ -233,4 +233,4 @@ cargo make build-flow
 ./quick-test.sh
 ```
 
-This is till work in progress, in terms of designing and implementing a well defined workflow with implementation of every DSL nodes in TimeLine.
+This is all still a work in progress, in terms of designing and implementing a well defined workflow with implementation of every DSL nodes in TimeLine.
