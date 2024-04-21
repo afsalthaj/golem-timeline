@@ -16,7 +16,7 @@ pub mod zip_result;
 use crate::bindings::exports::timeline::core::api::Guest;
 use crate::bindings::exports::timeline::core::api::*;
 use crate::timeline_op::{TimeLineOp as CoreTimeLineOp, TimeLineOp};
-use crate::bindings::timeline::raw_events_stub::stub_raw_events;
+use crate::bindings::timeline::event_processor_stub::stub_event_processor;
 use crate::bindings::golem::rpc::types::Uri;
 
 
@@ -36,9 +36,9 @@ impl Guest for Component {
                    value: format!("worker://{template_id}/{}", worker_id.clone()),
                };
 
-               let core = stub_raw_events::Api::new(&uri);
+               let core = stub_event_processor::Api::new(&uri);
 
-               core.initialize(&stub_raw_events::WorkerId{
+               core.initialize(&stub_event_processor::WorkerId{
                      name: worker_id,
                 })
            },

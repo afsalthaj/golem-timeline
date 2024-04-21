@@ -1,0 +1,21 @@
+package timeline:event-processor-stub;
+
+interface stub-event-processor {
+  use golem:rpc/types@0.1.0.{uri};
+  use timeline:event-processor/api.{event-value};
+  use timeline:event-processor/api.{event};
+  use timeline:event-processor/api.{worker-id};
+
+  resource api {
+    constructor(location: uri);
+    initialize: func(worker: worker-id) -> result<string, string>;
+    add-event: func(order: event);
+    get-event: func(time: u64) -> event;
+    get-events: func() -> list<event>;
+  }
+
+}
+
+world wasm-rpc-stub-event-processor {
+  export stub-event-processor;
+}

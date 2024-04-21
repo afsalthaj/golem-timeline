@@ -7,16 +7,16 @@ current_epoch=$(date +%s)
 driver_with_core_template_name="driver_with_core${current_epoch}"
 
 core_composed_template_id=$(golem-cli -F json template add --template-name core_composed_all${current_epoch} target/wasm32-wasi/debug/core_composed_leaf.wasm | jq .templateId)
-raw_events_template_id=$(golem-cli -F json template add --template-name raw_event${current_epoch} target/wasm32-wasi/debug/raw_events.wasm | jq .templateId)
+event_processor_template_id=$(golem-cli -F json template add --template-name raw_event${current_epoch} target/wasm32-wasi/debug/event_processor.wasm | jq .templateId)
 driver_template_id=$(golem-cli -F json template add --template-name "$driver_with_core_template_name" target/wasm32-wasi/debug/driver_composed.wasm| jq .templateId)
 
 echo "Template IDs:"
 echo "Core Composed: $core_composed_template_id"
-echo "Raw Events: $raw_events_template_id"
+echo "Raw Events: $event_processor_template_id"
 echo "Driver: $driver_template_id"
 
 # Construct the command with properly formatted parameters
-command="golem-cli worker invoke-and-await --template-id \"$driver_template_id\" --worker-name first-try --function timeline:driver/api/run --parameters '[$core_composed_template_id, $raw_events_template_id, \"dummy\"]'"
+command="golem-cli worker invoke-and-await --template-id \"$driver_template_id\" --worker-name first-try --function timeline:driver/api/run --parameters '[$core_composed_template_id, $event_processor_template_id, \"dummy\"]'"
 
 # Output the constructed command
 echo "A dry run on deployed timeline..."
@@ -39,7 +39,7 @@ api_definition='{
         "template": REPLACE_DRIVER_TEMPLATE_ID,
         "workerId": "first-try",
         "functionName": "timeline:driver/api/run",
-        "functionParams": [REPLACE_CORE_COMPOSED, REPLACE_RAW_EVENTS, "dummy"],
+        "functionParams": [REPLACE_CORE_COMPOSED, REPLACE_event_processor, "dummy"],
         "response" : "${ { body: worker.response, status: 200 } }"
       }
     }
@@ -50,7 +50,7 @@ api_definition='{
 api_definition="${api_definition/REPLACE_VERSION/$current_epoch}"
 api_definition="${api_definition/REPLACE_DRIVER_TEMPLATE_ID/$driver_template_id}"
 api_definition="${api_definition/REPLACE_CORE_COMPOSED/$core_composed_template_id}"
-api_definition="${api_definition/REPLACE_RAW_EVENTS/$raw_events_template_id}"
+api_definition="${api_definition/REPLACE_event_processor/$event_processor_template_id}"
 
 echo $api_definition
 

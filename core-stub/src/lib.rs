@@ -117,44 +117,44 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                                     .item()
                                                     .variant_fn(
                                                         match &inner.value {
-                                                            crate::bindings::timeline::raw_events::api::EventValue::StringValue(
+                                                            crate::bindings::timeline::event_processor::api::EventValue::StringValue(
                                                                 _,
                                                             ) => 0u32,
-                                                            crate::bindings::timeline::raw_events::api::EventValue::IntValue(
+                                                            crate::bindings::timeline::event_processor::api::EventValue::IntValue(
                                                                 _,
                                                             ) => 1u32,
-                                                            crate::bindings::timeline::raw_events::api::EventValue::FloatValue(
+                                                            crate::bindings::timeline::event_processor::api::EventValue::FloatValue(
                                                                 _,
                                                             ) => 2u32,
-                                                            crate::bindings::timeline::raw_events::api::EventValue::BoolValue(
+                                                            crate::bindings::timeline::event_processor::api::EventValue::BoolValue(
                                                                 _,
                                                             ) => 3u32,
                                                         },
                                                         match &inner.value {
-                                                            crate::bindings::timeline::raw_events::api::EventValue::StringValue(
+                                                            crate::bindings::timeline::event_processor::api::EventValue::StringValue(
                                                                 _,
                                                             ) => false,
-                                                            crate::bindings::timeline::raw_events::api::EventValue::IntValue(
+                                                            crate::bindings::timeline::event_processor::api::EventValue::IntValue(
                                                                 _,
                                                             ) => false,
-                                                            crate::bindings::timeline::raw_events::api::EventValue::FloatValue(
+                                                            crate::bindings::timeline::event_processor::api::EventValue::FloatValue(
                                                                 _,
                                                             ) => false,
-                                                            crate::bindings::timeline::raw_events::api::EventValue::BoolValue(
+                                                            crate::bindings::timeline::event_processor::api::EventValue::BoolValue(
                                                                 _,
                                                             ) => false,
                                                         },
                                                         |case_builder| match &inner.value {
-                                                            crate::bindings::timeline::raw_events::api::EventValue::StringValue(
+                                                            crate::bindings::timeline::event_processor::api::EventValue::StringValue(
                                                                 inner,
                                                             ) => case_builder.string(inner),
-                                                            crate::bindings::timeline::raw_events::api::EventValue::IntValue(
+                                                            crate::bindings::timeline::event_processor::api::EventValue::IntValue(
                                                                 inner,
                                                             ) => case_builder.s64(*inner),
-                                                            crate::bindings::timeline::raw_events::api::EventValue::FloatValue(
+                                                            crate::bindings::timeline::event_processor::api::EventValue::FloatValue(
                                                                 inner,
                                                             ) => case_builder.f64(*inner),
-                                                            crate::bindings::timeline::raw_events::api::EventValue::BoolValue(
+                                                            crate::bindings::timeline::event_processor::api::EventValue::BoolValue(
                                                                 inner,
                                                             ) => case_builder.bool(*inner),
                                                         },
@@ -198,44 +198,44 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                                     .item()
                                                     .variant_fn(
                                                         match &inner.event_predicate.value {
-                                                            crate::bindings::timeline::raw_events::api::EventValue::StringValue(
+                                                            crate::bindings::timeline::event_processor::api::EventValue::StringValue(
                                                                 _,
                                                             ) => 0u32,
-                                                            crate::bindings::timeline::raw_events::api::EventValue::IntValue(
+                                                            crate::bindings::timeline::event_processor::api::EventValue::IntValue(
                                                                 _,
                                                             ) => 1u32,
-                                                            crate::bindings::timeline::raw_events::api::EventValue::FloatValue(
+                                                            crate::bindings::timeline::event_processor::api::EventValue::FloatValue(
                                                                 _,
                                                             ) => 2u32,
-                                                            crate::bindings::timeline::raw_events::api::EventValue::BoolValue(
+                                                            crate::bindings::timeline::event_processor::api::EventValue::BoolValue(
                                                                 _,
                                                             ) => 3u32,
                                                         },
                                                         match &inner.event_predicate.value {
-                                                            crate::bindings::timeline::raw_events::api::EventValue::StringValue(
+                                                            crate::bindings::timeline::event_processor::api::EventValue::StringValue(
                                                                 _,
                                                             ) => false,
-                                                            crate::bindings::timeline::raw_events::api::EventValue::IntValue(
+                                                            crate::bindings::timeline::event_processor::api::EventValue::IntValue(
                                                                 _,
                                                             ) => false,
-                                                            crate::bindings::timeline::raw_events::api::EventValue::FloatValue(
+                                                            crate::bindings::timeline::event_processor::api::EventValue::FloatValue(
                                                                 _,
                                                             ) => false,
-                                                            crate::bindings::timeline::raw_events::api::EventValue::BoolValue(
+                                                            crate::bindings::timeline::event_processor::api::EventValue::BoolValue(
                                                                 _,
                                                             ) => false,
                                                         },
                                                         |case_builder| match &inner.event_predicate.value {
-                                                            crate::bindings::timeline::raw_events::api::EventValue::StringValue(
+                                                            crate::bindings::timeline::event_processor::api::EventValue::StringValue(
                                                                 inner,
                                                             ) => case_builder.string(inner),
-                                                            crate::bindings::timeline::raw_events::api::EventValue::IntValue(
+                                                            crate::bindings::timeline::event_processor::api::EventValue::IntValue(
                                                                 inner,
                                                             ) => case_builder.s64(*inner),
-                                                            crate::bindings::timeline::raw_events::api::EventValue::FloatValue(
+                                                            crate::bindings::timeline::event_processor::api::EventValue::FloatValue(
                                                                 inner,
                                                             ) => case_builder.f64(*inner),
-                                                            crate::bindings::timeline::raw_events::api::EventValue::BoolValue(
+                                                            crate::bindings::timeline::event_processor::api::EventValue::BoolValue(
                                                                 inner,
                                                             ) => case_builder.bool(*inner),
                                                         },
@@ -280,44 +280,44 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                                     .item()
                                                     .variant_fn(
                                                         match &inner.filtered.event_predicate.value {
-                                                            crate::bindings::timeline::raw_events::api::EventValue::StringValue(
+                                                            crate::bindings::timeline::event_processor::api::EventValue::StringValue(
                                                                 _,
                                                             ) => 0u32,
-                                                            crate::bindings::timeline::raw_events::api::EventValue::IntValue(
+                                                            crate::bindings::timeline::event_processor::api::EventValue::IntValue(
                                                                 _,
                                                             ) => 1u32,
-                                                            crate::bindings::timeline::raw_events::api::EventValue::FloatValue(
+                                                            crate::bindings::timeline::event_processor::api::EventValue::FloatValue(
                                                                 _,
                                                             ) => 2u32,
-                                                            crate::bindings::timeline::raw_events::api::EventValue::BoolValue(
+                                                            crate::bindings::timeline::event_processor::api::EventValue::BoolValue(
                                                                 _,
                                                             ) => 3u32,
                                                         },
                                                         match &inner.filtered.event_predicate.value {
-                                                            crate::bindings::timeline::raw_events::api::EventValue::StringValue(
+                                                            crate::bindings::timeline::event_processor::api::EventValue::StringValue(
                                                                 _,
                                                             ) => false,
-                                                            crate::bindings::timeline::raw_events::api::EventValue::IntValue(
+                                                            crate::bindings::timeline::event_processor::api::EventValue::IntValue(
                                                                 _,
                                                             ) => false,
-                                                            crate::bindings::timeline::raw_events::api::EventValue::FloatValue(
+                                                            crate::bindings::timeline::event_processor::api::EventValue::FloatValue(
                                                                 _,
                                                             ) => false,
-                                                            crate::bindings::timeline::raw_events::api::EventValue::BoolValue(
+                                                            crate::bindings::timeline::event_processor::api::EventValue::BoolValue(
                                                                 _,
                                                             ) => false,
                                                         },
                                                         |case_builder| match &inner.filtered.event_predicate.value {
-                                                            crate::bindings::timeline::raw_events::api::EventValue::StringValue(
+                                                            crate::bindings::timeline::event_processor::api::EventValue::StringValue(
                                                                 inner,
                                                             ) => case_builder.string(inner),
-                                                            crate::bindings::timeline::raw_events::api::EventValue::IntValue(
+                                                            crate::bindings::timeline::event_processor::api::EventValue::IntValue(
                                                                 inner,
                                                             ) => case_builder.s64(*inner),
-                                                            crate::bindings::timeline::raw_events::api::EventValue::FloatValue(
+                                                            crate::bindings::timeline::event_processor::api::EventValue::FloatValue(
                                                                 inner,
                                                             ) => case_builder.f64(*inner),
-                                                            crate::bindings::timeline::raw_events::api::EventValue::BoolValue(
+                                                            crate::bindings::timeline::event_processor::api::EventValue::BoolValue(
                                                                 inner,
                                                             ) => case_builder.bool(*inner),
                                                         },

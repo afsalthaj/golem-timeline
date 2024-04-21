@@ -1,5 +1,5 @@
 use std::fmt::Display;
-use crate::bindings::timeline::raw_events::api::EventValue as GolemEventValue;
+use crate::bindings::timeline::event_processor::api::EventValue as GolemEventValue;
 //use crate::bindings::exports::golem::timeline::api::{/*FilterOp, TimelineNode, TimelineOp as WitTimeLineOp, TimeLineClassicComparator};
 use crate::event_predicate::{EventColumn, EventPredicate, EventValue};
 use crate::timeline::TimeLine;

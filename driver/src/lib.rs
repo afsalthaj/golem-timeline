@@ -19,7 +19,7 @@ impl Guest for Component {
         let timeline_op = TimelineOp {
             nodes: vec![Leaf(Server {
                 template_id : leaf_template_id.to_string(),
-                worker_id: "raw-events-worker".to_string(),
+                worker_id: "event-processor-worker".to_string(),
 
             })],
         };

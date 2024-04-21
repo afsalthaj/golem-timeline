@@ -339,7 +339,7 @@ where
 // ~~ represents `forever`
 // -- denotes a finite boundary
 mod tests {
-    use crate::bindings::timeline::raw_events::api::EventValue as GolemEventValue;
+    use crate::bindings::timeline::event_processor::api::EventValue as GolemEventValue;
     use super::*;
     use crate::event_predicate;
     use crate::event_predicate::EventValue;

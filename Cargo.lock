@@ -146,9 +146,9 @@ name = "driver"
 version = "0.0.1"
 dependencies = [
  "core",
+ "event-processor",
  "once_cell",
  "rand",
- "raw-events",
  "wit-bindgen",
 ]
 
@@ -172,6 +172,23 @@ checksum = "a258e46cdc063eb8519c00b9fc845fc47bcfca4130e2f08e88665ceda8474245"
 dependencies = [
  "libc",
  "windows-sys",
+]
+
+[[package]]
+name = "event-processor"
+version = "0.0.1"
+dependencies = [
+ "once_cell",
+ "rand",
+ "wit-bindgen",
+]
+
+[[package]]
+name = "event-processor-stub"
+version = "0.0.1"
+dependencies = [
+ "golem-wasm-rpc",
+ "wit-bindgen",
 ]
 
 [[package]]
@@ -571,23 +588,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ec0be4795e2f6a28069bec0b5ff3e2ac9bafc99e6a9a7dc3547996c5c816922c"
 dependencies = [
  "getrandom",
-]
-
-[[package]]
-name = "raw-events"
-version = "0.0.1"
-dependencies = [
- "once_cell",
- "rand",
- "wit-bindgen",
-]
-
-[[package]]
-name = "raw-events-stub"
-version = "0.0.1"
-dependencies = [
- "golem-wasm-rpc",
- "wit-bindgen",
 ]
 
 [[package]]

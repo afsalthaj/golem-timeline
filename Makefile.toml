@@ -7,11 +7,11 @@ command = "golem-cli"
 cwd = "."
 dependencies = ["generate-core-stub"]
 
-[tasks.add-stub-dependency-raw-events-core]
-args = ["stubgen", "add-stub-dependency", "--stub-wit-root", "raw-events-stub/wit", "--dest-wit-root", "core/wit", "--overwrite", "--update-cargo-toml"]
+[tasks.add-stub-dependency-event-processor-core]
+args = ["stubgen", "add-stub-dependency", "--stub-wit-root", "event-processor-stub/wit", "--dest-wit-root", "core/wit", "--overwrite", "--update-cargo-toml"]
 command = "golem-cli"
 cwd = "."
-dependencies = ["generate-raw-events-stub"]
+dependencies = ["generate-event-processor-stub"]
 
 [tasks.build]
 args = ["build"]
@@ -40,13 +40,13 @@ args = ["stubgen", "compose", "--source-wasm", "target/wasm32-wasi/release/drive
 command = "golem-cli"
 cwd = "."
 
-[tasks.compose-core-with-raw-events]
-args = ["stubgen", "compose", "--source-wasm", "target/wasm32-wasi/debug/core.wasm", "--stub-wasm", "target/wasm32-wasi/debug/raw_events_stub.wasm", "--dest-wasm", "target/wasm32-wasi/debug/core_composed_leaf.wasm"]
+[tasks.compose-core-with-event-processor]
+args = ["stubgen", "compose", "--source-wasm", "target/wasm32-wasi/debug/core.wasm", "--stub-wasm", "target/wasm32-wasi/debug/event_processor_stub.wasm", "--dest-wasm", "target/wasm32-wasi/debug/core_composed_leaf.wasm"]
 command = "golem-cli"
 cwd = "."
 
-[tasks.compose-release-core-with-raw-events]
-args = ["stubgen", "compose", "--source-wasm", "target/wasm32-wasi/release/core.wasm", "--stub-wasm", "target/wasm32-wasi/release/raw_events_stub.wasm", "--dest-wasm", "target/wasm32-wasi/release/core_composed_leaf.wasm"]
+[tasks.compose-release-core-with-event-processor]
+args = ["stubgen", "compose", "--source-wasm", "target/wasm32-wasi/release/core.wasm", "--stub-wasm", "target/wasm32-wasi/release/event_processor_stub.wasm", "--dest-wasm", "target/wasm32-wasi/release/core_composed_leaf.wasm"]
 command = "golem-cli"
 cwd = "."
 
@@ -59,19 +59,19 @@ command = "golem-cli"
 cwd = "."
 
 
-[tasks.generate-raw-events-stub]
-args = ["stubgen", "generate", "-s", "raw-events/wit", "-d", "raw-events-stub"]
+[tasks.generate-event-processor-stub]
+args = ["stubgen", "generate", "-s", "event-processor/wit", "-d", "event-processor-stub"]
 command = "golem-cli"
 cwd = "."
 
 [tasks.post-build]
-dependencies = ["compose-driver", "compose-core-with-raw-events"]
+dependencies = ["compose-driver", "compose-core-with-event-processor"]
 
 [tasks.post-build-release]
-dependencies = ["compose-release-driver", "compose-release-core-with-raw-events"]
+dependencies = ["compose-release-driver", "compose-release-core-with-event-processor"]
 
 [tasks.regenerate-stubs]
-dependencies = ["add-stub-dependency-core-driver", "add-stub-dependency-raw-events-core"]
+dependencies = ["add-stub-dependency-core-driver", "add-stub-dependency-event-processor-core"]
 
 [tasks.release-build-flow]
 dependencies = ["build-release", "post-build-release"]

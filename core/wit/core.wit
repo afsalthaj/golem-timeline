@@ -1,7 +1,7 @@
 package timeline:core;
 
 interface api {
-  use timeline:raw-events/api.{event-value, event};
+  use timeline:event-processor/api.{event-value, event};
 
   type node-index = s32;
 
@@ -90,7 +90,7 @@ interface api {
 }
 
 world core {
-  import timeline:raw-events-stub/stub-raw-events;
+  import timeline:event-processor-stub/stub-event-processor;
   export api;
 }
 
