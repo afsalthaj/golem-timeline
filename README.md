@@ -213,6 +213,24 @@ contributing to the connection induced rebuffering.
 TL_HasExistedWithin(TL_DurationInCurState(TL_LatestEventToState(col("lat_long")), col(duration) < 10)
 ```
 
+## Setup
+
+```sh
+# Install Rust
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+rustup install stable && rustup default stable
+rustup target add wasm32-wasi
+
+# Install wasm tools 
+cargo install --force --locked  wasm-tools@1.0.57
+
+# Install Cargo Component
+cargo install --force --locked cargo-component@0.7.0
+
+# Install golem-cli (OSS, for enterprise edition, golem-cloud-cli)
+cargo install golem-cli
+```
+
 ## Quick Start to spin up Golem Timeline with Golem OSS
 
 Mostly all you need is:
