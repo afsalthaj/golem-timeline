@@ -9,14 +9,6 @@ pub enum TimeLine<T> {
 }
 
 impl<T: Debug + Clone + Eq + PartialOrd> TimeLine<T> {
-    pub fn state_points(&self) -> Option<&Vec<StateDynamicsTimeLinePoint<T>>> {
-        match self {
-            TimeLine::StateDynamic(value) => Some(&value.points),
-
-            TimeLine::EventTime(_) => None,
-        }
-    }
-
     pub fn add_info(&mut self, time: u64, value: T) {
         match self {
             TimeLine::StateDynamic(timeline) => {

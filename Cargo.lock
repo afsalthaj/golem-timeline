@@ -178,6 +178,7 @@ dependencies = [
 name = "event-processor"
 version = "0.0.1"
 dependencies = [
+ "core",
  "once_cell",
  "rand",
  "wit-bindgen",

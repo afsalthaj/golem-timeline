@@ -21,7 +21,7 @@ Input
     "playback_session_id": "dd365258-57b9-4c17-a6ae-7d482e9ffde1",
     "video": "avengers",
     "duration": 60,
-    "attributes": {
+    "attributes": {     
       "device": "mobile",
       "os": "android",
       "browser": "chrome",

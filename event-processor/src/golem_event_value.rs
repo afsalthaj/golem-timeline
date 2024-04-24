@@ -24,6 +24,17 @@ impl From<WitEventValue> for GolemEventValue {
     }
 }
 
+impl Into<WitEventValue> for GolemEventValue {
+    fn into(self) -> WitEventValue {
+        match self {
+            GolemEventValue::StringValue(value) => WitEventValue::StringValue(value),
+            GolemEventValue::IntValue(value) => WitEventValue::IntValue(value),
+            GolemEventValue::BooleanValue(value) => WitEventValue::BoolValue(value),
+            GolemEventValue::FloatValue(value) => WitEventValue::FloatValue(value),
+        }
+    }
+}
+
 impl GolemEventValue {
     fn from_wit(value: WitEventValue) -> Self {
         match value {

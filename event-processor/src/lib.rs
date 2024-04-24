@@ -1,21 +1,29 @@
-use crate::bindings::exports::timeline::event_processor::api::{Event, Guest, WorkerId};
+use std::cell::RefCell;
+use crate::bindings::exports::timeline::event_processor::api::{Event, EventValue, Guest, WorkerId};
+use core::state_dynamics_timeline::StateDynamicsTimeLine;
+use crate::golem_event_value::GolemEventValue;
 
-mod bindings;
-pub mod raw_event;
-pub mod golem_event_value;
+    mod bindings;
+    pub mod raw_event;
+    pub mod golem_event_value;
 
-struct Component;
+    struct Component;
 
-struct State {
-    orders: Vec<Event>,
+    struct State {
+        state_dynamic_timeline: StateDynamicsTimeLine<EventValue>
+    }
+
+thread_local! {
+    static STATE: RefCell<State> = RefCell::new(State {
+        state_dynamic_timeline: StateDynamicsTimeLine::default()
+    });
+
 }
 
-static mut STATE: State = State {
-    orders: Vec::new()
-};
-
 fn with_state<T>(f: impl FnOnce(&mut State) -> T) -> T {
-    let result = unsafe { f(&mut STATE) };
+    let result = STATE.with_borrow_mut(|state| {
+        f(state)
+    });
 
     return result;
 }
@@ -28,7 +36,7 @@ impl Guest for Component {
 
     fn add_event(order: Event) {
         with_state(|state| {
-            state.orders.push(order);
+            state.state_dynamic_timeline.add_state_dynamic_info(order.time, order.event);
         });
     }
 
