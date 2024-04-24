@@ -419,7 +419,7 @@ mod tests {
     use crate::bindings::timeline::event_processor::api::EventValue as GolemEventValue;
     use super::*;
     use crate::event_predicate;
-    use crate::event_predicate::EventValue;
+    use crate::event_predicate::{EventValue, string};
     use crate::event_timeline::EventTimeLinePoint;
 
     // t1~~~~(playing)~~~~~~~~~~~~>
@@ -592,241 +592,246 @@ mod tests {
 
         assert_eq!(result, expected);
     }
-    //
-    // // FIX this test - this is because we don't allign timeline2 to the correct segment of timeline1
-    // // t1-----(pause)------t2~~~~~(playing)~~~~~>
-    // //                         t3~~~~~(movie)~~~~>
-    // // Expected Result:
-    // //   t1 - t2    : pause
-    // //   t2 - t3    : playing
-    // //   t2 - future: playing a movie
-    // #[test]
-    // fn test_zip_with_scenario4() {
-    //     let mut timeline1 = StateDynamicsTimeLine::default();
-    //     timeline1.add_state_dynamic_info(1, GolemEventValue::StringValue("pause".to_string()));
-    //     timeline1.add_state_dynamic_info(2, GolemEventValue::StringValue("playing".to_string()));
-    //
-    //     let mut timeline2 = StateDynamicsTimeLine::default();
-    //     timeline2.add_state_dynamic_info(3, GolemEventValue::StringValue("movie".to_string()));
-    //
-    //     let result = timeline1.zip_with(&timeline2, |a| match a {
-    //         ZipResult::Both((a, b)) => {
-    //             let a0 = a.clone().clone();
-    //             let b0 = b.clone().clone();
-    //             match (a0, b0) {
-    //                 (GolemEventValue::ArrayValue(a), GolemEventValue::ArrayValue(b)) => {
-    //                     GolemEventValue::ArrayValue(a.iter().chain(b.iter()).cloned().collect())
-    //                 }
-    //                 (GolemEventValue::ArrayValue(a), value) => {
-    //                     GolemEventValue::ArrayValue(a.iter().chain(&vec![value]).cloned().collect())
-    //                 }
-    //                 (value, GolemEventValue::ArrayValue(b)) => {
-    //                     GolemEventValue::ArrayValue(vec![value].iter().chain(b.iter()).cloned().collect())
-    //                 }
-    //                 (value1, value2) => GolemEventValue::ArrayValue(vec![value1, value2]),
-    //             }
-    //         }
-    //         ZipResult::Singleton(a) => {
-    //             let a0 = a.clone().clone();
-    //             GolemEventValue::ArrayValue(vec![a0])
-    //         }
-    //     });
-    //
-    //     let expected = StateDynamicsTimeLine {
-    //         points: vec![
-    //             StateDynamicsTimeLinePoint {
-    //                 t1: 1,
-    //                 t2: Some(2),
-    //                 value: GolemEventValue::ArrayValue(vec![GolemEventValue::StringValue("pause".to_string())]),
-    //             },
-    //             StateDynamicsTimeLinePoint {
-    //                 t1: 2,
-    //                 t2: Some(3),
-    //                 value: GolemEventValue::ArrayValue(vec![GolemEventValue::StringValue("playing".to_string())]),
-    //             },
-    //             StateDynamicsTimeLinePoint {
-    //                 t1: 3,
-    //                 t2: None,
-    //                 value: GolemEventValue::ArrayValue(vec![
-    //                     GolemEventValue::StringValue("playing".to_string()),
-    //                     GolemEventValue::StringValue("movie".to_string()),
-    //                 ]),
-    //             },
-    //         ],
-    //     };
-    //
-    //     assert_eq!(result, expected);
-    // }
-    //
-    // #[test]
-    // fn test_tl_has_existed() {
-    //     let mut event_time_line = EventTimeLine::default();
-    //     event_time_line.add_event_info(1, "pause".to_string());
-    //     event_time_line.add_event_info(2, "playing".to_string());
-    //     event_time_line.add_event_info(3, "pause".to_string());
-    //
-    //     let event_predicate = event_predicate::col("event").equal_to::<String>(string("playing"));
-    //
-    //     let result = StateDynamicsTimeLine::tl_has_existed(&event_time_line, event_predicate);
-    //
-    //     let expected = StateDynamicsTimeLine {
-    //         points: vec![
-    //             StateDynamicsTimeLinePoint {
-    //                 t1: 1,
-    //                 t2: Some(2),
-    //                 value: false,
-    //             },
-    //             StateDynamicsTimeLinePoint {
-    //                 t1: 2,
-    //                 t2: None,
-    //                 value: true,
-    //             },
-    //         ],
-    //     };
-    //
-    //     assert_eq!(result, expected);
-    // }
-    //
-    // // Input t1------(pause)-----t2~~~~~(playing)~~~~~>
-    // // Expiration time: 1 seconds, predicate: if playing
-    // // t1------(false)-----t2----(true)-------t3~~~(false)~~~~>
-    // #[test]
-    // fn test_tl_has_existed_within_scenario1() {
-    //     let mut event_time_line = EventTimeLine::default();
-    //     event_time_line.add_event_info(1, "pause".to_string());
-    //     event_time_line.add_event_info(2, "playing".to_string());
-    //
-    //     let event_predicate = event_predicate::col("event").equal_to::<String>(string("playing"));
-    //
-    //     let result =
-    //         StateDynamicsTimeLine::tl_has_existed_within(&event_time_line, event_predicate, 1);
-    //
-    //     let expected = StateDynamicsTimeLine {
-    //         points: vec![
-    //             StateDynamicsTimeLinePoint {
-    //                 t1: 1,
-    //                 t2: Some(2),
-    //                 value: false,
-    //             },
-    //             StateDynamicsTimeLinePoint {
-    //                 t1: 2,
-    //                 t2: Some(3),
-    //                 value: true,
-    //             },
-    //             StateDynamicsTimeLinePoint {
-    //                 t1: 3,
-    //                 t2: None,
-    //                 value: false,
-    //             },
-    //         ],
-    //     };
-    //
-    //     assert_eq!(result, expected);
-    // }
-    //
-    // // Input t1------(pause)-----t2----------(playing)------t5~~~~~~(playing)~~~~>
-    // // Expiration time: 2 seconds, predicate: if playing
-    // // t1--------(false)-----t2----(true)---t4----(false)---t5----(true)---t7~~~~(false)~~~~~~>
-    // #[test]
-    // fn test_tl_has_existed_within_scenario2() {
-    //     let mut event_time_line = EventTimeLine::default();
-    //     event_time_line.add_event_info(1, "pause".to_string());
-    //     event_time_line.add_event_info(2, "playing".to_string());
-    //     event_time_line.add_event_info(5, "playing".to_string());
-    //
-    //     let event_predicate = event_predicate::col("event").equal_to::<String>(string("playing"));
-    //
-    //     let result =
-    //         StateDynamicsTimeLine::tl_has_existed_within(&event_time_line, event_predicate, 2);
-    //
-    //     let expected = StateDynamicsTimeLine {
-    //         points: vec![
-    //             StateDynamicsTimeLinePoint {
-    //                 t1: 1,
-    //                 t2: Some(2),
-    //                 value: false,
-    //             },
-    //             StateDynamicsTimeLinePoint {
-    //                 t1: 2,
-    //                 t2: Some(4),
-    //                 value: true,
-    //             },
-    //             StateDynamicsTimeLinePoint {
-    //                 t1: 4,
-    //                 t2: Some(5),
-    //                 value: false,
-    //             },
-    //             StateDynamicsTimeLinePoint {
-    //                 t1: 5,
-    //                 t2: Some(7),
-    //                 value: true,
-    //             },
-    //             StateDynamicsTimeLinePoint {
-    //                 t1: 7,
-    //                 t2: None,
-    //                 value: false,
-    //             },
-    //         ],
-    //     };
-    //
-    //     assert_eq!(result, expected);
-    // }
-    //
-    // #[test]
-    // fn test_negatable() {
-    //     let mut timeline = StateDynamicsTimeLine::default();
-    //     timeline.add_state_dynamic_info(1, true);
-    //     timeline.add_state_dynamic_info(2, false);
-    //     timeline.add_state_dynamic_info(3, true);
-    //
-    //     let result = timeline.negate();
-    //
-    //     let expected = StateDynamicsTimeLine {
-    //         points: vec![
-    //             StateDynamicsTimeLinePoint {
-    //                 t1: 1,
-    //                 t2: Some(2),
-    //                 value: false,
-    //             },
-    //             StateDynamicsTimeLinePoint {
-    //                 t1: 2,
-    //                 t2: Some(3),
-    //                 value: true,
-    //             },
-    //             StateDynamicsTimeLinePoint {
-    //                 t1: 3,
-    //                 t2: None,
-    //                 value: false,
-    //             },
-    //         ],
-    //     };
-    //
-    //     assert_eq!(result, expected);
-    // }
-    //
-    // #[test]
-    // fn tl_duration_where() {
-    //     let mut timeline = StateDynamicsTimeLine::default();
-    //     timeline.add_state_dynamic_info(1, true);
-    //     timeline.add_state_dynamic_info(3, false);
-    //     timeline.add_state_dynamic_info(5, true);
-    //     timeline.add_state_dynamic_info(7, true);
-    //     let result = timeline.tl_duration_where();
-    //
-    //     let expected = EventTimeLine {
-    //         points: vec![
-    //             EventTimeLinePoint { t1: 1, value: 0 },
-    //             EventTimeLinePoint { t1: 2, value: 1 },
-    //             EventTimeLinePoint { t1: 3, value: 2 },
-    //             EventTimeLinePoint { t1: 4, value: 2 },
-    //             EventTimeLinePoint { t1: 5, value: 2 },
-    //             EventTimeLinePoint { t1: 6, value: 3 },
-    //             EventTimeLinePoint { t1: 7, value: 4 },
-    //         ],
-    //     };
-    //
-    //     assert_eq!(result, expected);
-    // }
+
+    // t1-----(pause)------t2~~~~~(playing)~~~~~>
+    //                         t3~~~~~(movie)~~~~>
+    // Expected Result:
+    //   t1 - t2    : pause
+    //   t2 - t3    : playing
+    //   t2 - future: playing a movie
+    #[test]
+    fn test_zip_with_scenario4() {
+        let mut timeline1 = StateDynamicsTimeLine::default();
+        timeline1.add_state_dynamic_info(1, "pause".to_string());
+        timeline1.add_state_dynamic_info(2, "playing".to_string());
+
+        let mut timeline2 = StateDynamicsTimeLine::default();
+        timeline2.add_state_dynamic_info(3, "movie".to_string());
+
+        let result = timeline1.zip_with(&timeline2, |a, b| {
+            format!("{} {}", a, b)
+        });
+
+        let mut btree_map = BTreeMap::new();
+
+        btree_map.insert(1, StateDynamicsTimeLinePoint {
+            t1: 1,
+            t2: Some(2),
+            value: "pause".to_string()
+        });
+
+        btree_map.insert(2, StateDynamicsTimeLinePoint {
+            t1: 2,
+            t2: Some(3),
+            value: "playing".to_string()
+        });
+
+        btree_map.insert(3, StateDynamicsTimeLinePoint {
+            t1: 3,
+            t2: None,
+            value: "playing movie".to_string()
+        });
+
+        let expected = StateDynamicsTimeLine {
+            points: btree_map,
+        };
+
+
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn test_tl_has_existed() {
+        let mut event_time_line = EventTimeLine::default();
+        event_time_line.add_event_info(1, "pause".to_string());
+        event_time_line.add_event_info(2, "playing".to_string());
+        event_time_line.add_event_info(3, "pause".to_string());
+
+        let event_predicate = event_predicate::col("event").equal_to::<String>(string("playing"));
+
+        let result = StateDynamicsTimeLine::tl_has_existed(&event_time_line, event_predicate);
+
+
+        let mut btree_map = BTreeMap::new();
+
+        btree_map.insert(1, StateDynamicsTimeLinePoint {
+            t1: 1,
+            t2: Some(2),
+            value: false,
+        });
+
+        btree_map.insert(2, StateDynamicsTimeLinePoint {
+            t1: 2,
+            t2: None,
+            value: true,
+        });
+
+        let expected = StateDynamicsTimeLine {
+            points: btree_map,
+        };
+
+
+        assert_eq!(result, expected);
+    }
+
+    // Input t1------(pause)-----t2~~~~~(playing)~~~~~>
+    // Expiration time: 1 seconds, predicate: if playing
+    // t1------(false)-----t2----(true)-------t3~~~(false)~~~~>
+    #[test]
+    fn test_tl_has_existed_within_scenario1() {
+        let mut event_time_line = EventTimeLine::default();
+        event_time_line.add_event_info(1, "pause".to_string());
+        event_time_line.add_event_info(2, "playing".to_string());
+
+        let event_predicate = event_predicate::col("event").equal_to::<String>(string("playing"));
+
+        let result =
+            StateDynamicsTimeLine::tl_has_existed_within(&event_time_line, event_predicate, 1);
+
+        let mut btree_map = BTreeMap::new();
+
+        btree_map.insert(1, StateDynamicsTimeLinePoint {
+            t1: 1,
+            t2: Some(2),
+            value: false,
+        });
+
+        btree_map.insert(2, StateDynamicsTimeLinePoint {
+            t1: 2,
+            t2: Some(3),
+            value: true,
+        });
+
+        btree_map.insert(3, StateDynamicsTimeLinePoint {
+            t1: 3,
+            t2: None,
+            value: false,
+        });
+
+        let expected = StateDynamicsTimeLine {
+            points: btree_map,
+        };
+
+
+        assert_eq!(result, expected);
+    }
+
+    // Input t1------(pause)-----t2----------(playing)------t5~~~~~~(playing)~~~~>
+    // Expiration time: 2 seconds, predicate: if playing
+    // t1--------(false)-----t2----(true)---t4----(false)---t5----(true)---t7~~~~(false)~~~~~~>
+    #[test]
+    fn test_tl_has_existed_within_scenario2() {
+        let mut event_time_line = EventTimeLine::default();
+        event_time_line.add_event_info(1, "pause".to_string());
+        event_time_line.add_event_info(2, "playing".to_string());
+        event_time_line.add_event_info(5, "playing".to_string());
+
+        let event_predicate = event_predicate::col("event").equal_to::<String>(string("playing"));
+
+        let result =
+            StateDynamicsTimeLine::tl_has_existed_within(&event_time_line, event_predicate, 2);
+
+        let mut btree_map = BTreeMap::new();
+
+        btree_map.insert(1, StateDynamicsTimeLinePoint {
+            t1: 1,
+            t2: Some(2),
+            value: false,
+        });
+
+        btree_map.insert(2, StateDynamicsTimeLinePoint {
+            t1: 2,
+            t2: Some(4),
+            value: true,
+        });
+
+
+        btree_map.insert(4, StateDynamicsTimeLinePoint {
+            t1: 4,
+            t2: Some(5),
+            value: false,
+        });
+
+        btree_map.insert(5, StateDynamicsTimeLinePoint {
+            t1: 5,
+            t2: Some(7),
+            value: true,
+        });
+
+        btree_map.insert(7, StateDynamicsTimeLinePoint {
+            t1: 7,
+            t2: None,
+            value: false,
+        });
+
+        let expected = StateDynamicsTimeLine {
+            points: btree_map,
+        };
+
+
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn test_negatable() {
+        let mut timeline = StateDynamicsTimeLine::default();
+        timeline.add_state_dynamic_info(1, true);
+        timeline.add_state_dynamic_info(2, false);
+        timeline.add_state_dynamic_info(3, true);
+
+        let result = timeline.negate();
+
+        let mut btree_map = BTreeMap::new();
+
+        btree_map.insert(1, StateDynamicsTimeLinePoint {
+            t1: 1,
+            t2: Some(2),
+            value: false,
+        });
+
+        btree_map.insert(2, StateDynamicsTimeLinePoint {
+            t1: 2,
+            t2: Some(3),
+            value: true,
+        });
+
+        btree_map.insert(3, StateDynamicsTimeLinePoint {
+            t1: 3,
+            t2: None,
+            value: false,
+        });
+
+        let expected = StateDynamicsTimeLine {
+            points: btree_map,
+        };
+
+
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn tl_duration_where() {
+        let mut timeline = StateDynamicsTimeLine::default();
+        timeline.add_state_dynamic_info(1, true);
+        timeline.add_state_dynamic_info(3, false);
+        timeline.add_state_dynamic_info(5, true);
+        timeline.add_state_dynamic_info(7, true);
+
+        dbg!(timeline.clone());
+        let result = timeline.tl_duration_where();
+
+        let expected = EventTimeLine {
+            points: vec![
+                EventTimeLinePoint { t1: 1, value: 0 },
+                EventTimeLinePoint { t1: 2, value: 1 },
+                EventTimeLinePoint { t1: 3, value: 2 },
+                EventTimeLinePoint { t1: 4, value: 2 },
+                EventTimeLinePoint { t1: 5, value: 2 },
+            ],
+        };
+
+        assert_eq!(result, expected);
+    }
 }
 
 
