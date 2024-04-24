@@ -1,10 +1,10 @@
 use std::collections::BTreeMap;
-use crate::aligned_state_dynamic_timeline::AlignedStateDynamicsTimeLine;
-use crate::boundaries::Boundaries;
+use crate::internals::aligned_state_dynamic_timeline::AlignedStateDynamicsTimeLine;
+use crate::internals::boundaries::Boundaries;
 use crate::event_predicate::EventPredicate;
 use crate::event_timeline::EventTimeLine;
 use crate::state_dynamic_timeline_point::StateDynamicsTimeLinePoint;
-use crate::zip_result::ZipResult;
+use crate::internals::zip_result::ZipResult;
 use std::fmt::Debug;
 use std::ops::Neg;
 
@@ -15,6 +15,7 @@ pub struct StateDynamicsTimeLine<T> {
 }
 
 impl<T: Clone + PartialEq> StateDynamicsTimeLine<T> {
+
 
     pub fn boundary(&self, t: u64) -> Option<u64> {
         let mut previous_point = self.points.range(..t).next_back();

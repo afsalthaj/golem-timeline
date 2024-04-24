@@ -1,4 +1,4 @@
-use crate::zip_result::ZipResult;
+use crate::internals::zip_result::ZipResult;
 
 // None represents, for the most of the time, future
 #[derive(Clone, Debug, PartialEq)]
@@ -6,16 +6,6 @@ pub struct  StateDynamicsTimeLinePoint<T> {
     pub t1: u64,
     pub t2: Option<u64>,
     pub value: T,
-}
-
-impl StateDynamicsTimeLinePoint<bool> {
-    pub fn is_true(&self) -> bool {
-        self.value
-    }
-
-    pub fn is_false(&self) -> bool {
-        !self.value
-    }
 }
 
 
@@ -27,15 +17,6 @@ impl<T: Clone> StateDynamicsTimeLinePoint<T> {
         } else {
             t >= self.t1
         }
-    }
-    pub fn is_mutually_exclusive(&self, other: &StateDynamicsTimeLinePoint<T>) -> bool {
-        // first timeline's end is less than second timeline's start or
-        // first timeline's start is greater than second timeline's end
-        optional_less_than(self.t2, Some(other.t1))
-            || optional_greater_than(Some(self.t1), other.t2)
-    }
-    pub fn update_t2(&mut self, t2: u64) {
-        self.t2 = Some(t2);
     }
 }
 

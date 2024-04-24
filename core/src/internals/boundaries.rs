@@ -1,15 +1,15 @@
 use crate::state_dynamic_timeline_point::StateDynamicsTimeLinePoint;
-use crate::zip_result::{Side, ZipResult};
+use crate::internals::zip_result::{Side, ZipResult};
 use std::fmt::Debug;
 
-pub struct Boundaries<'t, T: Clone> {
-    pub left: Option<StateDynamicsTimeLinePoint<ZipResult<'t, T>>>,
-    pub intersection: StateDynamicsTimeLinePoint<ZipResult<'t, T>>,
-    pub right: Option<StateDynamicsTimeLinePoint<ZipResult<'t, T>>>,
+pub(crate) struct Boundaries<'t, T: Clone> {
+    pub(crate) left: Option<StateDynamicsTimeLinePoint<ZipResult<'t, T>>>,
+    pub(crate) intersection: StateDynamicsTimeLinePoint<ZipResult<'t, T>>,
+    pub(crate) right: Option<StateDynamicsTimeLinePoint<ZipResult<'t, T>>>,
 }
 
 impl<'t, T: Debug + Clone> Boundaries<'t, T> {
-    pub fn get_boundaries(
+    pub(crate) fn get_boundaries(
         left: &'t StateDynamicsTimeLinePoint<T>,
         right: &'t StateDynamicsTimeLinePoint<T>,
     ) -> Boundaries<'t, T> {

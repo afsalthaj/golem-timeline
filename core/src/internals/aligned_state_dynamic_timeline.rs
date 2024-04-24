@@ -14,15 +14,15 @@ use std::fmt::Debug;
 // TimeLine1:                  t3-----------t5
 // TimeLine2: t1----------t2---------t4
 // Output: AlignedTimeLine returns (t3 - t5) and (t2 -t4)
-pub struct AlignedStateDynamicsTimeLine<T> {
-    pub time_line1: StateDynamicsTimeLine<T>,
-    pub time_line2: StateDynamicsTimeLine<T>,
-    pub removed_points_timeline1: Option<StateDynamicsTimeLine<T>>,
-    pub removed_points_timeline2: Option<StateDynamicsTimeLine<T>>,
+pub(crate) struct AlignedStateDynamicsTimeLine<T> {
+    pub(crate) time_line1: StateDynamicsTimeLine<T>,
+    pub(crate) time_line2: StateDynamicsTimeLine<T>,
+    pub(crate) removed_points_timeline1: Option<StateDynamicsTimeLine<T>>,
+    pub(crate) removed_points_timeline2: Option<StateDynamicsTimeLine<T>>,
 }
 
 impl<T: Clone + Debug + Eq + PartialOrd> AlignedStateDynamicsTimeLine<T> {
-    pub fn from_left_and_right(
+    pub(crate) fn from_left_and_right(
         left: &mut StateDynamicsTimeLine<T>,
         right: &mut StateDynamicsTimeLine<T>,
     ) -> AlignedStateDynamicsTimeLine<T> {
