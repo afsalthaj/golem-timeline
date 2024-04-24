@@ -20,13 +20,6 @@ impl StateDynamicsTimeLinePoint<bool> {
 
 
 impl<T: Clone> StateDynamicsTimeLinePoint<T> {
-    pub fn to_zip_result(&self) -> StateDynamicsTimeLinePoint<ZipResult<T>> {
-        StateDynamicsTimeLinePoint {
-            t1: self.t1,
-            t2: self.t2,
-            value: ZipResult::Singleton(&self.value),
-        }
-    }
 
     pub fn contains(&self, t: u64) -> bool {
         if let Some(t2) = self.t2 {
@@ -65,11 +58,11 @@ fn optional_greater_than(left: Option<u64>, right: Option<u64>) -> bool {
 }
 
 impl<'t, T: Clone> StateDynamicsTimeLinePoint<ZipResult<'t, T>> {
-    pub fn apply_f<F>(&self, f: &F) -> StateDynamicsTimeLinePoint<T>  where F: Fn(&ZipResult<T>) -> T,{
+    pub fn apply_f<F>(&self, f: &F) -> StateDynamicsTimeLinePoint<T>  where F: Fn(&T, &T) -> T,{
         StateDynamicsTimeLinePoint {
             t1: self.t1,
             t2: self.t2,
-            value: f(&self.value),
+            value: self.value.merge(&f),
         }
     }
 }

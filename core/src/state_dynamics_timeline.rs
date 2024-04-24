@@ -228,16 +228,14 @@ impl StateDynamicsTimeLine<bool> {
     }
 
     pub fn and(&self, that: StateDynamicsTimeLine<bool>) -> StateDynamicsTimeLine<bool> {
-        self.zip_with(&that, |a| match a {
-            ZipResult::Both((a, b)) => **a && **b,
-            ZipResult::Singleton(a) => **a,
+        self.zip_with(&that, |a, b| {
+           *a && *b
         })
     }
 
     pub fn or(&self, that: StateDynamicsTimeLine<bool>) -> StateDynamicsTimeLine<bool> {
-        self.zip_with(&that, |a| match a {
-            ZipResult::Both((a, b)) => **a || **b,
-            ZipResult::Singleton(a) => **a,
+        self.zip_with(&that, |a, b| {
+            *a || *b
         })
     }
 }
@@ -353,7 +351,7 @@ impl<T: Debug + Clone + Eq + PartialOrd> StateDynamicsTimeLine<T> {
 
     pub fn zip_with<F>(&self, other: &StateDynamicsTimeLine<T>, f: F) -> StateDynamicsTimeLine<T>
     where
-        F: Fn(&ZipResult<T>) -> T,
+        F: Fn(&T, &T) -> T,
     {
         let mut flattened_time_line_points: BTreeMap<u64, StateDynamicsTimeLinePoint<T>> =
             BTreeMap::new();
@@ -371,15 +369,13 @@ impl<T: Debug + Clone + Eq + PartialOrd> StateDynamicsTimeLine<T> {
         if let Some(removed_time_lines) = &aligned_time_lines.removed_points_timeline1 {
 
             for point in &removed_time_lines.points {
-                let zipped_result = point.1.to_zip_result();
-                flattened_time_line_points.insert(point.0.clone(), zipped_result.apply_f(&f));
+                flattened_time_line_points.insert(point.0.clone(), point.1.clone());
             }
         }
 
         if let Some(removed_time_lines) = &aligned_time_lines.removed_points_timeline2 {
             for point in &removed_time_lines.points {
-                let zipped_result = point.1.to_zip_result();
-                flattened_time_line_points.insert(point.0.clone(), zipped_result.apply_f(&f));
+                flattened_time_line_points.insert(point.0.clone(), point.1.clone());
             }
         }
 
@@ -396,10 +392,17 @@ impl<T: Debug + Clone + Eq + PartialOrd> StateDynamicsTimeLine<T> {
             flattened_time_line_points.insert(intersection.t1, intersection.apply_f(&f));
 
             if let Some(left_ex) = left_ex {
-                flattened_time_line_points.insert(left_ex.t1, left_ex.apply_f(&f));
+                flattened_time_line_points.entry(left_ex.t1).and_modify(
+                    |existing|
+                        *existing = StateDynamicsTimeLinePoint{t1: left_ex.t1, t2: left_ex.t2 ,value: ZipResult::Both((&existing.value, Box::new(left_ex.value.clone()))).merge(&f) }
+                ).or_insert(left_ex.apply_f(&f));
             }
+
             if let Some(right_ex) = right_ex {
-                flattened_time_line_points.insert(right_ex.t1, right_ex.apply_f(&f));
+                flattened_time_line_points.entry(right_ex.t1).and_modify(
+                    |existing|
+                        *existing = StateDynamicsTimeLinePoint{t1: right_ex.t1, t2: right_ex.t2 ,value: ZipResult::Both((&existing.value, Box::new(right_ex.value.clone()))).merge(&f) }
+                ).or_insert(right_ex.apply_f(&f));
             }
         }
 
@@ -407,55 +410,6 @@ impl<T: Debug + Clone + Eq + PartialOrd> StateDynamicsTimeLine<T> {
             points: flattened_time_line_points,
         }
     }
-}
-
-fn merge_result<F, T: Clone>(
-    flattened_time_line_points: &Vec<StateDynamicsTimeLinePoint<ZipResult<T>>>,
-    f: F,
-) -> Vec<StateDynamicsTimeLinePoint<T>>
-where
-    F: Fn(&ZipResult<T>) -> T,
-{
-    let mut merged_timeline_points: Vec<StateDynamicsTimeLinePoint<T>> = vec![];
-
-    for current_timeline in flattened_time_line_points.iter() {
-        let last_merged_timeline_points = merged_timeline_points.last_mut();
-
-        match last_merged_timeline_points {
-            Some(last) => {
-                if last.t1 == current_timeline.t1 && last.t2 == current_timeline.t2 {
-                    let time_line_point = StateDynamicsTimeLinePoint {
-                        t1: current_timeline.t1,
-                        t2: current_timeline.t2,
-                        value: f(
-                            &ZipResult::Singleton(&last.value).combine(&current_timeline.value)
-                        ),
-                    };
-
-                    *last = time_line_point;
-                } else {
-                    let current_time_line_evaluated = StateDynamicsTimeLinePoint {
-                        t1: current_timeline.t1,
-                        t2: current_timeline.t2,
-                        value: f(&current_timeline.value),
-                    };
-
-                    merged_timeline_points.push(current_time_line_evaluated.clone());
-                }
-            }
-            None => {
-                let current_time_line_evaluated = StateDynamicsTimeLinePoint {
-                    t1: current_timeline.t1,
-                    t2: current_timeline.t2,
-                    value: f(&current_timeline.value),
-                };
-
-                merged_timeline_points.push(current_time_line_evaluated.clone());
-            }
-        }
-    }
-
-    merged_timeline_points
 }
 
 
@@ -481,27 +435,12 @@ mod tests {
         let mut timeline2 = StateDynamicsTimeLine::default();
         timeline2.add_state_dynamic_info(7, "movie".to_string());
 
-        let result1 = timeline1.zip_with(&timeline2, |a| match a {
-            ZipResult::Both((a, b)) => {
-                let a0 = a.clone().clone();
-                let b0 = b.clone().clone();
-                format!("{} {}", a0, b0)
-            }
-            ZipResult::Singleton(a) => {
-                let a0 = a.clone().clone();
-                a0
-            }
+        let result1 = timeline1.zip_with(&timeline2, |a, b| {
+                format!("{} {}", a, b)
         });
 
-        let result2 = timeline2.zip_with(&timeline1, |a| match a {
-            ZipResult::Both((a, b)) => {
-                let a0 = a.clone().clone();
-                let b0 = b.clone().clone();
-                format!("{} {}", a0, b0)
-            }
-            ZipResult::Singleton(a) => {
-                a.clone().clone()
-            }
+        let result2 = timeline2.zip_with(&timeline1, |a, b| {
+            format!("{} {}", a, b)
         });
 
         let mut btree_map1 = BTreeMap::new();
@@ -550,152 +489,109 @@ mod tests {
     //   t2 - t3    : playing a movie
     //   t3 - t4    : paused movie
     //   t4 - future: paused cartoon
-   // #[test]
-    // fn test_zip_with_scenario2() {
-    //     let mut timeline1 = StateDynamicsTimeLine::default();
-    //     timeline1.add_state_dynamic_info(5, GolemEventValue::StringValue("playing".to_string()));
-    //     timeline1.add_state_dynamic_info(8, GolemEventValue::StringValue("pause".to_string()));
-    //
-    //     let mut timeline2 = StateDynamicsTimeLine::default();
-    //     timeline2.add_state_dynamic_info(7, GolemEventValue::StringValue("movie".to_string()));
-    //     timeline2.add_state_dynamic_info(9, GolemEventValue::StringValue("cartoon".to_string()));
-    //
-    //     let result = timeline2.zip_with(&timeline1, |a| match a {
-    //         ZipResult::Both((a, b)) => {
-    //             let a0 = a.clone().clone();
-    //             let b0 = b.clone().clone();
-    //             match (a0, b0) {
-    //                 (GolemEventValue::ArrayValue(a), GolemEventValue::ArrayValue(b)) => {
-    //                     GolemEventValue::ArrayValue(a.iter().chain(b.iter()).cloned().collect())
-    //                 }
-    //                 (GolemEventValue::ArrayValue(a), value) => {
-    //                     GolemEventValue::ArrayValue(a.iter().chain(&vec![value]).cloned().collect())
-    //                 }
-    //                 (value, GolemEventValue::ArrayValue(b)) => {
-    //                     GolemEventValue::ArrayValue(vec![value].iter().chain(b.iter()).cloned().collect())
-    //                 }
-    //                 (value1, value2) => GolemEventValue::ArrayValue(vec![value1, value2]),
-    //             }
-    //         }
-    //         ZipResult::Singleton(a) => {
-    //             let a0 = a.clone().clone();
-    //             GolemEventValue::ArrayValue(vec![a0])
-    //         }
-    //     });
-    //
-    //     let expected = StateDynamicsTimeLine {
-    //         points: vec![
-    //             StateDynamicsTimeLinePoint {
-    //                 t1: 5,
-    //                 t2: Some(7),
-    //                 value: GolemEventValue::ArrayValue(vec![GolemEventValue::StringValue("playing".to_string())]),
-    //             },
-    //             StateDynamicsTimeLinePoint {
-    //                 t1: 7,
-    //                 t2: Some(8),
-    //                 value: GolemEventValue::ArrayValue(vec![
-    //                     GolemEventValue::StringValue("movie".to_string()),
-    //                     GolemEventValue::StringValue("playing".to_string()),
-    //                 ]),
-    //             },
-    //             StateDynamicsTimeLinePoint {
-    //                 t1: 8,
-    //                 t2: Some(9),
-    //                 value: GolemEventValue::ArrayValue(vec![
-    //                     GolemEventValue::StringValue("movie".to_string()),
-    //                     GolemEventValue::StringValue("pause".to_string()),
-    //                 ]),
-    //             },
-    //             StateDynamicsTimeLinePoint {
-    //                 t1: 9,
-    //                 t2: None,
-    //                 value: GolemEventValue::ArrayValue(vec![
-    //                     GolemEventValue::StringValue("cartoon".to_string()),
-    //                     GolemEventValue::StringValue("pause".to_string()),
-    //                 ]),
-    //             },
-    //         ],
-    //     };
-    //
-    //     assert_eq!(result, expected);
-    // }
-    //
-    // // t1-------(playing)----------t4~~~~(pause)~~~~~>
-    // //      t2----(movie)---t3~~~~(cartoon)~~~~~>
-    // // Expected Result:
-    // //   t1 - t2    : playing
-    // //   t2 - t3    : playing a movie
-    // //   t3 - t4    : playing a cartoon
-    // //   t4 - future: paused cartoon
-    // #[test]
-    // fn test_zip_with_scenario3() {
-    //     let mut timeline1 = StateDynamicsTimeLine::default();
-    //     timeline1.add_state_dynamic_info(1, GolemEventValue::StringValue("playing".to_string()));
-    //     timeline1.add_state_dynamic_info(4, GolemEventValue::StringValue("pause".to_string()));
-    //
-    //     let mut timeline2 = StateDynamicsTimeLine::default();
-    //     timeline2.add_state_dynamic_info(2, GolemEventValue::StringValue("movie".to_string()));
-    //     timeline2.add_state_dynamic_info(3, GolemEventValue::StringValue("cartoon".to_string()));
-    //
-    //     let result = timeline2.zip_with(&timeline1, |a| match a {
-    //         ZipResult::Both((a, b)) => {
-    //             let a0 = a.clone().clone();
-    //             let b0 = b.clone().clone();
-    //             match (a0, b0) {
-    //                 (GolemEventValue::ArrayValue(a), GolemEventValue::ArrayValue(b)) => {
-    //                     GolemEventValue::ArrayValue(a.iter().chain(b.iter()).cloned().collect())
-    //                 }
-    //                 (GolemEventValue::ArrayValue(a), value) => {
-    //                     GolemEventValue::ArrayValue(a.iter().chain(&vec![value]).cloned().collect())
-    //                 }
-    //                 (value, GolemEventValue::ArrayValue(b)) => {
-    //                     GolemEventValue::ArrayValue(vec![value].iter().chain(b.iter()).cloned().collect())
-    //                 }
-    //                 (value1, value2) => GolemEventValue::ArrayValue(vec![value1, value2]),
-    //             }
-    //         }
-    //         ZipResult::Singleton(a) => {
-    //             let a0 = a.clone().clone();
-    //             GolemEventValue::ArrayValue(vec![a0])
-    //         }
-    //     });
-    //
-    //     let expected = StateDynamicsTimeLine {
-    //         points: vec![
-    //             StateDynamicsTimeLinePoint {
-    //                 t1: 1,
-    //                 t2: Some(2),
-    //                 value: GolemEventValue::ArrayValue(vec![GolemEventValue::StringValue("playing".to_string())]),
-    //             },
-    //             StateDynamicsTimeLinePoint {
-    //                 t1: 2,
-    //                 t2: Some(3),
-    //                 value: GolemEventValue::ArrayValue(vec![
-    //                     GolemEventValue::StringValue("movie".to_string()),
-    //                     GolemEventValue::StringValue("playing".to_string()),
-    //                 ]),
-    //             },
-    //             StateDynamicsTimeLinePoint {
-    //                 t1: 3,
-    //                 t2: Some(4),
-    //                 value: GolemEventValue::ArrayValue(vec![
-    //                     GolemEventValue::StringValue("playing".to_string()),
-    //                     GolemEventValue::StringValue("cartoon".to_string()),
-    //                 ]),
-    //             },
-    //             StateDynamicsTimeLinePoint {
-    //                 t1: 4,
-    //                 t2: None,
-    //                 value: GolemEventValue::ArrayValue(vec![
-    //                     GolemEventValue::StringValue("cartoon".to_string()),
-    //                     GolemEventValue::StringValue("pause".to_string()),
-    //                 ]),
-    //             },
-    //         ],
-    //     };
-    //
-    //     assert_eq!(result, expected);
-    // }
+   #[test]
+    fn test_zip_with_scenario2() {
+        let mut timeline1 = StateDynamicsTimeLine::default();
+        timeline1.add_state_dynamic_info(5, "playing".to_string());
+        timeline1.add_state_dynamic_info(8, "pause".to_string());
+
+        let mut timeline2 = StateDynamicsTimeLine::default();
+        timeline2.add_state_dynamic_info(7, "movie".to_string());
+        timeline2.add_state_dynamic_info(9, "cartoon".to_string());
+
+        let result = timeline2.zip_with(&timeline1, |a, b| {
+            format!("{} {}", a, b)
+        });
+
+        let mut btree_map = BTreeMap::new();
+
+        btree_map.insert(5, StateDynamicsTimeLinePoint {
+            t1: 5,
+            t2: Some(7),
+            value: "playing".to_string()
+        });
+
+        btree_map.insert(7, StateDynamicsTimeLinePoint {
+            t1: 7,
+            t2: Some(8),
+            value: "movie playing".to_string(),
+        });
+
+        btree_map.insert(8, StateDynamicsTimeLinePoint {
+            t1: 8,
+            t2: Some(9),
+            value: "movie pause".to_string(),
+        });
+
+        btree_map.insert(9, StateDynamicsTimeLinePoint {
+            t1: 9,
+            t2: None,
+            value: "cartoon pause".to_string(),
+        });
+
+
+
+        let expected = StateDynamicsTimeLine {
+            points: btree_map,
+        };
+
+        assert_eq!(result, expected);
+    }
+
+    // t1-------(playing)----------t4~~~~(pause)~~~~~>
+    //      t2----(movie)---t3~~~~(cartoon)~~~~~>
+    // Expected Result:
+    //   t1 - t2    : playing
+    //   t2 - t3    : playing a movie
+    //   t3 - t4    : playing a cartoon
+    //   t4 - future: paused cartoon
+    #[test]
+    fn test_zip_with_scenario3() {
+        let mut timeline1 = StateDynamicsTimeLine::default();
+        timeline1.add_state_dynamic_info(1, "playing".to_string());
+        timeline1.add_state_dynamic_info(4, "pause".to_string());
+
+        let mut timeline2 = StateDynamicsTimeLine::default();
+        timeline2.add_state_dynamic_info(2, "movie".to_string());
+        timeline2.add_state_dynamic_info(3, "cartoon".to_string());
+
+        let result = timeline2.zip_with(&timeline1, |a, b| {
+            format!("{} {}", a, b)
+        });
+
+        let mut btree_map = BTreeMap::new();
+
+        btree_map.insert(1, StateDynamicsTimeLinePoint {
+            t1: 1,
+            t2: Some(2),
+            value: "playing".to_string()
+        });
+
+        btree_map.insert(2, StateDynamicsTimeLinePoint {
+            t1: 2,
+            t2: Some(3),
+            value: "movie playing".to_string()
+        });
+
+        btree_map.insert(3, StateDynamicsTimeLinePoint {
+            t1: 3,
+            t2: Some(4),
+            value: "cartoon playing".to_string()
+        });
+
+        btree_map.insert(4, StateDynamicsTimeLinePoint {
+            t1: 4,
+            t2: None,
+            value: "cartoon pause".to_string()
+        });
+
+        let expected = StateDynamicsTimeLine {
+            points: btree_map,
+        };
+
+
+        assert_eq!(result, expected);
+    }
     //
     // // FIX this test - this is because we don't allign timeline2 to the correct segment of timeline1
     // // t1-----(pause)------t2~~~~~(playing)~~~~~>

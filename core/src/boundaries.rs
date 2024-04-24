@@ -1,5 +1,5 @@
 use crate::state_dynamic_timeline_point::StateDynamicsTimeLinePoint;
-use crate::zip_result::ZipResult;
+use crate::zip_result::{Side, ZipResult};
 use std::fmt::Debug;
 
 pub struct Boundaries<'t, T: Clone> {
@@ -25,7 +25,7 @@ impl<'t, T: Debug + Clone> Boundaries<'t, T> {
         let intersection = StateDynamicsTimeLinePoint {
             t1: intersection_boundary_left,
             t2: intersection_boundary_right,
-            value: ZipResult::Both((&left.value, &right.value)),
+            value: ZipResult::Both((&left.value, Box::new(ZipResult::Singleton(&right.value, Side::Right)))),
         };
 
         // left boundary optional: t1 -> t2
@@ -38,14 +38,14 @@ impl<'t, T: Debug + Clone> Boundaries<'t, T> {
                 StateDynamicsTimeLinePoint {
                     t1: left_boundary_left,
                     t2: Some(left_boundary_right),
-                    value: ZipResult::Singleton(&left.value),
+                    value: ZipResult::Singleton(&left.value, Side::Left),
                 }
             } else {
                 // if t1x0 == other_point.t1, then it means t1 is before t2 and the value exists only in self time line.
                 StateDynamicsTimeLinePoint {
                     t1: left_boundary_left,
                     t2: Some(left_boundary_right),
-                    value: ZipResult::Singleton(&right.value),
+                    value: ZipResult::Singleton(&right.value, Side::Right),
                 }
             })
         };
@@ -67,13 +67,13 @@ impl<'t, T: Debug + Clone> Boundaries<'t, T> {
                         Some(StateDynamicsTimeLinePoint {
                             t1: t2x0,
                             t2: right_boundary_right,
-                            value: ZipResult::Singleton(&right.value),
+                            value: ZipResult::Singleton(&right.value, Side::Right),
                         })
                     } else {
                         Some(StateDynamicsTimeLinePoint {
                             t1: t2x0,
                             t2: right_boundary_right,
-                            value: ZipResult::Singleton(&left.value),
+                            value: ZipResult::Singleton(&left.value, Side::Left),
                         })
                     }
                 }
