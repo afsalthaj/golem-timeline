@@ -20,8 +20,6 @@ interface api {
 
   initialize: func(worker: worker-id) -> result<string, string>;
 
-
-
   get-events: func() -> list<event>;
 }
 

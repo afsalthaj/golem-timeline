@@ -182,6 +182,7 @@ dependencies = [
  "core",
  "once_cell",
  "rand",
+ "timeline",
  "wit-bindgen",
 ]
 

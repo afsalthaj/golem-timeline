@@ -34,18 +34,6 @@ impl Guest for Component {
         Ok("Succeeded".to_string())
     }
 
-    fn add_event(order: Event) {
-        with_state(|state| {
-            state.state_dynamic_timeline.add_state_dynamic_info(order.time, order.event);
-        });
-    }
-
-    fn get_event(time: u64) -> Event {
-        with_state(|state| {
-            state.orders.iter().find(|event| event.time == time).unwrap().clone()
-        })
-    }
-
     fn get_events() -> Vec<Event> {
         with_state(|state| {
             state.orders.clone()
