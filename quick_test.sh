@@ -64,7 +64,10 @@ echo "Deploying the API against localhost:9006..."
 deployment='{
    "apiDefinitionId": "golem-timeline",
    "version": REPLACE_VERSION,
-   "site": "localhost:9006"
+   "site": {
+      "host" : "localhost:9006",
+      "subdomain" : ""
+    }
 }'
 
 deployment="${deployment/REPLACE_VERSION/$current_epoch}"
