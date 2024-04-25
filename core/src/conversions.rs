@@ -5,9 +5,9 @@ use timeline::timeline_node_worker::TimeLineNodeWorker;
 use timeline::timeline_op::TimeLineOp;
 use crate::bindings::exports::timeline::core::api::{EventPredicateOp, TimelineOp as WitTimeLineOp};
 use crate::bindings::timeline::event_processor::api::EventValue as WitEventValue;
-use crate::bindings::timeline::event_processor::api::Event as WitEvent;
 use crate::bindings::exports::timeline::core::api::Server as WitTimeLineNodeWorker;
 use crate::bindings::exports::timeline::core::api::EventPredicate as WitEventPredicate;
+use crate::bindings::timeline::event_processor::api::Event as WitEvent;
 
 
 pub trait Conversion: Clone + Debug {

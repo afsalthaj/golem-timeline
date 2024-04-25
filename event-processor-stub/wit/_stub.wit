@@ -9,7 +9,7 @@ interface stub-event-processor {
   resource api {
     constructor(location: uri);
     initialize: func(worker: worker-id) -> result<string, string>;
-    get-events: func() -> list<event>;
+    latest-event-to-state: func(event: event) -> result<string, string>;
   }
 
 }

@@ -60,87 +60,110 @@ for Api {
             }
         })
     }
-    fn get_events(&self) -> Vec<crate::bindings::timeline::event_processor::api::Event> {
+    fn latest_event_to_state(
+        &self,
+        event: crate::bindings::timeline::event_processor::api::Event,
+    ) -> Result<String, String> {
         let result = self
             .rpc
-            .invoke_and_await("timeline:event-processor/api/get-events", &[])
+            .invoke_and_await(
+                "timeline:event-processor/api/latest-event-to-state",
+                &[
+                    WitValue::builder()
+                        .record()
+                        .item()
+                        .u64(event.time)
+                        .item()
+                        .list_fn(
+                            &event.event,
+                            |item, item_builder| {
+                                item_builder
+                                    .tuple()
+                                    .item()
+                                    .string(&item.0)
+                                    .item()
+                                    .variant_fn(
+                                        match &item.1 {
+                                            crate::bindings::timeline::event_processor::api::EventValue::StringValue(
+                                                _,
+                                            ) => 0u32,
+                                            crate::bindings::timeline::event_processor::api::EventValue::IntValue(
+                                                _,
+                                            ) => 1u32,
+                                            crate::bindings::timeline::event_processor::api::EventValue::FloatValue(
+                                                _,
+                                            ) => 2u32,
+                                            crate::bindings::timeline::event_processor::api::EventValue::BoolValue(
+                                                _,
+                                            ) => 3u32,
+                                        },
+                                        match &item.1 {
+                                            crate::bindings::timeline::event_processor::api::EventValue::StringValue(
+                                                _,
+                                            ) => false,
+                                            crate::bindings::timeline::event_processor::api::EventValue::IntValue(
+                                                _,
+                                            ) => false,
+                                            crate::bindings::timeline::event_processor::api::EventValue::FloatValue(
+                                                _,
+                                            ) => false,
+                                            crate::bindings::timeline::event_processor::api::EventValue::BoolValue(
+                                                _,
+                                            ) => false,
+                                        },
+                                        |case_builder| match &item.1 {
+                                            crate::bindings::timeline::event_processor::api::EventValue::StringValue(
+                                                inner,
+                                            ) => case_builder.string(inner),
+                                            crate::bindings::timeline::event_processor::api::EventValue::IntValue(
+                                                inner,
+                                            ) => case_builder.s64(*inner),
+                                            crate::bindings::timeline::event_processor::api::EventValue::FloatValue(
+                                                inner,
+                                            ) => case_builder.f64(*inner),
+                                            crate::bindings::timeline::event_processor::api::EventValue::BoolValue(
+                                                inner,
+                                            ) => case_builder.bool(*inner),
+                                        },
+                                    )
+                                    .finish()
+                            },
+                        )
+                        .finish(),
+                ],
+            )
             .expect(
                 &format!(
                     "Failed to invoke remote {}",
-                    "timeline:event-processor/api/get-events"
+                    "timeline:event-processor/api/latest-event-to-state"
                 ),
             );
-        (result
-            .tuple_element(0)
-            .expect("tuple not found")
-            .list_elements(|item| {
-                let record = item;
-                crate::bindings::timeline::event_processor::api::Event {
-                    time: record
-                        .field(0usize)
-                        .expect("record field not found")
-                        .u64()
-                        .expect("u64 not found"),
-                    event: record
-                        .field(1usize)
-                        .expect("record field not found")
-                        .list_elements(|item| {
-                            let tuple = item;
-                            (
-                                tuple
-                                    .tuple_element(0usize)
-                                    .expect("tuple element not found")
-                                    .string()
-                                    .expect("string not found")
-                                    .to_string(),
-                                {
-                                    let (case_idx, inner) = tuple
-                                        .tuple_element(1usize)
-                                        .expect("tuple element not found")
-                                        .variant()
-                                        .expect("variant not found");
-                                    match case_idx {
-                                        0u32 => {
-                                            crate::bindings::timeline::event_processor::api::EventValue::StringValue(
-                                                inner
-                                                    .expect("variant case not found")
-                                                    .string()
-                                                    .expect("string not found")
-                                                    .to_string(),
-                                            )
-                                        }
-                                        1u32 => {
-                                            crate::bindings::timeline::event_processor::api::EventValue::IntValue(
-                                                inner
-                                                    .expect("variant case not found")
-                                                    .s64()
-                                                    .expect("i64 not found"),
-                                            )
-                                        }
-                                        2u32 => {
-                                            crate::bindings::timeline::event_processor::api::EventValue::FloatValue(
-                                                inner
-                                                    .expect("variant case not found")
-                                                    .f64()
-                                                    .expect("f64 not found"),
-                                            )
-                                        }
-                                        3u32 => {
-                                            crate::bindings::timeline::event_processor::api::EventValue::BoolValue(
-                                                inner
-                                                    .expect("variant case not found")
-                                                    .bool()
-                                                    .expect("bool not found"),
-                                            )
-                                        }
-                                        _ => unreachable!("invalid variant case index"),
-                                    }
-                                },
-                            )
-                        })
-                        .expect("list not found"),
+        ({
+            let result = result
+                .tuple_element(0)
+                .expect("tuple not found")
+                .result()
+                .expect("result not found");
+            match result {
+                Ok(ok_value) => {
+                    Ok(
+                        ok_value
+                            .expect("result ok value not found")
+                            .string()
+                            .expect("string not found")
+                            .to_string(),
+                    )
                 }
-            })
-            .expect("list not found"))
+                Err(err_value) => {
+                    Err(
+                        err_value
+                            .expect("result err value not found")
+                            .string()
+                            .expect("string not found")
+                            .to_string(),
+                    )
+                }
+            }
+        })
     }
 }
