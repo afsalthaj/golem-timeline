@@ -4,15 +4,15 @@ use crate::golem_event::GolemEventValue;
 #[derive(Clone, Debug)]
 pub struct EventColumnName(pub String);
 impl EventColumnName {
-    pub fn equal_to<T>(self, value: EventColumnValue<T>) -> GolemEventPredicate<T> {
+    pub fn equal_to<T : Debug + Clone>(self, value: EventColumnValue<T>) -> GolemEventPredicate<T> {
         GolemEventPredicate::Equals(self, value)
     }
 
-    pub fn greater_than<T>(self, value: EventColumnValue<T>) -> GolemEventPredicate<T> {
+    pub fn greater_than<T: Debug + Clone>(self, value: EventColumnValue<T>) -> GolemEventPredicate<T> {
         GolemEventPredicate::GreaterThan(self, value)
     }
 
-    pub fn less_than<T>(self, value: EventColumnValue<T>) -> GolemEventPredicate<T> {
+    pub fn less_than<T: Debug + Clone>(self, value: EventColumnValue<T>) -> GolemEventPredicate<T> {
         GolemEventPredicate::LessThan(self, value)
     }
 }
@@ -20,14 +20,14 @@ impl EventColumnName {
 #[derive(Debug, Clone)]
 pub struct EventColumnValue<T : Debug + Clone>(pub T);
 
-impl<T: Display> Display for EventColumnValue<T> {
+impl<T: Display + Debug + Clone> Display for EventColumnValue<T> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.0)
     }
 }
 
 
-impl<T> From<T> for EventColumnValue<T> {
+impl<T : Debug + Clone> From<T> for EventColumnValue<T> {
     fn from(value: T) -> Self {
         EventColumnValue(value)
     }
@@ -55,7 +55,7 @@ pub fn col(column_name: &str) -> EventColumnName {
 
 
 #[derive(Clone, Debug)]
-pub enum GolemEventPredicate<T: Clone> {
+pub enum GolemEventPredicate<T: Clone + Debug> {
     Equals(EventColumnName, EventColumnValue<T>),
     GreaterThan(EventColumnName, EventColumnValue<T>),
     LessThan(EventColumnName, EventColumnValue<T>),
@@ -75,7 +75,7 @@ impl Display for GolemEventPredicate<GolemEventValue> {
     }
 }
 
-impl<T: Eq + PartialOrd> GolemEventPredicate<T> {
+impl<T: Eq + PartialOrd + Clone + Debug> GolemEventPredicate<T> {
     pub fn evaluate(&self, original_value: &T) -> bool {
         match self {
             GolemEventPredicate::Equals(_, event_value) => original_value == &event_value.0,

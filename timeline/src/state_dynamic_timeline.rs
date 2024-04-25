@@ -2,12 +2,12 @@
 use std::collections::BTreeMap;
 use crate::internals::aligned_state_dynamic_timeline::AlignedStateDynamicsTimeLine;
 use crate::internals::boundaries::Boundaries;
-use crate::event_predicate::EventPredicate;
 use crate::event_timeline::EventTimeLine;
 use crate::state_dynamic_timeline_point::StateDynamicsTimeLinePoint;
 use crate::internals::zip_result::ZipResult;
 use std::fmt::Debug;
 use std::ops::Neg;
+use crate::event_predicate::GolemEventPredicate;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct StateDynamicsTimeLine<T> {
@@ -257,7 +257,7 @@ impl<T: Debug + Clone + Eq + PartialOrd> StateDynamicsTimeLine<T> {
 
     pub fn tl_has_existed(
         event_time_line: &EventTimeLine<T>,
-        event_predicate: EventPredicate<T>,
+        event_predicate: GolemEventPredicate<T>,
     ) -> StateDynamicsTimeLine<bool> {
         let mut state_dynamics_time_line = StateDynamicsTimeLine::default();
 
@@ -275,7 +275,7 @@ impl<T: Debug + Clone + Eq + PartialOrd> StateDynamicsTimeLine<T> {
 
     pub fn tl_has_existed_within(
         event_time_line: &EventTimeLine<T>,
-        event_predicate: EventPredicate<T>,
+        event_predicate: GolemEventPredicate<T>,
         seconds: u64,
     ) -> StateDynamicsTimeLine<bool> {
         let mut state_dynamics_time_line = StateDynamicsTimeLine::default();

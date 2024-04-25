@@ -111,7 +111,7 @@ impl Conversion for GolemEventPredicate<GolemEventValue> {
                 value: event_value.0.to_wit(),
                 op: EventPredicateOp::LessThan
             },
-            _ => panic!("Not all possible event predicate represented in WIT. This will be included in near future".to_string())
+            _ => panic!("Not all possible event predicate represented in WIT. This will be included in near future")
         }
     }
 }
@@ -121,13 +121,13 @@ impl Conversion for GolemEventPredicate<GolemEventValue> {
 impl Conversion for TimeLineOp {
     type WitType = WitTimeLineOp;
 
-    fn from_wit(input: Self::WitType) -> Result<Self, Self::Error> {
+    fn from_wit(input: Self::WitType) -> Self {
         assert!(!input.nodes.is_empty());
-        Ok(internals::build_timeline_tree(&input.nodes[0], &input.nodes))
+        internals::build_timeline_tree(&input.nodes[0], &input.nodes)
     }
 
-    fn to_wit(&self) -> Result<Self::WitType, Self::Error> {
-        Ok(self.clone().into())
+    fn to_wit(&self) -> Self::WitType {
+       panic!("Conversion from TimeLineOp to corresponding WIT type hasn't been done yet")
     }
 
 }
@@ -183,7 +183,8 @@ mod internals {
             }
            WitTimeLineNode::TlDurationInCurState(tl) => {
                 let time_line = build_timeline_tree(&nodes[tl.timeline as usize], nodes);
-                TimeLineOp::TlDurationInCurState(tl.server.clone().into(), Box::new(time_line))
+                let timeline_node_worker = TimeLineNodeWorker::from_wit(tl.server.clone());
+                TimeLineOp::TlDurationInCurState(timeline_node_worker, Box::new(time_line))
             }
            WitTimeLineNode::Leaf(server) => {
                let timeline_node_worker = TimeLineNodeWorker::from_wit(server.clone());

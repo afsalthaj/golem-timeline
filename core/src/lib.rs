@@ -15,7 +15,7 @@ struct Component;
 
 impl Guest for Component {
     fn initialize_timeline(timeline: TimelineOp) -> Result<String, String> {
-       let timeline: CoreTimeLineOp = CoreTimeLineOp::from_wit(timeline).unwrap();
+       let timeline: CoreTimeLineOp = CoreTimeLineOp::from_wit(timeline);
 
         match timeline {
             CoreTimeLineOp::Leaf(server) => {
