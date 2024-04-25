@@ -1,3 +1,4 @@
+
 use std::collections::BTreeMap;
 use crate::internals::aligned_state_dynamic_timeline::AlignedStateDynamicsTimeLine;
 use crate::internals::boundaries::Boundaries;
@@ -7,7 +8,6 @@ use crate::state_dynamic_timeline_point::StateDynamicsTimeLinePoint;
 use crate::internals::zip_result::ZipResult;
 use std::fmt::Debug;
 use std::ops::Neg;
-
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct StateDynamicsTimeLine<T> {
@@ -25,21 +25,21 @@ impl<T: Clone + PartialEq> StateDynamicsTimeLine<T> {
         match (previous_point, next_point) {
             (Some((_, left)), Some((_, _))) => Some(left.t1),
             (Some((_, left)), None) => {
-               if left.contains(t) {
-                   Some(left.t1)
-               } else {
-                   None
-               }
+                if left.contains(t) {
+                    Some(left.t1)
+                } else {
+                    None
+                }
             },
             (None, Some((_, right))) => {
-               if right.contains(t) {
-                   Some(right.t1)
-               } else {
-                   None
-               }
+                if right.contains(t) {
+                    Some(right.t1)
+                } else {
+                    None
+                }
             },
             (None, None) => {
-               None
+                None
             }
         }
     }
@@ -230,7 +230,7 @@ impl StateDynamicsTimeLine<bool> {
 
     pub fn and(&self, that: StateDynamicsTimeLine<bool>) -> StateDynamicsTimeLine<bool> {
         self.zip_with(&that, |a, b| {
-           *a && *b
+            *a && *b
         })
     }
 
@@ -246,7 +246,7 @@ impl<T: Debug + Clone + Eq + PartialOrd> StateDynamicsTimeLine<T> {
     pub fn tl_latest_event_to_state(
         event_time_line: &EventTimeLine<T>,
     ) -> StateDynamicsTimeLine<T> {
-                let mut state_dynamics_time_line = StateDynamicsTimeLine::default();
+        let mut state_dynamics_time_line = StateDynamicsTimeLine::default();
 
         for point in &event_time_line.points {
             state_dynamics_time_line.add_state_dynamic_info(point.t1, point.value.clone());
@@ -351,8 +351,8 @@ impl<T: Debug + Clone + Eq + PartialOrd> StateDynamicsTimeLine<T> {
     }
 
     pub fn zip_with<F>(&self, other: &StateDynamicsTimeLine<T>, f: F) -> StateDynamicsTimeLine<T>
-    where
-        F: Fn(&T, &T) -> T,
+        where
+            F: Fn(&T, &T) -> T,
     {
         let mut flattened_time_line_points: BTreeMap<u64, StateDynamicsTimeLinePoint<T>> =
             BTreeMap::new();
@@ -417,10 +417,9 @@ impl<T: Debug + Clone + Eq + PartialOrd> StateDynamicsTimeLine<T> {
 // ~~ represents `forever`
 // -- denotes a finite boundary
 mod tests {
-    use crate::bindings::timeline::event_processor::api::EventValue as GolemEventValue;
     use super::*;
     use crate::event_predicate;
-    use crate::event_predicate::{EventValue, string};
+    use crate::event_predicate::{string};
     use crate::event_timeline::EventTimeLinePoint;
 
     // t1~~~~(playing)~~~~~~~~~~~~>
@@ -437,7 +436,7 @@ mod tests {
         timeline2.add_state_dynamic_info(7, "movie".to_string());
 
         let result1 = timeline1.zip_with(&timeline2, |a, b| {
-                format!("{} {}", a, b)
+            format!("{} {}", a, b)
         });
 
         let result2 = timeline2.zip_with(&timeline1, |a, b| {
@@ -490,7 +489,7 @@ mod tests {
     //   t2 - t3    : playing a movie
     //   t3 - t4    : paused movie
     //   t4 - future: paused cartoon
-   #[test]
+    #[test]
     fn test_zip_with_scenario2() {
         let mut timeline1 = StateDynamicsTimeLine::default();
         timeline1.add_state_dynamic_info(5, "playing".to_string());

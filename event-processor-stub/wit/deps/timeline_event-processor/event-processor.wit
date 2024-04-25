@@ -4,7 +4,7 @@ interface api {
 
   record event {
     time: u64,
-    event: event-value
+    event: list<tuple<string, event-value>>
   }
 
   variant event-value {
@@ -20,9 +20,7 @@ interface api {
 
   initialize: func(worker: worker-id) -> result<string, string>;
 
-  add-event: func(order: event) -> ();
 
-  get-event: func(time: u64) -> event;
 
   get-events: func() -> list<event>;
 }

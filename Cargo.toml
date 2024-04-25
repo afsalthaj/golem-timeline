@@ -1,5 +1,5 @@
 [workspace]
-members = ["event-processor", "core", "driver", "core-stub", "event-processor-stub"]
+members = ["timeline", "event-processor", "core", "driver", "core-stub", "event-processor-stub"]
 resolver = "2"
 
 [profile.release]

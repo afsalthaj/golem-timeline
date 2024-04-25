@@ -4,7 +4,7 @@ interface api {
 
   record event {
     time: u64,
-    event: event-value
+    event: list<tuple<string, event-value>>
   }
 
   variant event-value {

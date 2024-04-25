@@ -123,6 +123,7 @@ dependencies = [
  "chrono",
  "futures",
  "serde_json",
+ "timeline",
  "tokio",
  "wit-bindgen",
 ]
@@ -706,6 +707,17 @@ dependencies = [
  "fastrand",
  "rustix",
  "windows-sys",
+]
+
+[[package]]
+name = "timeline"
+version = "0.1.0"
+dependencies = [
+ "bitflags",
+ "chrono",
+ "futures",
+ "serde_json",
+ "tokio",
 ]
 
 [[package]]
