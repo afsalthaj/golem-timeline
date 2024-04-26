@@ -5,7 +5,7 @@ use timeline::golem_event::{GolemEvent, GolemEventValue};
 use timeline::state_dynamic_timeline::StateDynamicsTimeLine;
 
 use crate::bindings::exports::timeline::event_processor::api::{
-    Event, EventPredicate, EventStateResult, EventValue, Guest, LatestEventToStateResult,
+    Event, EventPredicate, EventStateResult, Guest, LatestEventToStateResult,
     TimePeriod, WorkerId,
 };
 use crate::conversions::Conversion;
