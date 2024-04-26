@@ -1,15 +1,14 @@
+use crate::bindings::exports::timeline::core::api::Server as WitTimeLineNodeWorker;
+use crate::bindings::exports::timeline::core::api::TimelineOp as WitTimeLineOp;
+use crate::bindings::timeline::event_processor::api::EventPredicate as WitEventPredicate;
+use crate::bindings::timeline::event_processor::api::EventPredicateOp;
+use crate::bindings::timeline::event_processor::api::EventValue as WitEventValue;
 use std::collections::HashMap;
 use std::fmt::{Debug, Display};
 use timeline::event_predicate::{EventColumnName, EventColumnValue, GolemEventPredicate};
 use timeline::golem_event::{GolemEvent, GolemEventValue};
 use timeline::timeline_node_worker::TimeLineNodeWorker;
 use timeline::timeline_op::TimeLineOp;
-use crate::bindings::timeline::event_processor::api::{EventPredicateOp};
-use crate::bindings::timeline::event_processor::api::EventValue as WitEventValue;
-use crate::bindings::exports::timeline::core::api::TimelineOp as WitTimeLineOp;
-use crate::bindings::exports::timeline::core::api::Server as WitTimeLineNodeWorker;
-use crate::bindings::timeline::event_processor::api::EventPredicate as WitEventPredicate;
-
 
 // TODO: Some of these conversions are repeated even after reusing WIT files. Make sure to fix it
 
@@ -18,7 +17,6 @@ pub trait Conversion: Clone + Debug {
     fn from_wit(input: Self::WitType) -> Self;
     fn to_wit(&self) -> Self::WitType;
 }
-
 
 // Golem Event Value conversion
 impl Conversion for GolemEventValue {
@@ -43,8 +41,6 @@ impl Conversion for GolemEventValue {
     }
 }
 
-
-
 // Timeline Node Worker conversion
 impl Conversion for TimeLineNodeWorker {
     type WitType = WitTimeLineNodeWorker;
@@ -62,7 +58,6 @@ impl Conversion for TimeLineNodeWorker {
             template_id: self.template_id.clone(),
         }
     }
-
 }
 
 // Event Predicate conversion
@@ -74,7 +69,9 @@ impl Conversion for GolemEventPredicate<GolemEventValue> {
         let event_value = EventColumnValue::from(GolemEventValue::from_wit(input.value.clone()));
         match input.op {
             EventPredicateOp::Equal => GolemEventPredicate::Equals(event_column, event_value),
-            EventPredicateOp::GreaterThan => GolemEventPredicate::GreaterThan(event_column, event_value),
+            EventPredicateOp::GreaterThan => {
+                GolemEventPredicate::GreaterThan(event_column, event_value)
+            }
             EventPredicateOp::LessThan => GolemEventPredicate::LessThan(event_column, event_value),
         }
     }
@@ -101,7 +98,6 @@ impl Conversion for GolemEventPredicate<GolemEventValue> {
     }
 }
 
-
 // TimeLineOp conversion
 impl Conversion for TimeLineOp {
     type WitType = WitTimeLineOp;
@@ -112,73 +108,110 @@ impl Conversion for TimeLineOp {
     }
 
     fn to_wit(&self) -> Self::WitType {
-       panic!("Conversion from TimeLineOp to corresponding WIT type hasn't been done yet")
+        panic!("Conversion from TimeLineOp to corresponding WIT type hasn't been done yet")
     }
-
 }
 
 mod internals {
+    use super::Conversion;
+    use crate::bindings::exports::timeline::core::api::{
+        TimelineConstantComparator, TimelineNode as WitTimeLineNode, TimelineNode,
+    };
     use timeline::event_predicate::{EventColumnName, GolemEventPredicate};
     use timeline::golem_event::GolemEventValue;
     use timeline::timeline_node_worker::TimeLineNodeWorker;
     use timeline::timeline_op::TimeLineOp;
-    use crate::bindings::exports::timeline::core::api::{TimelineConstantComparator, TimelineNode as WitTimeLineNode, TimelineNode};
-    use super::Conversion;
 
-    pub(crate) fn build_timeline_tree(node: &crate::bindings::exports::timeline::core::api::TimelineNode, nodes: &[crate::bindings::exports::timeline::core::api::TimelineNode]) -> TimeLineOp {
+    pub(crate) fn build_timeline_tree(
+        node: &crate::bindings::exports::timeline::core::api::TimelineNode,
+        nodes: &[crate::bindings::exports::timeline::core::api::TimelineNode],
+    ) -> TimeLineOp {
         match node {
-           WitTimeLineNode::TimelineComparison(timeline_constant_compared) => {
-                let time_line = build_timeline_tree(&nodes[timeline_constant_compared.timeline as usize], nodes);
-                let golem_event_value: GolemEventValue = GolemEventValue::from_wit(timeline_constant_compared.value.clone());
-                let timeline_node_worker = TimeLineNodeWorker::from_wit(timeline_constant_compared.server.clone());
+            WitTimeLineNode::TimelineComparison(timeline_constant_compared) => {
+                let time_line = build_timeline_tree(
+                    &nodes[timeline_constant_compared.timeline as usize],
+                    nodes,
+                );
+                let golem_event_value: GolemEventValue =
+                    GolemEventValue::from_wit(timeline_constant_compared.value.clone());
+                let timeline_node_worker =
+                    TimeLineNodeWorker::from_wit(timeline_constant_compared.server.clone());
 
                 match timeline_constant_compared.op {
-                    TimelineConstantComparator::GreaterThan => TimeLineOp::GreaterThan(timeline_node_worker, Box::new(time_line),golem_event_value),
-                    TimelineConstantComparator::GreaterThanEqual => TimeLineOp::GreaterThanOrEqual(timeline_node_worker, Box::new(time_line),golem_event_value),
-                    TimelineConstantComparator::LessThan => TimeLineOp::LessThan(timeline_node_worker, Box::new(time_line),golem_event_value),
-                    TimelineConstantComparator::LessThanEqual => TimeLineOp::LessThanOrEqual(timeline_node_worker, Box::new(time_line),golem_event_value),
+                    TimelineConstantComparator::GreaterThan => TimeLineOp::GreaterThan(
+                        timeline_node_worker,
+                        Box::new(time_line),
+                        golem_event_value,
+                    ),
+                    TimelineConstantComparator::GreaterThanEqual => TimeLineOp::GreaterThanOrEqual(
+                        timeline_node_worker,
+                        Box::new(time_line),
+                        golem_event_value,
+                    ),
+                    TimelineConstantComparator::LessThan => TimeLineOp::LessThan(
+                        timeline_node_worker,
+                        Box::new(time_line),
+                        golem_event_value,
+                    ),
+                    TimelineConstantComparator::LessThanEqual => TimeLineOp::LessThanOrEqual(
+                        timeline_node_worker,
+                        Box::new(time_line),
+                        golem_event_value,
+                    ),
                 }
             }
-           WitTimeLineNode::TimelineNegation(timeline_negation) => {
-                let time_line = build_timeline_tree(&nodes[timeline_negation.timeline as usize], nodes);
-                let timeline_node_worker: TimeLineNodeWorker = TimeLineNodeWorker::from_wit(timeline_negation.server.clone());
+            WitTimeLineNode::TimelineNegation(timeline_negation) => {
+                let time_line =
+                    build_timeline_tree(&nodes[timeline_negation.timeline as usize], nodes);
+                let timeline_node_worker: TimeLineNodeWorker =
+                    TimeLineNodeWorker::from_wit(timeline_negation.server.clone());
 
                 TimeLineOp::Not(timeline_node_worker, Box::new(time_line))
             }
-           WitTimeLineNode::TlHasExisted(timeline_with_event_predicate) => {
-                let time_line = build_timeline_tree(&nodes[timeline_with_event_predicate.timeline as usize], nodes);
-                let server: TimeLineNodeWorker = TimeLineNodeWorker::from_wit(timeline_with_event_predicate.server.clone());
-                let filter = GolemEventPredicate::from_wit(timeline_with_event_predicate.event_predicate.clone());
-                TimeLineOp::TlHasExisted(server, Box::new(time_line), filter)
+            WitTimeLineNode::TlHasExisted(server_with_event_predicate) => {
+                let server: TimeLineNodeWorker =
+                    TimeLineNodeWorker::from_wit(server_with_event_predicate.server.clone());
+                let filter = GolemEventPredicate::from_wit(
+                    server_with_event_predicate.event_predicate.clone(),
+                );
+                TimeLineOp::TlHasExisted(server, filter)
             }
 
-           WitTimeLineNode::TlHasExistedWithin(tl_has_existed_within) => {
-                let time_line = build_timeline_tree(&nodes[tl_has_existed_within.filtered.timeline as usize], nodes);
-                let max_duration = tl_has_existed_within.time;
-                let server: TimeLineNodeWorker = TimeLineNodeWorker::from_wit(tl_has_existed_within.filtered.server.clone());
+            WitTimeLineNode::TlHasExistedWithin(server_with_event_predicate_within) => {
+                let max_duration = server_with_event_predicate_within.time;
+                let server: TimeLineNodeWorker = TimeLineNodeWorker::from_wit(
+                    server_with_event_predicate_within.filtered.server.clone(),
+                );
 
-               let filter = GolemEventPredicate::from_wit(tl_has_existed_within.filtered.event_predicate.clone());
+                let filter = GolemEventPredicate::from_wit(
+                    server_with_event_predicate_within
+                        .filtered
+                        .event_predicate
+                        .clone(),
+                );
 
-                TimeLineOp::TlHasExistedWithin(server, Box::new(time_line), filter, max_duration)
+                TimeLineOp::TlHasExistedWithin(server, filter, max_duration)
             }
-           WitTimeLineNode::TlDurationWhere(tl) => {
+            WitTimeLineNode::TlDurationWhere(tl) => {
                 let time_line = build_timeline_tree(&nodes[tl.timeline.clone() as usize], nodes);
 
-                TimeLineOp::TlDurationWhere(TimeLineNodeWorker::from_wit(tl.server.clone()), Box::new(time_line))
+                TimeLineOp::TlDurationWhere(
+                    TimeLineNodeWorker::from_wit(tl.server.clone()),
+                    Box::new(time_line),
+                )
             }
-           WitTimeLineNode::TlDurationInCurState(tl) => {
+            WitTimeLineNode::TlDurationInCurState(tl) => {
                 let time_line = build_timeline_tree(&nodes[tl.timeline as usize], nodes);
                 let timeline_node_worker = TimeLineNodeWorker::from_wit(tl.server.clone());
                 TimeLineOp::TlDurationInCurState(timeline_node_worker, Box::new(time_line))
             }
             TimelineNode::TlLatestEventToState(server_with_event_column_name) => {
-                let server = TimeLineNodeWorker::from_wit(server_with_event_column_name.server.clone());
-                let event_column_name = EventColumnName(server_with_event_column_name.event_column_name.clone());
+                let server =
+                    TimeLineNodeWorker::from_wit(server_with_event_column_name.server.clone());
+                let event_column_name =
+                    EventColumnName(server_with_event_column_name.event_column_name.clone());
                 TimeLineOp::TlLatestEventToState(server, event_column_name)
             }
         }
     }
-
-
 }
-

@@ -5,7 +5,7 @@ pub struct WorkerId(pub String);
 #[derive(Clone, Debug)]
 pub struct TimeLineNodeWorker {
     pub worker_id: String,
-    pub template_id: String
+    pub template_id: String,
 }
 
 impl Display for TimeLineNodeWorker {

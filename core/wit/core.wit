@@ -10,11 +10,11 @@ interface api {
   }
 
   variant timeline-node {
+    tl-latest-event-to-state(server-with-event-column-name),
+    tl-has-existed(server-with-event-predicate),
+    tl-has-existed-within(server-with-event-predicate-within),
     timeline-comparison(timeline-constant-compared),
     timeline-negation(timeline-negated),
-    tl-latest-event-to-state(server-with-event-column-name),
-    tl-has-existed(timeline-with-event-predicate),
-    tl-has-existed-within(timeline-with-event-predicate-within),
     tl-duration-where(timeline-with-server),
     tl-duration-in-cur-state(timeline-with-server),
   }
@@ -67,14 +67,13 @@ interface api {
   // seek and col("userAction) is event-predicate
   // and == is filter-op
   // A filtered timeline is also maintained in a separate worker/server
-  record timeline-with-event-predicate {
-    timeline: node-index,
+  record server-with-event-predicate {
     event-predicate: event-predicate,
     server: server
   }
 
-  record timeline-with-event-predicate-within {
-    filtered: timeline-with-event-predicate,
+  record server-with-event-predicate-within {
+    filtered: server-with-event-predicate,
     time: u64,
   }
 

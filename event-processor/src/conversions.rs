@@ -1,8 +1,10 @@
+use crate::bindings::exports::timeline::event_processor::api::{
+    Event, EventPredicate, EventPredicateOp, EventValue,
+};
 use std::collections::HashMap;
 use std::fmt::Debug;
 use timeline::event_predicate::{EventColumnName, EventColumnValue, GolemEventPredicate};
 use timeline::golem_event::{GolemEvent, GolemEventValue};
-use crate::bindings::exports::timeline::event_processor::api::{Event, EventPredicate, EventPredicateOp, EventValue};
 
 pub trait Conversion: Clone + Debug {
     type WitType: Clone;
@@ -40,7 +42,9 @@ impl Conversion for GolemEventPredicate<GolemEventValue> {
         let event_value = EventColumnValue::from(GolemEventValue::from_wit(input.value.clone()));
         match input.op {
             EventPredicateOp::Equal => GolemEventPredicate::Equals(event_column, event_value),
-            EventPredicateOp::GreaterThan => GolemEventPredicate::GreaterThan(event_column, event_value),
+            EventPredicateOp::GreaterThan => {
+                GolemEventPredicate::GreaterThan(event_column, event_value)
+            }
             EventPredicateOp::LessThan => GolemEventPredicate::LessThan(event_column, event_value),
         }
     }
@@ -73,11 +77,13 @@ impl Conversion for GolemEvent<GolemEventValue> {
     fn from_wit(input: Self::WitType) -> Self {
         let mut event = GolemEvent {
             time: input.time,
-            event: HashMap::new()
+            event: HashMap::new(),
         };
 
         for (key, value) in input.event {
-            event.event.insert(EventColumnName(key), GolemEventValue::from_wit(value));
+            event
+                .event
+                .insert(EventColumnName(key), GolemEventValue::from_wit(value));
         }
 
         event
@@ -86,7 +92,7 @@ impl Conversion for GolemEvent<GolemEventValue> {
     fn to_wit(&self) -> Self::WitType {
         let mut event = Event {
             time: self.time,
-            event: vec![]
+            event: vec![],
         };
 
         for (key, value) in self.event.iter() {

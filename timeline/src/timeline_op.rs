@@ -1,7 +1,7 @@
-use std::fmt::Display;
 use crate::event_predicate::{EventColumnName, GolemEventPredicate};
 use crate::golem_event::GolemEventValue;
 use crate::timeline_node_worker::TimeLineNodeWorker;
+use std::fmt::Display;
 
 #[derive(Clone, Debug)]
 pub enum TimeLineOp {
@@ -26,7 +26,7 @@ pub enum TimeLineOp {
     // Output
     // t1-t2: false
     // t2-t3: true
-    TlHasExisted(TimeLineNodeWorker, Box<TimeLineOp>, GolemEventPredicate<GolemEventValue>),
+    TlHasExisted(TimeLineNodeWorker, GolemEventPredicate<GolemEventValue>),
     // This is more of tracking a StateDynamic event, as a cumulative OR
     // Input
     // Duration: D = 4
@@ -38,7 +38,11 @@ pub enum TimeLineOp {
     // t3-t7: true
     // t7-t9: false
     // t9-t13: true
-    TlHasExistedWithin(TimeLineNodeWorker, Box<TimeLineOp>, GolemEventPredicate<GolemEventValue>, u64),
+    TlHasExistedWithin(
+        TimeLineNodeWorker,
+        GolemEventPredicate<GolemEventValue>,
+        u64,
+    ),
     // This is more or less making number of events to a very simple
     // timeline. Obviously this is corresponding to the events that are state dynamic in nature
     // t1 - t10 : CDN2
@@ -81,6 +85,11 @@ impl TimeLineOp {
     fn timeline_nodes(&self) -> Vec<TimeLineNodeWorker> {
         fn servers_of(time_line_op: &TimeLineOp) -> Vec<TimeLineNodeWorker> {
             match time_line_op {
+                TimeLineOp::TlHasExisted(server, event_predicate) => vec![server.clone()],
+
+                TimeLineOp::TlLatestEventToState(server, _) => vec![server.clone()],
+                TimeLineOp::TlHasExistedWithin(server, _, _) => vec![server.clone()],
+
                 TimeLineOp::EqualTo(server, time_line, _) => {
                     let mut servers = servers_of(time_line);
                     servers.push(server.clone());
@@ -123,17 +132,6 @@ impl TimeLineOp {
                     servers.push(server.clone());
                     servers
                 }
-                TimeLineOp::TlHasExisted(server, time_line, _) => {
-                    let mut servers = servers_of(time_line);
-                    servers.push(server.clone());
-                    servers
-                }
-                TimeLineOp::TlHasExistedWithin(server, time_line, _, _) => {
-                    let mut servers = servers_of(time_line);
-                    servers.push(server.clone());
-                    servers
-                }
-                TimeLineOp::TlLatestEventToState(server, _) => vec![server.clone()],
                 TimeLineOp::TlDurationWhere(server, time_line) => {
                     let mut servers = servers_of(time_line);
                     servers.push(server.clone());
@@ -163,19 +161,65 @@ impl Display for TimeLineOp {
         }
 
         match self {
-            TimeLineOp::EqualTo(server, time_line, golem_event_value) => write!(f, "EqualTo({}, {}, {})", server, time_line, text_of(golem_event_value)),
-            TimeLineOp::GreaterThan(server, time_line, golem_event_value) => write!(f, "GreaterThan({}, {}, {})", server, time_line, text_of(golem_event_value)),
-            TimeLineOp::GreaterThanOrEqual(server, time_line, golem_event_value) => write!(f, "GreaterThanOrEqual({}, {}, {})", server, time_line, text_of(golem_event_value)),
-            TimeLineOp::LessThan(server, time_line, golem_event_value) => write!(f, "LessThan({}, {}, {})", server, time_line, text_of(golem_event_value)),
-            TimeLineOp::LessThanOrEqual(server, time_line, golem_event_value) => write!(f, "LessThanOrEqual({}, {}, {})", server, time_line, text_of(golem_event_value)),
-            TimeLineOp::And(server, time_line1, time_line2) => write!(f, "And({}, {}, {})", server, time_line1, time_line2),
-            TimeLineOp::Or(server, time_line1, time_line2) => write!(f, "Or({}, {}, {})", server, time_line1, time_line2),
+            TimeLineOp::EqualTo(server, time_line, golem_event_value) => write!(
+                f,
+                "EqualTo({}, {}, {})",
+                server,
+                time_line,
+                text_of(golem_event_value)
+            ),
+            TimeLineOp::GreaterThan(server, time_line, golem_event_value) => write!(
+                f,
+                "GreaterThan({}, {}, {})",
+                server,
+                time_line,
+                text_of(golem_event_value)
+            ),
+            TimeLineOp::GreaterThanOrEqual(server, time_line, golem_event_value) => write!(
+                f,
+                "GreaterThanOrEqual({}, {}, {})",
+                server,
+                time_line,
+                text_of(golem_event_value)
+            ),
+            TimeLineOp::LessThan(server, time_line, golem_event_value) => write!(
+                f,
+                "LessThan({}, {}, {})",
+                server,
+                time_line,
+                text_of(golem_event_value)
+            ),
+            TimeLineOp::LessThanOrEqual(server, time_line, golem_event_value) => write!(
+                f,
+                "LessThanOrEqual({}, {}, {})",
+                server,
+                time_line,
+                text_of(golem_event_value)
+            ),
+            TimeLineOp::And(server, time_line1, time_line2) => {
+                write!(f, "And({}, {}, {})", server, time_line1, time_line2)
+            }
+            TimeLineOp::Or(server, time_line1, time_line2) => {
+                write!(f, "Or({}, {}, {})", server, time_line1, time_line2)
+            }
             TimeLineOp::Not(server, time_line) => write!(f, "Not({}, {})", server, time_line),
-            TimeLineOp::TlHasExisted(server, time_line, event_predicate) => write!(f, "TlHasExisted({}, {}, {})", server, time_line, event_predicate),
-            TimeLineOp::TlHasExistedWithin(server, time_line, event_predicate, within_time) => write!(f, "TlHasExistedWithin({}, {}, {}, {})", server, time_line, event_predicate, within_time),
-            TimeLineOp::TlLatestEventToState(server, event_column) => write!(f, "TlLatestEventToState({}, {})", server, event_column),
-            TimeLineOp::TlDurationWhere(server, time_line) => write!(f, "TlDurationWhere({}, {})", server, time_line),
-            TimeLineOp::TlDurationInCurState(server, time_line) => write!(f, "TlDurationInCurState({}, {})", server, time_line),
+            TimeLineOp::TlHasExisted(server, event_predicate) => {
+                write!(f, "TlHasExisted({}, {})", server, event_predicate)
+            }
+            TimeLineOp::TlHasExistedWithin(server, event_predicate, within_time) => write!(
+                f,
+                "TlHasExistedWithin({}, {}, {})",
+                server, event_predicate, within_time
+            ),
+            TimeLineOp::TlLatestEventToState(server, event_column) => {
+                write!(f, "TlLatestEventToState({}, {})", server, event_column)
+            }
+            TimeLineOp::TlDurationWhere(server, time_line) => {
+                write!(f, "TlDurationWhere({}, {})", server, time_line)
+            }
+            TimeLineOp::TlDurationInCurState(server, time_line) => {
+                write!(f, "TlDurationInCurState({}, {})", server, time_line)
+            }
         }
     }
 }

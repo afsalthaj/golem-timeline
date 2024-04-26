@@ -1,5 +1,5 @@
-use crate::state_dynamic_timeline_point::StateDynamicsTimeLinePoint;
 use crate::internals::zip_result::{Side, ZipResult};
+use crate::state_dynamic_timeline_point::StateDynamicsTimeLinePoint;
 use std::fmt::Debug;
 
 pub struct Boundaries<'t, T: Clone> {
@@ -25,7 +25,10 @@ impl<'t, T: Debug + Clone> Boundaries<'t, T> {
         let intersection = StateDynamicsTimeLinePoint {
             t1: intersection_boundary_left,
             t2: intersection_boundary_right,
-            value: ZipResult::Both((&left.value, Box::new(ZipResult::Singleton(&right.value, Side::Right)))),
+            value: ZipResult::Both((
+                &left.value,
+                Box::new(ZipResult::Singleton(&right.value, Side::Right)),
+            )),
         };
 
         // left boundary optional: t1 -> t2
@@ -88,4 +91,3 @@ impl<'t, T: Debug + Clone> Boundaries<'t, T> {
         }
     }
 }
-

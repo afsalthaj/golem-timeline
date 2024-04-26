@@ -1,6 +1,6 @@
+use crate::event_predicate::EventColumnName;
 use std::collections::HashMap;
 use std::fmt::Display;
-use crate::event_predicate::EventColumnName;
 
 #[derive(Clone, Debug)]
 pub struct GolemEvent<T> {
@@ -8,9 +8,8 @@ pub struct GolemEvent<T> {
     pub event: HashMap<EventColumnName, T>,
 }
 
-
 #[derive(Clone, PartialEq, PartialOrd, Debug)]
-pub enum GolemEventValue{
+pub enum GolemEventValue {
     StringValue(String),
     IntValue(i64),
     FloatValue(f64),

@@ -1,14 +1,17 @@
-use std::fmt::{Debug, Display};
 use crate::golem_event::{GolemEvent, GolemEventValue};
+use std::fmt::{Debug, Display};
 
 #[derive(Clone, Debug, Eq, PartialEq, Hash)]
 pub struct EventColumnName(pub String);
 impl EventColumnName {
-    pub fn equal_to<T : Debug + Clone>(self, value: EventColumnValue<T>) -> GolemEventPredicate<T> {
+    pub fn equal_to<T: Debug + Clone>(self, value: EventColumnValue<T>) -> GolemEventPredicate<T> {
         GolemEventPredicate::Equals(self, value)
     }
 
-    pub fn greater_than<T: Debug + Clone>(self, value: EventColumnValue<T>) -> GolemEventPredicate<T> {
+    pub fn greater_than<T: Debug + Clone>(
+        self,
+        value: EventColumnValue<T>,
+    ) -> GolemEventPredicate<T> {
         GolemEventPredicate::GreaterThan(self, value)
     }
 
@@ -24,7 +27,7 @@ impl Display for EventColumnName {
 }
 
 #[derive(Debug, Clone)]
-pub struct EventColumnValue<T : Debug + Clone>(pub T);
+pub struct EventColumnValue<T: Debug + Clone>(pub T);
 
 impl<T: Display + Debug + Clone> Display for EventColumnValue<T> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -32,8 +35,7 @@ impl<T: Display + Debug + Clone> Display for EventColumnValue<T> {
     }
 }
 
-
-impl<T : Debug + Clone> From<T> for EventColumnValue<T> {
+impl<T: Debug + Clone> From<T> for EventColumnValue<T> {
     fn from(value: T) -> Self {
         EventColumnValue(value)
     }
@@ -59,7 +61,6 @@ pub fn col(column_name: &str) -> EventColumnName {
     EventColumnName(column_name.to_string())
 }
 
-
 #[derive(Clone, Debug)]
 pub enum GolemEventPredicate<T: Clone + Debug> {
     Equals(EventColumnName, EventColumnValue<T>),
@@ -73,7 +74,9 @@ impl Display for GolemEventPredicate<GolemEventValue> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             GolemEventPredicate::Equals(column, value) => write!(f, "{} == {}", column.0, value),
-            GolemEventPredicate::GreaterThan(column, value) => write!(f, "{} > {}", column.0, value),
+            GolemEventPredicate::GreaterThan(column, value) => {
+                write!(f, "{} > {}", column.0, value)
+            }
             GolemEventPredicate::LessThan(column, value) => write!(f, "{} < {}", column.0, value),
             GolemEventPredicate::And(left, right) => write!(f, "{} && {}", left, right),
             GolemEventPredicate::Or(left, right) => write!(f, "{} || {}", left, right),
@@ -84,23 +87,22 @@ impl Display for GolemEventPredicate<GolemEventValue> {
 impl<T: PartialEq + PartialOrd + Clone + Debug> GolemEventPredicate<T> {
     pub fn evaluate(&self, event: &GolemEvent<T>) -> bool {
         match self {
-            GolemEventPredicate::Equals(event_column_name, event_value) => {
-                event.event.get(event_column_name).map_or(false, |v| v == &event_value.0)
-            }
+            GolemEventPredicate::Equals(event_column_name, event_value) => event
+                .event
+                .get(event_column_name)
+                .map_or(false, |v| v == &event_value.0),
 
-            GolemEventPredicate::GreaterThan(event_column_name, event_value) =>{
-                event.event.get(event_column_name).map_or(false, |v| v > &event_value.0)
-            }
+            GolemEventPredicate::GreaterThan(event_column_name, event_value) => event
+                .event
+                .get(event_column_name)
+                .map_or(false, |v| v > &event_value.0),
 
-            GolemEventPredicate::LessThan(event_column_name, event_value) =>  {
-                event.event.get(event_column_name).map_or(false, |v| v < &event_value.0)
-            }
-            GolemEventPredicate::And(left, right) => {
-                left.evaluate(event) && right.evaluate(event)
-            }
-            GolemEventPredicate::Or(left, right) => {
-                left.evaluate(event) || right.evaluate(event)
-            }
+            GolemEventPredicate::LessThan(event_column_name, event_value) => event
+                .event
+                .get(event_column_name)
+                .map_or(false, |v| v < &event_value.0),
+            GolemEventPredicate::And(left, right) => left.evaluate(event) && right.evaluate(event),
+            GolemEventPredicate::Or(left, right) => left.evaluate(event) || right.evaluate(event),
         }
     }
 

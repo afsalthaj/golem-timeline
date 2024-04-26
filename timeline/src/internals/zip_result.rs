@@ -7,9 +7,8 @@ pub enum ZipResult<'t, T: Clone> {
     Singleton(&'t T, Side),
 }
 
-
 #[derive(Clone, Debug, PartialEq)]
-pub enum Side  {
+pub enum Side {
     Left,
     Right,
 }
@@ -22,10 +21,17 @@ impl<'t, T: Clone + Sized> ZipResult<'t, T> {
     // For some reason, we tracked the play type to be cartoon for t1-t2 at time X, and the fact that it was paused came in only the same time period t1-t2 (say at X + 10 just to show its delayed),
     // Given we were trying to zip play_state.zip_with(play_type), the fact of "pause" should be merged towards the left side of value "cartoon".
     // Also another subtility here is, we are not building functions in the recursion by not calling merge at `Both` node.
-    pub fn merge<F>(&'t self, f: &F) -> T where F: Fn(&T, &T) -> T {
-        fn go<'t, B, G>(prev: Option<&'t B>, zip_result: &ZipResult<'t, B>, f: &G) -> B where G: Fn(&B, &B) -> B, B: Clone {
+    pub fn merge<F>(&'t self, f: &F) -> T
+    where
+        F: Fn(&T, &T) -> T,
+    {
+        fn go<'t, B, G>(prev: Option<&'t B>, zip_result: &ZipResult<'t, B>, f: &G) -> B
+        where
+            G: Fn(&B, &B) -> B,
+            B: Clone,
+        {
             match zip_result {
-                ZipResult::Singleton(a, side) =>
+                ZipResult::Singleton(a, side) => {
                     if let Some(prev) = prev {
                         match side {
                             Side::Left => f(a, prev),
@@ -33,14 +39,12 @@ impl<'t, T: Clone + Sized> ZipResult<'t, T> {
                         }
                     } else {
                         a.deref().clone()
-                    },
-                ZipResult::Both((a, b)) => go(Some(a), b, f)
+                    }
+                }
+                ZipResult::Both((a, b)) => go(Some(a), b, f),
             }
         }
 
         go(None, self, f)
-
     }
-
-
 }

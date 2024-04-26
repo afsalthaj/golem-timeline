@@ -27,13 +27,11 @@ impl<T: Clone + Debug + Eq + PartialOrd> AlignedStateDynamicsTimeLine<T> {
         right: &mut StateDynamicsTimeLine<T>,
     ) -> AlignedStateDynamicsTimeLine<T> {
         if &left.beginning() <= &right.beginning() {
+            let boundary = right.beginning().map_or(None, |t| left.boundary(t));
 
-            let boundary =
-                right.beginning().map_or(None, |t| left.boundary(t));
-
-            let new_points =
-                boundary.map_or(left.points.clone(), |boundary| left.points.split_off(&boundary));
-
+            let new_points = boundary.map_or(left.points.clone(), |boundary| {
+                left.points.split_off(&boundary)
+            });
 
             AlignedStateDynamicsTimeLine {
                 time_line1: StateDynamicsTimeLine { points: new_points },
@@ -44,12 +42,11 @@ impl<T: Clone + Debug + Eq + PartialOrd> AlignedStateDynamicsTimeLine<T> {
                 removed_points_timeline2: None,
             }
         } else {
-            let boundary =
-                left.beginning().map_or(None, |t| right.boundary(t));
+            let boundary = left.beginning().map_or(None, |t| right.boundary(t));
 
-            let new_points =
-                boundary.map_or(right.points.clone(), |boundary| right.points.split_off(&boundary));
-
+            let new_points = boundary.map_or(right.points.clone(), |boundary| {
+                right.points.split_off(&boundary)
+            });
 
             AlignedStateDynamicsTimeLine {
                 time_line1: left.clone(),
