@@ -83,10 +83,10 @@ pub enum TimeLineOp {
 }
 
 impl TimeLineOp {
-    fn timeline_nodes(&self) -> Vec<TimeLineNodeWorker> {
+    pub fn timeline_nodes(&self) -> Vec<TimeLineNodeWorker> {
         fn servers_of(time_line_op: &TimeLineOp) -> Vec<TimeLineNodeWorker> {
             match time_line_op {
-                TimeLineOp::TlHasExisted(server, event_predicate) => vec![server.clone()],
+                TimeLineOp::TlHasExisted(server, _event_predicate) => vec![server.clone()],
 
                 TimeLineOp::TlLatestEventToState(server, _) => vec![server.clone()],
                 TimeLineOp::TlHasExistedWithin(server, _, _) => vec![server.clone()],

@@ -1,6 +1,6 @@
 use std::collections::BTreeMap;
 use std::fmt::Debug;
-use std::ops::Neg;
+
 
 use crate::event_timeline::EventTimeLine;
 use crate::internals::aligned_state_dynamic_timeline::AlignedStateDynamicsTimeLine;
@@ -37,9 +37,9 @@ impl<T: Clone + PartialEq> StateDynamicsTimeLine<T> {
     }
 
     pub fn boundary(&self, t: u64) -> Option<u64> {
-        let mut previous_point = self.points.range(..t).next_back();
+        let previous_point = self.points.range(..t).next_back();
 
-        let mut next_point = self.points.range(t..).next();
+        let next_point = self.points.range(t..).next();
 
         match (previous_point, next_point) {
             (Some((_, left)), Some((_, _))) => Some(left.t1),
@@ -64,9 +64,9 @@ impl<T: Clone + PartialEq> StateDynamicsTimeLine<T> {
     // Aka building tl_latest_event_to_state
     pub fn add_state_dynamic_info(&mut self, new_time: u64, value: T) {
         let binding = self.points.clone();
-        let mut previous_point = binding.range(..new_time).next_back();
+        let previous_point = binding.range(..new_time).next_back();
 
-        let mut next_point = binding.range(new_time..).next();
+        let next_point = binding.range(new_time..).next();
 
         match (previous_point, next_point) {
             // The new time is in between timelines.
@@ -111,7 +111,7 @@ impl<T: Clone + PartialEq> StateDynamicsTimeLine<T> {
                     // here we say its future if the right is `None`, or the new time stamp is less
                     // than the existing right boundary
                     if left.value != value {
-                        if (left.t2.is_none() || left.t2.unwrap() > new_time) {
+                        if left.t2.is_none() || left.t2.unwrap() > new_time {
                             let l = &left.t1;
                             let r = new_time;
                             let updated_left = StateDynamicsTimeLinePoint {
@@ -427,9 +427,9 @@ impl<T: Debug + Clone + Eq + PartialOrd> StateDynamicsTimeLine<T> {
 // ~~ represents `forever`
 // -- denotes a finite boundary
 mod tests {
-    use crate::event_timeline::EventTimeLinePoint;
+    
 
-    use super::*;
+    
 
     // t1~~~~(playing)~~~~~~~~~~~~>
     //       t2~~~~(movie)~~~~~~~~~~>
