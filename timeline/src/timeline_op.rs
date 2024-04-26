@@ -1,12 +1,11 @@
 use std::fmt::Display;
-use crate::event_predicate::GolemEventPredicate;
+use crate::event_predicate::{EventColumnName, GolemEventPredicate};
 use crate::golem_event::GolemEventValue;
 use crate::timeline_node_worker::TimeLineNodeWorker;
 
 #[derive(Clone, Debug)]
 pub enum TimeLineOp {
     // Pretty much represents the event-timeline (not state dynamics) - source (through workerid) and collection
-    Leaf(TimeLineNodeWorker), // A leaf node results in a component that exposes a function accepting event and storing it in a configurable buffer
     EqualTo(TimeLineNodeWorker, Box<TimeLineOp>, GolemEventValue),
     GreaterThan(TimeLineNodeWorker, Box<TimeLineOp>, GolemEventValue),
     GreaterThanOrEqual(TimeLineNodeWorker, Box<TimeLineOp>, GolemEventValue),
@@ -48,7 +47,7 @@ pub enum TimeLineOp {
     // Output
     // t1-t10: CDN2
     // t10-t12: CDN1
-    TlLatestEventToState(TimeLineNodeWorker, Box<TimeLineOp>, GolemEventPredicate<GolemEventValue>),
+    TlLatestEventToState(TimeLineNodeWorker, EventColumnName),
     // A Numerical Timeline of
     // the cumulative duration
     // where the state was True
@@ -82,7 +81,6 @@ impl TimeLineOp {
     fn timeline_nodes(&self) -> Vec<TimeLineNodeWorker> {
         fn servers_of(time_line_op: &TimeLineOp) -> Vec<TimeLineNodeWorker> {
             match time_line_op {
-                TimeLineOp::Leaf(server) => vec![server.clone()],
                 TimeLineOp::EqualTo(server, time_line, _) => {
                     let mut servers = servers_of(time_line);
                     servers.push(server.clone());
@@ -135,11 +133,7 @@ impl TimeLineOp {
                     servers.push(server.clone());
                     servers
                 }
-                TimeLineOp::TlLatestEventToState(server, time_line, _) => {
-                    let mut servers = servers_of(time_line);
-                    servers.push(server.clone());
-                    servers
-                }
+                TimeLineOp::TlLatestEventToState(server, _) => vec![server.clone()],
                 TimeLineOp::TlDurationWhere(server, time_line) => {
                     let mut servers = servers_of(time_line);
                     servers.push(server.clone());
@@ -169,7 +163,6 @@ impl Display for TimeLineOp {
         }
 
         match self {
-            TimeLineOp::Leaf(server) => write!(f, "Leaf({}.{})", server.template_id, server.worker_id),
             TimeLineOp::EqualTo(server, time_line, golem_event_value) => write!(f, "EqualTo({}, {}, {})", server, time_line, text_of(golem_event_value)),
             TimeLineOp::GreaterThan(server, time_line, golem_event_value) => write!(f, "GreaterThan({}, {}, {})", server, time_line, text_of(golem_event_value)),
             TimeLineOp::GreaterThanOrEqual(server, time_line, golem_event_value) => write!(f, "GreaterThanOrEqual({}, {}, {})", server, time_line, text_of(golem_event_value)),
@@ -180,7 +173,7 @@ impl Display for TimeLineOp {
             TimeLineOp::Not(server, time_line) => write!(f, "Not({}, {})", server, time_line),
             TimeLineOp::TlHasExisted(server, time_line, event_predicate) => write!(f, "TlHasExisted({}, {}, {})", server, time_line, event_predicate),
             TimeLineOp::TlHasExistedWithin(server, time_line, event_predicate, within_time) => write!(f, "TlHasExistedWithin({}, {}, {}, {})", server, time_line, event_predicate, within_time),
-            TimeLineOp::TlLatestEventToState(server, time_line, event_predicate) => write!(f, "TlLatestEventToState({}, {}, {})", server, time_line, event_predicate),
+            TimeLineOp::TlLatestEventToState(server, event_column) => write!(f, "TlLatestEventToState({}, {})", server, event_column),
             TimeLineOp::TlDurationWhere(server, time_line) => write!(f, "TlDurationWhere({}, {})", server, time_line),
             TimeLineOp::TlDurationInCurState(server, time_line) => write!(f, "TlDurationInCurState({}, {})", server, time_line),
         }

@@ -10,14 +10,19 @@ interface api {
   }
 
   variant timeline-node {
-    leaf(server),
     timeline-comparison(timeline-constant-compared),
     timeline-negation(timeline-negated),
+    tl-latest-event-to-state(server-with-event-column-name),
     tl-has-existed(timeline-with-event-predicate),
     tl-has-existed-within(timeline-with-event-predicate-within),
     tl-duration-where(timeline-with-server),
     tl-duration-in-cur-state(timeline-with-server),
   }
+
+ record server-with-event-column-name {
+   server: server,
+   event-column-name: string
+ }
 
  record timeline-with-server {
     server: server,

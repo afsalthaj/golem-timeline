@@ -18,8 +18,24 @@ interface api {
     name: string
   }
 
-  initialize: func(worker: worker-id) -> result<string, string>;
-  latest-event-to-state: func(event: event) -> result<string, string>;
+  record time-period {
+    t1: u64,
+    t2: u64
+  }
+
+  record event-state-result {
+    time-period: time-period,
+    value: event-value
+  }
+
+  record latest-event-to-state-result {
+    event-col-name: string,
+    event-results: list<event-state-result>
+  }
+
+  initialize-latest-event-state: func(worker: worker-id, event-col-name: string) -> result<string, string>;
+  add-event: func(event: event) -> result<string, string>;
+  latest-event-to-state: func(t1: u64) -> result<latest-event-to-state-result, string>;
 }
 
 world event-processor {

@@ -133,11 +133,11 @@ impl Conversion for TimeLineOp {
 }
 
 mod internals {
-    use timeline::event_predicate::GolemEventPredicate;
+    use timeline::event_predicate::{EventColumnName, GolemEventPredicate};
     use timeline::golem_event::GolemEventValue;
     use timeline::timeline_node_worker::TimeLineNodeWorker;
     use timeline::timeline_op::TimeLineOp;
-    use crate::bindings::exports::timeline::core::api::{TimelineConstantComparator, TimelineNode as WitTimeLineNode};
+    use crate::bindings::exports::timeline::core::api::{TimelineConstantComparator, TimelineNode as WitTimeLineNode, TimelineNode};
     use super::Conversion;
 
     pub(crate) fn build_timeline_tree(node: &crate::bindings::exports::timeline::core::api::TimelineNode, nodes: &[crate::bindings::exports::timeline::core::api::TimelineNode]) -> TimeLineOp {
@@ -186,11 +186,11 @@ mod internals {
                 let timeline_node_worker = TimeLineNodeWorker::from_wit(tl.server.clone());
                 TimeLineOp::TlDurationInCurState(timeline_node_worker, Box::new(time_line))
             }
-           WitTimeLineNode::Leaf(server) => {
-               let timeline_node_worker = TimeLineNodeWorker::from_wit(server.clone());
-
-               TimeLineOp::Leaf(timeline_node_worker)
-           },
+            TimelineNode::TlLatestEventToState(server_with_event_column_name) => {
+                let server = TimeLineNodeWorker::from_wit(server_with_event_column_name.server.clone());
+                let event_column_name = EventColumnName(server_with_event_column_name.event_column_name.clone());
+                TimeLineOp::TlLatestEventToState(server, event_column_name)
+            }
         }
     }
 

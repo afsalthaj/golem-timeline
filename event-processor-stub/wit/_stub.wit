@@ -5,11 +5,15 @@ interface stub-event-processor {
   use timeline:event-processor/api.{event-value};
   use timeline:event-processor/api.{event};
   use timeline:event-processor/api.{worker-id};
+  use timeline:event-processor/api.{time-period};
+  use timeline:event-processor/api.{event-state-result};
+  use timeline:event-processor/api.{latest-event-to-state-result};
 
   resource api {
     constructor(location: uri);
-    initialize: func(worker: worker-id) -> result<string, string>;
-    latest-event-to-state: func(event: event) -> result<string, string>;
+    initialize-latest-event-state: func(worker: worker-id, event-col-name: string) -> result<string, string>;
+    add-event: func(event: event) -> result<string, string>;
+    latest-event-to-state: func(t1: u64) -> result<latest-event-to-state-result, string>;
   }
 
 }

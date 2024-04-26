@@ -17,6 +17,10 @@ pub struct StateDynamicsTimeLine<T> {
 impl<T: Clone + PartialEq> StateDynamicsTimeLine<T> {
 
 
+    pub fn get_state_at(&self, t: u64) -> Option<StateDynamicsTimeLinePoint<T>> {
+        self.points.range(..t).next_back().map(|x| x.1.clone())
+    }
+
     pub fn boundary(&self, t: u64) -> Option<u64> {
         let mut previous_point = self.points.range(..t).next_back();
 

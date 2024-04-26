@@ -33,13 +33,13 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                 item_builder
                                     .variant_fn(
                                         match &item {
-                                            crate::bindings::timeline::core::api::TimelineNode::Leaf(
-                                                _,
-                                            ) => 0u32,
                                             crate::bindings::timeline::core::api::TimelineNode::TimelineComparison(
                                                 _,
-                                            ) => 1u32,
+                                            ) => 0u32,
                                             crate::bindings::timeline::core::api::TimelineNode::TimelineNegation(
+                                                _,
+                                            ) => 1u32,
+                                            crate::bindings::timeline::core::api::TimelineNode::TlLatestEventToState(
                                                 _,
                                             ) => 2u32,
                                             crate::bindings::timeline::core::api::TimelineNode::TlHasExisted(
@@ -56,13 +56,13 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                             ) => 6u32,
                                         },
                                         match &item {
-                                            crate::bindings::timeline::core::api::TimelineNode::Leaf(
-                                                _,
-                                            ) => false,
                                             crate::bindings::timeline::core::api::TimelineNode::TimelineComparison(
                                                 _,
                                             ) => false,
                                             crate::bindings::timeline::core::api::TimelineNode::TimelineNegation(
+                                                _,
+                                            ) => false,
+                                            crate::bindings::timeline::core::api::TimelineNode::TlLatestEventToState(
                                                 _,
                                             ) => false,
                                             crate::bindings::timeline::core::api::TimelineNode::TlHasExisted(
@@ -79,17 +79,6 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                             ) => false,
                                         },
                                         |case_builder| match &item {
-                                            crate::bindings::timeline::core::api::TimelineNode::Leaf(
-                                                inner,
-                                            ) => {
-                                                case_builder
-                                                    .record()
-                                                    .item()
-                                                    .string(&inner.worker_id)
-                                                    .item()
-                                                    .string(&inner.template_id)
-                                                    .finish()
-                                            }
                                             crate::bindings::timeline::core::api::TimelineNode::TimelineComparison(
                                                 inner,
                                             ) => {
@@ -182,6 +171,22 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                                     .item()
                                                     .string(&inner.server.template_id)
                                                     .finish()
+                                                    .finish()
+                                            }
+                                            crate::bindings::timeline::core::api::TimelineNode::TlLatestEventToState(
+                                                inner,
+                                            ) => {
+                                                case_builder
+                                                    .record()
+                                                    .item()
+                                                    .record()
+                                                    .item()
+                                                    .string(&inner.server.worker_id)
+                                                    .item()
+                                                    .string(&inner.server.template_id)
+                                                    .finish()
+                                                    .item()
+                                                    .string(&inner.event_column_name)
                                                     .finish()
                                             }
                                             crate::bindings::timeline::core::api::TimelineNode::TlHasExisted(

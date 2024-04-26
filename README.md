@@ -120,11 +120,11 @@ Mostly all you need is:
 ### Spin up golem
 
 ```sh
-curl -O https://raw.githubusercontent.com/golemcloud/golem/main/docker-examples/docker-compose-sqlite.yaml -O  https://raw.githubusercontent.com/golemcloud/golem/main/docker-examples/.env
-docker-compose -f docker-compose-sqlite.yaml up
+docker-compose up -d
 ```
 
 The docker version should correspond to 0.0.96 similar to CLI.
+It's good to download the latest dockeer-compose from golem website or repository, to avoid any issues.
 
 
 ### Generate all required code and build timeline project

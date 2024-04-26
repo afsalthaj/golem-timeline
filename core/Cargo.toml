@@ -10,11 +10,11 @@ path = "wit"
 [package.metadata.component.target.dependencies."timeline:event-processor-stub"]
 path = "wit/deps/timeline_event-processor-stub"
 
-[package.metadata.component.target.dependencies."timeline:event-processor"]
-path = "wit/deps/timeline_event-processor"
-
 [package.metadata.component.target.dependencies."golem:rpc"]
 path = "wit/deps/wasm-rpc"
+
+[package.metadata.component.target.dependencies."timeline:event-processor"]
+path = "wit/deps/timeline_event-processor"
 
 [dependencies]
 bitflags = "2.4.2"

@@ -1,27 +1,28 @@
 use std::cell::RefCell;
+use timeline::event_predicate::EventColumnName;
 use timeline::golem_event::GolemEventValue;
 use timeline::state_dynamic_timeline::StateDynamicsTimeLine;
-use crate::bindings::exports::timeline::event_processor::api::{Event, EventValue, Guest, WorkerId};
+use crate::bindings::exports::timeline::event_processor::api::{Event, EventStateResult, EventValue, Guest, LatestEventToStateResult, TimePeriod, WorkerId};
 
     mod bindings;
 
     struct Component;
 
-    struct State {
+    struct LatestEventToStateTracker {
         state_dynamic_timeline: StateDynamicsTimeLine<GolemEventValue>,
-        col_name: Option<String>
+        col_name: Option<EventColumnName>
     }
 
 thread_local! {
-    static STATE: RefCell<State> = RefCell::new(State {
+    static LATEST_EVENT_TO_STATE: RefCell<LatestEventToStateTracker> = RefCell::new(LatestEventToStateTracker {
         state_dynamic_timeline: StateDynamicsTimeLine::default(),
         col_name: None
     });
 
 }
 
-fn with_state<T>(f: impl FnOnce(&mut State) -> T) -> T {
-    let result = STATE.with_borrow_mut(|state| {
+fn with_latest_event_to_state<T>(f: impl FnOnce(&mut LatestEventToStateTracker) -> Result<T, String>) -> Result<T, String> {
+    let result = LATEST_EVENT_TO_STATE.with_borrow_mut(|state| {
         f(state)
     });
 
@@ -29,41 +30,81 @@ fn with_state<T>(f: impl FnOnce(&mut State) -> T) -> T {
 }
 
 impl Guest for Component {
-    fn initialize(worker: WorkerId) -> Result<String, String> {
-        dbg!("Initiating raw events: {}", worker.name);
-        with_state(|state| {
-            state.col_name = Some("cdn_change".to_string()); //TODO; Get it from initialise
-        });
-
-        Ok("Succeeded".to_string())
+    fn initialize_latest_event_state(worker: WorkerId, event_column_name: String) -> Result<String, String> {
+        with_latest_event_to_state(|state| {
+            state.col_name = Some(EventColumnName(event_column_name.clone()));
+            Ok(worker.name)
+        })
     }
 
-    fn latest_event_to_state(event: Event) -> Result<String, String> {
+    fn add_event(event: Event) -> Result<String, String> {
+        with_latest_event_to_state(|state| {
+            if let Some(state_col_name) = state.col_name.as_ref() {
+                let event_value =
+                    event.event.iter().find(|(key, _)| key == state_col_name.0.as_str());
 
-        with_state(|state| {
-            let event_to_be_tracked = state.col_name.as_ref().expect("Illegal state. Worker uninitialized for a specific event");
-
-            let event_value =
-                event.event.iter().find(|(key, _)| key == event_to_be_tracked);
-
-            match event_value {
-                Some((_, value)) => {
-                    let golem_event_value = match value {
-                        EventValue::StringValue(s) => GolemEventValue::StringValue(s.clone()),
-                        EventValue::IntValue(i) => GolemEventValue::IntValue(i.clone()),
-                        EventValue::FloatValue(fl) => GolemEventValue::FloatValue(fl.clone()),
-                        EventValue::BoolValue(b) => GolemEventValue::BoolValue(b.clone()),
-                    };
-                    state.state_dynamic_timeline.add_state_dynamic_info(event.time, golem_event_value);
-                },
-                None => {
-                    dbg!("No event value found for the column name: {}", event_to_be_tracked);
+                match event_value {
+                    Some((_, value)) => {
+                        let golem_event_value = get_golem_column_event_value(value.clone());
+                        state.state_dynamic_timeline.add_state_dynamic_info(event.time, golem_event_value);
+                    },
+                    None => {
+                        dbg!("No event value found for the column name: {}", &state_col_name.0);
+                    }
                 }
-            }
-        });
+            };
+            Ok("Added event to the state dynamic event".to_string())
+        })
+    }
 
-        Ok("Added event to the state dynamic event".to_string())
+    fn latest_event_to_state(t1: u64) -> Result<LatestEventToStateResult, String> {
+        with_latest_event_to_state(|state| {
+            let latest_event = state.state_dynamic_timeline.get_state_at(t1);
 
+            let column_name = state.col_name.as_ref().ok_or("Latest Event To State hasn't been initialised or part of the workflow yet")?;
+
+
+            let result = match latest_event {
+                Some(event) => LatestEventToStateResult {
+                    event_col_name: column_name.0.clone(),
+                    event_results: {
+                        let event_result = EventStateResult {
+                            time_period: TimePeriod {
+                                t1: event.t1,
+                                t2: event.t2.unwrap_or(u64::MAX)
+                            },
+                            value: get_event_value(event.value)
+                        };
+                        vec![event_result]
+                    }
+                },
+
+                None => LatestEventToStateResult {
+                    event_col_name: column_name.0.clone(),
+                    event_results: vec![]
+                }
+            };
+
+            Ok(result)
+        })
     }
 }
 
+
+fn get_golem_column_event_value(event_value: EventValue) -> GolemEventValue {
+    match event_value {
+        EventValue::StringValue(s) => GolemEventValue::StringValue(s.clone()),
+        EventValue::IntValue(i) => GolemEventValue::IntValue(i.clone()),
+        EventValue::FloatValue(fl) => GolemEventValue::FloatValue(fl.clone()),
+        EventValue::BoolValue(b) => GolemEventValue::BoolValue(b.clone()),
+    }
+}
+
+fn get_event_value(golem_event_value: GolemEventValue) -> EventValue {
+    match golem_event_value {
+        GolemEventValue::StringValue(s) => EventValue::StringValue(s.clone()),
+        GolemEventValue::IntValue(i) => EventValue::IntValue(i.clone()),
+        GolemEventValue::FloatValue(fl) => EventValue::FloatValue(fl.clone()),
+        GolemEventValue::BoolValue(b) => EventValue::BoolValue(b.clone()),
+    }
+}
