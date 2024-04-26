@@ -402,24 +402,16 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                 .result()
                 .expect("result not found");
             match result {
-                Ok(ok_value) => {
-                    Ok(
-                        ok_value
-                            .expect("result ok value not found")
-                            .string()
-                            .expect("string not found")
-                            .to_string(),
-                    )
-                }
-                Err(err_value) => {
-                    Err(
-                        err_value
-                            .expect("result err value not found")
-                            .string()
-                            .expect("string not found")
-                            .to_string(),
-                    )
-                }
+                Ok(ok_value) => Ok(ok_value
+                    .expect("result ok value not found")
+                    .string()
+                    .expect("string not found")
+                    .to_string()),
+                Err(err_value) => Err(err_value
+                    .expect("result err value not found")
+                    .string()
+                    .expect("string not found")
+                    .to_string()),
             }
         })
     }

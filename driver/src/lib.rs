@@ -1,8 +1,8 @@
 use crate::bindings::exports::timeline::driver::api::Guest;
 use crate::bindings::golem::rpc::types::Uri;
-use crate::bindings::timeline::core::api::{ServerWithEventColumnName, TimelineOp};
 use crate::bindings::timeline::core::api::Server;
 use crate::bindings::timeline::core::api::TimelineNode::TlLatestEventToState;
+use crate::bindings::timeline::core::api::{ServerWithEventColumnName, TimelineOp};
 use crate::bindings::timeline::core_stub::stub_core;
 
 #[allow(dead_code)]

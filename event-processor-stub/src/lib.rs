@@ -8,7 +8,8 @@ pub struct Api {
 }
 impl Api {}
 impl crate::bindings::exports::timeline::event_processor_stub::stub_event_processor::GuestApi
-for Api {
+    for Api
+{
     fn new(location: crate::bindings::golem::rpc::types::Uri) -> Self {
         let location = golem_wasm_rpc::Uri {
             value: location.value,
@@ -27,16 +28,18 @@ for Api {
             .invoke_and_await(
                 "timeline:event-processor/api/initialize-latest-event-state",
                 &[
-                    WitValue::builder().record().item().string(&worker.name).finish(),
+                    WitValue::builder()
+                        .record()
+                        .item()
+                        .string(&worker.name)
+                        .finish(),
                     WitValue::builder().string(&event_col_name),
                 ],
             )
-            .expect(
-                &format!(
-                    "Failed to invoke remote {}",
-                    "timeline:event-processor/api/initialize-latest-event-state"
-                ),
-            );
+            .expect(&format!(
+                "Failed to invoke remote {}",
+                "timeline:event-processor/api/initialize-latest-event-state"
+            ));
         ({
             let result = result
                 .tuple_element(0)
@@ -44,24 +47,16 @@ for Api {
                 .result()
                 .expect("result not found");
             match result {
-                Ok(ok_value) => {
-                    Ok(
-                        ok_value
-                            .expect("result ok value not found")
-                            .string()
-                            .expect("string not found")
-                            .to_string(),
-                    )
-                }
-                Err(err_value) => {
-                    Err(
-                        err_value
-                            .expect("result err value not found")
-                            .string()
-                            .expect("string not found")
-                            .to_string(),
-                    )
-                }
+                Ok(ok_value) => Ok(ok_value
+                    .expect("result ok value not found")
+                    .string()
+                    .expect("string not found")
+                    .to_string()),
+                Err(err_value) => Err(err_value
+                    .expect("result err value not found")
+                    .string()
+                    .expect("string not found")
+                    .to_string()),
             }
         })
     }
@@ -155,24 +150,16 @@ for Api {
                 .result()
                 .expect("result not found");
             match result {
-                Ok(ok_value) => {
-                    Ok(
-                        ok_value
-                            .expect("result ok value not found")
-                            .string()
-                            .expect("string not found")
-                            .to_string(),
-                    )
-                }
-                Err(err_value) => {
-                    Err(
-                        err_value
-                            .expect("result err value not found")
-                            .string()
-                            .expect("string not found")
-                            .to_string(),
-                    )
-                }
+                Ok(ok_value) => Ok(ok_value
+                    .expect("result ok value not found")
+                    .string()
+                    .expect("string not found")
+                    .to_string()),
+                Err(err_value) => Err(err_value
+                    .expect("result err value not found")
+                    .string()
+                    .expect("string not found")
+                    .to_string()),
             }
         })
     }
@@ -261,46 +248,34 @@ for Api {
                 .result()
                 .expect("result not found");
             match result {
-                Ok(ok_value) => {
-                    Ok(
-                        ok_value
-                            .expect("result ok value not found")
-                            .string()
-                            .expect("string not found")
-                            .to_string(),
-                    )
-                }
-                Err(err_value) => {
-                    Err(
-                        err_value
-                            .expect("result err value not found")
-                            .string()
-                            .expect("string not found")
-                            .to_string(),
-                    )
-                }
+                Ok(ok_value) => Ok(ok_value
+                    .expect("result ok value not found")
+                    .string()
+                    .expect("string not found")
+                    .to_string()),
+                Err(err_value) => Err(err_value
+                    .expect("result err value not found")
+                    .string()
+                    .expect("string not found")
+                    .to_string()),
             }
         })
     }
     fn latest_event_to_state(
         &self,
         t1: u64,
-    ) -> Result<
-        crate::bindings::timeline::event_processor::api::LatestEventToStateResult,
-        String,
-    > {
+    ) -> Result<crate::bindings::timeline::event_processor::api::LatestEventToStateResult, String>
+    {
         let result = self
             .rpc
             .invoke_and_await(
                 "timeline:event-processor/api/latest-event-to-state",
                 &[WitValue::builder().u64(t1)],
             )
-            .expect(
-                &format!(
-                    "Failed to invoke remote {}",
-                    "timeline:event-processor/api/latest-event-to-state"
-                ),
-            );
+            .expect(&format!(
+                "Failed to invoke remote {}",
+                "timeline:event-processor/api/latest-event-to-state"
+            ));
         ({
             let result = result
                 .tuple_element(0)
@@ -308,10 +283,9 @@ for Api {
                 .result()
                 .expect("result not found");
             match result {
-                Ok(ok_value) => {
-                    Ok({
-                        let record = ok_value.expect("result ok value not found");
-                        crate::bindings::timeline::event_processor::api::LatestEventToStateResult {
+                Ok(ok_value) => Ok({
+                    let record = ok_value.expect("result ok value not found");
+                    crate::bindings::timeline::event_processor::api::LatestEventToStateResult {
                             event_col_name: record
                                 .field(0usize)
                                 .expect("record field not found")
@@ -388,17 +362,12 @@ for Api {
                                 })
                                 .expect("list not found"),
                         }
-                    })
-                }
-                Err(err_value) => {
-                    Err(
-                        err_value
-                            .expect("result err value not found")
-                            .string()
-                            .expect("string not found")
-                            .to_string(),
-                    )
-                }
+                }),
+                Err(err_value) => Err(err_value
+                    .expect("result err value not found")
+                    .string()
+                    .expect("string not found")
+                    .to_string()),
             }
         })
     }
@@ -409,12 +378,10 @@ for Api {
                 "timeline:event-processor/api/tl-has-existed",
                 &[WitValue::builder().u64(t1)],
             )
-            .expect(
-                &format!(
-                    "Failed to invoke remote {}",
-                    "timeline:event-processor/api/tl-has-existed"
-                ),
-            );
+            .expect(&format!(
+                "Failed to invoke remote {}",
+                "timeline:event-processor/api/tl-has-existed"
+            ));
         ({
             let result = result
                 .tuple_element(0)
@@ -422,23 +389,15 @@ for Api {
                 .result()
                 .expect("result not found");
             match result {
-                Ok(ok_value) => {
-                    Ok(
-                        ok_value
-                            .expect("result ok value not found")
-                            .bool()
-                            .expect("bool not found"),
-                    )
-                }
-                Err(err_value) => {
-                    Err(
-                        err_value
-                            .expect("result err value not found")
-                            .string()
-                            .expect("string not found")
-                            .to_string(),
-                    )
-                }
+                Ok(ok_value) => Ok(ok_value
+                    .expect("result ok value not found")
+                    .bool()
+                    .expect("bool not found")),
+                Err(err_value) => Err(err_value
+                    .expect("result err value not found")
+                    .string()
+                    .expect("string not found")
+                    .to_string()),
             }
         })
     }
