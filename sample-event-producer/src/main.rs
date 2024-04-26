@@ -9,11 +9,20 @@ use pulsar::{
 };
 
 #[derive(Serialize, Deserialize)]
-struct TestData {
-    data: String,
+pub struct Event {
+    pub time: u64,
+    pub event: Vec<(String, EventValue)>,
 }
 
-impl SerializeMessage for TestData {
+#[derive(Serialize, Deserialize)]
+pub enum EventValue{
+    StringValue(String),
+    IntValue(i64),
+    FloatValue(f64),
+    BoolValue(bool),
+}
+
+impl SerializeMessage for Event {
     fn serialize_message(input: Self) -> Result<producer::Message, PulsarError> {
         let payload = serde_json::to_vec(&input).map_err(|e| PulsarError::Custom(e.to_string()))?;
         Ok(producer::Message {
@@ -50,26 +59,21 @@ async fn main() -> Result<(), pulsar::Error> {
         ));
     }
 
+
     let pulsar: Pulsar<_> = builder.build().await?;
     let mut producer = pulsar
         .producer()
         .with_topic(topic)
-        .with_name("my producer")
-        .with_options(producer::ProducerOptions {
-            schema: Some(proto::Schema {
-                r#type: proto::schema::Type::String as i32,
-                ..Default::default()
-            }),
-            ..Default::default()
-        })
+        .with_name("sample-playback-events")
         .build()
         .await?;
 
     let mut counter = 0usize;
     loop {
         producer
-            .send(TestData {
-                data: "data".to_string(),
+            .send(Event {
+                time: 1,
+                event: vec![("playerStateChange".to_string(), EventValue::StringValue("buffer".to_string()))],
             })
             .await?
             .await
