@@ -8,12 +8,16 @@ interface stub-event-processor {
   use timeline:event-processor/api.{time-period};
   use timeline:event-processor/api.{event-state-result};
   use timeline:event-processor/api.{latest-event-to-state-result};
+  use timeline:event-processor/api.{event-predicate-op};
+  use timeline:event-processor/api.{event-predicate};
 
   resource api {
     constructor(location: uri);
     initialize-latest-event-state: func(worker: worker-id, event-col-name: string) -> result<string, string>;
+    initialize-tl-has-existed: func(worker: worker-id, event-predicate: event-predicate) -> result<string, string>;
     add-event: func(event: event) -> result<string, string>;
     latest-event-to-state: func(t1: u64) -> result<latest-event-to-state-result, string>;
+    tl-has-existed: func(t1: u64) -> result<bool, string>;
   }
 
 }

@@ -33,9 +33,23 @@ interface api {
     event-results: list<event-state-result>
   }
 
+  enum event-predicate-op{
+    equal,
+    greater-than,
+    less-than,
+  }
+
+  record event-predicate {
+    col-name: string,
+    value: event-value,
+    op: event-predicate-op
+  }
+
   initialize-latest-event-state: func(worker: worker-id, event-col-name: string) -> result<string, string>;
+  initialize-tl-has-existed: func(worker: worker-id, event-predicate: event-predicate) -> result<string, string>;
   add-event: func(event: event) -> result<string, string>;
   latest-event-to-state: func(t1: u64) -> result<latest-event-to-state-result, string>;
+  tl-has-existed: func(t1: u64) -> result<bool, string>;
 }
 
 world event-processor {

@@ -16,6 +16,21 @@ pub struct StateDynamicsTimeLine<T> {
 
 impl<T: Clone + PartialEq> StateDynamicsTimeLine<T> {
 
+    pub fn last(&self) -> Option<StateDynamicsTimeLinePoint<T>> {
+        self.points.last_key_value().map(|x| x.1.clone())
+    }
+
+    pub fn last_value_is(&self, value: T) -> bool {
+        self.last().map(|x| x.value == value).unwrap_or(false)
+    }
+
+    pub fn future_is(&self, value: T) -> bool {
+        self.last().map(|x| x.t2.is_none() && x.value == value).unwrap_or(false)
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.points.is_empty()
+    }
 
     pub fn get_state_at(&self, t: u64) -> Option<StateDynamicsTimeLinePoint<T>> {
         self.points.range(..t).next_back().map(|x| x.1.clone())
@@ -48,6 +63,7 @@ impl<T: Clone + PartialEq> StateDynamicsTimeLine<T> {
         }
     }
 
+    // Aka building tl_latest_event_to_state
     pub fn add_state_dynamic_info(&mut self, new_time: u64, value: T) {
         let binding = self.points.clone();
         let mut previous_point = binding.range(..new_time).next_back();
@@ -259,63 +275,45 @@ impl<T: Debug + Clone + Eq + PartialOrd> StateDynamicsTimeLine<T> {
         state_dynamics_time_line
     }
 
-    pub fn tl_has_existed(
-        event_time_line: &EventTimeLine<T>,
-        event_predicate: GolemEventPredicate<T>,
-    ) -> StateDynamicsTimeLine<bool> {
-        let mut state_dynamics_time_line = StateDynamicsTimeLine::default();
-
-        for event_time_line_point in &event_time_line.points {
-            if event_predicate.evaluate(&event_time_line_point.value) {
-                state_dynamics_time_line.add_state_dynamic_info(event_time_line_point.t1, true);
-                break;
-            } else {
-                state_dynamics_time_line.add_state_dynamic_info(event_time_line_point.t1, false);
-            }
-        }
-
-        state_dynamics_time_line
-    }
-
-    pub fn tl_has_existed_within(
-        event_time_line: &EventTimeLine<T>,
-        event_predicate: GolemEventPredicate<T>,
-        seconds: u64,
-    ) -> StateDynamicsTimeLine<bool> {
-        let mut state_dynamics_time_line = StateDynamicsTimeLine::default();
-
-        let mut previous_true_point: Option<u64> = None;
-
-        for event_time_line_point in &event_time_line.points {
-            let is_predicate_true = event_predicate.evaluate(&event_time_line_point.value);
-
-            match previous_true_point {
-                Some(t) if event_time_line_point.t1 > t + seconds => {
-                    state_dynamics_time_line.add_state_dynamic_info(t + seconds, false);
-                    previous_true_point = None;
-                }
-                _ => {}
-            }
-
-            if is_predicate_true {
-                state_dynamics_time_line.add_state_dynamic_info(event_time_line_point.t1, true);
-                previous_true_point = Some(event_time_line_point.t1);
-            } else {
-                state_dynamics_time_line.add_state_dynamic_info(event_time_line_point.t1, false);
-                previous_true_point = None;
-            }
-        }
-
-        // If the last known value is a true, then add an extra data point that expires at t + seconds
-        match previous_true_point {
-            Some(t) => {
-                state_dynamics_time_line.add_state_dynamic_info(t + seconds, false);
-            }
-            None => {}
-        }
-
-        state_dynamics_time_line
-    }
+    // pub fn tl_has_existed_within(
+    //     event_time_line: &EventTimeLine<T>,
+    //     event_predicate: GolemEventPredicate<T>,
+    //     seconds: u64,
+    // ) -> StateDynamicsTimeLine<bool> {
+    //     let mut state_dynamics_time_line = StateDynamicsTimeLine::default();
+    //
+    //     let mut previous_true_point: Option<u64> = None;
+    //
+    //     for event_time_line_point in &event_time_line.points {
+    //         let is_predicate_true = event_predicate.evaluate(&event_time_line_point.value);
+    //
+    //         match previous_true_point {
+    //             Some(t) if event_time_line_point.t1 > t + seconds => {
+    //                 state_dynamics_time_line.add_state_dynamic_info(t + seconds, false);
+    //                 previous_true_point = None;
+    //             }
+    //             _ => {}
+    //         }
+    //
+    //         if is_predicate_true {
+    //             state_dynamics_time_line.add_state_dynamic_info(event_time_line_point.t1, true);
+    //             previous_true_point = Some(event_time_line_point.t1);
+    //         } else {
+    //             state_dynamics_time_line.add_state_dynamic_info(event_time_line_point.t1, false);
+    //             previous_true_point = None;
+    //         }
+    //     }
+    //
+    //     // If the last known value is a true, then add an extra data point that expires at t + seconds
+    //     match previous_true_point {
+    //         Some(t) => {
+    //             state_dynamics_time_line.add_state_dynamic_info(t + seconds, false);
+    //         }
+    //         None => {}
+    //     }
+    //
+    //     state_dynamics_time_line
+    // }
 
     pub fn beginning(&self) -> Option<u64> {
         self.points.first_key_value().map(|(k, _)| *k)
@@ -644,137 +642,103 @@ mod tests {
         assert_eq!(result, expected);
     }
 
-    #[test]
-    fn test_tl_has_existed() {
-        let mut event_time_line = EventTimeLine::default();
-        event_time_line.add_event_info(1, "pause".to_string());
-        event_time_line.add_event_info(2, "playing".to_string());
-        event_time_line.add_event_info(3, "pause".to_string());
-
-        let event_predicate = event_predicate::col("event").equal_to::<String>(string("playing"));
-
-        let result = StateDynamicsTimeLine::tl_has_existed(&event_time_line, event_predicate);
-
-
-        let mut btree_map = BTreeMap::new();
-
-        btree_map.insert(1, StateDynamicsTimeLinePoint {
-            t1: 1,
-            t2: Some(2),
-            value: false,
-        });
-
-        btree_map.insert(2, StateDynamicsTimeLinePoint {
-            t1: 2,
-            t2: None,
-            value: true,
-        });
-
-        let expected = StateDynamicsTimeLine {
-            points: btree_map,
-        };
-
-
-        assert_eq!(result, expected);
-    }
-
     // Input t1------(pause)-----t2~~~~~(playing)~~~~~>
     // Expiration time: 1 seconds, predicate: if playing
     // t1------(false)-----t2----(true)-------t3~~~(false)~~~~>
-    #[test]
-    fn test_tl_has_existed_within_scenario1() {
-        let mut event_time_line = EventTimeLine::default();
-        event_time_line.add_event_info(1, "pause".to_string());
-        event_time_line.add_event_info(2, "playing".to_string());
-
-        let event_predicate = event_predicate::col("event").equal_to::<String>(string("playing"));
-
-        let result =
-            StateDynamicsTimeLine::tl_has_existed_within(&event_time_line, event_predicate, 1);
-
-        let mut btree_map = BTreeMap::new();
-
-        btree_map.insert(1, StateDynamicsTimeLinePoint {
-            t1: 1,
-            t2: Some(2),
-            value: false,
-        });
-
-        btree_map.insert(2, StateDynamicsTimeLinePoint {
-            t1: 2,
-            t2: Some(3),
-            value: true,
-        });
-
-        btree_map.insert(3, StateDynamicsTimeLinePoint {
-            t1: 3,
-            t2: None,
-            value: false,
-        });
-
-        let expected = StateDynamicsTimeLine {
-            points: btree_map,
-        };
-
-
-        assert_eq!(result, expected);
-    }
+    // #[test]
+    // fn test_tl_has_existed_within_scenario1() {
+    //     let mut event_time_line = EventTimeLine::default();
+    //     event_time_line.add_event_info(1, "pause".to_string());
+    //     event_time_line.add_event_info(2, "playing".to_string());
+    //
+    //     let event_predicate = event_predicate::col("event").equal_to::<String>(string("playing"));
+    //
+    //     let result =
+    //         StateDynamicsTimeLine::tl_has_existed_within(&event_time_line, event_predicate, 1);
+    //
+    //     let mut btree_map = BTreeMap::new();
+    //
+    //     btree_map.insert(1, StateDynamicsTimeLinePoint {
+    //         t1: 1,
+    //         t2: Some(2),
+    //         value: false,
+    //     });
+    //
+    //     btree_map.insert(2, StateDynamicsTimeLinePoint {
+    //         t1: 2,
+    //         t2: Some(3),
+    //         value: true,
+    //     });
+    //
+    //     btree_map.insert(3, StateDynamicsTimeLinePoint {
+    //         t1: 3,
+    //         t2: None,
+    //         value: false,
+    //     });
+    //
+    //     let expected = StateDynamicsTimeLine {
+    //         points: btree_map,
+    //     };
+    //
+    //
+    //     assert_eq!(result, expected);
+    // }
 
     // Input t1------(pause)-----t2----------(playing)------t5~~~~~~(playing)~~~~>
     // Expiration time: 2 seconds, predicate: if playing
     // t1--------(false)-----t2----(true)---t4----(false)---t5----(true)---t7~~~~(false)~~~~~~>
-    #[test]
-    fn test_tl_has_existed_within_scenario2() {
-        let mut event_time_line = EventTimeLine::default();
-        event_time_line.add_event_info(1, "pause".to_string());
-        event_time_line.add_event_info(2, "playing".to_string());
-        event_time_line.add_event_info(5, "playing".to_string());
-
-        let event_predicate = event_predicate::col("event").equal_to::<String>(string("playing"));
-
-        let result =
-            StateDynamicsTimeLine::tl_has_existed_within(&event_time_line, event_predicate, 2);
-
-        let mut btree_map = BTreeMap::new();
-
-        btree_map.insert(1, StateDynamicsTimeLinePoint {
-            t1: 1,
-            t2: Some(2),
-            value: false,
-        });
-
-        btree_map.insert(2, StateDynamicsTimeLinePoint {
-            t1: 2,
-            t2: Some(4),
-            value: true,
-        });
-
-
-        btree_map.insert(4, StateDynamicsTimeLinePoint {
-            t1: 4,
-            t2: Some(5),
-            value: false,
-        });
-
-        btree_map.insert(5, StateDynamicsTimeLinePoint {
-            t1: 5,
-            t2: Some(7),
-            value: true,
-        });
-
-        btree_map.insert(7, StateDynamicsTimeLinePoint {
-            t1: 7,
-            t2: None,
-            value: false,
-        });
-
-        let expected = StateDynamicsTimeLine {
-            points: btree_map,
-        };
-
-
-        assert_eq!(result, expected);
-    }
+    // #[test]
+    // fn test_tl_has_existed_within_scenario2() {
+    //     let mut event_time_line = EventTimeLine::default();
+    //     event_time_line.add_event_info(1, "pause".to_string());
+    //     event_time_line.add_event_info(2, "playing".to_string());
+    //     event_time_line.add_event_info(5, "playing".to_string());
+    //
+    //     let event_predicate = event_predicate::col("event").equal_to::<String>(string("playing"));
+    //
+    //     let result =
+    //         StateDynamicsTimeLine::tl_has_existed_within(&event_time_line, event_predicate, 2);
+    //
+    //     let mut btree_map = BTreeMap::new();
+    //
+    //     btree_map.insert(1, StateDynamicsTimeLinePoint {
+    //         t1: 1,
+    //         t2: Some(2),
+    //         value: false,
+    //     });
+    //
+    //     btree_map.insert(2, StateDynamicsTimeLinePoint {
+    //         t1: 2,
+    //         t2: Some(4),
+    //         value: true,
+    //     });
+    //
+    //
+    //     btree_map.insert(4, StateDynamicsTimeLinePoint {
+    //         t1: 4,
+    //         t2: Some(5),
+    //         value: false,
+    //     });
+    //
+    //     btree_map.insert(5, StateDynamicsTimeLinePoint {
+    //         t1: 5,
+    //         t2: Some(7),
+    //         value: true,
+    //     });
+    //
+    //     btree_map.insert(7, StateDynamicsTimeLinePoint {
+    //         t1: 7,
+    //         t2: None,
+    //         value: false,
+    //     });
+    //
+    //     let expected = StateDynamicsTimeLine {
+    //         points: btree_map,
+    //     };
+    //
+    //
+    //     assert_eq!(result, expected);
+    // }
 
     #[test]
     fn test_negatable() {

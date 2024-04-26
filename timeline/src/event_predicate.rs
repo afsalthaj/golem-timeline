@@ -1,7 +1,7 @@
 use std::fmt::{Debug, Display};
-use crate::golem_event::GolemEventValue;
+use crate::golem_event::{GolemEvent, GolemEventValue};
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Eq, PartialEq, Hash)]
 pub struct EventColumnName(pub String);
 impl EventColumnName {
     pub fn equal_to<T : Debug + Clone>(self, value: EventColumnValue<T>) -> GolemEventPredicate<T> {
@@ -81,20 +81,29 @@ impl Display for GolemEventPredicate<GolemEventValue> {
     }
 }
 
-impl<T: Eq + PartialOrd + Clone + Debug> GolemEventPredicate<T> {
-    pub fn evaluate(&self, original_value: &T) -> bool {
+impl<T: PartialEq + PartialOrd + Clone + Debug> GolemEventPredicate<T> {
+    pub fn evaluate(&self, event: &GolemEvent<T>) -> bool {
         match self {
-            GolemEventPredicate::Equals(_, event_value) => original_value == &event_value.0,
-            GolemEventPredicate::GreaterThan(_, event_value) => original_value > &event_value.0,
-            GolemEventPredicate::LessThan(_, event_value) => original_value < &event_value.0,
+            GolemEventPredicate::Equals(event_column_name, event_value) => {
+                event.event.get(event_column_name).map_or(false, |v| v == &event_value.0)
+            }
+
+            GolemEventPredicate::GreaterThan(event_column_name, event_value) =>{
+                event.event.get(event_column_name).map_or(false, |v| v > &event_value.0)
+            }
+
+            GolemEventPredicate::LessThan(event_column_name, event_value) =>  {
+                event.event.get(event_column_name).map_or(false, |v| v < &event_value.0)
+            }
             GolemEventPredicate::And(left, right) => {
-                left.evaluate(original_value) && right.evaluate(original_value)
+                left.evaluate(event) && right.evaluate(event)
             }
             GolemEventPredicate::Or(left, right) => {
-                left.evaluate(original_value) || right.evaluate(original_value)
+                left.evaluate(event) || right.evaluate(event)
             }
         }
     }
+
     pub fn and(self, other: GolemEventPredicate<T>) -> GolemEventPredicate<T> {
         GolemEventPredicate::And(Box::new(self), Box::new(other))
     }

@@ -248,13 +248,13 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                                     .item()
                                                     .enum_value(
                                                         match inner.event_predicate.op {
-                                                            crate::bindings::timeline::core::api::EventPredicateOp::Equal => {
+                                                            crate::bindings::timeline::event_processor::api::EventPredicateOp::Equal => {
                                                                 0u32
                                                             }
-                                                            crate::bindings::timeline::core::api::EventPredicateOp::GreaterThan => {
+                                                            crate::bindings::timeline::event_processor::api::EventPredicateOp::GreaterThan => {
                                                                 1u32
                                                             }
-                                                            crate::bindings::timeline::core::api::EventPredicateOp::LessThan => {
+                                                            crate::bindings::timeline::event_processor::api::EventPredicateOp::LessThan => {
                                                                 2u32
                                                             }
                                                         },
@@ -330,13 +330,13 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                                     .item()
                                                     .enum_value(
                                                         match inner.filtered.event_predicate.op {
-                                                            crate::bindings::timeline::core::api::EventPredicateOp::Equal => {
+                                                            crate::bindings::timeline::event_processor::api::EventPredicateOp::Equal => {
                                                                 0u32
                                                             }
-                                                            crate::bindings::timeline::core::api::EventPredicateOp::GreaterThan => {
+                                                            crate::bindings::timeline::event_processor::api::EventPredicateOp::GreaterThan => {
                                                                 1u32
                                                             }
-                                                            crate::bindings::timeline::core::api::EventPredicateOp::LessThan => {
+                                                            crate::bindings::timeline::event_processor::api::EventPredicateOp::LessThan => {
                                                                 2u32
                                                             }
                                                         },

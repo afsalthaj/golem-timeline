@@ -1,7 +1,7 @@
 package timeline:core;
 
 interface api {
-  use timeline:event-processor/api.{event-value, event};
+  use timeline:event-processor/api.{event-value, event, event-predicate};
 
   type node-index = s32;
 
@@ -76,19 +76,6 @@ interface api {
   record timeline-with-event-predicate-within {
     filtered: timeline-with-event-predicate,
     time: u64,
-  }
-
-
-  enum event-predicate-op{
-    equal,
-    greater-than,
-    less-than,
-  }
-
-  record event-predicate {
-    col-name: string,
-    value: event-value,
-    op: event-predicate-op
   }
 
   initialize-timeline: func(timeline: timeline-op) -> result<string, string>;

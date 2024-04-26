@@ -1,14 +1,17 @@
+use std::collections::HashMap;
 use std::fmt::{Debug, Display};
 use timeline::event_predicate::{EventColumnName, EventColumnValue, GolemEventPredicate};
 use timeline::golem_event::{GolemEvent, GolemEventValue};
 use timeline::timeline_node_worker::TimeLineNodeWorker;
 use timeline::timeline_op::TimeLineOp;
-use crate::bindings::exports::timeline::core::api::{EventPredicateOp, TimelineOp as WitTimeLineOp};
+use crate::bindings::timeline::event_processor::api::{EventPredicateOp};
 use crate::bindings::timeline::event_processor::api::EventValue as WitEventValue;
+use crate::bindings::exports::timeline::core::api::TimelineOp as WitTimeLineOp;
 use crate::bindings::exports::timeline::core::api::Server as WitTimeLineNodeWorker;
-use crate::bindings::exports::timeline::core::api::EventPredicate as WitEventPredicate;
-use crate::bindings::timeline::event_processor::api::Event as WitEvent;
+use crate::bindings::timeline::event_processor::api::EventPredicate as WitEventPredicate;
 
+
+// TODO: Some of these conversions are repeated even after reusing WIT files. Make sure to fix it
 
 pub trait Conversion: Clone + Debug {
     type WitType: Clone;
@@ -41,24 +44,6 @@ impl Conversion for GolemEventValue {
 }
 
 
-// Golem Event conversion
-impl Conversion for GolemEvent {
-    type WitType = WitEvent;
-
-    fn from_wit(input: Self::WitType) -> Self {
-        GolemEvent {
-            time: input.time,
-            event: input.event.into_iter().map(|(k, v)| (k, GolemEventValue::from_wit(v))).collect()
-        }
-    }
-
-    fn to_wit(&self) -> Self::WitType {
-        WitEvent {
-            time: self.time,
-            event: self.event.iter().map(|(k, v)| (k.clone(), v.to_wit())).collect()
-        }
-    }
-}
 
 // Timeline Node Worker conversion
 impl Conversion for TimeLineNodeWorker {

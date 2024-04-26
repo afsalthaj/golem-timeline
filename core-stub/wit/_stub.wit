@@ -4,6 +4,7 @@ interface stub-core {
   use golem:rpc/types@0.1.0.{uri};
   use timeline:core/api.{event-value};
   use timeline:core/api.{event};
+  use timeline:core/api.{event-predicate};
   use timeline:core/api.{node-index};
   use timeline:core/api.{server};
   use timeline:core/api.{server-with-event-column-name};
@@ -12,8 +13,6 @@ interface stub-core {
   use timeline:core/api.{timeline-constant-comparator};
   use timeline:core/api.{timeline-constant-compared};
   use timeline:core/api.{timeline-negated};
-  use timeline:core/api.{event-predicate-op};
-  use timeline:core/api.{event-predicate};
   use timeline:core/api.{timeline-with-event-predicate};
   use timeline:core/api.{timeline-with-event-predicate-within};
   use timeline:core/api.{timeline-node};
