@@ -1,12 +1,12 @@
-use crate::event_predicate::GolemEventPredicate;
+use std::collections::BTreeMap;
+use std::fmt::Debug;
+use std::ops::Neg;
+
 use crate::event_timeline::EventTimeLine;
 use crate::internals::aligned_state_dynamic_timeline::AlignedStateDynamicsTimeLine;
 use crate::internals::boundaries::Boundaries;
 use crate::internals::zip_result::ZipResult;
 use crate::state_dynamic_timeline_point::StateDynamicsTimeLinePoint;
-use std::collections::BTreeMap;
-use std::fmt::Debug;
-use std::ops::Neg;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct StateDynamicsTimeLine<T> {
@@ -427,10 +427,9 @@ impl<T: Debug + Clone + Eq + PartialOrd> StateDynamicsTimeLine<T> {
 // ~~ represents `forever`
 // -- denotes a finite boundary
 mod tests {
-    use super::*;
-    use crate::event_predicate;
-    use crate::event_predicate::string;
     use crate::event_timeline::EventTimeLinePoint;
+
+    use super::*;
 
     // t1~~~~(playing)~~~~~~~~~~~~>
     //       t2~~~~(movie)~~~~~~~~~~>

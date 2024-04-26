@@ -1,6 +1,7 @@
+use std::fmt::Debug;
+
 use crate::internals::zip_result::{Side, ZipResult};
 use crate::state_dynamic_timeline_point::StateDynamicsTimeLinePoint;
-use std::fmt::Debug;
 
 pub struct Boundaries<'t, T: Clone> {
     pub left: Option<StateDynamicsTimeLinePoint<ZipResult<'t, T>>>,

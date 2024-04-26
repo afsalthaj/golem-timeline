@@ -1,5 +1,6 @@
-use crate::state_dynamic_timeline::StateDynamicsTimeLine;
 use std::fmt::Debug;
+
+use crate::state_dynamic_timeline::StateDynamicsTimeLine;
 
 // Aligning two timelines is an important step before you start zipping timelines
 // In real world, if the align returns empty timelines probably it's a good idea to wait for the

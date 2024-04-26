@@ -13,8 +13,8 @@ interface stub-core {
   use timeline:core/api.{timeline-constant-comparator};
   use timeline:core/api.{timeline-constant-compared};
   use timeline:core/api.{timeline-negated};
-  use timeline:core/api.{timeline-with-event-predicate};
-  use timeline:core/api.{timeline-with-event-predicate-within};
+  use timeline:core/api.{server-with-event-predicate};
+  use timeline:core/api.{server-with-event-predicate-within};
   use timeline:core/api.{timeline-node};
   use timeline:core/api.{timeline-op};
 

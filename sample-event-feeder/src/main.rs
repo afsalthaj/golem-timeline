@@ -1,18 +1,18 @@
 use std::env;
 use std::fmt::Error;
-use serde::{Serialize, Deserialize};
-use tokio;
-use log;
-use reqwest::Client;
 
 use futures::TryStreamExt;
+use log;
 use pulsar::{
-    authentication::oauth2::OAuth2Authentication, Authentication, Consumer, DeserializeMessage,
+    Authentication, authentication::oauth2::OAuth2Authentication, Consumer, DeserializeMessage,
     Payload, Pulsar, SubType, TokioExecutor,
 };
 use pulsar::error::AuthenticationError::Custom;
+use reqwest::Client;
 use reqwest::header::{CONTENT_TYPE, HeaderName, HeaderValue};
-use serde_json::{Value, json};
+use serde::{Deserialize, Serialize};
+use serde_json::{json, Value};
+use tokio;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Event {

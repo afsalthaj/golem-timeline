@@ -1,5 +1,6 @@
-use crate::golem_event::{GolemEvent, GolemEventValue};
 use std::fmt::{Debug, Display};
+
+use crate::golem_event::{GolemEvent, GolemEventValue};
 
 #[derive(Clone, Debug, Eq, PartialEq, Hash)]
 pub struct EventColumnName(pub String);

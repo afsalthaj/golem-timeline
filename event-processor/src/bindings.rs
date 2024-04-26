@@ -5,7 +5,12 @@ pub mod exports {
 
             #[allow(clippy::all)]
             pub mod api {
-                #[used]
+              #[allow(unused_imports)]
+              use wit_bindgen::rt::{alloc, string::String, vec::Vec};
+
+              use super::super::super::super::super::Component as _GuestImpl;
+
+              #[used]
                 #[doc(hidden)]
                 #[cfg(target_arch = "wasm32")]
                 static __FORCE_SECTION_REF: fn() = super::super::super::super::__link_section;
@@ -696,8 +701,8 @@ pub mod exports {
                         }
                     };
                 };
-                use super::super::super::super::super::Component as _GuestImpl;
-                pub trait Guest {
+
+              pub trait Guest {
                     fn initialize_latest_event_state(
                         worker: WorkerId,
                         event_col_name: wit_bindgen::rt::string::String,
@@ -715,10 +720,7 @@ pub mod exports {
                     fn tl_has_existed(t1: u64) -> Result<bool, wit_bindgen::rt::string::String>;
                 }
 
-                #[allow(unused_imports)]
-                use wit_bindgen::rt::{alloc, string::String, vec::Vec};
-
-                #[repr(align(4))]
+              #[repr(align(4))]
                 struct _RetArea([u8; 20]);
                 static mut _RET_AREA: _RetArea = _RetArea([0; 20]);
             }

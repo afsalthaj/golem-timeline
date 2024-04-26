@@ -1,12 +1,12 @@
 use std::env;
-use serde::{Serialize, Deserialize};
-use tokio;
-use log;
 
+use log;
 use pulsar::{
-    authentication::oauth2::OAuth2Authentication, message::proto, producer, Authentication,
-    Error as PulsarError, Pulsar, SerializeMessage, TokioExecutor,
+    Authentication, authentication::oauth2::OAuth2Authentication, Error as PulsarError, message::proto,
+    producer, Pulsar, SerializeMessage, TokioExecutor,
 };
+use serde::{Deserialize, Serialize};
+use tokio;
 
 #[derive(Serialize, Deserialize)]
 pub struct Event {

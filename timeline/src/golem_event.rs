@@ -1,6 +1,7 @@
-use crate::event_predicate::EventColumnName;
 use std::collections::HashMap;
 use std::fmt::Display;
+
+use crate::event_predicate::EventColumnName;
 
 #[derive(Clone, Debug)]
 pub struct GolemEvent<T> {

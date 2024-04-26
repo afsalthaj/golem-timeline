@@ -1,13 +1,17 @@
+use std::cell::RefCell;
+
+use timeline::event_predicate::{EventColumnName, GolemEventPredicate};
+use timeline::golem_event::{GolemEvent, GolemEventValue};
+use timeline::state_dynamic_timeline::StateDynamicsTimeLine;
+
 use crate::bindings::exports::timeline::event_processor::api::{
     Event, EventPredicate, EventStateResult, EventValue, Guest, LatestEventToStateResult,
     TimePeriod, WorkerId,
 };
 use crate::conversions::Conversion;
-use std::cell::RefCell;
-use timeline::event_predicate::{EventColumnName, GolemEventPredicate};
-use timeline::golem_event::{GolemEvent, GolemEventValue};
-use timeline::state_dynamic_timeline::StateDynamicsTimeLine;
 
+#[allow(dead_code)]
+#[rustfmt::skip]
 mod bindings;
 mod conversions;
 

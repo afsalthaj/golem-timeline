@@ -1,6 +1,7 @@
 #![allow(warnings)]
 use golem_wasm_rpc::*;
 #[allow(dead_code)]
+#[rustfmt::skip]
 mod bindings;
 pub struct Api {
     rpc: WasmRpc,
@@ -33,19 +34,19 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                 item_builder
                                     .variant_fn(
                                         match &item {
-                                            crate::bindings::timeline::core::api::TimelineNode::TimelineComparison(
-                                                _,
-                                            ) => 0u32,
-                                            crate::bindings::timeline::core::api::TimelineNode::TimelineNegation(
-                                                _,
-                                            ) => 1u32,
                                             crate::bindings::timeline::core::api::TimelineNode::TlLatestEventToState(
                                                 _,
-                                            ) => 2u32,
+                                            ) => 0u32,
                                             crate::bindings::timeline::core::api::TimelineNode::TlHasExisted(
                                                 _,
-                                            ) => 3u32,
+                                            ) => 1u32,
                                             crate::bindings::timeline::core::api::TimelineNode::TlHasExistedWithin(
+                                                _,
+                                            ) => 2u32,
+                                            crate::bindings::timeline::core::api::TimelineNode::TimelineComparison(
+                                                _,
+                                            ) => 3u32,
+                                            crate::bindings::timeline::core::api::TimelineNode::TimelineNegation(
                                                 _,
                                             ) => 4u32,
                                             crate::bindings::timeline::core::api::TimelineNode::TlDurationWhere(
@@ -56,12 +57,6 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                             ) => 6u32,
                                         },
                                         match &item {
-                                            crate::bindings::timeline::core::api::TimelineNode::TimelineComparison(
-                                                _,
-                                            ) => false,
-                                            crate::bindings::timeline::core::api::TimelineNode::TimelineNegation(
-                                                _,
-                                            ) => false,
                                             crate::bindings::timeline::core::api::TimelineNode::TlLatestEventToState(
                                                 _,
                                             ) => false,
@@ -69,6 +64,12 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                                 _,
                                             ) => false,
                                             crate::bindings::timeline::core::api::TimelineNode::TlHasExistedWithin(
+                                                _,
+                                            ) => false,
+                                            crate::bindings::timeline::core::api::TimelineNode::TimelineComparison(
+                                                _,
+                                            ) => false,
+                                            crate::bindings::timeline::core::api::TimelineNode::TimelineNegation(
                                                 _,
                                             ) => false,
                                             crate::bindings::timeline::core::api::TimelineNode::TlDurationWhere(
@@ -79,6 +80,183 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                             ) => false,
                                         },
                                         |case_builder| match &item {
+                                            crate::bindings::timeline::core::api::TimelineNode::TlLatestEventToState(
+                                                inner,
+                                            ) => {
+                                                case_builder
+                                                    .record()
+                                                    .item()
+                                                    .record()
+                                                    .item()
+                                                    .string(&inner.server.worker_id)
+                                                    .item()
+                                                    .string(&inner.server.template_id)
+                                                    .finish()
+                                                    .item()
+                                                    .string(&inner.event_column_name)
+                                                    .finish()
+                                            }
+                                            crate::bindings::timeline::core::api::TimelineNode::TlHasExisted(
+                                                inner,
+                                            ) => {
+                                                case_builder
+                                                    .record()
+                                                    .item()
+                                                    .record()
+                                                    .item()
+                                                    .string(&inner.event_predicate.col_name)
+                                                    .item()
+                                                    .variant_fn(
+                                                        match &inner.event_predicate.value {
+                                                            crate::bindings::timeline::event_processor::api::EventValue::StringValue(
+                                                                _,
+                                                            ) => 0u32,
+                                                            crate::bindings::timeline::event_processor::api::EventValue::IntValue(
+                                                                _,
+                                                            ) => 1u32,
+                                                            crate::bindings::timeline::event_processor::api::EventValue::FloatValue(
+                                                                _,
+                                                            ) => 2u32,
+                                                            crate::bindings::timeline::event_processor::api::EventValue::BoolValue(
+                                                                _,
+                                                            ) => 3u32,
+                                                        },
+                                                        match &inner.event_predicate.value {
+                                                            crate::bindings::timeline::event_processor::api::EventValue::StringValue(
+                                                                _,
+                                                            ) => false,
+                                                            crate::bindings::timeline::event_processor::api::EventValue::IntValue(
+                                                                _,
+                                                            ) => false,
+                                                            crate::bindings::timeline::event_processor::api::EventValue::FloatValue(
+                                                                _,
+                                                            ) => false,
+                                                            crate::bindings::timeline::event_processor::api::EventValue::BoolValue(
+                                                                _,
+                                                            ) => false,
+                                                        },
+                                                        |case_builder| match &inner.event_predicate.value {
+                                                            crate::bindings::timeline::event_processor::api::EventValue::StringValue(
+                                                                inner,
+                                                            ) => case_builder.string(inner),
+                                                            crate::bindings::timeline::event_processor::api::EventValue::IntValue(
+                                                                inner,
+                                                            ) => case_builder.s64(*inner),
+                                                            crate::bindings::timeline::event_processor::api::EventValue::FloatValue(
+                                                                inner,
+                                                            ) => case_builder.f64(*inner),
+                                                            crate::bindings::timeline::event_processor::api::EventValue::BoolValue(
+                                                                inner,
+                                                            ) => case_builder.bool(*inner),
+                                                        },
+                                                    )
+                                                    .item()
+                                                    .enum_value(
+                                                        match inner.event_predicate.op {
+                                                            crate::bindings::timeline::event_processor::api::EventPredicateOp::Equal => {
+                                                                0u32
+                                                            }
+                                                            crate::bindings::timeline::event_processor::api::EventPredicateOp::GreaterThan => {
+                                                                1u32
+                                                            }
+                                                            crate::bindings::timeline::event_processor::api::EventPredicateOp::LessThan => {
+                                                                2u32
+                                                            }
+                                                        },
+                                                    )
+                                                    .finish()
+                                                    .item()
+                                                    .record()
+                                                    .item()
+                                                    .string(&inner.server.worker_id)
+                                                    .item()
+                                                    .string(&inner.server.template_id)
+                                                    .finish()
+                                                    .finish()
+                                            }
+                                            crate::bindings::timeline::core::api::TimelineNode::TlHasExistedWithin(
+                                                inner,
+                                            ) => {
+                                                case_builder
+                                                    .record()
+                                                    .item()
+                                                    .record()
+                                                    .item()
+                                                    .record()
+                                                    .item()
+                                                    .string(&inner.filtered.event_predicate.col_name)
+                                                    .item()
+                                                    .variant_fn(
+                                                        match &inner.filtered.event_predicate.value {
+                                                            crate::bindings::timeline::event_processor::api::EventValue::StringValue(
+                                                                _,
+                                                            ) => 0u32,
+                                                            crate::bindings::timeline::event_processor::api::EventValue::IntValue(
+                                                                _,
+                                                            ) => 1u32,
+                                                            crate::bindings::timeline::event_processor::api::EventValue::FloatValue(
+                                                                _,
+                                                            ) => 2u32,
+                                                            crate::bindings::timeline::event_processor::api::EventValue::BoolValue(
+                                                                _,
+                                                            ) => 3u32,
+                                                        },
+                                                        match &inner.filtered.event_predicate.value {
+                                                            crate::bindings::timeline::event_processor::api::EventValue::StringValue(
+                                                                _,
+                                                            ) => false,
+                                                            crate::bindings::timeline::event_processor::api::EventValue::IntValue(
+                                                                _,
+                                                            ) => false,
+                                                            crate::bindings::timeline::event_processor::api::EventValue::FloatValue(
+                                                                _,
+                                                            ) => false,
+                                                            crate::bindings::timeline::event_processor::api::EventValue::BoolValue(
+                                                                _,
+                                                            ) => false,
+                                                        },
+                                                        |case_builder| match &inner.filtered.event_predicate.value {
+                                                            crate::bindings::timeline::event_processor::api::EventValue::StringValue(
+                                                                inner,
+                                                            ) => case_builder.string(inner),
+                                                            crate::bindings::timeline::event_processor::api::EventValue::IntValue(
+                                                                inner,
+                                                            ) => case_builder.s64(*inner),
+                                                            crate::bindings::timeline::event_processor::api::EventValue::FloatValue(
+                                                                inner,
+                                                            ) => case_builder.f64(*inner),
+                                                            crate::bindings::timeline::event_processor::api::EventValue::BoolValue(
+                                                                inner,
+                                                            ) => case_builder.bool(*inner),
+                                                        },
+                                                    )
+                                                    .item()
+                                                    .enum_value(
+                                                        match inner.filtered.event_predicate.op {
+                                                            crate::bindings::timeline::event_processor::api::EventPredicateOp::Equal => {
+                                                                0u32
+                                                            }
+                                                            crate::bindings::timeline::event_processor::api::EventPredicateOp::GreaterThan => {
+                                                                1u32
+                                                            }
+                                                            crate::bindings::timeline::event_processor::api::EventPredicateOp::LessThan => {
+                                                                2u32
+                                                            }
+                                                        },
+                                                    )
+                                                    .finish()
+                                                    .item()
+                                                    .record()
+                                                    .item()
+                                                    .string(&inner.filtered.server.worker_id)
+                                                    .item()
+                                                    .string(&inner.filtered.server.template_id)
+                                                    .finish()
+                                                    .finish()
+                                                    .item()
+                                                    .u64(inner.time)
+                                                    .finish()
+                                            }
                                             crate::bindings::timeline::core::api::TimelineNode::TimelineComparison(
                                                 inner,
                                             ) => {
@@ -173,187 +351,6 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                                     .finish()
                                                     .finish()
                                             }
-                                            crate::bindings::timeline::core::api::TimelineNode::TlLatestEventToState(
-                                                inner,
-                                            ) => {
-                                                case_builder
-                                                    .record()
-                                                    .item()
-                                                    .record()
-                                                    .item()
-                                                    .string(&inner.server.worker_id)
-                                                    .item()
-                                                    .string(&inner.server.template_id)
-                                                    .finish()
-                                                    .item()
-                                                    .string(&inner.event_column_name)
-                                                    .finish()
-                                            }
-                                            crate::bindings::timeline::core::api::TimelineNode::TlHasExisted(
-                                                inner,
-                                            ) => {
-                                                case_builder
-                                                    .record()
-                                                    .item()
-                                                    .s32(inner.timeline)
-                                                    .item()
-                                                    .record()
-                                                    .item()
-                                                    .string(&inner.event_predicate.col_name)
-                                                    .item()
-                                                    .variant_fn(
-                                                        match &inner.event_predicate.value {
-                                                            crate::bindings::timeline::event_processor::api::EventValue::StringValue(
-                                                                _,
-                                                            ) => 0u32,
-                                                            crate::bindings::timeline::event_processor::api::EventValue::IntValue(
-                                                                _,
-                                                            ) => 1u32,
-                                                            crate::bindings::timeline::event_processor::api::EventValue::FloatValue(
-                                                                _,
-                                                            ) => 2u32,
-                                                            crate::bindings::timeline::event_processor::api::EventValue::BoolValue(
-                                                                _,
-                                                            ) => 3u32,
-                                                        },
-                                                        match &inner.event_predicate.value {
-                                                            crate::bindings::timeline::event_processor::api::EventValue::StringValue(
-                                                                _,
-                                                            ) => false,
-                                                            crate::bindings::timeline::event_processor::api::EventValue::IntValue(
-                                                                _,
-                                                            ) => false,
-                                                            crate::bindings::timeline::event_processor::api::EventValue::FloatValue(
-                                                                _,
-                                                            ) => false,
-                                                            crate::bindings::timeline::event_processor::api::EventValue::BoolValue(
-                                                                _,
-                                                            ) => false,
-                                                        },
-                                                        |case_builder| match &inner.event_predicate.value {
-                                                            crate::bindings::timeline::event_processor::api::EventValue::StringValue(
-                                                                inner,
-                                                            ) => case_builder.string(inner),
-                                                            crate::bindings::timeline::event_processor::api::EventValue::IntValue(
-                                                                inner,
-                                                            ) => case_builder.s64(*inner),
-                                                            crate::bindings::timeline::event_processor::api::EventValue::FloatValue(
-                                                                inner,
-                                                            ) => case_builder.f64(*inner),
-                                                            crate::bindings::timeline::event_processor::api::EventValue::BoolValue(
-                                                                inner,
-                                                            ) => case_builder.bool(*inner),
-                                                        },
-                                                    )
-                                                    .item()
-                                                    .enum_value(
-                                                        match inner.event_predicate.op {
-                                                            crate::bindings::timeline::event_processor::api::EventPredicateOp::Equal => {
-                                                                0u32
-                                                            }
-                                                            crate::bindings::timeline::event_processor::api::EventPredicateOp::GreaterThan => {
-                                                                1u32
-                                                            }
-                                                            crate::bindings::timeline::event_processor::api::EventPredicateOp::LessThan => {
-                                                                2u32
-                                                            }
-                                                        },
-                                                    )
-                                                    .finish()
-                                                    .item()
-                                                    .record()
-                                                    .item()
-                                                    .string(&inner.server.worker_id)
-                                                    .item()
-                                                    .string(&inner.server.template_id)
-                                                    .finish()
-                                                    .finish()
-                                            }
-                                            crate::bindings::timeline::core::api::TimelineNode::TlHasExistedWithin(
-                                                inner,
-                                            ) => {
-                                                case_builder
-                                                    .record()
-                                                    .item()
-                                                    .record()
-                                                    .item()
-                                                    .s32(inner.filtered.timeline)
-                                                    .item()
-                                                    .record()
-                                                    .item()
-                                                    .string(&inner.filtered.event_predicate.col_name)
-                                                    .item()
-                                                    .variant_fn(
-                                                        match &inner.filtered.event_predicate.value {
-                                                            crate::bindings::timeline::event_processor::api::EventValue::StringValue(
-                                                                _,
-                                                            ) => 0u32,
-                                                            crate::bindings::timeline::event_processor::api::EventValue::IntValue(
-                                                                _,
-                                                            ) => 1u32,
-                                                            crate::bindings::timeline::event_processor::api::EventValue::FloatValue(
-                                                                _,
-                                                            ) => 2u32,
-                                                            crate::bindings::timeline::event_processor::api::EventValue::BoolValue(
-                                                                _,
-                                                            ) => 3u32,
-                                                        },
-                                                        match &inner.filtered.event_predicate.value {
-                                                            crate::bindings::timeline::event_processor::api::EventValue::StringValue(
-                                                                _,
-                                                            ) => false,
-                                                            crate::bindings::timeline::event_processor::api::EventValue::IntValue(
-                                                                _,
-                                                            ) => false,
-                                                            crate::bindings::timeline::event_processor::api::EventValue::FloatValue(
-                                                                _,
-                                                            ) => false,
-                                                            crate::bindings::timeline::event_processor::api::EventValue::BoolValue(
-                                                                _,
-                                                            ) => false,
-                                                        },
-                                                        |case_builder| match &inner.filtered.event_predicate.value {
-                                                            crate::bindings::timeline::event_processor::api::EventValue::StringValue(
-                                                                inner,
-                                                            ) => case_builder.string(inner),
-                                                            crate::bindings::timeline::event_processor::api::EventValue::IntValue(
-                                                                inner,
-                                                            ) => case_builder.s64(*inner),
-                                                            crate::bindings::timeline::event_processor::api::EventValue::FloatValue(
-                                                                inner,
-                                                            ) => case_builder.f64(*inner),
-                                                            crate::bindings::timeline::event_processor::api::EventValue::BoolValue(
-                                                                inner,
-                                                            ) => case_builder.bool(*inner),
-                                                        },
-                                                    )
-                                                    .item()
-                                                    .enum_value(
-                                                        match inner.filtered.event_predicate.op {
-                                                            crate::bindings::timeline::event_processor::api::EventPredicateOp::Equal => {
-                                                                0u32
-                                                            }
-                                                            crate::bindings::timeline::event_processor::api::EventPredicateOp::GreaterThan => {
-                                                                1u32
-                                                            }
-                                                            crate::bindings::timeline::event_processor::api::EventPredicateOp::LessThan => {
-                                                                2u32
-                                                            }
-                                                        },
-                                                    )
-                                                    .finish()
-                                                    .item()
-                                                    .record()
-                                                    .item()
-                                                    .string(&inner.filtered.server.worker_id)
-                                                    .item()
-                                                    .string(&inner.filtered.server.template_id)
-                                                    .finish()
-                                                    .finish()
-                                                    .item()
-                                                    .u64(inner.time)
-                                                    .finish()
-                                            }
                                             crate::bindings::timeline::core::api::TimelineNode::TlDurationWhere(
                                                 inner,
                                             ) => {
@@ -405,16 +402,24 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                 .result()
                 .expect("result not found");
             match result {
-                Ok(ok_value) => Ok(ok_value
-                    .expect("result ok value not found")
-                    .string()
-                    .expect("string not found")
-                    .to_string()),
-                Err(err_value) => Err(err_value
-                    .expect("result err value not found")
-                    .string()
-                    .expect("string not found")
-                    .to_string()),
+                Ok(ok_value) => {
+                    Ok(
+                        ok_value
+                            .expect("result ok value not found")
+                            .string()
+                            .expect("string not found")
+                            .to_string(),
+                    )
+                }
+                Err(err_value) => {
+                    Err(
+                        err_value
+                            .expect("result err value not found")
+                            .string()
+                            .expect("string not found")
+                            .to_string(),
+                    )
+                }
             }
         })
     }

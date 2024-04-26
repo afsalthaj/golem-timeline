@@ -1,15 +1,20 @@
+use std::hash::{Hash, Hasher};
+
+use uuid::Uuid;
+
+use conversions::Conversion;
+use timeline::timeline_op::TimeLineOp as CoreTimeLineOp;
+
+use crate::bindings::exports::timeline::core::api::*;
+use crate::bindings::exports::timeline::core::api::Guest;
+use crate::bindings::golem::rpc::types::Uri;
+use crate::bindings::timeline::event_processor_stub::stub_event_processor;
+
+#[allow(dead_code)]
+#[rustfmt::skip]
 mod bindings;
 
 pub mod conversions;
-
-use crate::bindings::exports::timeline::core::api::Guest;
-use crate::bindings::exports::timeline::core::api::*;
-use crate::bindings::golem::rpc::types::Uri;
-use crate::bindings::timeline::event_processor_stub::stub_event_processor;
-use conversions::Conversion;
-use std::hash::{DefaultHasher, Hash, Hasher};
-use timeline::timeline_op::TimeLineOp as CoreTimeLineOp;
-use uuid::Uuid;
 
 struct Component;
 

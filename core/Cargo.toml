@@ -7,14 +7,14 @@ version = "0.1.0"
 world = "core"
 path = "wit"
 
-[package.metadata.component.target.dependencies."golem:rpc"]
-path = "wit/deps/wasm-rpc"
-
 [package.metadata.component.target.dependencies."timeline:event-processor-stub"]
 path = "wit/deps/timeline_event-processor-stub"
 
 [package.metadata.component.target.dependencies."timeline:event-processor"]
 path = "wit/deps/timeline_event-processor"
+
+[package.metadata.component.target.dependencies."golem:rpc"]
+path = "wit/deps/wasm-rpc"
 
 [dependencies]
 bitflags = "2.4.2"
@@ -22,10 +22,13 @@ chrono = "0.4.33"
 futures = "0.3.30"
 serde_json = "1.0.113"
 tokio = "1.36.0"
-uuid = { version = "1.8.0", features = ["v4"] }
 
 [dependencies.timeline]
 path = "../timeline"
+
+[dependencies.uuid]
+version = "1.8.0"
+features = ["v4"]
 
 [dependencies.wit-bindgen]
 version = "0.17.0"

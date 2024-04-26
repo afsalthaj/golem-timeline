@@ -1,14 +1,15 @@
+use std::fmt::{Debug, Display};
+
+use timeline::event_predicate::{EventColumnName, EventColumnValue, GolemEventPredicate};
+use timeline::golem_event::GolemEventValue;
+use timeline::timeline_node_worker::TimeLineNodeWorker;
+use timeline::timeline_op::TimeLineOp;
+
 use crate::bindings::exports::timeline::core::api::Server as WitTimeLineNodeWorker;
 use crate::bindings::exports::timeline::core::api::TimelineOp as WitTimeLineOp;
 use crate::bindings::timeline::event_processor::api::EventPredicate as WitEventPredicate;
 use crate::bindings::timeline::event_processor::api::EventPredicateOp;
 use crate::bindings::timeline::event_processor::api::EventValue as WitEventValue;
-use std::collections::HashMap;
-use std::fmt::{Debug, Display};
-use timeline::event_predicate::{EventColumnName, EventColumnValue, GolemEventPredicate};
-use timeline::golem_event::{GolemEvent, GolemEventValue};
-use timeline::timeline_node_worker::TimeLineNodeWorker;
-use timeline::timeline_op::TimeLineOp;
 
 // TODO: Some of these conversions are repeated even after reusing WIT files. Make sure to fix it
 
@@ -113,14 +114,16 @@ impl Conversion for TimeLineOp {
 }
 
 mod internals {
-    use super::Conversion;
-    use crate::bindings::exports::timeline::core::api::{
-        TimelineConstantComparator, TimelineNode as WitTimeLineNode, TimelineNode,
-    };
     use timeline::event_predicate::{EventColumnName, GolemEventPredicate};
     use timeline::golem_event::GolemEventValue;
     use timeline::timeline_node_worker::TimeLineNodeWorker;
     use timeline::timeline_op::TimeLineOp;
+
+    use crate::bindings::exports::timeline::core::api::{
+        TimelineConstantComparator, TimelineNode as WitTimeLineNode, TimelineNode,
+    };
+
+    use super::Conversion;
 
     pub(crate) fn build_timeline_tree(
         node: &crate::bindings::exports::timeline::core::api::TimelineNode,
