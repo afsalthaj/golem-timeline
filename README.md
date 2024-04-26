@@ -123,6 +123,9 @@ Mostly all you need is:
 docker-compose up -d
 ```
 
+This wil deploy the OSS version of Golem , along with Pulsar (which will be used later). Pulsar sort of simulates
+the existence of events in streaming platforms employed in various companies.
+
 The docker version should correspond to 0.0.96 similar to CLI.
 It's good to download the latest dockeer-compose from golem website or repository, to avoid any issues.
 
@@ -138,5 +141,51 @@ cargo make build-flow
 ```bash
 ./quick-test.sh
 ```
+
+`quick-test.sh` essentially registers the workflow and makes a dry run to see if everything is set up correctly.
+
+This should give some output like this,
+
+```bash
+...
+Core Composed: "16809bce-95df-4607-9697-55edb2dfea71"
+Raw Events: "17e0839e-9e9b-4e3f-bcd0-26de49aefa98"
+Driver: "0a3072c5-b7d7-489b-8ee8-c3add4fa093e"
+A dry run on deployed timeline...
+
+...
+Invocation results in WAVE format:
+- ok("cirr-le2s-playerStateChange")
+
+...
+```
+
+### Streaming with Pulsar
+
+Now for demo purpose we use `pulsar` for streaming. We have a sample `producer` and a `feeder` (which reads the events and feeds it to the worker that handles the events directly).
+More explanations on different types of workers (processing events, processing timelines itself etc) will be given later.
+
+You can test this workflow by first building the producer and feeder, and run them separately. 
+
+```bash
+cd sample-event-feeder
+cargo build
+export WORKER_NAME=cirr-le2s-playerStateChange
+export COMPONENT_ID=17e0839e-9e9b-4e3f-bcd0-26de49aefa98
+RUST_LOG=DEBUG target/debug/sample-event-feeder
+```
+
+Now the consumer is running, ready to accept the events produced by `sample-event-producer`. 
+
+```bash
+cd sample-event-producer
+cargo build
+RUST_LOG=DEBUG target/debug/sample-event-producer
+
+```
+
+The consumer (feeder) essentially reads the events, and feed it to the worker that is acting as leaf node (basically, reading the events directly) to compute
+leaf timeline nodes. For now, our leaf node corresponds to tl_latest_event_to_state tracking playerStateChange field in the event.
+
 
 This is all still a work in progress, in terms of designing and implementing a well defined workflow with implementation of every DSL nodes in TimeLine.

@@ -21,6 +21,7 @@ pub struct Event {
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
+#[serde(rename_all = "kebab-case")]
 pub enum EventValue{
     StringValue(String),
     IntValue(i64),
@@ -81,8 +82,10 @@ async fn main() -> Result<(), pulsar::Error> {
 
     let client = Client::new();
 
-    let component_id = "17e0839e-9e9b-4e3f-bcd0-26de49aefa98";
-    let worker_name = "cirr-le2s-playerStateChange";
+
+    let component_id = env::var("COMPONENT_ID").expect("Provide COMPONENT_ID. You can understand from the output logs of quick_test.sh which was used to register timeline with Golem");
+    let worker_name = env::var("WORKER_NAME").expect("Provide WORKER_ID. This should correspond to the worker that directly process events. You can understand from the output logs of quick_test.sh which was used to register timeline with Golem");
+
 
     let url = format!("http://localhost:9005/v2/components/{}/workers/{}/key", component_id, worker_name);
 
@@ -115,14 +118,14 @@ async fn main() -> Result<(), pulsar::Error> {
                     format!("http://localhost:9005/v2/components/{}/workers/{}/invoke-and-await?invocation-key={}&function={}", component_id, worker_name, invocation_key, "timeline:event-processor/api/add-event");
 
 
-                let params = json!(CustomBody { params: vec![data] });
+                let params = json!({"params": [data]});
 
                 dbg!(params.to_string());
 
                 // Second POST request
                  let result = client
                      .post(&invoke_url)
-                     .json(&json!({"params": [{"time": 2, "event": [["playerStateChange", {"string-value": "playing"}]]}]}))
+                     .json(&params)
                      .send()
                      .await.map_err(|error| pulsar::Error::Custom(error.to_string()))?;
 

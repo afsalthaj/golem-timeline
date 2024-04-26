@@ -15,6 +15,7 @@ pub struct Event {
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
 pub enum EventValue{
     StringValue(String),
     IntValue(i64),
