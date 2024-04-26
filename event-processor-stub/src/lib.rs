@@ -175,6 +175,119 @@ for Api {
             }
         })
     }
+    fn initialize_tl_has_existed_within(
+        &self,
+        worker: crate::bindings::timeline::event_processor::api::WorkerId,
+        event_predicate: crate::bindings::timeline::event_processor::api::EventPredicate,
+        time: u64,
+    ) -> Result<String, String> {
+        let result = self
+            .rpc
+            .invoke_and_await(
+                "timeline:event-processor/api/initialize-tl-has-existed-within",
+                &[
+                    WitValue::builder().record().item().string(&worker.name).finish(),
+                    WitValue::builder()
+                        .record()
+                        .item()
+                        .string(&event_predicate.col_name)
+                        .item()
+                        .variant_fn(
+                            match &event_predicate.value {
+                                crate::bindings::timeline::event_processor::api::EventValue::StringValue(
+                                    _,
+                                ) => 0u32,
+                                crate::bindings::timeline::event_processor::api::EventValue::IntValue(
+                                    _,
+                                ) => 1u32,
+                                crate::bindings::timeline::event_processor::api::EventValue::FloatValue(
+                                    _,
+                                ) => 2u32,
+                                crate::bindings::timeline::event_processor::api::EventValue::BoolValue(
+                                    _,
+                                ) => 3u32,
+                            },
+                            match &event_predicate.value {
+                                crate::bindings::timeline::event_processor::api::EventValue::StringValue(
+                                    _,
+                                ) => false,
+                                crate::bindings::timeline::event_processor::api::EventValue::IntValue(
+                                    _,
+                                ) => false,
+                                crate::bindings::timeline::event_processor::api::EventValue::FloatValue(
+                                    _,
+                                ) => false,
+                                crate::bindings::timeline::event_processor::api::EventValue::BoolValue(
+                                    _,
+                                ) => false,
+                            },
+                            |case_builder| match &event_predicate.value {
+                                crate::bindings::timeline::event_processor::api::EventValue::StringValue(
+                                    inner,
+                                ) => case_builder.string(inner),
+                                crate::bindings::timeline::event_processor::api::EventValue::IntValue(
+                                    inner,
+                                ) => case_builder.s64(*inner),
+                                crate::bindings::timeline::event_processor::api::EventValue::FloatValue(
+                                    inner,
+                                ) => case_builder.f64(*inner),
+                                crate::bindings::timeline::event_processor::api::EventValue::BoolValue(
+                                    inner,
+                                ) => case_builder.bool(*inner),
+                            },
+                        )
+                        .item()
+                        .enum_value(
+                            match event_predicate.op {
+                                crate::bindings::timeline::event_processor::api::EventPredicateOp::Equal => {
+                                    0u32
+                                }
+                                crate::bindings::timeline::event_processor::api::EventPredicateOp::GreaterThan => {
+                                    1u32
+                                }
+                                crate::bindings::timeline::event_processor::api::EventPredicateOp::LessThan => {
+                                    2u32
+                                }
+                            },
+                        )
+                        .finish(),
+                    WitValue::builder().u64(time),
+                ],
+            )
+            .expect(
+                &format!(
+                    "Failed to invoke remote {}",
+                    "timeline:event-processor/api/initialize-tl-has-existed-within"
+                ),
+            );
+        ({
+            let result = result
+                .tuple_element(0)
+                .expect("tuple not found")
+                .result()
+                .expect("result not found");
+            match result {
+                Ok(ok_value) => {
+                    Ok(
+                        ok_value
+                            .expect("result ok value not found")
+                            .string()
+                            .expect("string not found")
+                            .to_string(),
+                    )
+                }
+                Err(err_value) => {
+                    Err(
+                        err_value
+                            .expect("result err value not found")
+                            .string()
+                            .expect("string not found")
+                            .to_string(),
+                    )
+                }
+            }
+        })
+    }
     fn add_event(
         &self,
         event: crate::bindings::timeline::event_processor::api::Event,
