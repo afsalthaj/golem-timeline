@@ -1,21 +1,26 @@
 use std::env;
+use std::fmt::Error;
 use serde::{Serialize, Deserialize};
 use tokio;
 use log;
+use reqwest::Client;
 
 use futures::TryStreamExt;
 use pulsar::{
     authentication::oauth2::OAuth2Authentication, Authentication, Consumer, DeserializeMessage,
     Payload, Pulsar, SubType, TokioExecutor,
 };
+use pulsar::error::AuthenticationError::Custom;
+use reqwest::header::{CONTENT_TYPE, HeaderName, HeaderValue};
+use serde_json::{Value, json};
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Event {
     pub time: u64,
     pub event: Vec<(String, EventValue)>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum EventValue{
     StringValue(String),
     IntValue(i64),
@@ -29,6 +34,11 @@ impl DeserializeMessage for Event {
     fn deserialize_message(payload: &Payload) -> Self::Output {
         serde_json::from_slice(&payload.data)
     }
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+struct CustomBody {
+    params: Vec<Event>
 }
 
 #[tokio::main]
@@ -69,13 +79,56 @@ async fn main() -> Result<(), pulsar::Error> {
         .build()
         .await?;
 
+    let client = Client::new();
+
+    let component_id = "17e0839e-9e9b-4e3f-bcd0-26de49aefa98";
+    let worker_name = "cirr-le2s-playerStateChange";
+
+    let url = format!("http://localhost:9005/v2/components/{}/workers/{}/key", component_id, worker_name);
+
     let mut counter = 0usize;
     while let Some(msg) = consumer.try_next().await? {
         consumer.ack(&msg).await?;
         log::info!("metadata: {:?}", msg.metadata());
         log::info!("id: {:?}", msg.message_id());
         let data = match msg.deserialize() {
-            Ok(data) => data,
+            Ok(data) => {
+                dbg!("got {} messages", data.clone());
+
+
+                let response = client
+                    .post(&url)
+                    .send()
+                    .await.map_err(|error| pulsar::Error::Custom(error.to_string()))?;
+
+
+                let response_text = response.text().await.map_err(|error| pulsar::Error::Custom(error.to_string()))?;
+                let value: Value = serde_json::from_str(&response_text).map_err(|error| pulsar::Error::Custom(error.to_string()))?;
+
+                // Extract value from response
+                let invocation_key =
+                    value["value"].as_str().ok_or(pulsar::Error::Custom("Missing value field".to_string()))?;
+
+                dbg!("The invocation_key key is: {}", invocation_key);
+
+                let invoke_url =
+                    format!("http://localhost:9005/v2/components/{}/workers/{}/invoke-and-await?invocation-key={}&function={}", component_id, worker_name, invocation_key, "timeline:event-processor/api/add-event");
+
+
+                let params = json!(CustomBody { params: vec![data] });
+
+                dbg!(params.to_string());
+
+                // Second POST request
+                 let result = client
+                     .post(&invoke_url)
+                     .json(&json!({"params": [{"time": 2, "event": [["playerStateChange", {"string-value": "playing"}]]}]}))
+                     .send()
+                     .await.map_err(|error| pulsar::Error::Custom(error.to_string()))?;
+
+                dbg!(result);
+
+            },
             Err(e) => {
                 log::error!("could not deserialize message: {:?}", e);
                 break;
@@ -83,7 +136,6 @@ async fn main() -> Result<(), pulsar::Error> {
         };
 
         counter += 1;
-        dbg!("got {} messages", data);
 
 
         if counter > 10 {

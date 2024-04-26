@@ -40,13 +40,19 @@ impl Guest for Component {
     fn add_event(event: Event) -> Result<String, String> {
         with_latest_event_to_state(|state| {
             if let Some(state_col_name) = state.col_name.as_ref() {
+
+                dbg!(event.event.clone());
+                dbg!(state_col_name.0.clone());
+
                 let event_value =
                     event.event.iter().find(|(key, _)| key == state_col_name.0.as_str());
 
+                dbg!(event_value);
                 match event_value {
                     Some((_, value)) => {
                         let golem_event_value = get_golem_column_event_value(value.clone());
                         state.state_dynamic_timeline.add_state_dynamic_info(event.time, golem_event_value);
+                        dbg!("Added event for time {} for the latest-event-to-state of {}", event.time, &state_col_name.0);
                     },
                     None => {
                         dbg!("No event value found for the column name: {}", &state_col_name.0);
