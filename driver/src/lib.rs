@@ -14,7 +14,7 @@ impl Guest for Component {
     fn run(
         core_template_id: String,
         leaf_template_id: String,
-        event_to_state_tempalte_id: String,
+        _event_to_state_tempalte_id: String,
     ) -> Result<String, String> {
         let uri = Uri {
             value: format!("worker://{core_template_id}/{}", "initialize-timeline"),
