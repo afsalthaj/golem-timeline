@@ -9,13 +9,22 @@ use pulsar::{
     Payload, Pulsar, SubType, TokioExecutor,
 };
 
-#[derive(Serialize, Deserialize)]
-struct TestData {
-    data: String,
+#[derive(Serialize, Deserialize, Debug)]
+pub struct Event {
+    pub time: u64,
+    pub event: Vec<(String, EventValue)>,
 }
 
-impl DeserializeMessage for TestData {
-    type Output = Result<TestData, serde_json::Error>;
+#[derive(Serialize, Deserialize, Debug)]
+pub enum EventValue{
+    StringValue(String),
+    IntValue(i64),
+    FloatValue(f64),
+    BoolValue(bool),
+}
+
+impl DeserializeMessage for Event {
+    type Output = Result<Event, serde_json::Error>;
 
     fn deserialize_message(payload: &Payload) -> Self::Output {
         serde_json::from_slice(&payload.data)
@@ -51,10 +60,10 @@ async fn main() -> Result<(), pulsar::Error> {
 
     let pulsar: Pulsar<_> = builder.build().await?;
 
-    let mut consumer: Consumer<TestData, _> = pulsar
+    let mut consumer: Consumer<Event, _> = pulsar
         .consumer()
         .with_topic(topic)
-        .with_consumer_name("test_consumer")
+        .with_consumer_name("sample-playback-consumer")
         .with_subscription_type(SubType::Exclusive)
         .with_subscription("test_subscription")
         .build()
@@ -73,12 +82,8 @@ async fn main() -> Result<(), pulsar::Error> {
             }
         };
 
-        if data.data.as_str() != "data" {
-            log::error!("Unexpected payload: {}", &data.data);
-            break;
-        }
         counter += 1;
-        dbg!("got {} messages", counter);
+        dbg!("got {} messages", data);
 
 
         if counter > 10 {
