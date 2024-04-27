@@ -1,0 +1,12 @@
+package timeline:timeline-processor;
+
+interface api {
+  use timeline:event-processor/api.{event-value};
+  use timeline:event-processor/api.{worker-id};
+
+  initialize-equal: func(child-url: worker-id, current-worker-id: worker-id, event-value: event-value) -> result<string, string>;
+}
+
+world event-processor {
+  export api;
+}
