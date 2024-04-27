@@ -7,6 +7,7 @@ interface api {
   initialize-equal: func(child-url: worker-id, current-worker-id: worker-id, event-value: event-value) -> result<string, string>;
 }
 
-world event-processor {
+world timeline-processor {
+  import timeline:event-processor-stub/stub-event-processor;
   export api;
 }
