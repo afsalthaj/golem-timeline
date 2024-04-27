@@ -49,7 +49,25 @@ impl Guest for Component {
                     &predicate.to_wit(),
                 )
             }
-            CoreTimeLineOp::TlHasExistedWithin(_, _, _) => Err("Not implemented".to_string()),
+            CoreTimeLineOp::TlHasExistedWithin(worker, predicate, within) => {
+                let template_id = worker.template_id;
+                let worker_id_prefix = worker.worker_id;
+                let uuid = Uuid::new_v4();
+
+                let worker_id = format!("{}-tlhew-{}", worker_id_prefix, uuid.to_string());
+
+                let uri = Uri {
+                    value: format!("worker://{template_id}/{}", worker_id.clone()),
+                };
+
+                let core = stub_event_processor::Api::new(&uri);
+
+                core.initialize_tl_has_existed_within(
+                    &stub_event_processor::WorkerId { name: worker_id },
+                    &predicate.to_wit(),
+                    within
+                )
+            }
             CoreTimeLineOp::TlLatestEventToState(worker, event_column_name) => {
                 let template_id = worker.template_id;
                 let worker_id_prefix = worker.worker_id;

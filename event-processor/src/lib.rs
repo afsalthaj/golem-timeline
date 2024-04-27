@@ -211,23 +211,12 @@ impl Guest for Component {
                         state
                             .state_dynamic_timeline
                             .add_state_dynamic_info(event.time, true);
+
+                        state.state_dynamic_timeline.add_state_dynamic_info(event.time + predicate_within.within, false);
                     } else {
                         // If predicate is false, and if the future is not yet set to false, then set it to false once and for all
                         if !state.state_dynamic_timeline.future_is(false) {
                             dbg!("Setting timeline as false from time {} since the predicate is false!", event.time);
-                            state
-                                .state_dynamic_timeline
-                                .add_state_dynamic_info(event.time, false);
-                        }
-                    }
-                } else {
-                    let time_elapsed = state.time_elapsed_from_last_true.unwrap_or(0);
-                    let current_time = event.time;
-
-                    if let Some(last_true_duration)  = state.state_dynamic_timeline.last() {
-                        let begin_time = last_true_duration.t1;
-                        if time_elapsed >= current_time - begin_time {
-                            dbg!("Setting timeline as false from time {} since the time elapsed from last true is greater than the within time!", event.time);
                             state
                                 .state_dynamic_timeline
                                 .add_state_dynamic_info(event.time, false);
