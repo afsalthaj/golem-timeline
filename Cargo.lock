@@ -734,6 +734,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "timeline-processor-stub"
+version = "0.0.1"
+dependencies = [
+ "golem-wasm-rpc",
+ "wit-bindgen",
+]
+
+[[package]]
 name = "tokio"
 version = "1.36.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"

@@ -1,0 +1,17 @@
+package timeline:timeline-processor-stub;
+
+interface stub-timeline-processor {
+  use golem:rpc/types@0.1.0.{uri};
+  use timeline:timeline-processor/api.{event-value};
+  use timeline:timeline-processor/api.{worker-id};
+
+  resource api {
+    constructor(location: uri);
+    initialize-equal: func(child-url: worker-id, current-worker-id: worker-id, event-value: event-value) -> result<string, string>;
+  }
+
+}
+
+world wasm-rpc-stub-timeline-processor {
+  export stub-timeline-processor;
+}
