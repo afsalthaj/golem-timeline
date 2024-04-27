@@ -136,6 +136,8 @@ It's good to download the latest dockeer-compose from golem website or repositor
 cargo make build-flow
 ```
 
+Things will fail here, as we have bumped into this issue: https://github.com/golemcloud/wasm-rpc/issues/40
+
 ### Run a quick test
 
 ```bash
