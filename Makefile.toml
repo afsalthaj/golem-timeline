@@ -19,6 +19,12 @@ command = "golem-cli"
 cwd = "."
 dependencies = ["generate-event-processor-stub"]
 
+[tasks.add-stub-dependency-timeline-processor-timeline-processor]
+args = ["stubgen", "add-stub-dependency", "--stub-wit-root", "timeline-processor-stub/wit", "--dest-wit-root", "timeline-processor/wit", "--overwrite", "--update-cargo-toml"]
+command = "golem-cli"
+cwd = "."
+dependencies = ["generate-timeline-processor-stub"]
+
 [tasks.build]
 args = ["build"]
 command = "cargo-component"
@@ -67,6 +73,16 @@ args = ["stubgen", "compose", "--source-wasm", "target/wasm32-wasi/release/timel
 command = "golem-cli"
 cwd = "."
 
+[tasks.compose-timeline-and-event-with-timeline-processor]
+args = ["stubgen", "compose", "--source-wasm", "target/wasm32-wasi/debug/timeine_processor_composed_leaf.wasm", "--stub-wasm", "target/wasm32-wasi/debug/timeline_processor_stub.wasm", "--dest-wasm", "target/wasm32-wasi/debug/timeine_processor_composed_final.wasm"]
+command = "golem-cli"
+cwd = "."
+
+[tasks.compose-release-timeline-and-event-with-timeline-processor]
+args = ["stubgen", "compose", "--source-wasm", "target/wasm32-wasi/release/timeine_processor_composed_leaf.wasm", "--stub-wasm", "target/wasm32-wasi/release/timeline_processor_stub.wasm", "--dest-wasm", "target/wasm32-wasi/release/timeine_processor_composed_final.wasm"]
+command = "golem-cli"
+cwd = "."
+
 
 [tasks.default]
 alias = "build"
@@ -82,14 +98,20 @@ args = ["stubgen", "generate", "-s", "event-processor/wit", "-d", "event-process
 command = "golem-cli"
 cwd = "."
 
+[tasks.generate-timeline-processor-stub]
+args = ["stubgen", "generate", "-s", "timeline-processor/wit", "-d", "timeline-processor-stub"]
+command = "golem-cli"
+cwd = "."
+
+
 [tasks.post-build]
-dependencies = ["compose-driver", "compose-core-with-event-processor", "compose-timeline-processor-with-event-processor"]
+dependencies = ["compose-driver", "compose-core-with-event-processor", "compose-timeline-processor-with-event-processor", "compose-timeline-and-event-with-timeline-processor"]
 
 [tasks.post-build-release]
-dependencies = ["compose-release-driver", "compose-release-core-with-event-processor", "compose-release-timeline-processor-with-event-processor"]
+dependencies = ["compose-release-driver", "compose-release-core-with-event-processor", "compose-release-timeline-processor-with-event-processor", "compose-release-timeline-and-event-with-timeline-processor"]
 
 [tasks.regenerate-stubs]
-dependencies = ["add-stub-dependency-core-driver", "add-stub-dependency-event-processor-core", "add-stub-dependency-event-processor-timline-processor"]
+dependencies = ["add-stub-dependency-core-driver", "add-stub-dependency-event-processor-core", "add-stub-dependency-event-processor-timline-processor", "add-stub-dependency-timeline-processor-timeline-processor"]
 
 [tasks.release-build-flow]
 dependencies = ["build-release", "post-build-release"]
