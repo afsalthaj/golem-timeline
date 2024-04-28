@@ -19,6 +19,7 @@ command = "golem-cli"
 cwd = "."
 dependencies = ["generate-event-processor-stub"]
 
+# Not to be called untl wasm-rpc is fixed
 [tasks.add-stub-dependency-timeline-processor-timeline-processor]
 args = ["stubgen", "add-stub-dependency", "--stub-wit-root", "timeline-processor-stub/wit", "--dest-wit-root", "timeline-processor/wit", "--overwrite", "--update-cargo-toml"]
 command = "golem-cli"
@@ -105,13 +106,13 @@ cwd = "."
 
 
 [tasks.post-build]
-dependencies = ["compose-driver", "compose-core-with-event-processor", "compose-timeline-processor-with-event-processor", "compose-timeline-and-event-with-timeline-processor"]
+dependencies = ["compose-driver", "compose-core-with-event-processor", "compose-timeline-processor-with-event-processor"]
 
 [tasks.post-build-release]
-dependencies = ["compose-release-driver", "compose-release-core-with-event-processor", "compose-release-timeline-processor-with-event-processor", "compose-release-timeline-and-event-with-timeline-processor"]
+dependencies = ["compose-release-driver", "compose-release-core-with-event-processor", "compose-release-timeline-processor-with-event-processor"]
 
 [tasks.regenerate-stubs]
-dependencies = ["add-stub-dependency-core-driver", "add-stub-dependency-event-processor-core", "add-stub-dependency-event-processor-timline-processor", "add-stub-dependency-timeline-processor-timeline-processor"]
+dependencies = ["add-stub-dependency-core-driver", "add-stub-dependency-event-processor-core", "add-stub-dependency-event-processor-timline-processor", "generate-timeline-processor-stub"]
 
 [tasks.release-build-flow]
 dependencies = ["build-release", "post-build-release"]
