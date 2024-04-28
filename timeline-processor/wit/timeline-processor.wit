@@ -35,9 +35,9 @@ interface api {
   initialize-greater-than-or-equal-to: func(child-worker: typed-timeline-result-worker, event-value: event-value) -> result<string, string>;
   initialize-less-than: func(child-worker: typed-timeline-result-worker, event-value: event-value) -> result<string, string>;
   initialize-less-than-or-equal-to: func(child-worker: typed-timeline-result-worker, event-value: event-value) -> result<string, string>;
-  initialize-and: func(child-worker1: typed-timeline-result-worker, child-worker2: typed-timeline-result-worker, event-value: event-value) -> result<string, string>;
-  initialize-or: func(child-worker1: typed-timeline-result-worker, child-worker2: typed-timeline-result-worker, event-value: event-value) -> result<string, string>;
-  initialize-not: func(child-worker: typed-timeline-result-worker, event-value: event-value) -> result<string, string>;
+  initialize-and: func(child-worker1: typed-timeline-result-worker, child-worker2: typed-timeline-result-worker) -> result<string, string>;
+  initialize-or: func(child-worker1: typed-timeline-result-worker, child-worker2: typed-timeline-result-worker) -> result<string, string>;
+  initialize-not: func(child-worker: typed-timeline-result-worker) -> result<string, string>;
 }
 
 world timeline-processor {

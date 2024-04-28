@@ -1645,7 +1645,6 @@ for Api {
         &self,
         child_worker1: crate::bindings::timeline::timeline_processor::api::TypedTimelineResultWorker,
         child_worker2: crate::bindings::timeline::timeline_processor::api::TypedTimelineResultWorker,
-        event_value: crate::bindings::timeline::timeline_processor::api::EventValue,
     ) -> Result<String, String> {
         let result = self
             .rpc
@@ -2120,51 +2119,6 @@ for Api {
                                 }
                             },
                         ),
-                    WitValue::builder()
-                        .variant_fn(
-                            match &event_value {
-                                crate::bindings::timeline::event_processor::api::EventValue::StringValue(
-                                    _,
-                                ) => 0u32,
-                                crate::bindings::timeline::event_processor::api::EventValue::IntValue(
-                                    _,
-                                ) => 1u32,
-                                crate::bindings::timeline::event_processor::api::EventValue::FloatValue(
-                                    _,
-                                ) => 2u32,
-                                crate::bindings::timeline::event_processor::api::EventValue::BoolValue(
-                                    _,
-                                ) => 3u32,
-                            },
-                            match &event_value {
-                                crate::bindings::timeline::event_processor::api::EventValue::StringValue(
-                                    _,
-                                ) => false,
-                                crate::bindings::timeline::event_processor::api::EventValue::IntValue(
-                                    _,
-                                ) => false,
-                                crate::bindings::timeline::event_processor::api::EventValue::FloatValue(
-                                    _,
-                                ) => false,
-                                crate::bindings::timeline::event_processor::api::EventValue::BoolValue(
-                                    _,
-                                ) => false,
-                            },
-                            |case_builder| match &event_value {
-                                crate::bindings::timeline::event_processor::api::EventValue::StringValue(
-                                    inner,
-                                ) => case_builder.string(inner),
-                                crate::bindings::timeline::event_processor::api::EventValue::IntValue(
-                                    inner,
-                                ) => case_builder.s64(*inner),
-                                crate::bindings::timeline::event_processor::api::EventValue::FloatValue(
-                                    inner,
-                                ) => case_builder.f64(*inner),
-                                crate::bindings::timeline::event_processor::api::EventValue::BoolValue(
-                                    inner,
-                                ) => case_builder.bool(*inner),
-                            },
-                        ),
                 ],
             )
             .expect(
@@ -2205,7 +2159,6 @@ for Api {
         &self,
         child_worker1: crate::bindings::timeline::timeline_processor::api::TypedTimelineResultWorker,
         child_worker2: crate::bindings::timeline::timeline_processor::api::TypedTimelineResultWorker,
-        event_value: crate::bindings::timeline::timeline_processor::api::EventValue,
     ) -> Result<String, String> {
         let result = self
             .rpc
@@ -2680,51 +2633,6 @@ for Api {
                                 }
                             },
                         ),
-                    WitValue::builder()
-                        .variant_fn(
-                            match &event_value {
-                                crate::bindings::timeline::event_processor::api::EventValue::StringValue(
-                                    _,
-                                ) => 0u32,
-                                crate::bindings::timeline::event_processor::api::EventValue::IntValue(
-                                    _,
-                                ) => 1u32,
-                                crate::bindings::timeline::event_processor::api::EventValue::FloatValue(
-                                    _,
-                                ) => 2u32,
-                                crate::bindings::timeline::event_processor::api::EventValue::BoolValue(
-                                    _,
-                                ) => 3u32,
-                            },
-                            match &event_value {
-                                crate::bindings::timeline::event_processor::api::EventValue::StringValue(
-                                    _,
-                                ) => false,
-                                crate::bindings::timeline::event_processor::api::EventValue::IntValue(
-                                    _,
-                                ) => false,
-                                crate::bindings::timeline::event_processor::api::EventValue::FloatValue(
-                                    _,
-                                ) => false,
-                                crate::bindings::timeline::event_processor::api::EventValue::BoolValue(
-                                    _,
-                                ) => false,
-                            },
-                            |case_builder| match &event_value {
-                                crate::bindings::timeline::event_processor::api::EventValue::StringValue(
-                                    inner,
-                                ) => case_builder.string(inner),
-                                crate::bindings::timeline::event_processor::api::EventValue::IntValue(
-                                    inner,
-                                ) => case_builder.s64(*inner),
-                                crate::bindings::timeline::event_processor::api::EventValue::FloatValue(
-                                    inner,
-                                ) => case_builder.f64(*inner),
-                                crate::bindings::timeline::event_processor::api::EventValue::BoolValue(
-                                    inner,
-                                ) => case_builder.bool(*inner),
-                            },
-                        ),
                 ],
             )
             .expect(
@@ -2764,7 +2672,6 @@ for Api {
     fn initialize_not(
         &self,
         child_worker: crate::bindings::timeline::timeline_processor::api::TypedTimelineResultWorker,
-        event_value: crate::bindings::timeline::timeline_processor::api::EventValue,
     ) -> Result<String, String> {
         let result = self
             .rpc
@@ -3003,51 +2910,6 @@ for Api {
                                             },
                                         )
                                 }
-                            },
-                        ),
-                    WitValue::builder()
-                        .variant_fn(
-                            match &event_value {
-                                crate::bindings::timeline::event_processor::api::EventValue::StringValue(
-                                    _,
-                                ) => 0u32,
-                                crate::bindings::timeline::event_processor::api::EventValue::IntValue(
-                                    _,
-                                ) => 1u32,
-                                crate::bindings::timeline::event_processor::api::EventValue::FloatValue(
-                                    _,
-                                ) => 2u32,
-                                crate::bindings::timeline::event_processor::api::EventValue::BoolValue(
-                                    _,
-                                ) => 3u32,
-                            },
-                            match &event_value {
-                                crate::bindings::timeline::event_processor::api::EventValue::StringValue(
-                                    _,
-                                ) => false,
-                                crate::bindings::timeline::event_processor::api::EventValue::IntValue(
-                                    _,
-                                ) => false,
-                                crate::bindings::timeline::event_processor::api::EventValue::FloatValue(
-                                    _,
-                                ) => false,
-                                crate::bindings::timeline::event_processor::api::EventValue::BoolValue(
-                                    _,
-                                ) => false,
-                            },
-                            |case_builder| match &event_value {
-                                crate::bindings::timeline::event_processor::api::EventValue::StringValue(
-                                    inner,
-                                ) => case_builder.string(inner),
-                                crate::bindings::timeline::event_processor::api::EventValue::IntValue(
-                                    inner,
-                                ) => case_builder.s64(*inner),
-                                crate::bindings::timeline::event_processor::api::EventValue::FloatValue(
-                                    inner,
-                                ) => case_builder.f64(*inner),
-                                crate::bindings::timeline::event_processor::api::EventValue::BoolValue(
-                                    inner,
-                                ) => case_builder.bool(*inner),
                             },
                         ),
                 ],
