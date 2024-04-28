@@ -4,10 +4,7 @@ use timeline::event_predicate::{EventColumnName, GolemEventPredicate};
 use timeline::golem_event::{GolemEvent, GolemEventValue};
 use timeline::state_dynamic_timeline::StateDynamicsTimeLine;
 
-use crate::bindings::exports::timeline::event_processor::api::{
-    Event, EventPredicate, EventStateResult, Guest, LatestEventToStateResult,
-    TimePeriod,
-};
+use crate::bindings::exports::timeline::event_processor::api::{Event, EventPredicate, TimelineResult, Guest, TimelineResultPoint, TimePeriod, EventValue};
 use crate::conversions::Conversion;
 
 #[allow(dead_code)]
@@ -230,7 +227,7 @@ impl Guest for Component {
         Ok("Event tracked successfully".to_string())
     }
 
-    fn latest_event_to_state(t1: u64) -> Result<LatestEventToStateResult, String> {
+    fn latest_event_to_state(t1: u64) -> Result<TimelineResult, String> {
         with_latest_event_to_state(|state| {
             let latest_event = state.state_dynamic_timeline.get_state_at(t1);
 
@@ -239,10 +236,9 @@ impl Guest for Component {
             )?;
 
             let result = match latest_event {
-                Some(event) => LatestEventToStateResult {
-                    event_col_name: column_name.0.clone(),
-                    event_results: {
-                        let event_result = EventStateResult {
+                Some(event) => TimelineResult {
+                    results: {
+                        let event_result = TimelineResultPoint {
                             time_period: TimePeriod {
                                 t1: event.t1,
                                 t2: event.t2.unwrap_or(u64::MAX),
@@ -253,9 +249,8 @@ impl Guest for Component {
                     },
                 },
 
-                None => LatestEventToStateResult {
-                    event_col_name: column_name.0.clone(),
-                    event_results: vec![],
+                None => TimelineResult {
+                    results: vec![],
                 },
             };
 
@@ -263,11 +258,57 @@ impl Guest for Component {
         })
     }
 
-    fn tl_has_existed(t1: u64) -> Result<bool, String> {
+    fn tl_has_existed(t1: u64) -> Result<TimelineResult, String> {
         with_tl_has_existed(|state| {
             let result = state.state_dynamic_timeline.get_state_at(t1);
 
-            result.map_or(Ok(false), |res| Ok(res.value))
+            let timeline_result = match result {
+                Some(event) => TimelineResult {
+                    results: {
+                        let event_result = TimelineResultPoint {
+                            time_period: TimePeriod {
+                                t1: event.t1,
+                                t2: event.t2.unwrap_or(u64::MAX),
+                            },
+                            value: EventValue::BoolValue(event.value),
+                        };
+                        vec![event_result]
+                    },
+                },
+
+                None => TimelineResult {
+                    results: vec![],
+                },
+            };
+
+            Ok(timeline_result)
+        })
+    }
+
+    fn tl_has_existed_within(t1: u64) -> Result<TimelineResult, String> {
+        with_tl_has_existed_within(|state| {
+            let result = state.state_dynamic_timeline.get_state_at(t1);
+
+            let timeline_result = match result {
+                Some(event) => TimelineResult {
+                    results: {
+                        let event_result = TimelineResultPoint {
+                            time_period: TimePeriod {
+                                t1: event.t1,
+                                t2: event.t2.unwrap_or(u64::MAX),
+                            },
+                            value: EventValue::BoolValue(event.value),
+                        };
+                        vec![event_result]
+                    },
+                },
+
+                None => TimelineResult {
+                    results: vec![],
+                },
+            };
+
+            Ok(timeline_result)
         })
     }
 }

@@ -5,8 +5,8 @@ interface stub-event-processor {
   use timeline:event-processor/api.{event-value};
   use timeline:event-processor/api.{event};
   use timeline:event-processor/api.{time-period};
-  use timeline:event-processor/api.{event-state-result};
-  use timeline:event-processor/api.{latest-event-to-state-result};
+  use timeline:event-processor/api.{timeline-result-point};
+  use timeline:event-processor/api.{timeline-result};
   use timeline:event-processor/api.{event-predicate-op};
   use timeline:event-processor/api.{event-predicate};
 
@@ -16,8 +16,9 @@ interface stub-event-processor {
     initialize-tl-has-existed: func(event-predicate: event-predicate) -> result<string, string>;
     initialize-tl-has-existed-within: func(event-predicate: event-predicate, time: u64) -> result<string, string>;
     add-event: func(event: event) -> result<string, string>;
-    latest-event-to-state: func(t1: u64) -> result<latest-event-to-state-result, string>;
-    tl-has-existed: func(t1: u64) -> result<bool, string>;
+    latest-event-to-state: func(t1: u64) -> result<timeline-result, string>;
+    tl-has-existed: func(t1: u64) -> result<timeline-result, string>;
+    tl-has-existed-within: func(t1: u64) -> result<timeline-result, string>;
   }
 
 }

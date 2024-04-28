@@ -390,7 +390,7 @@ for Api {
         &self,
         t1: u64,
     ) -> Result<
-        crate::bindings::timeline::event_processor::api::LatestEventToStateResult,
+        crate::bindings::timeline::event_processor::api::TimelineResult,
         String,
     > {
         let result = self
@@ -415,19 +415,13 @@ for Api {
                 Ok(ok_value) => {
                     Ok({
                         let record = ok_value.expect("result ok value not found");
-                        crate::bindings::timeline::event_processor::api::LatestEventToStateResult {
-                            event_col_name: record
+                        crate::bindings::timeline::event_processor::api::TimelineResult {
+                            results: record
                                 .field(0usize)
-                                .expect("record field not found")
-                                .string()
-                                .expect("string not found")
-                                .to_string(),
-                            event_results: record
-                                .field(1usize)
                                 .expect("record field not found")
                                 .list_elements(|item| {
                                     let record = item;
-                                    crate::bindings::timeline::event_processor::api::EventStateResult {
+                                    crate::bindings::timeline::event_processor::api::TimelineResultPoint {
                                         time_period: {
                                             let record = record
                                                 .field(0usize)
@@ -506,7 +500,13 @@ for Api {
             }
         })
     }
-    fn tl_has_existed(&self, t1: u64) -> Result<bool, String> {
+    fn tl_has_existed(
+        &self,
+        t1: u64,
+    ) -> Result<
+        crate::bindings::timeline::event_processor::api::TimelineResult,
+        String,
+    > {
         let result = self
             .rpc
             .invoke_and_await(
@@ -527,12 +527,194 @@ for Api {
                 .expect("result not found");
             match result {
                 Ok(ok_value) => {
-                    Ok(
-                        ok_value
-                            .expect("result ok value not found")
-                            .bool()
-                            .expect("bool not found"),
+                    Ok({
+                        let record = ok_value.expect("result ok value not found");
+                        crate::bindings::timeline::event_processor::api::TimelineResult {
+                            results: record
+                                .field(0usize)
+                                .expect("record field not found")
+                                .list_elements(|item| {
+                                    let record = item;
+                                    crate::bindings::timeline::event_processor::api::TimelineResultPoint {
+                                        time_period: {
+                                            let record = record
+                                                .field(0usize)
+                                                .expect("record field not found");
+                                            crate::bindings::timeline::event_processor::api::TimePeriod {
+                                                t1: record
+                                                    .field(0usize)
+                                                    .expect("record field not found")
+                                                    .u64()
+                                                    .expect("u64 not found"),
+                                                t2: record
+                                                    .field(1usize)
+                                                    .expect("record field not found")
+                                                    .u64()
+                                                    .expect("u64 not found"),
+                                            }
+                                        },
+                                        value: {
+                                            let (case_idx, inner) = record
+                                                .field(1usize)
+                                                .expect("record field not found")
+                                                .variant()
+                                                .expect("variant not found");
+                                            match case_idx {
+                                                0u32 => {
+                                                    crate::bindings::timeline::event_processor::api::EventValue::StringValue(
+                                                        inner
+                                                            .expect("variant case not found")
+                                                            .string()
+                                                            .expect("string not found")
+                                                            .to_string(),
+                                                    )
+                                                }
+                                                1u32 => {
+                                                    crate::bindings::timeline::event_processor::api::EventValue::IntValue(
+                                                        inner
+                                                            .expect("variant case not found")
+                                                            .s64()
+                                                            .expect("i64 not found"),
+                                                    )
+                                                }
+                                                2u32 => {
+                                                    crate::bindings::timeline::event_processor::api::EventValue::FloatValue(
+                                                        inner
+                                                            .expect("variant case not found")
+                                                            .f64()
+                                                            .expect("f64 not found"),
+                                                    )
+                                                }
+                                                3u32 => {
+                                                    crate::bindings::timeline::event_processor::api::EventValue::BoolValue(
+                                                        inner
+                                                            .expect("variant case not found")
+                                                            .bool()
+                                                            .expect("bool not found"),
+                                                    )
+                                                }
+                                                _ => unreachable!("invalid variant case index"),
+                                            }
+                                        },
+                                    }
+                                })
+                                .expect("list not found"),
+                        }
+                    })
+                }
+                Err(err_value) => {
+                    Err(
+                        err_value
+                            .expect("result err value not found")
+                            .string()
+                            .expect("string not found")
+                            .to_string(),
                     )
+                }
+            }
+        })
+    }
+    fn tl_has_existed_within(
+        &self,
+        t1: u64,
+    ) -> Result<
+        crate::bindings::timeline::event_processor::api::TimelineResult,
+        String,
+    > {
+        let result = self
+            .rpc
+            .invoke_and_await(
+                "timeline:event-processor/api/tl-has-existed-within",
+                &[WitValue::builder().u64(t1)],
+            )
+            .expect(
+                &format!(
+                    "Failed to invoke remote {}",
+                    "timeline:event-processor/api/tl-has-existed-within"
+                ),
+            );
+        ({
+            let result = result
+                .tuple_element(0)
+                .expect("tuple not found")
+                .result()
+                .expect("result not found");
+            match result {
+                Ok(ok_value) => {
+                    Ok({
+                        let record = ok_value.expect("result ok value not found");
+                        crate::bindings::timeline::event_processor::api::TimelineResult {
+                            results: record
+                                .field(0usize)
+                                .expect("record field not found")
+                                .list_elements(|item| {
+                                    let record = item;
+                                    crate::bindings::timeline::event_processor::api::TimelineResultPoint {
+                                        time_period: {
+                                            let record = record
+                                                .field(0usize)
+                                                .expect("record field not found");
+                                            crate::bindings::timeline::event_processor::api::TimePeriod {
+                                                t1: record
+                                                    .field(0usize)
+                                                    .expect("record field not found")
+                                                    .u64()
+                                                    .expect("u64 not found"),
+                                                t2: record
+                                                    .field(1usize)
+                                                    .expect("record field not found")
+                                                    .u64()
+                                                    .expect("u64 not found"),
+                                            }
+                                        },
+                                        value: {
+                                            let (case_idx, inner) = record
+                                                .field(1usize)
+                                                .expect("record field not found")
+                                                .variant()
+                                                .expect("variant not found");
+                                            match case_idx {
+                                                0u32 => {
+                                                    crate::bindings::timeline::event_processor::api::EventValue::StringValue(
+                                                        inner
+                                                            .expect("variant case not found")
+                                                            .string()
+                                                            .expect("string not found")
+                                                            .to_string(),
+                                                    )
+                                                }
+                                                1u32 => {
+                                                    crate::bindings::timeline::event_processor::api::EventValue::IntValue(
+                                                        inner
+                                                            .expect("variant case not found")
+                                                            .s64()
+                                                            .expect("i64 not found"),
+                                                    )
+                                                }
+                                                2u32 => {
+                                                    crate::bindings::timeline::event_processor::api::EventValue::FloatValue(
+                                                        inner
+                                                            .expect("variant case not found")
+                                                            .f64()
+                                                            .expect("f64 not found"),
+                                                    )
+                                                }
+                                                3u32 => {
+                                                    crate::bindings::timeline::event_processor::api::EventValue::BoolValue(
+                                                        inner
+                                                            .expect("variant case not found")
+                                                            .bool()
+                                                            .expect("bool not found"),
+                                                    )
+                                                }
+                                                _ => unreachable!("invalid variant case index"),
+                                            }
+                                        },
+                                    }
+                                })
+                                .expect("list not found"),
+                        }
+                    })
                 }
                 Err(err_value) => {
                     Err(
