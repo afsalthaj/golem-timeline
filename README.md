@@ -138,6 +138,8 @@ cargo make build-flow
 
 Things will fail here, as we have bumped into this issue: https://github.com/golemcloud/wasm-rpc/issues/40
 
+Until then you may have to rely on `build.sh` script in this repository.
+
 ### Run a quick test
 
 ```bash
