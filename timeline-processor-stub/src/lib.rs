@@ -228,19 +228,9 @@ for Api {
                                                     case_builder
                                                         .record()
                                                         .item()
-                                                        .record()
+                                                        .string(&inner.worker_id)
                                                         .item()
-                                                        .string(&inner.left.worker_id)
-                                                        .item()
-                                                        .string(&inner.left.template_id)
-                                                        .finish()
-                                                        .item()
-                                                        .record()
-                                                        .item()
-                                                        .string(&inner.right.worker_id)
-                                                        .item()
-                                                        .string(&inner.right.template_id)
-                                                        .finish()
+                                                        .string(&inner.template_id)
                                                         .finish()
                                                 }
                                                 crate::bindings::timeline::timeline_processor::api::DerivedTimelineNode::Or(
@@ -249,19 +239,9 @@ for Api {
                                                     case_builder
                                                         .record()
                                                         .item()
-                                                        .record()
+                                                        .string(&inner.worker_id)
                                                         .item()
-                                                        .string(&inner.left.worker_id)
-                                                        .item()
-                                                        .string(&inner.left.template_id)
-                                                        .finish()
-                                                        .item()
-                                                        .record()
-                                                        .item()
-                                                        .string(&inner.right.worker_id)
-                                                        .item()
-                                                        .string(&inner.right.template_id)
-                                                        .finish()
+                                                        .string(&inner.template_id)
                                                         .finish()
                                                 }
                                                 crate::bindings::timeline::timeline_processor::api::DerivedTimelineNode::Not(

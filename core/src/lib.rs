@@ -7,7 +7,7 @@ use timeline::timeline_node_worker::{TimeLineResultWorker, TimeLineWorkerId, Typ
 use timeline::timeline_op::TimeLineOp as CoreTimeLineOp;
 
 use crate::bindings::exports::timeline::core::api::Guest;
-use crate::bindings::exports::timeline::core::api::*;
+use crate::bindings::exports::timeline::core::api::{TypedTimelineResultWorker as WitTypedTimelineResultWorker, TimelineOp};
 use crate::bindings::golem::rpc::types::Uri;
 use crate::bindings::timeline::event_processor_stub::stub_event_processor;
 use crate::bindings::timeline::timeline_processor_stub::stub_timeline_processor;
@@ -21,7 +21,7 @@ pub mod conversions;
 struct Component;
 
 impl Guest for Component {
-    fn initialize_timeline(timeline: TimelineOp) -> Result<ExecutionResultWorker, String> {
+    fn initialize_timeline(timeline: TimelineOp) -> Result<WitTypedTimelineResultWorker, String> {
         let timeline: CoreTimeLineOp = CoreTimeLineOp::from_wit(timeline);
 
         fn go(core_time_line_op: &CoreTimeLineOp) -> Result<TypedTimeLineResultWorker, String> {
@@ -30,6 +30,8 @@ impl Guest for Component {
                     let template_id = &worker.template_id;
                     let worker_id_prefix = &worker.worker_id_prefix;
                     let uuid = Uuid::new_v4();
+
+                    // Connecting to the worker that should compute equal
                     let worker_id = TimeLineWorkerId(format!("{}-tleq-{}", worker_id_prefix, uuid.to_string()));
 
                     let uri = Uri {
@@ -38,17 +40,20 @@ impl Guest for Component {
 
                     let timeline_processor_api = stub_timeline_processor::Api::new(&uri);
 
-                    // The result of this node will be available in this worker
-                    let typed_timeline_result_worker = TypedTimeLineResultWorker::tl_has_existed({
+                    // Specifying the worker the timeline-equal worker should fetch the results from to compare with a constant
+                    let child_worker = go(left)?;
+
+                    timeline_processor_api.initialize_equal(&child_worker.to_wit(), &right.to_wit())?;
+
+                    // The worker in which the comparison with a constant actually executes
+                    let typed_timeline_result_worker = TypedTimeLineResultWorker::equal_to({
                         TimeLineResultWorker {
                             template_id: template_id.clone(),
                             worker_id
                         }
                     });
 
-                    timeline_processor_api.initialize_equal(&uri.to_string(), &right.to_wit())?;
-
-
+                    Ok(typed_timeline_result_worker)
                 }
                 CoreTimeLineOp::GreaterThan(_, _, _) => Err("Not implemented".to_string()),
                 CoreTimeLineOp::GreaterThanOrEqual(_, _, _) => Err("Not implemented".to_string()),
@@ -143,6 +148,6 @@ impl Guest for Component {
             }
         }
 
-        go(&timeline)
+        go(&timeline).map(|typed_worker_info| typed_worker_info.to_wit())
     }
 }

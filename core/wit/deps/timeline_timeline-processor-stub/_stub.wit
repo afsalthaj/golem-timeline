@@ -5,7 +5,6 @@ interface stub-timeline-processor {
   use timeline:timeline-processor/api.{event-value};
   use timeline:timeline-processor/api.{timeline-result-worker};
   use timeline:timeline-processor/api.{leaf-timeline-node};
-  use timeline:timeline-processor/api.{left-right-timeline-worker};
   use timeline:timeline-processor/api.{derived-timeline-node};
   use timeline:timeline-processor/api.{typed-timeline-result-worker};
 

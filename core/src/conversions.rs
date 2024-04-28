@@ -7,11 +7,10 @@ use timeline::timeline_op::TimeLineOp;
 
 use crate::bindings::exports::timeline::core::api::Server as WitTimeLineNodeWorker;
 use crate::bindings::exports::timeline::core::api::TimelineOp as WitTimeLineOp;
-use crate::bindings::exports::timeline::core::api::ExecutionResultWorker;
 use crate::bindings::timeline::event_processor::api::EventPredicate as WitEventPredicate;
 use crate::bindings::timeline::event_processor::api::EventPredicateOp;
 use crate::bindings::timeline::event_processor::api::EventValue as WitEventValue;
-use crate::bindings::timeline::timeline_processor::api::{DerivedTimelineNode, LeftRightTimelineWorker, TypedTimelineResultWorker as WitTypedTimeLineResultWorker};
+use crate::bindings::timeline::timeline_processor::api::{DerivedTimelineNode, TypedTimelineResultWorker as WitTypedTimeLineResultWorker};
 use crate::bindings::timeline::timeline_processor::api::LeafTimelineNode as WitLeafTimeLineNode;
 use crate::bindings::timeline::timeline_processor::api::DerivedTimelineNode as WitDerivedTimeLineNode;
 use crate::bindings::timeline::timeline_processor::api::TimelineResultWorker as WitTimeLineResultWorker;
@@ -22,24 +21,6 @@ pub trait Conversion: Clone + Debug {
     type WitType: Clone;
     fn from_wit(input: Self::WitType) -> Self;
     fn to_wit(&self) -> Self::WitType;
-}
-
-impl Conversion for TimeLineResultWorker {
-    type WitType = ExecutionResultWorker;
-
-    fn from_wit(input: Self::WitType) -> Self {
-        TimeLineResultWorker {
-            worker_id: TimeLineWorkerId(input.worker_id.clone()),
-            template_id: input.template_id.clone(),
-        }
-    }
-
-    fn to_wit(&self) -> Self::WitType {
-        ExecutionResultWorker {
-            worker_id: self.worker_id.0.clone(),
-            template_id: self.template_id.clone(),
-        }
-    }
 }
 
 impl Conversion for TypedTimeLineResultWorker {
@@ -102,24 +83,16 @@ impl Conversion for TypedTimeLineResultWorker {
                             template_id: timeline_result_worker.template_id.clone(),
                         }
                     ),
-                    WitDerivedTimeLineNode::And(left_right) => TypedTimeLineResultWorker::and(
+                    WitDerivedTimeLineNode::And(timeline_result_worker) => TypedTimeLineResultWorker::and(
                         TimeLineResultWorker {
-                            worker_id: TimeLineWorkerId(left_right.left.worker_id.clone()),
-                            template_id: left_right.left.template_id.clone(),
-                        },
-                        TimeLineResultWorker {
-                            worker_id: TimeLineWorkerId(left_right.right.worker_id.clone()),
-                            template_id: left_right.right.template_id.clone(),
+                            worker_id: TimeLineWorkerId(timeline_result_worker.worker_id.clone()),
+                            template_id: timeline_result_worker.template_id.clone(),
                         }
                     ),
-                    WitDerivedTimeLineNode::Or(left_right) => TypedTimeLineResultWorker::or(
+                    WitDerivedTimeLineNode::Or(timeline_result_worker) => TypedTimeLineResultWorker::or(
                         TimeLineResultWorker {
-                            worker_id: TimeLineWorkerId(left_right.left.worker_id.clone()),
-                            template_id: left_right.left.template_id.clone(),
-                        },
-                        TimeLineResultWorker {
-                            worker_id: TimeLineWorkerId(left_right.right.worker_id.clone()),
-                            template_id: left_right.right.template_id.clone(),
+                            worker_id: TimeLineWorkerId(timeline_result_worker.worker_id.clone()),
+                            template_id: timeline_result_worker.template_id.clone(),
                         }
                     ),
                     WitDerivedTimeLineNode::Not(timeline_result_worker) => TypedTimeLineResultWorker::not(
@@ -221,40 +194,24 @@ impl Conversion for TypedTimeLineResultWorker {
                     ))
                 },
 
-                DerivedTimeLineNode::And { left_result_worker, right_result_worker } => {
-                    let left_worker = left_result_worker.clone().worker_id.0;
-                    let left_template_id = left_result_worker.clone().template_id;
-                    let right_worker = right_result_worker.clone().worker_id.0;
-                    let right_template_id = right_result_worker.clone().template_id;
+                DerivedTimeLineNode::And { result_worker } => {
+                    let worker = result_worker.clone().worker_id.0;
+                    let template_id = result_worker.clone().template_id;
                     WitTypedTimeLineResultWorker::DerivedTimeline(WitDerivedTimeLineNode::And(
-                       LeftRightTimelineWorker {
-                           left: WitTimeLineResultWorker {
-                               template_id: left_template_id,
-                               worker_id: left_worker,
-                           },
-                           right: WitTimeLineResultWorker {
-                               template_id: right_template_id,
-                               worker_id: right_worker,
-                           }
-                       },
+                        WitTimeLineResultWorker {
+                            template_id,
+                            worker_id: worker,
+                        }
                     ))
                 },
-                DerivedTimeLineNode::Or { left_result_worker, right_result_worker } => {
-                    let left_worker = left_result_worker.clone().worker_id.0;
-                    let left_template_id = left_result_worker.clone().template_id;
-                    let right_worker = right_result_worker.clone().worker_id.0;
-                    let right_template_id = right_result_worker.clone().template_id;
+                DerivedTimeLineNode::Or { result_worker } => {
+                    let worker = result_worker.clone().worker_id.0;
+                    let template_id = result_worker.clone().template_id;
                     WitTypedTimeLineResultWorker::DerivedTimeline(WitDerivedTimeLineNode::Or(
-                        LeftRightTimelineWorker {
-                            left: WitTimeLineResultWorker {
-                                template_id: left_template_id,
-                                worker_id: left_worker,
-                            },
-                            right: WitTimeLineResultWorker {
-                                template_id: right_template_id,
-                                worker_id: right_worker,
-                            }
-                        },
+                        WitTimeLineResultWorker {
+                            template_id,
+                            worker_id: worker,
+                        }
                     ))
                 },
                 DerivedTimeLineNode::Not { result_worker } => {
@@ -308,7 +265,7 @@ impl Conversion for TimeLineNodeWorkerInput {
 
     fn to_wit(&self) -> Self::WitType {
         WitTimeLineNodeWorker {
-            worker_id_prefix: self.worker_id_prefix.clone(),
+            worker_id_prefix: self.worker_id_prefix.0.clone(),
             template_id: self.template_id.clone(),
         }
     }

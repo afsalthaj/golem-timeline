@@ -7,6 +7,7 @@ pub struct TimeLineNodeWorkerInput {
     pub template_id: String,
 }
 
+#[derive(Clone, Debug)]
 pub struct TimeLineWorkerIdPrefix(pub String);
 
 impl Display for TimeLineWorkerIdPrefix {
@@ -97,17 +98,15 @@ impl TypedTimeLineResultWorker {
         })
     }
 
-    pub fn and(left: TimeLineResultWorker, right: TimeLineResultWorker) -> TypedTimeLineResultWorker {
+    pub fn and(worker: TimeLineResultWorker) -> TypedTimeLineResultWorker {
         TypedTimeLineResultWorker::DerivedTimeLine(DerivedTimeLineNode::And {
-            left_result_worker: left,
-            right_result_worker: right
+            result_worker: worker,
         })
     }
 
-    pub fn or(left: TimeLineResultWorker, right: TimeLineResultWorker) -> TypedTimeLineResultWorker {
+    pub fn or(worker: TimeLineResultWorker) -> TypedTimeLineResultWorker {
         TypedTimeLineResultWorker::DerivedTimeLine(DerivedTimeLineNode::Or {
-            left_result_worker: left,
-            right_result_worker: right
+            result_worker: worker,
         })
     }
 
@@ -117,6 +116,8 @@ impl TypedTimeLineResultWorker {
         })
     }
 }
+
+#[derive(Clone, Debug)]
 pub enum LeafTimeLineNode {
     TLHasExisted {
         time_line_worker: TimeLineResultWorker,
@@ -131,6 +132,7 @@ pub enum LeafTimeLineNode {
     },
 }
 
+#[derive(Clone, Debug)]
 pub enum DerivedTimeLineNode {
     EqualTo {
         result_worker: TimeLineResultWorker,
@@ -149,13 +151,11 @@ pub enum DerivedTimeLineNode {
     },
 
     And {
-        left_result_worker: TimeLineResultWorker,
-        right_result_worker: TimeLineResultWorker
+        result_worker: TimeLineResultWorker,
     },
 
     Or {
-        left_result_worker: TimeLineResultWorker,
-        right_result_worker: TimeLineResultWorker
+        result_worker: TimeLineResultWorker,
     },
 
     Not {

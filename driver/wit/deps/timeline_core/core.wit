@@ -2,6 +2,7 @@ package timeline:core;
 
 interface api {
   use timeline:event-processor/api.{event-value, event, event-predicate};
+  use timeline:timeline-processor/api.{typed-timeline-result-worker};
 
   type node-index = s32;
 
@@ -36,11 +37,6 @@ interface api {
   // to aggregate workers (to reduce number of workers)
   record server {
     worker-id-prefix: string,
-    template-id: string
-  }
-
-  record execution-result-worker {
-    worker-id: string,
     template-id: string
   }
 
@@ -87,7 +83,7 @@ interface api {
     time: u64,
   }
 
-  initialize-timeline: func(timeline: timeline-op) -> result<execution-result-worker, string>;
+  initialize-timeline: func(timeline: timeline-op) -> result<typed-timeline-result-worker, string>;
 }
 
 world core {

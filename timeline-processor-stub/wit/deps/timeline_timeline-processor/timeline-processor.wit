@@ -25,14 +25,9 @@ interface api {
     greater-than-or-equal-to(timeline-result-worker),
     less-than(timeline-result-worker),
     less-than-or-equal-to(timeline-result-worker),
-    and(left-right-timeline-worker),
-    or(left-right-timeline-worker),
+    and(timeline-result-worker),
+    or(timeline-result-worker),
     not(timeline-result-worker)
-  }
-
-  record left-right-timeline-worker {
-    left: timeline-result-worker,
-    right: timeline-result-worker
   }
 
   initialize-equal: func(child-worker: typed-timeline-result-worker, event-value: event-value) -> result<string, string>;

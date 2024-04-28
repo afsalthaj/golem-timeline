@@ -6,7 +6,7 @@ use timeline::state_dynamic_timeline::StateDynamicsTimeLine;
 
 use crate::bindings::exports::timeline::event_processor::api::{
     Event, EventPredicate, EventStateResult, Guest, LatestEventToStateResult,
-    TimePeriod, WorkerId,
+    TimePeriod,
 };
 use crate::conversions::Conversion;
 
@@ -101,30 +101,28 @@ fn with_tl_has_existed_within<T>(
 
 impl Guest for Component {
     fn initialize_latest_event_state(
-        worker: WorkerId,
         event_column_name: String,
     ) -> Result<String, String> {
         with_latest_event_to_state(|state| {
             state.col_name = Some(EventColumnName(event_column_name.clone()));
-            Ok(worker.name)
+            Ok("Successfully initiated latest-event-to-state".to_string())
         })
     }
 
     fn initialize_tl_has_existed(
-        worker: WorkerId,
         event_predicate: EventPredicate,
     ) -> Result<String, String> {
         with_tl_has_existed(|state| {
             state.predicate = Some(GolemEventPredicate::from_wit(event_predicate));
-            Ok(worker.name)
+            Ok("Successfully initiated tl-has-existed".to_string())
         })
     }
 
-    fn initialize_tl_has_existed_within(worker: WorkerId, event_predicate: EventPredicate, time: u64) -> Result<String, String> {
+    fn initialize_tl_has_existed_within(event_predicate: EventPredicate, time: u64) -> Result<String, String> {
         with_tl_has_existed_within(|state| {
             let predicate = GolemEventPredicate::from_wit(event_predicate);
             state.with_predicate_within(predicate, time);
-            Ok(worker.name)
+            Ok("Successfully initiated tl-has-existed-within".to_string())
         })
     }
 
