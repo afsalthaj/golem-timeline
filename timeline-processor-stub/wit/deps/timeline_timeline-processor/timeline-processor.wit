@@ -8,5 +8,6 @@ interface api {
 }
 
 world timeline-processor {
+  import timeline:event-processor-stub/stub-event-processor;
   export api;
 }

@@ -29,7 +29,17 @@ interface api {
     timeline: node-index
   }
 
+  // A user can provide a prefix to each worker
+  // however it is the engine to decide the exact worker-id which
+  // will be prefixed by worker-id-prefix
+  // In future, we can allow users to simply use prefix
+  // to aggregate workers (to reduce number of workers)
   record server {
+    worker-id-prefix: string,
+    template-id: string
+  }
+
+  record execution-result-worker {
     worker-id: string,
     template-id: string
   }
@@ -77,7 +87,7 @@ interface api {
     time: u64,
   }
 
-  initialize-timeline: func(timeline: timeline-op) -> result<string, string>;
+  initialize-timeline: func(timeline: timeline-op) -> result<execution-result-worker, string>;
 }
 
 world core {

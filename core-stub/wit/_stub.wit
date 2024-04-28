@@ -9,6 +9,7 @@ interface stub-core {
   use timeline:core/api.{server};
   use timeline:core/api.{server-with-event-column-name};
   use timeline:core/api.{timeline-with-server};
+  use timeline:core/api.{execution-result-worker};
   use timeline:core/api.{worker-id};
   use timeline:core/api.{timeline-constant-comparator};
   use timeline:core/api.{timeline-constant-compared};
@@ -20,7 +21,7 @@ interface stub-core {
 
   resource api {
     constructor(location: uri);
-    initialize-timeline: func(timeline: timeline-op) -> result<string, string>;
+    initialize-timeline: func(timeline: timeline-op) -> result<execution-result-worker, string>;
   }
 
 }

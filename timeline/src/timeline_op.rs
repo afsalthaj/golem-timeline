@@ -2,19 +2,19 @@ use std::fmt::Display;
 
 use crate::event_predicate::{EventColumnName, GolemEventPredicate};
 use crate::golem_event::GolemEventValue;
-use crate::timeline_node_worker::TimeLineNodeWorker;
+use crate::timeline_node_worker::{TimeLineNodeWorkerInput, TimeLineResultWorker};
 
 #[derive(Clone, Debug)]
 pub enum TimeLineOp {
     // Pretty much represents the event-timeline (not state dynamics) - source (through workerid) and collection
-    EqualTo(TimeLineNodeWorker, Box<TimeLineOp>, GolemEventValue),
-    GreaterThan(TimeLineNodeWorker, Box<TimeLineOp>, GolemEventValue),
-    GreaterThanOrEqual(TimeLineNodeWorker, Box<TimeLineOp>, GolemEventValue),
-    LessThan(TimeLineNodeWorker, Box<TimeLineOp>, GolemEventValue),
-    LessThanOrEqual(TimeLineNodeWorker, Box<TimeLineOp>, GolemEventValue),
-    And(TimeLineNodeWorker, Box<TimeLineOp>, Box<TimeLineOp>),
-    Or(TimeLineNodeWorker, Box<TimeLineOp>, Box<TimeLineOp>),
-    Not(TimeLineNodeWorker, Box<TimeLineOp>),
+    EqualTo(TimeLineNodeWorkerInput, Box<TimeLineOp>, GolemEventValue),
+    GreaterThan(TimeLineNodeWorkerInput, Box<TimeLineOp>, GolemEventValue),
+    GreaterThanOrEqual(TimeLineNodeWorkerInput, Box<TimeLineOp>, GolemEventValue),
+    LessThan(TimeLineNodeWorkerInput, Box<TimeLineOp>, GolemEventValue),
+    LessThanOrEqual(TimeLineNodeWorkerInput, Box<TimeLineOp>, GolemEventValue),
+    And(TimeLineNodeWorkerInput, Box<TimeLineOp>, Box<TimeLineOp>),
+    Or(TimeLineNodeWorkerInput, Box<TimeLineOp>, Box<TimeLineOp>),
+    Not(TimeLineNodeWorkerInput, Box<TimeLineOp>),
 
     // Each o the below functions invokes a worker
     // Each worker is responsible for forgetting past beyond an extent
@@ -27,7 +27,7 @@ pub enum TimeLineOp {
     // Output
     // t1-t2: false
     // t2-t3: true
-    TlHasExisted(TimeLineNodeWorker, GolemEventPredicate<GolemEventValue>),
+    TlHasExisted(TimeLineNodeWorkerInput, GolemEventPredicate<GolemEventValue>),
     // This is more of tracking a StateDynamic event, as a cumulative OR
     // Input
     // Duration: D = 4
@@ -40,7 +40,7 @@ pub enum TimeLineOp {
     // t7-t9: false
     // t9-t13: true
     TlHasExistedWithin(
-        TimeLineNodeWorker,
+        TimeLineNodeWorkerInput,
         GolemEventPredicate<GolemEventValue>,
         u64,
     ),
@@ -52,7 +52,7 @@ pub enum TimeLineOp {
     // Output
     // t1-t10: CDN2
     // t10-t12: CDN1
-    TlLatestEventToState(TimeLineNodeWorker, EventColumnName),
+    TlLatestEventToState(TimeLineNodeWorkerInput, EventColumnName),
     // A Numerical Timeline of
     // the cumulative duration
     // where the state was True
@@ -65,7 +65,7 @@ pub enum TimeLineOp {
     // t3 - t8 : 5
     // t8 - t4 : 5
     // t14 - t20: 11
-    TlDurationWhere(TimeLineNodeWorker, Box<TimeLineOp>),
+    TlDurationWhere(TimeLineNodeWorkerInput, Box<TimeLineOp>),
 
     // A Numerical Timeline of
     // the duration since the last
@@ -79,12 +79,12 @@ pub enum TimeLineOp {
     // t3- t8: 5
     // t8-t14: 6
     // t14- t20: 6
-    TlDurationInCurState(TimeLineNodeWorker, Box<TimeLineOp>),
+    TlDurationInCurState(TimeLineNodeWorkerInput, Box<TimeLineOp>),
 }
 
 impl TimeLineOp {
-    pub fn timeline_nodes(&self) -> Vec<TimeLineNodeWorker> {
-        fn servers_of(time_line_op: &TimeLineOp) -> Vec<TimeLineNodeWorker> {
+    pub fn timeline_nodes(&self) -> Vec<TimeLineNodeWorkerInput> {
+        fn servers_of(time_line_op: &TimeLineOp) -> Vec<TimeLineNodeWorkerInput> {
             match time_line_op {
                 TimeLineOp::TlHasExisted(server, _event_predicate) => vec![server.clone()],
 

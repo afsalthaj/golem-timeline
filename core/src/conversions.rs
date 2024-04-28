@@ -2,11 +2,12 @@ use std::fmt::{Debug};
 
 use timeline::event_predicate::{EventColumnName, EventColumnValue, GolemEventPredicate};
 use timeline::golem_event::GolemEventValue;
-use timeline::timeline_node_worker::TimeLineNodeWorker;
+use timeline::timeline_node_worker::{TimeLineNodeWorkerInput, TimeLineResultWorker, TimeLineWorkerId, TimeLineWorkerIdPrefix};
 use timeline::timeline_op::TimeLineOp;
 
 use crate::bindings::exports::timeline::core::api::Server as WitTimeLineNodeWorker;
 use crate::bindings::exports::timeline::core::api::TimelineOp as WitTimeLineOp;
+use crate::bindings::exports::timeline::core::api::ExecutionResultWorker;
 use crate::bindings::timeline::event_processor::api::EventPredicate as WitEventPredicate;
 use crate::bindings::timeline::event_processor::api::EventPredicateOp;
 use crate::bindings::timeline::event_processor::api::EventValue as WitEventValue;
@@ -17,6 +18,24 @@ pub trait Conversion: Clone + Debug {
     type WitType: Clone;
     fn from_wit(input: Self::WitType) -> Self;
     fn to_wit(&self) -> Self::WitType;
+}
+
+impl Conversion for TimeLineResultWorker {
+    type WitType = ExecutionResultWorker;
+
+    fn from_wit(input: Self::WitType) -> Self {
+        TimeLineResultWorker {
+            worker_id: TimeLineWorkerId(input.worker_id.clone()),
+            template_id: input.template_id.clone(),
+        }
+    }
+
+    fn to_wit(&self) -> Self::WitType {
+        ExecutionResultWorker {
+            worker_id: self.worker_id.0.clone(),
+            template_id: self.template_id.clone(),
+        }
+    }
 }
 
 // Golem Event Value conversion
@@ -43,19 +62,19 @@ impl Conversion for GolemEventValue {
 }
 
 // Timeline Node Worker conversion
-impl Conversion for TimeLineNodeWorker {
+impl Conversion for TimeLineNodeWorkerInput {
     type WitType = WitTimeLineNodeWorker;
 
     fn from_wit(input: Self::WitType) -> Self {
-        TimeLineNodeWorker {
-            worker_id: input.worker_id,
+        TimeLineNodeWorkerInput {
+            worker_id_prefix: TimeLineWorkerIdPrefix(input.worker_id_prefix),
             template_id: input.template_id,
         }
     }
 
     fn to_wit(&self) -> Self::WitType {
         WitTimeLineNodeWorker {
-            worker_id: self.worker_id.clone(),
+            worker_id_prefix: self.worker_id_prefix.clone(),
             template_id: self.template_id.clone(),
         }
     }
@@ -116,7 +135,7 @@ impl Conversion for TimeLineOp {
 mod internals {
     use timeline::event_predicate::{EventColumnName, GolemEventPredicate};
     use timeline::golem_event::GolemEventValue;
-    use timeline::timeline_node_worker::TimeLineNodeWorker;
+    use timeline::timeline_node_worker::TimeLineNodeWorkerInput;
     use timeline::timeline_op::TimeLineOp;
 
     use crate::bindings::exports::timeline::core::api::{
@@ -138,7 +157,7 @@ mod internals {
                 let golem_event_value: GolemEventValue =
                     GolemEventValue::from_wit(timeline_constant_compared.value.clone());
                 let timeline_node_worker =
-                    TimeLineNodeWorker::from_wit(timeline_constant_compared.server.clone());
+                    TimeLineNodeWorkerInput::from_wit(timeline_constant_compared.server.clone());
 
                 match timeline_constant_compared.op {
                     TimelineConstantComparator::GreaterThan => TimeLineOp::GreaterThan(
@@ -166,14 +185,14 @@ mod internals {
             WitTimeLineNode::TimelineNegation(timeline_negation) => {
                 let time_line =
                     build_timeline_tree(&nodes[timeline_negation.timeline as usize], nodes);
-                let timeline_node_worker: TimeLineNodeWorker =
-                    TimeLineNodeWorker::from_wit(timeline_negation.server.clone());
+                let timeline_node_worker: TimeLineNodeWorkerInput =
+                    TimeLineNodeWorkerInput::from_wit(timeline_negation.server.clone());
 
                 TimeLineOp::Not(timeline_node_worker, Box::new(time_line))
             }
             WitTimeLineNode::TlHasExisted(server_with_event_predicate) => {
-                let server: TimeLineNodeWorker =
-                    TimeLineNodeWorker::from_wit(server_with_event_predicate.server.clone());
+                let server: TimeLineNodeWorkerInput =
+                    TimeLineNodeWorkerInput::from_wit(server_with_event_predicate.server.clone());
                 let filter = GolemEventPredicate::from_wit(
                     server_with_event_predicate.event_predicate.clone(),
                 );
@@ -182,7 +201,7 @@ mod internals {
 
             WitTimeLineNode::TlHasExistedWithin(server_with_event_predicate_within) => {
                 let max_duration = server_with_event_predicate_within.time;
-                let server: TimeLineNodeWorker = TimeLineNodeWorker::from_wit(
+                let server: TimeLineNodeWorkerInput = TimeLineNodeWorkerInput::from_wit(
                     server_with_event_predicate_within.filtered.server.clone(),
                 );
 
@@ -199,18 +218,18 @@ mod internals {
                 let time_line = build_timeline_tree(&nodes[tl.timeline.clone() as usize], nodes);
 
                 TimeLineOp::TlDurationWhere(
-                    TimeLineNodeWorker::from_wit(tl.server.clone()),
+                    TimeLineNodeWorkerInput::from_wit(tl.server.clone()),
                     Box::new(time_line),
                 )
             }
             WitTimeLineNode::TlDurationInCurState(tl) => {
                 let time_line = build_timeline_tree(&nodes[tl.timeline as usize], nodes);
-                let timeline_node_worker = TimeLineNodeWorker::from_wit(tl.server.clone());
+                let timeline_node_worker = TimeLineNodeWorkerInput::from_wit(tl.server.clone());
                 TimeLineOp::TlDurationInCurState(timeline_node_worker, Box::new(time_line))
             }
             TimelineNode::TlLatestEventToState(server_with_event_column_name) => {
                 let server =
-                    TimeLineNodeWorker::from_wit(server_with_event_column_name.server.clone());
+                    TimeLineNodeWorkerInput::from_wit(server_with_event_column_name.server.clone());
                 let event_column_name =
                     EventColumnName(server_with_event_column_name.event_column_name.clone());
                 TimeLineOp::TlLatestEventToState(server, event_column_name)

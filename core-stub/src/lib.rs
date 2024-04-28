@@ -18,7 +18,7 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
     fn initialize_timeline(
         &self,
         timeline: crate::bindings::timeline::core::api::TimelineOp,
-    ) -> Result<String, String> {
+    ) -> Result<crate::bindings::timeline::core::api::ExecutionResultWorker, String> {
         let result = self
             .rpc
             .invoke_and_await(
@@ -87,7 +87,7 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                                     .item()
                                                     .record()
                                                     .item()
-                                                    .string(&inner.server.worker_id)
+                                                    .string(&inner.server.worker_id_prefix)
                                                     .item()
                                                     .string(&inner.server.template_id)
                                                     .finish()
@@ -167,7 +167,7 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                                     .item()
                                                     .record()
                                                     .item()
-                                                    .string(&inner.server.worker_id)
+                                                    .string(&inner.server.worker_id_prefix)
                                                     .item()
                                                     .string(&inner.server.template_id)
                                                     .finish()
@@ -247,7 +247,7 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                                     .item()
                                                     .record()
                                                     .item()
-                                                    .string(&inner.filtered.server.worker_id)
+                                                    .string(&inner.filtered.server.worker_id_prefix)
                                                     .item()
                                                     .string(&inner.filtered.server.template_id)
                                                     .finish()
@@ -328,7 +328,7 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                                     .item()
                                                     .record()
                                                     .item()
-                                                    .string(&inner.server.worker_id)
+                                                    .string(&inner.server.worker_id_prefix)
                                                     .item()
                                                     .string(&inner.server.template_id)
                                                     .finish()
@@ -344,7 +344,7 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                                     .item()
                                                     .record()
                                                     .item()
-                                                    .string(&inner.server.worker_id)
+                                                    .string(&inner.server.worker_id_prefix)
                                                     .item()
                                                     .string(&inner.server.template_id)
                                                     .finish()
@@ -358,7 +358,7 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                                     .item()
                                                     .record()
                                                     .item()
-                                                    .string(&inner.server.worker_id)
+                                                    .string(&inner.server.worker_id_prefix)
                                                     .item()
                                                     .string(&inner.server.template_id)
                                                     .finish()
@@ -374,7 +374,7 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                                     .item()
                                                     .record()
                                                     .item()
-                                                    .string(&inner.server.worker_id)
+                                                    .string(&inner.server.worker_id_prefix)
                                                     .item()
                                                     .string(&inner.server.template_id)
                                                     .finish()
@@ -402,13 +402,23 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                 .expect("result not found");
             match result {
                 Ok(ok_value) => {
-                    Ok(
-                        ok_value
-                            .expect("result ok value not found")
-                            .string()
-                            .expect("string not found")
-                            .to_string(),
-                    )
+                    Ok({
+                        let record = ok_value.expect("result ok value not found");
+                        crate::bindings::timeline::core::api::ExecutionResultWorker {
+                            worker_id: record
+                                .field(0usize)
+                                .expect("record field not found")
+                                .string()
+                                .expect("string not found")
+                                .to_string(),
+                            template_id: record
+                                .field(1usize)
+                                .expect("record field not found")
+                                .string()
+                                .expect("string not found")
+                                .to_string(),
+                        }
+                    })
                 }
                 Err(err_value) => {
                     Err(
