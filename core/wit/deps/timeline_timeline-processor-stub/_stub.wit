@@ -3,11 +3,15 @@ package timeline:timeline-processor-stub;
 interface stub-timeline-processor {
   use golem:rpc/types@0.1.0.{uri};
   use timeline:timeline-processor/api.{event-value};
-  use timeline:timeline-processor/api.{worker-id};
+  use timeline:timeline-processor/api.{timeline-result-worker};
+  use timeline:timeline-processor/api.{leaf-timeline-node};
+  use timeline:timeline-processor/api.{left-right-timeline-worker};
+  use timeline:timeline-processor/api.{derived-timeline-node};
+  use timeline:timeline-processor/api.{typed-timeline-result-worker};
 
   resource api {
     constructor(location: uri);
-    initialize-equal: func(child-url: worker-id, current-worker-id: worker-id, event-value: event-value) -> result<string, string>;
+    initialize-equal: func(child-worker: typed-timeline-result-worker, event-value: event-value) -> result<string, string>;
   }
 
 }

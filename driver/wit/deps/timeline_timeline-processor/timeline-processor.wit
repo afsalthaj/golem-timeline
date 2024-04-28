@@ -17,7 +17,7 @@ interface api {
     tl-has-existed(timeline-result-worker),
     tl-has-existed-within(timeline-result-worker),
     tl-latest-event-to-state(timeline-result-worker),
-}
+  }
 
   variant derived-timeline-node {
     equal-to(timeline-result-worker),

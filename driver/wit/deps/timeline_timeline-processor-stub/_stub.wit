@@ -1,7 +1,8 @@
-package timeline:timeline-processor;
+package timeline:timeline-processor-stub;
 
-interface api {
-  use timeline:event-processor/api.{event-value};
+interface stub-timeline-processor {
+  use golem:rpc/types@0.1.0.{uri};
+  use timeline:timeline-processor/api.{event-value};
 
   record timeline-result-worker {
     worker-id: string,
@@ -35,10 +36,13 @@ interface api {
     right: timeline-result-worker
   }
 
-  initialize-equal: func(child-worker: typed-timeline-result-worker, event-value: event-value) -> result<string, string>;
+  resource api {
+    constructor(location: uri);
+    initialize-equal: func(child-worker: typed-timeline-result-worker, event-value: event-value) -> result<string, string>;
+  }
+
 }
 
-world timeline-processor {
-  import timeline:event-processor-stub/stub-event-processor;
-  export api;
+world wasm-rpc-stub-timeline-processor {
+  export stub-timeline-processor;
 }

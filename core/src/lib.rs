@@ -38,7 +38,15 @@ impl Guest for Component {
 
                     let timeline_processor_api = stub_timeline_processor::Api::new(&uri);
 
-                    timeline_processor_api.initialize_equal()
+                    // The result of this node will be available in this worker
+                    let typed_timeline_result_worker = TypedTimeLineResultWorker::tl_has_existed({
+                        TimeLineResultWorker {
+                            template_id: template_id.clone(),
+                            worker_id
+                        }
+                    });
+
+                    timeline_processor_api.initialize_equal(&uri.to_string(), &right.to_wit())?;
 
 
                 }
@@ -63,10 +71,10 @@ impl Guest for Component {
                     let core = stub_event_processor::Api::new(&uri);
 
                     core.initialize_tl_has_existed(
-                        &stub_event_processor::WorkerId { name: worker_id.0.clone() },
                         &predicate.to_wit(),
                     )?;
 
+                    // The result of this node will be available in this worker
                     let typed_timeline_result_worker = TypedTimeLineResultWorker::tl_has_existed({
                         TimeLineResultWorker {
                             template_id: template_id.clone(),
@@ -81,7 +89,7 @@ impl Guest for Component {
                     let worker_id_prefix = &worker.worker_id_prefix;
                     let uuid = Uuid::new_v4();
 
-                    let worker_id = format!("{}-tlhew-{}", worker_id_prefix, uuid.to_string());
+                    let worker_id = TimeLineWorkerId(format!("{}-tlhew-{}", worker_id_prefix, uuid.to_string()));
 
                     let uri = Uri {
                         value: format!("worker://{template_id}/{}", worker_id),
@@ -89,18 +97,26 @@ impl Guest for Component {
 
                     let core = stub_event_processor::Api::new(&uri);
 
+                    // The result of this node will be available in this worker
                     core.initialize_tl_has_existed_within(
-                        &stub_event_processor::WorkerId { name: worker_id.clone() },
                         &predicate.to_wit(),
                         *within
                     )?;
 
-                    Ok(worker_id)
+                    // The result of this node will be available in this worker
+                    let typed_timeline_result_worker = TypedTimeLineResultWorker::tl_has_existed_within({
+                        TimeLineResultWorker {
+                            template_id: template_id.clone(),
+                            worker_id
+                        }
+                    });
+
+                    Ok(typed_timeline_result_worker)
                 }
                 CoreTimeLineOp::TlLatestEventToState(worker, event_column_name) => {
                     let template_id = &worker.template_id;
                     let worker_id_prefix = &worker.worker_id_prefix;
-                    let worker_id = format!("{}-le2s-{}", worker_id_prefix, event_column_name);
+                    let worker_id = TimeLineWorkerId(format!("{}-le2s-{}", worker_id_prefix, event_column_name));
 
                     let uri = Uri {
                         value: format!("worker://{template_id}/{}", worker_id),
@@ -109,11 +125,18 @@ impl Guest for Component {
                     let core = stub_event_processor::Api::new(&uri);
 
                     core.initialize_latest_event_state(
-                        &stub_event_processor::WorkerId { name: worker_id.clone() },
                         event_column_name.0.as_str(),
                     )?;
 
-                    Ok(worker_id)
+                    // The result of this node will be available in this worker
+                    let typed_timeline_result_worker = TypedTimeLineResultWorker::tl_has_existed_within({
+                        TimeLineResultWorker {
+                            template_id: template_id.clone(),
+                            worker_id
+                        }
+                    });
+
+                    Ok(typed_timeline_result_worker)
                 }
                 CoreTimeLineOp::TlDurationWhere(_, _) => Err("Not implemented".to_string()),
                 CoreTimeLineOp::TlDurationInCurState(_, _) => Err("Not implemented".to_string()),

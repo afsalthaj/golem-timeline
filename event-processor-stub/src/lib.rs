@@ -18,17 +18,13 @@ for Api {
     }
     fn initialize_latest_event_state(
         &self,
-        worker: crate::bindings::timeline::event_processor::api::WorkerId,
         event_col_name: String,
     ) -> Result<String, String> {
         let result = self
             .rpc
             .invoke_and_await(
                 "timeline:event-processor/api/initialize-latest-event-state",
-                &[
-                    WitValue::builder().record().item().string(&worker.name).finish(),
-                    WitValue::builder().string(&event_col_name),
-                ],
+                &[WitValue::builder().string(&event_col_name)],
             )
             .expect(
                 &format!(
@@ -66,7 +62,6 @@ for Api {
     }
     fn initialize_tl_has_existed(
         &self,
-        worker: crate::bindings::timeline::event_processor::api::WorkerId,
         event_predicate: crate::bindings::timeline::event_processor::api::EventPredicate,
     ) -> Result<String, String> {
         let result = self
@@ -74,7 +69,6 @@ for Api {
             .invoke_and_await(
                 "timeline:event-processor/api/initialize-tl-has-existed",
                 &[
-                    WitValue::builder().record().item().string(&worker.name).finish(),
                     WitValue::builder()
                         .record()
                         .item()
@@ -177,7 +171,6 @@ for Api {
     }
     fn initialize_tl_has_existed_within(
         &self,
-        worker: crate::bindings::timeline::event_processor::api::WorkerId,
         event_predicate: crate::bindings::timeline::event_processor::api::EventPredicate,
         time: u64,
     ) -> Result<String, String> {
@@ -186,7 +179,6 @@ for Api {
             .invoke_and_await(
                 "timeline:event-processor/api/initialize-tl-has-existed-within",
                 &[
-                    WitValue::builder().record().item().string(&worker.name).finish(),
                     WitValue::builder()
                         .record()
                         .item()
