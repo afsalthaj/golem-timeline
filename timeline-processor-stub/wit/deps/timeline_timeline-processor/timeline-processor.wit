@@ -2,11 +2,38 @@ package timeline:timeline-processor;
 
 interface api {
   use timeline:event-processor/api.{event-value};
-  use timeline:event-processor/api.{worker-id};
 
-  initialize-equal: func(child-url: worker-id, current-worker-id: worker-id, event-value: event-value) -> result<string, string>;
+  record timeline-result-worker {
+    worker-id: string,
+    template-id: string
+  }
+
+  variant typed-timeline-result-worker {
+    leaf-timeline(leaf-timeline-node),
+    derived-timeline(derived-timeline-node)
+  }
+
+  variant leaf-timeline-node {
+    tl-has-existed(timeline-result-worker),
+    tl-has-existed-within(timeline-result-worker),
+    tl-latest-event-to-state(timeline-result-worker),
+}
+
+  variant derived-timeline-node {
+    equal-to(timeline-result-worker),
+    greater-than(timeline-result-worker),
+    greater-than-or-equal-to(timeline-result-worker),
+    less-than(timeline-result-worker),
+    less-than-or-equal-to(timeline-result-worker),
+    and(timeline-result-worker),
+    or(timeline-result-worker),
+    not(timeline-result-worker)
+  }
+
+  initialize-equal: func(child-worker: typed-timeline-result-worker, event-value: event-value) -> result<string, string>;
 }
 
 world timeline-processor {
+  import timeline:event-processor-stub/stub-event-processor;
   export api;
 }

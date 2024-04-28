@@ -5,6 +5,7 @@ interface stub-core {
   use timeline:core/api.{event-value};
   use timeline:core/api.{event};
   use timeline:core/api.{event-predicate};
+  use timeline:core/api.{typed-timeline-result-worker};
   use timeline:core/api.{node-index};
   use timeline:core/api.{server};
   use timeline:core/api.{server-with-event-column-name};
@@ -20,7 +21,7 @@ interface stub-core {
 
   resource api {
     constructor(location: uri);
-    initialize-timeline: func(timeline: timeline-op) -> result<string, string>;
+    initialize-timeline: func(timeline: timeline-op) -> result<typed-timeline-result-worker, string>;
   }
 
 }

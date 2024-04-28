@@ -2,7 +2,7 @@ use std::fmt::{Debug};
 
 use timeline::event_predicate::{EventColumnName, EventColumnValue, GolemEventPredicate};
 use timeline::golem_event::GolemEventValue;
-use timeline::timeline_node_worker::TimeLineNodeWorker;
+use timeline::timeline_node_worker::{DerivedTimeLineNode, LeafTimeLineNode, TimeLineNodeWorkerInput, TimeLineResultWorker, TimeLineWorkerId, TimeLineWorkerIdPrefix, TypedTimeLineResultWorker};
 use timeline::timeline_op::TimeLineOp;
 
 use crate::bindings::exports::timeline::core::api::Server as WitTimeLineNodeWorker;
@@ -10,6 +10,10 @@ use crate::bindings::exports::timeline::core::api::TimelineOp as WitTimeLineOp;
 use crate::bindings::timeline::event_processor::api::EventPredicate as WitEventPredicate;
 use crate::bindings::timeline::event_processor::api::EventPredicateOp;
 use crate::bindings::timeline::event_processor::api::EventValue as WitEventValue;
+use crate::bindings::timeline::timeline_processor::api::{DerivedTimelineNode, TypedTimelineResultWorker as WitTypedTimeLineResultWorker};
+use crate::bindings::timeline::timeline_processor::api::LeafTimelineNode as WitLeafTimeLineNode;
+use crate::bindings::timeline::timeline_processor::api::DerivedTimelineNode as WitDerivedTimeLineNode;
+use crate::bindings::timeline::timeline_processor::api::TimelineResultWorker as WitTimeLineResultWorker;
 
 // TODO: Some of these conversions are repeated even after reusing WIT files. Make sure to fix it
 
@@ -17,6 +21,212 @@ pub trait Conversion: Clone + Debug {
     type WitType: Clone;
     fn from_wit(input: Self::WitType) -> Self;
     fn to_wit(&self) -> Self::WitType;
+}
+
+impl Conversion for TypedTimeLineResultWorker {
+    type WitType = WitTypedTimeLineResultWorker;
+
+    fn from_wit(input: Self::WitType) -> Self {
+        match input {
+            WitTypedTimeLineResultWorker::LeafTimeline(leaf_time_line) => {
+                match leaf_time_line {
+                    WitLeafTimeLineNode::TlHasExisted(timeline_result_worker) => TypedTimeLineResultWorker::tl_has_existed(
+                        TimeLineResultWorker {
+                            worker_id: TimeLineWorkerId(timeline_result_worker.worker_id.clone()),
+                            template_id: timeline_result_worker.template_id.clone(),
+                        }
+                    ),
+                    WitLeafTimeLineNode::TlHasExistedWithin(timeline_result_worker) => TypedTimeLineResultWorker::tl_has_existed_within(
+                        TimeLineResultWorker {
+                            worker_id: TimeLineWorkerId(timeline_result_worker.worker_id.clone()),
+                            template_id: timeline_result_worker.template_id.clone(),
+                        }
+                    ),
+                    WitLeafTimeLineNode::TlLatestEventToState(timeline_result_worker) => TypedTimeLineResultWorker::tl_event_to_latest_state(
+                        TimeLineResultWorker {
+                            worker_id: TimeLineWorkerId(timeline_result_worker.worker_id.clone()),
+                            template_id: timeline_result_worker.template_id.clone(),
+                        }
+                    ),
+                }
+            }
+
+            WitTypedTimeLineResultWorker::DerivedTimeline(derived_timeline) => {
+                match derived_timeline {
+                    WitDerivedTimeLineNode::EqualTo(timeline_result_worker) => TypedTimeLineResultWorker::equal_to(
+                        TimeLineResultWorker {
+                            worker_id: TimeLineWorkerId(timeline_result_worker.worker_id.clone()),
+                            template_id: timeline_result_worker.template_id.clone(),
+                        }
+                    ),
+                    WitDerivedTimeLineNode::GreaterThan(timeline_result_worker) => TypedTimeLineResultWorker::greater_than(
+                        TimeLineResultWorker {
+                            worker_id: TimeLineWorkerId(timeline_result_worker.worker_id.clone()),
+                            template_id: timeline_result_worker.template_id.clone(),
+                        }
+                    ),
+                    WitDerivedTimeLineNode::GreaterThanOrEqualTo(timeline_result_worker) => TypedTimeLineResultWorker::greater_than_or_equal_to(
+                        TimeLineResultWorker {
+                            worker_id: TimeLineWorkerId(timeline_result_worker.worker_id.clone()),
+                            template_id: timeline_result_worker.template_id.clone(),
+                        }
+                    ),
+                    WitDerivedTimeLineNode::LessThan(timeline_result_worker) => TypedTimeLineResultWorker::less_than(
+                        TimeLineResultWorker {
+                            worker_id: TimeLineWorkerId(timeline_result_worker.worker_id.clone()),
+                            template_id: timeline_result_worker.template_id.clone(),
+                        }
+                    ),
+                    WitDerivedTimeLineNode::LessThanOrEqualTo(timeline_result_worker) => TypedTimeLineResultWorker::less_than_or_equal_to(
+                        TimeLineResultWorker {
+                            worker_id: TimeLineWorkerId(timeline_result_worker.worker_id.clone()),
+                            template_id: timeline_result_worker.template_id.clone(),
+                        }
+                    ),
+                    WitDerivedTimeLineNode::And(timeline_result_worker) => TypedTimeLineResultWorker::and(
+                        TimeLineResultWorker {
+                            worker_id: TimeLineWorkerId(timeline_result_worker.worker_id.clone()),
+                            template_id: timeline_result_worker.template_id.clone(),
+                        }
+                    ),
+                    WitDerivedTimeLineNode::Or(timeline_result_worker) => TypedTimeLineResultWorker::or(
+                        TimeLineResultWorker {
+                            worker_id: TimeLineWorkerId(timeline_result_worker.worker_id.clone()),
+                            template_id: timeline_result_worker.template_id.clone(),
+                        }
+                    ),
+                    WitDerivedTimeLineNode::Not(timeline_result_worker) => TypedTimeLineResultWorker::not(
+                        TimeLineResultWorker {
+                            worker_id: TimeLineWorkerId(timeline_result_worker.worker_id.clone()),
+                            template_id: timeline_result_worker.template_id.clone(),
+                        }
+                    ),
+                }
+            }
+        }
+    }
+
+    fn to_wit(&self) -> Self::WitType {
+        match self {
+            TypedTimeLineResultWorker::LeafTimeLine(leaf_timeline) => match leaf_timeline {
+                LeafTimeLineNode::TLHasExisted { time_line_worker } => {
+                    let worker = time_line_worker.clone().worker_id.0;
+                    let template_id = time_line_worker.clone().template_id;
+                    WitTypedTimeLineResultWorker::LeafTimeline(WitLeafTimeLineNode::TlHasExisted(
+                        WitTimeLineResultWorker {
+                            template_id,
+                            worker_id: worker,
+                        },
+                    ))
+                },
+                LeafTimeLineNode::TLHasExistedWithin { time_line_worker } => {
+                    let worker = time_line_worker.clone().worker_id.0;
+                    let template_id = time_line_worker.clone().template_id;
+                    WitTypedTimeLineResultWorker::LeafTimeline(WitLeafTimeLineNode::TlHasExistedWithin(
+                        WitTimeLineResultWorker {
+                            template_id,
+                            worker_id: worker,
+                        },
+                    ))
+                },
+
+                LeafTimeLineNode::TLEventToLatestState { time_line_worker } => {
+                    let worker = time_line_worker.clone().worker_id.0;
+                    let template_id = time_line_worker.clone().template_id;
+                    WitTypedTimeLineResultWorker::LeafTimeline(WitLeafTimeLineNode::TlLatestEventToState(
+                        WitTimeLineResultWorker {
+                            template_id,
+                            worker_id: worker,
+                        },
+                    ))
+                },
+            },
+
+            TypedTimeLineResultWorker::DerivedTimeLine(derived_timeline) => match derived_timeline {
+                DerivedTimeLineNode::EqualTo { result_worker } => {
+                    let worker = result_worker.clone().worker_id.0;
+                    let template_id = result_worker.clone().template_id;
+                    WitTypedTimeLineResultWorker::DerivedTimeline(WitDerivedTimeLineNode::EqualTo(
+                        WitTimeLineResultWorker {
+                            template_id,
+                            worker_id: worker,
+                        },
+                    ))
+                },
+                DerivedTimeLineNode::GreaterThan { result_worker } => {
+                    let worker = result_worker.clone().worker_id.0;
+                    let template_id = result_worker.clone().template_id;
+                    WitTypedTimeLineResultWorker::DerivedTimeline(WitDerivedTimeLineNode::GreaterThan(
+                        WitTimeLineResultWorker {
+                            template_id,
+                            worker_id: worker,
+                        },
+                    ))
+                },
+                DerivedTimeLineNode::GreaterThanOrEqualTo { result_worker } => {
+                    let worker = result_worker.clone().worker_id.0;
+                    let template_id = result_worker.clone().template_id;
+                    WitTypedTimeLineResultWorker::DerivedTimeline(WitDerivedTimeLineNode::GreaterThanOrEqualTo(
+                        WitTimeLineResultWorker {
+                            template_id,
+                            worker_id: worker,
+                        },
+                    ))
+                },
+                DerivedTimeLineNode::LessThan { result_worker } => {
+                    let worker = result_worker.clone().worker_id.0;
+                    let template_id = result_worker.clone().template_id;
+                    WitTypedTimeLineResultWorker::DerivedTimeline(WitDerivedTimeLineNode::LessThan(
+                        WitTimeLineResultWorker {
+                            template_id,
+                            worker_id: worker,
+                        },
+                    ))
+                },
+                DerivedTimeLineNode::LessThanOrEqualTo { result_worker } => {
+                    let worker = result_worker.clone().worker_id.0;
+                    let template_id = result_worker.clone().template_id;
+                    WitTypedTimeLineResultWorker::DerivedTimeline(WitDerivedTimeLineNode::LessThanOrEqualTo(
+                        WitTimeLineResultWorker {
+                            template_id,
+                            worker_id: worker,
+                        },
+                    ))
+                },
+
+                DerivedTimeLineNode::And { result_worker } => {
+                    let worker = result_worker.clone().worker_id.0;
+                    let template_id = result_worker.clone().template_id;
+                    WitTypedTimeLineResultWorker::DerivedTimeline(WitDerivedTimeLineNode::And(
+                        WitTimeLineResultWorker {
+                            template_id,
+                            worker_id: worker,
+                        }
+                    ))
+                },
+                DerivedTimeLineNode::Or { result_worker } => {
+                    let worker = result_worker.clone().worker_id.0;
+                    let template_id = result_worker.clone().template_id;
+                    WitTypedTimeLineResultWorker::DerivedTimeline(WitDerivedTimeLineNode::Or(
+                        WitTimeLineResultWorker {
+                            template_id,
+                            worker_id: worker,
+                        }
+                    ))
+                },
+                DerivedTimeLineNode::Not { result_worker } => {
+                    let worker = result_worker.clone().worker_id.0;
+                    let template_id = result_worker.clone().template_id;
+                    WitTypedTimeLineResultWorker::DerivedTimeline(WitDerivedTimeLineNode::Not(
+                        WitTimeLineResultWorker {
+                            template_id,
+                            worker_id: worker,
+                        },
+                    ))
+                },
+            }
+        }
+    }
 }
 
 // Golem Event Value conversion
@@ -43,19 +253,19 @@ impl Conversion for GolemEventValue {
 }
 
 // Timeline Node Worker conversion
-impl Conversion for TimeLineNodeWorker {
+impl Conversion for TimeLineNodeWorkerInput {
     type WitType = WitTimeLineNodeWorker;
 
     fn from_wit(input: Self::WitType) -> Self {
-        TimeLineNodeWorker {
-            worker_id: input.worker_id,
+        TimeLineNodeWorkerInput {
+            worker_id_prefix: TimeLineWorkerIdPrefix(input.worker_id_prefix),
             template_id: input.template_id,
         }
     }
 
     fn to_wit(&self) -> Self::WitType {
         WitTimeLineNodeWorker {
-            worker_id: self.worker_id.clone(),
+            worker_id_prefix: self.worker_id_prefix.0.clone(),
             template_id: self.template_id.clone(),
         }
     }
@@ -116,7 +326,7 @@ impl Conversion for TimeLineOp {
 mod internals {
     use timeline::event_predicate::{EventColumnName, GolemEventPredicate};
     use timeline::golem_event::GolemEventValue;
-    use timeline::timeline_node_worker::TimeLineNodeWorker;
+    use timeline::timeline_node_worker::TimeLineNodeWorkerInput;
     use timeline::timeline_op::TimeLineOp;
 
     use crate::bindings::exports::timeline::core::api::{
@@ -138,7 +348,7 @@ mod internals {
                 let golem_event_value: GolemEventValue =
                     GolemEventValue::from_wit(timeline_constant_compared.value.clone());
                 let timeline_node_worker =
-                    TimeLineNodeWorker::from_wit(timeline_constant_compared.server.clone());
+                    TimeLineNodeWorkerInput::from_wit(timeline_constant_compared.server.clone());
 
                 match timeline_constant_compared.op {
                     TimelineConstantComparator::GreaterThan => TimeLineOp::GreaterThan(
@@ -166,14 +376,14 @@ mod internals {
             WitTimeLineNode::TimelineNegation(timeline_negation) => {
                 let time_line =
                     build_timeline_tree(&nodes[timeline_negation.timeline as usize], nodes);
-                let timeline_node_worker: TimeLineNodeWorker =
-                    TimeLineNodeWorker::from_wit(timeline_negation.server.clone());
+                let timeline_node_worker: TimeLineNodeWorkerInput =
+                    TimeLineNodeWorkerInput::from_wit(timeline_negation.server.clone());
 
                 TimeLineOp::Not(timeline_node_worker, Box::new(time_line))
             }
             WitTimeLineNode::TlHasExisted(server_with_event_predicate) => {
-                let server: TimeLineNodeWorker =
-                    TimeLineNodeWorker::from_wit(server_with_event_predicate.server.clone());
+                let server: TimeLineNodeWorkerInput =
+                    TimeLineNodeWorkerInput::from_wit(server_with_event_predicate.server.clone());
                 let filter = GolemEventPredicate::from_wit(
                     server_with_event_predicate.event_predicate.clone(),
                 );
@@ -182,7 +392,7 @@ mod internals {
 
             WitTimeLineNode::TlHasExistedWithin(server_with_event_predicate_within) => {
                 let max_duration = server_with_event_predicate_within.time;
-                let server: TimeLineNodeWorker = TimeLineNodeWorker::from_wit(
+                let server: TimeLineNodeWorkerInput = TimeLineNodeWorkerInput::from_wit(
                     server_with_event_predicate_within.filtered.server.clone(),
                 );
 
@@ -199,18 +409,18 @@ mod internals {
                 let time_line = build_timeline_tree(&nodes[tl.timeline.clone() as usize], nodes);
 
                 TimeLineOp::TlDurationWhere(
-                    TimeLineNodeWorker::from_wit(tl.server.clone()),
+                    TimeLineNodeWorkerInput::from_wit(tl.server.clone()),
                     Box::new(time_line),
                 )
             }
             WitTimeLineNode::TlDurationInCurState(tl) => {
                 let time_line = build_timeline_tree(&nodes[tl.timeline as usize], nodes);
-                let timeline_node_worker = TimeLineNodeWorker::from_wit(tl.server.clone());
+                let timeline_node_worker = TimeLineNodeWorkerInput::from_wit(tl.server.clone());
                 TimeLineOp::TlDurationInCurState(timeline_node_worker, Box::new(time_line))
             }
             TimelineNode::TlLatestEventToState(server_with_event_column_name) => {
                 let server =
-                    TimeLineNodeWorker::from_wit(server_with_event_column_name.server.clone());
+                    TimeLineNodeWorkerInput::from_wit(server_with_event_column_name.server.clone());
                 let event_column_name =
                     EventColumnName(server_with_event_column_name.event_column_name.clone());
                 TimeLineOp::TlLatestEventToState(server, event_column_name)

@@ -18,8 +18,7 @@ for Api {
     }
     fn initialize_equal(
         &self,
-        child_url: crate::bindings::timeline::timeline_processor::api::WorkerId,
-        current_worker_id: crate::bindings::timeline::timeline_processor::api::WorkerId,
+        child_worker: crate::bindings::timeline::timeline_processor::api::TypedTimelineResultWorker,
         event_value: crate::bindings::timeline::timeline_processor::api::EventValue,
     ) -> Result<String, String> {
         let result = self
@@ -27,12 +26,240 @@ for Api {
             .invoke_and_await(
                 "timeline:timeline-processor/api/initialize-equal",
                 &[
-                    WitValue::builder().record().item().string(&child_url.name).finish(),
                     WitValue::builder()
-                        .record()
-                        .item()
-                        .string(&current_worker_id.name)
-                        .finish(),
+                        .variant_fn(
+                            match &child_worker {
+                                crate::bindings::timeline::timeline_processor::api::TypedTimelineResultWorker::LeafTimeline(
+                                    _,
+                                ) => 0u32,
+                                crate::bindings::timeline::timeline_processor::api::TypedTimelineResultWorker::DerivedTimeline(
+                                    _,
+                                ) => 1u32,
+                            },
+                            match &child_worker {
+                                crate::bindings::timeline::timeline_processor::api::TypedTimelineResultWorker::LeafTimeline(
+                                    _,
+                                ) => false,
+                                crate::bindings::timeline::timeline_processor::api::TypedTimelineResultWorker::DerivedTimeline(
+                                    _,
+                                ) => false,
+                            },
+                            |case_builder| match &child_worker {
+                                crate::bindings::timeline::timeline_processor::api::TypedTimelineResultWorker::LeafTimeline(
+                                    inner,
+                                ) => {
+                                    case_builder
+                                        .variant_fn(
+                                            match &inner {
+                                                crate::bindings::timeline::timeline_processor::api::LeafTimelineNode::TlHasExisted(
+                                                    _,
+                                                ) => 0u32,
+                                                crate::bindings::timeline::timeline_processor::api::LeafTimelineNode::TlHasExistedWithin(
+                                                    _,
+                                                ) => 1u32,
+                                                crate::bindings::timeline::timeline_processor::api::LeafTimelineNode::TlLatestEventToState(
+                                                    _,
+                                                ) => 2u32,
+                                            },
+                                            match &inner {
+                                                crate::bindings::timeline::timeline_processor::api::LeafTimelineNode::TlHasExisted(
+                                                    _,
+                                                ) => false,
+                                                crate::bindings::timeline::timeline_processor::api::LeafTimelineNode::TlHasExistedWithin(
+                                                    _,
+                                                ) => false,
+                                                crate::bindings::timeline::timeline_processor::api::LeafTimelineNode::TlLatestEventToState(
+                                                    _,
+                                                ) => false,
+                                            },
+                                            |case_builder| match &inner {
+                                                crate::bindings::timeline::timeline_processor::api::LeafTimelineNode::TlHasExisted(
+                                                    inner,
+                                                ) => {
+                                                    case_builder
+                                                        .record()
+                                                        .item()
+                                                        .string(&inner.worker_id)
+                                                        .item()
+                                                        .string(&inner.template_id)
+                                                        .finish()
+                                                }
+                                                crate::bindings::timeline::timeline_processor::api::LeafTimelineNode::TlHasExistedWithin(
+                                                    inner,
+                                                ) => {
+                                                    case_builder
+                                                        .record()
+                                                        .item()
+                                                        .string(&inner.worker_id)
+                                                        .item()
+                                                        .string(&inner.template_id)
+                                                        .finish()
+                                                }
+                                                crate::bindings::timeline::timeline_processor::api::LeafTimelineNode::TlLatestEventToState(
+                                                    inner,
+                                                ) => {
+                                                    case_builder
+                                                        .record()
+                                                        .item()
+                                                        .string(&inner.worker_id)
+                                                        .item()
+                                                        .string(&inner.template_id)
+                                                        .finish()
+                                                }
+                                            },
+                                        )
+                                }
+                                crate::bindings::timeline::timeline_processor::api::TypedTimelineResultWorker::DerivedTimeline(
+                                    inner,
+                                ) => {
+                                    case_builder
+                                        .variant_fn(
+                                            match &inner {
+                                                crate::bindings::timeline::timeline_processor::api::DerivedTimelineNode::EqualTo(
+                                                    _,
+                                                ) => 0u32,
+                                                crate::bindings::timeline::timeline_processor::api::DerivedTimelineNode::GreaterThan(
+                                                    _,
+                                                ) => 1u32,
+                                                crate::bindings::timeline::timeline_processor::api::DerivedTimelineNode::GreaterThanOrEqualTo(
+                                                    _,
+                                                ) => 2u32,
+                                                crate::bindings::timeline::timeline_processor::api::DerivedTimelineNode::LessThan(
+                                                    _,
+                                                ) => 3u32,
+                                                crate::bindings::timeline::timeline_processor::api::DerivedTimelineNode::LessThanOrEqualTo(
+                                                    _,
+                                                ) => 4u32,
+                                                crate::bindings::timeline::timeline_processor::api::DerivedTimelineNode::And(
+                                                    _,
+                                                ) => 5u32,
+                                                crate::bindings::timeline::timeline_processor::api::DerivedTimelineNode::Or(
+                                                    _,
+                                                ) => 6u32,
+                                                crate::bindings::timeline::timeline_processor::api::DerivedTimelineNode::Not(
+                                                    _,
+                                                ) => 7u32,
+                                            },
+                                            match &inner {
+                                                crate::bindings::timeline::timeline_processor::api::DerivedTimelineNode::EqualTo(
+                                                    _,
+                                                ) => false,
+                                                crate::bindings::timeline::timeline_processor::api::DerivedTimelineNode::GreaterThan(
+                                                    _,
+                                                ) => false,
+                                                crate::bindings::timeline::timeline_processor::api::DerivedTimelineNode::GreaterThanOrEqualTo(
+                                                    _,
+                                                ) => false,
+                                                crate::bindings::timeline::timeline_processor::api::DerivedTimelineNode::LessThan(
+                                                    _,
+                                                ) => false,
+                                                crate::bindings::timeline::timeline_processor::api::DerivedTimelineNode::LessThanOrEqualTo(
+                                                    _,
+                                                ) => false,
+                                                crate::bindings::timeline::timeline_processor::api::DerivedTimelineNode::And(
+                                                    _,
+                                                ) => false,
+                                                crate::bindings::timeline::timeline_processor::api::DerivedTimelineNode::Or(
+                                                    _,
+                                                ) => false,
+                                                crate::bindings::timeline::timeline_processor::api::DerivedTimelineNode::Not(
+                                                    _,
+                                                ) => false,
+                                            },
+                                            |case_builder| match &inner {
+                                                crate::bindings::timeline::timeline_processor::api::DerivedTimelineNode::EqualTo(
+                                                    inner,
+                                                ) => {
+                                                    case_builder
+                                                        .record()
+                                                        .item()
+                                                        .string(&inner.worker_id)
+                                                        .item()
+                                                        .string(&inner.template_id)
+                                                        .finish()
+                                                }
+                                                crate::bindings::timeline::timeline_processor::api::DerivedTimelineNode::GreaterThan(
+                                                    inner,
+                                                ) => {
+                                                    case_builder
+                                                        .record()
+                                                        .item()
+                                                        .string(&inner.worker_id)
+                                                        .item()
+                                                        .string(&inner.template_id)
+                                                        .finish()
+                                                }
+                                                crate::bindings::timeline::timeline_processor::api::DerivedTimelineNode::GreaterThanOrEqualTo(
+                                                    inner,
+                                                ) => {
+                                                    case_builder
+                                                        .record()
+                                                        .item()
+                                                        .string(&inner.worker_id)
+                                                        .item()
+                                                        .string(&inner.template_id)
+                                                        .finish()
+                                                }
+                                                crate::bindings::timeline::timeline_processor::api::DerivedTimelineNode::LessThan(
+                                                    inner,
+                                                ) => {
+                                                    case_builder
+                                                        .record()
+                                                        .item()
+                                                        .string(&inner.worker_id)
+                                                        .item()
+                                                        .string(&inner.template_id)
+                                                        .finish()
+                                                }
+                                                crate::bindings::timeline::timeline_processor::api::DerivedTimelineNode::LessThanOrEqualTo(
+                                                    inner,
+                                                ) => {
+                                                    case_builder
+                                                        .record()
+                                                        .item()
+                                                        .string(&inner.worker_id)
+                                                        .item()
+                                                        .string(&inner.template_id)
+                                                        .finish()
+                                                }
+                                                crate::bindings::timeline::timeline_processor::api::DerivedTimelineNode::And(
+                                                    inner,
+                                                ) => {
+                                                    case_builder
+                                                        .record()
+                                                        .item()
+                                                        .string(&inner.worker_id)
+                                                        .item()
+                                                        .string(&inner.template_id)
+                                                        .finish()
+                                                }
+                                                crate::bindings::timeline::timeline_processor::api::DerivedTimelineNode::Or(
+                                                    inner,
+                                                ) => {
+                                                    case_builder
+                                                        .record()
+                                                        .item()
+                                                        .string(&inner.worker_id)
+                                                        .item()
+                                                        .string(&inner.template_id)
+                                                        .finish()
+                                                }
+                                                crate::bindings::timeline::timeline_processor::api::DerivedTimelineNode::Not(
+                                                    inner,
+                                                ) => {
+                                                    case_builder
+                                                        .record()
+                                                        .item()
+                                                        .string(&inner.worker_id)
+                                                        .item()
+                                                        .string(&inner.template_id)
+                                                        .finish()
+                                                }
+                                            },
+                                        )
+                                }
+                            },
+                        ),
                     WitValue::builder()
                         .variant_fn(
                             match &event_value {

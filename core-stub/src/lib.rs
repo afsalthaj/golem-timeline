@@ -18,7 +18,10 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
     fn initialize_timeline(
         &self,
         timeline: crate::bindings::timeline::core::api::TimelineOp,
-    ) -> Result<String, String> {
+    ) -> Result<
+        crate::bindings::timeline::core::api::TypedTimelineResultWorker,
+        String,
+    > {
         let result = self
             .rpc
             .invoke_and_await(
@@ -87,7 +90,7 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                                     .item()
                                                     .record()
                                                     .item()
-                                                    .string(&inner.server.worker_id)
+                                                    .string(&inner.server.worker_id_prefix)
                                                     .item()
                                                     .string(&inner.server.template_id)
                                                     .finish()
@@ -167,7 +170,7 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                                     .item()
                                                     .record()
                                                     .item()
-                                                    .string(&inner.server.worker_id)
+                                                    .string(&inner.server.worker_id_prefix)
                                                     .item()
                                                     .string(&inner.server.template_id)
                                                     .finish()
@@ -247,7 +250,7 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                                     .item()
                                                     .record()
                                                     .item()
-                                                    .string(&inner.filtered.server.worker_id)
+                                                    .string(&inner.filtered.server.worker_id_prefix)
                                                     .item()
                                                     .string(&inner.filtered.server.template_id)
                                                     .finish()
@@ -328,7 +331,7 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                                     .item()
                                                     .record()
                                                     .item()
-                                                    .string(&inner.server.worker_id)
+                                                    .string(&inner.server.worker_id_prefix)
                                                     .item()
                                                     .string(&inner.server.template_id)
                                                     .finish()
@@ -344,7 +347,7 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                                     .item()
                                                     .record()
                                                     .item()
-                                                    .string(&inner.server.worker_id)
+                                                    .string(&inner.server.worker_id_prefix)
                                                     .item()
                                                     .string(&inner.server.template_id)
                                                     .finish()
@@ -358,7 +361,7 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                                     .item()
                                                     .record()
                                                     .item()
-                                                    .string(&inner.server.worker_id)
+                                                    .string(&inner.server.worker_id_prefix)
                                                     .item()
                                                     .string(&inner.server.template_id)
                                                     .finish()
@@ -374,7 +377,7 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                                     .item()
                                                     .record()
                                                     .item()
-                                                    .string(&inner.server.worker_id)
+                                                    .string(&inner.server.worker_id_prefix)
                                                     .item()
                                                     .string(&inner.server.template_id)
                                                     .finish()
@@ -402,13 +405,246 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                 .expect("result not found");
             match result {
                 Ok(ok_value) => {
-                    Ok(
-                        ok_value
+                    Ok({
+                        let (case_idx, inner) = ok_value
                             .expect("result ok value not found")
-                            .string()
-                            .expect("string not found")
-                            .to_string(),
-                    )
+                            .variant()
+                            .expect("variant not found");
+                        match case_idx {
+                            0u32 => {
+                                crate::bindings::timeline::timeline_processor::api::TypedTimelineResultWorker::LeafTimeline({
+                                    let (case_idx, inner) = inner
+                                        .expect("variant case not found")
+                                        .variant()
+                                        .expect("variant not found");
+                                    match case_idx {
+                                        0u32 => {
+                                            crate::bindings::timeline::timeline_processor::api::LeafTimelineNode::TlHasExisted({
+                                                let record = inner.expect("variant case not found");
+                                                crate::bindings::timeline::timeline_processor::api::TimelineResultWorker {
+                                                    worker_id: record
+                                                        .field(0usize)
+                                                        .expect("record field not found")
+                                                        .string()
+                                                        .expect("string not found")
+                                                        .to_string(),
+                                                    template_id: record
+                                                        .field(1usize)
+                                                        .expect("record field not found")
+                                                        .string()
+                                                        .expect("string not found")
+                                                        .to_string(),
+                                                }
+                                            })
+                                        }
+                                        1u32 => {
+                                            crate::bindings::timeline::timeline_processor::api::LeafTimelineNode::TlHasExistedWithin({
+                                                let record = inner.expect("variant case not found");
+                                                crate::bindings::timeline::timeline_processor::api::TimelineResultWorker {
+                                                    worker_id: record
+                                                        .field(0usize)
+                                                        .expect("record field not found")
+                                                        .string()
+                                                        .expect("string not found")
+                                                        .to_string(),
+                                                    template_id: record
+                                                        .field(1usize)
+                                                        .expect("record field not found")
+                                                        .string()
+                                                        .expect("string not found")
+                                                        .to_string(),
+                                                }
+                                            })
+                                        }
+                                        2u32 => {
+                                            crate::bindings::timeline::timeline_processor::api::LeafTimelineNode::TlLatestEventToState({
+                                                let record = inner.expect("variant case not found");
+                                                crate::bindings::timeline::timeline_processor::api::TimelineResultWorker {
+                                                    worker_id: record
+                                                        .field(0usize)
+                                                        .expect("record field not found")
+                                                        .string()
+                                                        .expect("string not found")
+                                                        .to_string(),
+                                                    template_id: record
+                                                        .field(1usize)
+                                                        .expect("record field not found")
+                                                        .string()
+                                                        .expect("string not found")
+                                                        .to_string(),
+                                                }
+                                            })
+                                        }
+                                        _ => unreachable!("invalid variant case index"),
+                                    }
+                                })
+                            }
+                            1u32 => {
+                                crate::bindings::timeline::timeline_processor::api::TypedTimelineResultWorker::DerivedTimeline({
+                                    let (case_idx, inner) = inner
+                                        .expect("variant case not found")
+                                        .variant()
+                                        .expect("variant not found");
+                                    match case_idx {
+                                        0u32 => {
+                                            crate::bindings::timeline::timeline_processor::api::DerivedTimelineNode::EqualTo({
+                                                let record = inner.expect("variant case not found");
+                                                crate::bindings::timeline::timeline_processor::api::TimelineResultWorker {
+                                                    worker_id: record
+                                                        .field(0usize)
+                                                        .expect("record field not found")
+                                                        .string()
+                                                        .expect("string not found")
+                                                        .to_string(),
+                                                    template_id: record
+                                                        .field(1usize)
+                                                        .expect("record field not found")
+                                                        .string()
+                                                        .expect("string not found")
+                                                        .to_string(),
+                                                }
+                                            })
+                                        }
+                                        1u32 => {
+                                            crate::bindings::timeline::timeline_processor::api::DerivedTimelineNode::GreaterThan({
+                                                let record = inner.expect("variant case not found");
+                                                crate::bindings::timeline::timeline_processor::api::TimelineResultWorker {
+                                                    worker_id: record
+                                                        .field(0usize)
+                                                        .expect("record field not found")
+                                                        .string()
+                                                        .expect("string not found")
+                                                        .to_string(),
+                                                    template_id: record
+                                                        .field(1usize)
+                                                        .expect("record field not found")
+                                                        .string()
+                                                        .expect("string not found")
+                                                        .to_string(),
+                                                }
+                                            })
+                                        }
+                                        2u32 => {
+                                            crate::bindings::timeline::timeline_processor::api::DerivedTimelineNode::GreaterThanOrEqualTo({
+                                                let record = inner.expect("variant case not found");
+                                                crate::bindings::timeline::timeline_processor::api::TimelineResultWorker {
+                                                    worker_id: record
+                                                        .field(0usize)
+                                                        .expect("record field not found")
+                                                        .string()
+                                                        .expect("string not found")
+                                                        .to_string(),
+                                                    template_id: record
+                                                        .field(1usize)
+                                                        .expect("record field not found")
+                                                        .string()
+                                                        .expect("string not found")
+                                                        .to_string(),
+                                                }
+                                            })
+                                        }
+                                        3u32 => {
+                                            crate::bindings::timeline::timeline_processor::api::DerivedTimelineNode::LessThan({
+                                                let record = inner.expect("variant case not found");
+                                                crate::bindings::timeline::timeline_processor::api::TimelineResultWorker {
+                                                    worker_id: record
+                                                        .field(0usize)
+                                                        .expect("record field not found")
+                                                        .string()
+                                                        .expect("string not found")
+                                                        .to_string(),
+                                                    template_id: record
+                                                        .field(1usize)
+                                                        .expect("record field not found")
+                                                        .string()
+                                                        .expect("string not found")
+                                                        .to_string(),
+                                                }
+                                            })
+                                        }
+                                        4u32 => {
+                                            crate::bindings::timeline::timeline_processor::api::DerivedTimelineNode::LessThanOrEqualTo({
+                                                let record = inner.expect("variant case not found");
+                                                crate::bindings::timeline::timeline_processor::api::TimelineResultWorker {
+                                                    worker_id: record
+                                                        .field(0usize)
+                                                        .expect("record field not found")
+                                                        .string()
+                                                        .expect("string not found")
+                                                        .to_string(),
+                                                    template_id: record
+                                                        .field(1usize)
+                                                        .expect("record field not found")
+                                                        .string()
+                                                        .expect("string not found")
+                                                        .to_string(),
+                                                }
+                                            })
+                                        }
+                                        5u32 => {
+                                            crate::bindings::timeline::timeline_processor::api::DerivedTimelineNode::And({
+                                                let record = inner.expect("variant case not found");
+                                                crate::bindings::timeline::timeline_processor::api::TimelineResultWorker {
+                                                    worker_id: record
+                                                        .field(0usize)
+                                                        .expect("record field not found")
+                                                        .string()
+                                                        .expect("string not found")
+                                                        .to_string(),
+                                                    template_id: record
+                                                        .field(1usize)
+                                                        .expect("record field not found")
+                                                        .string()
+                                                        .expect("string not found")
+                                                        .to_string(),
+                                                }
+                                            })
+                                        }
+                                        6u32 => {
+                                            crate::bindings::timeline::timeline_processor::api::DerivedTimelineNode::Or({
+                                                let record = inner.expect("variant case not found");
+                                                crate::bindings::timeline::timeline_processor::api::TimelineResultWorker {
+                                                    worker_id: record
+                                                        .field(0usize)
+                                                        .expect("record field not found")
+                                                        .string()
+                                                        .expect("string not found")
+                                                        .to_string(),
+                                                    template_id: record
+                                                        .field(1usize)
+                                                        .expect("record field not found")
+                                                        .string()
+                                                        .expect("string not found")
+                                                        .to_string(),
+                                                }
+                                            })
+                                        }
+                                        7u32 => {
+                                            crate::bindings::timeline::timeline_processor::api::DerivedTimelineNode::Not({
+                                                let record = inner.expect("variant case not found");
+                                                crate::bindings::timeline::timeline_processor::api::TimelineResultWorker {
+                                                    worker_id: record
+                                                        .field(0usize)
+                                                        .expect("record field not found")
+                                                        .string()
+                                                        .expect("string not found")
+                                                        .to_string(),
+                                                    template_id: record
+                                                        .field(1usize)
+                                                        .expect("record field not found")
+                                                        .string()
+                                                        .expect("string not found")
+                                                        .to_string(),
+                                                }
+                                            })
+                                        }
+                                        _ => unreachable!("invalid variant case index"),
+                                    }
+                                })
+                            }
+                            _ => unreachable!("invalid variant case index"),
+                        }
+                    })
                 }
                 Err(err_value) => {
                     Err(

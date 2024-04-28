@@ -14,10 +14,6 @@ interface api {
     bool-value(bool),
   }
 
-  record worker-id {
-    name: string
-  }
-
   record time-period {
     t1: u64,
     t2: u64
@@ -45,9 +41,9 @@ interface api {
     op: event-predicate-op
   }
 
-  initialize-latest-event-state: func(worker: worker-id, event-col-name: string) -> result<string, string>;
-  initialize-tl-has-existed: func(worker: worker-id, event-predicate: event-predicate) -> result<string, string>;
-  initialize-tl-has-existed-within: func(worker: worker-id, event-predicate: event-predicate, time: u64) -> result<string, string>;
+  initialize-latest-event-state: func(event-col-name: string) -> result<string, string>;
+  initialize-tl-has-existed: func(event-predicate: event-predicate) -> result<string, string>;
+  initialize-tl-has-existed-within: func(event-predicate: event-predicate, time: u64) -> result<string, string>;
   add-event: func(event: event) -> result<string, string>;
   latest-event-to-state: func(t1: u64) -> result<latest-event-to-state-result, string>;
   tl-has-existed: func(t1: u64) -> result<bool, string>;
