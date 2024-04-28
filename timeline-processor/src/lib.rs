@@ -34,4 +34,32 @@ impl Guest for Component {
 
         Ok("Successfully initiated the worker to compute equals".to_string())
     }
+
+    fn initialize_greater_than(child_worker: TypedTimelineResultWorker, event_value: EventValue) -> Result<String, String> {
+        todo!()
+    }
+
+    fn initialize_greater_than_or_equal_to(child_worker: TypedTimelineResultWorker, event_value: EventValue) -> Result<String, String> {
+        todo!()
+    }
+
+    fn initialize_less_than(child_worker: TypedTimelineResultWorker, event_value: EventValue) -> Result<String, String> {
+        todo!()
+    }
+
+    fn initialize_less_than_or_equal_to(child_worker: TypedTimelineResultWorker, event_value: EventValue) -> Result<String, String> {
+        todo!()
+    }
+
+    fn initialize_and(child_worker1: TypedTimelineResultWorker, child_worker2: TypedTimelineResultWorker, event_value: EventValue) -> Result<String, String> {
+        todo!()
+    }
+
+    fn initialize_or(child_worker1: TypedTimelineResultWorker, child_worker2: TypedTimelineResultWorker, event_value: EventValue) -> Result<String, String> {
+        todo!()
+    }
+
+    fn initialize_not(child_worker: TypedTimelineResultWorker, event_value: EventValue) -> Result<String, String> {
+        todo!()
+    }
 }
