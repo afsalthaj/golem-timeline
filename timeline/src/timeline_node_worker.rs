@@ -42,6 +42,7 @@ pub struct TimeLineResultWorker {
 
 // This not only says the worker in which result is available,
 // but also specifies the type of computation that was done as part of the worker
+#[derive(Clone, Debug)]
 pub enum TypedTimeLineResultWorker {
     LeafTimeLine(LeafTimeLineNode),
     DerivedTimeLine(DerivedTimeLineNode)
