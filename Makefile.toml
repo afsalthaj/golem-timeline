@@ -17,7 +17,6 @@ dependencies = ["generate-event-processor-stub"]
 args = ["stubgen", "add-stub-dependency", "--stub-wit-root", "timeline-processor-stub/wit", "--dest-wit-root", "core/wit", "--overwrite", "--update-cargo-toml"]
 command = "golem-cli"
 cwd = "."
-dependencies = ["generate-timeline-processor-stub"]
 
 [tasks.add-stub-dependency-event-processor-timline-processor]
 args = ["stubgen", "add-stub-dependency", "--stub-wit-root", "event-processor-stub/wit", "--dest-wit-root", "timeline-processor/wit", "--overwrite", "--update-cargo-toml"]
@@ -30,7 +29,6 @@ dependencies = ["generate-event-processor-stub"]
 args = ["stubgen", "add-stub-dependency", "--stub-wit-root", "timeline-processor-stub/wit", "--dest-wit-root", "timeline-processor/wit", "--overwrite", "--update-cargo-toml"]
 command = "golem-cli"
 cwd = "."
-dependencies = ["generate-timeline-processor-stub"]
 
 [tasks.build]
 args = ["build"]
@@ -116,11 +114,6 @@ args = ["stubgen", "generate", "-s", "event-processor/wit", "-d", "event-process
 command = "golem-cli"
 cwd = "."
 
-[tasks.generate-timeline-processor-stub]
-args = ["stubgen", "generate", "-s", "timeline-processor/wit", "-d", "timeline-processor-stub"]
-command = "golem-cli"
-cwd = "."
-
 
 [tasks.post-build]
 dependencies = ["compose-driver", "compose-core-with-event-processor", "compose-timeline-processor-with-event-processor", "compose-core-with-event-processor-with-timeline-processor"]
@@ -129,7 +122,7 @@ dependencies = ["compose-driver", "compose-core-with-event-processor", "compose-
 dependencies = ["compose-release-driver", "compose-release-core-with-event-processor", "compose-release-timeline-processor-with-event-processor", "compose-release-core-with-event-processor-with-timeline-processor"]
 
 [tasks.regenerate-stubs]
-dependencies = ["add-stub-dependency-core-driver", "add-stub-dependency-event-processor-core", "add-stub-dependency-timeline-processor-core", "add-stub-dependency-event-processor-timline-processor", "generate-timeline-processor-stub"]
+dependencies = ["add-stub-dependency-core-driver", "add-stub-dependency-event-processor-core", "add-stub-dependency-timeline-processor-core", "add-stub-dependency-event-processor-timline-processor"]
 
 [tasks.release-build-flow]
 dependencies = ["build-release", "post-build-release"]

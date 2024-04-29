@@ -1922,7 +1922,7 @@ pub mod golem {
                           static __FORCE_SECTION_REF: fn() = super::super::super::__link_section;
                           pub type Uri = super::super::super::golem::rpc::types::Uri;
                           pub type Event = super::super::super::timeline::event_processor::api::Event;
-                          pub type EventValueTimelineResult = super::super::super::timeline::event_processor::api::TimelineResult;
+                          pub type TimelineResult = super::super::super::timeline::event_processor::api::TimelineResult;
                           pub type EventPredicate = super::super::super::timeline::event_processor::api::EventPredicate;
                           
                           #[derive(Debug)]

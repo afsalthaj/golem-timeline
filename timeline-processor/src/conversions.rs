@@ -3,7 +3,6 @@ use timeline::golem_event::GolemEventValue;
 use timeline::state_dynamic_timeline::StateDynamicsTimeLine;
 use timeline::state_dynamic_timeline_point::StateDynamicsTimeLinePoint;
 use crate::bindings::timeline::event_processor::api::{EventValue, TimelineResult, TimelineResultPoint, TimePeriod};
-use crate::bindings::timeline::event_processor_stub::stub_event_processor::TimelineResult;
 
 pub trait Conversion: Clone + Debug {
     type WitType: Clone;

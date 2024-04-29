@@ -8,7 +8,7 @@ use crate::bindings::timeline::event_processor_stub::stub_event_processor;
 use crate::bindings::timeline::timeline_processor_stub::stub_timeline_processor;
 use crate::bindings::golem::rpc::types::Uri;
 use extensions::WorkerResultExt;
-use conversions::Conversion;;
+use conversions::Conversion;
 mod bindings;
 mod extensions;
 mod conversions;

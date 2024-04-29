@@ -5,6 +5,7 @@ interface stub-timeline-processor {
   use timeline:event-processor/api.{event-value};
   use timeline:event-processor/api.{timeline-result};
 
+
   record timeline-result-worker {
     worker-id: string,
     template-id: string
