@@ -2,4 +2,3 @@
 # where we make sure compositions
 cargo component build
 cargo make compose-timeline-and-event-with-timeline-processor
-

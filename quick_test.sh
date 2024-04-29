@@ -9,6 +9,7 @@ driver_with_core_template_name="driver_with_core${current_epoch}"
 core_composed_template_id=$(golem-cli -F json component add --component-name core_composed_all${current_epoch} target/wasm32-wasi/debug/core_composed_leaf.wasm | jq .componentId)
 event_processor_template_id=$(golem-cli -F json component add --component-name raw_event${current_epoch} target/wasm32-wasi/debug/event_processor.wasm | jq .componentId)
 driver_template_id=$(golem-cli -F json component add --component-name "$driver_with_core_template_name" target/wasm32-wasi/debug/driver_composed.wasm| jq .componentId)
+timeline_processor_final_template_id=$(golem-cli -F json component add --component-name timeline_processor_final${current_epoch} target/wasm32-wasi/debug/timeline_processor_final.wasm | jq .componentId)
 
 echo "Template IDs:"
 echo "Core Composed: $core_composed_template_id"

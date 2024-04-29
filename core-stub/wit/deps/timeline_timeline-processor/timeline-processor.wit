@@ -4,8 +4,7 @@ interface api {
   use timeline:event-processor/api.{event-value};
   use timeline:event-processor/api.{timeline-result};
 
-
-record timeline-result-worker {
+  record timeline-result-worker {
     worker-id: string,
     template-id: string
   }
@@ -42,6 +41,7 @@ record timeline-result-worker {
   initialize-not: func(child-worker: typed-timeline-result-worker) -> result<string, string>;
 
   get-timeline-result: func(t1: u64) -> result<timeline-result, string>;
+
 }
 
 world timeline-processor {

@@ -134,11 +134,12 @@ It's good to download the latest dockeer-compose from golem website or repositor
 
 ```bash
 cargo make build-flow
+./build.sh
 ```
 
-Things will fail here, as we have bumped into this issue: https://github.com/golemcloud/wasm-rpc/issues/40
+Please note that timeline-processor-stub project isn't listed in `Makefile.toml` due to: https://github.com/golemcloud/wasm-rpc/issues/40
+This implies, if you are making changes to timeline-processor related wit files, you will run into various issues.
 
-Until then you may have to rely on `build.sh` script in this repository.
 
 ### Run a quick test
 

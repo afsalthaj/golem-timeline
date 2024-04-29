@@ -3,13 +3,13 @@ package timeline:timeline-processor-stub;
 interface stub-timeline-processor {
   use golem:rpc/types@0.1.0.{uri};
   use timeline:timeline-processor/api.{event-value};
+  use timeline:timeline-processor/api.{timeline-result};
   use timeline:timeline-processor/api.{timeline-result-worker};
   use timeline:timeline-processor/api.{leaf-timeline-node};
   use timeline:timeline-processor/api.{derived-timeline-node};
   use timeline:timeline-processor/api.{typed-timeline-result-worker};
-  use timeline:event-processor/api.{timeline-result};
 
-resource api {
+  resource api {
     constructor(location: uri);
     initialize-equal: func(child-worker: typed-timeline-result-worker, event-value: event-value) -> result<string, string>;
     initialize-greater-than: func(child-worker: typed-timeline-result-worker, event-value: event-value) -> result<string, string>;
@@ -19,9 +19,7 @@ resource api {
     initialize-and: func(child-worker1: typed-timeline-result-worker, child-worker2: typed-timeline-result-worker) -> result<string, string>;
     initialize-or: func(child-worker1: typed-timeline-result-worker, child-worker2: typed-timeline-result-worker) -> result<string, string>;
     initialize-not: func(child-worker: typed-timeline-result-worker) -> result<string, string>;
-
     get-timeline-result: func(t1: u64) -> result<timeline-result, string>;
-
   }
 
 }
