@@ -138,8 +138,17 @@ cargo make build-flow
 ```
 
 Please note that timeline-processor-stub project isn't listed in `Makefile.toml` due to: https://github.com/golemcloud/wasm-rpc/issues/40
-This implies, if you are making changes to timeline-processor related wit files, you will run into various issues.
+This implies, if you are making changes to timeline-processor related wit files, you will run into various issues. One hack you could do is, 
+after making changes the timeline=processor/wit file, generate the stub again using
 
+```sh
+
+golem-cli stubgen generate -s timeline-processor/wit -d timeline-processor-stub
+
+```
+
+And then explicitly delete the new wit directories that was created, followed by `cargo component build`, which will direct you further on what to do!
+But be aware that this can be slightly tricky.
 
 ### Run a quick test
 
