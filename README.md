@@ -1,4 +1,4 @@
-## TimeLine-Golem (A work in progress)
+## TimeLine-Golem
 
 Forget imperative style and extremely complex and hefty data piplelines and streaming (probably with Spark and python/df, SQL queries) with the help of Timeline paper from Conviva backed by durable execution of Golem.
 
@@ -117,7 +117,7 @@ golem-cli 0.0.96
 
 Mostly all you need is:
 
-### Spin up golem
+## Spin up golem
 
 ```sh
 docker-compose up -d
@@ -130,7 +130,7 @@ The docker version should correspond to 0.0.96 similar to CLI.
 It's good to download the latest dockeer-compose from golem website or repository, to avoid any issues.
 
 
-### Generate all required code and build timeline project
+## Generate all required code and build timeline project
 
 ```bash
 cargo make build-flow
@@ -174,7 +174,7 @@ Invocation results in WAVE format:
 ...
 ```
 
-### Streaming with Pulsar
+## Streaming with Pulsar
 
 Now for demo purpose we use `pulsar` for streaming. We have a sample `producer` and a `feeder` (which reads the events and feeds it to the worker that handles the events directly).
 More explanations on different types of workers (processing events, processing timelines itself etc) will be given later.
