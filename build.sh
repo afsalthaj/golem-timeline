@@ -1,7 +1,5 @@
 # A temporary build script until a few issues with wasm-rpc is fixed
+# where we make sure compositions
 cargo component build
-cargo make compose-driver
-cargo make compose-core-with-event-processor
-cargo make compose-timeline-processor-with-event-processor
 cargo make compose-timeline-and-event-with-timeline-processor
 

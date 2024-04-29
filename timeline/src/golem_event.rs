@@ -17,6 +17,15 @@ pub enum GolemEventValue {
     BoolValue(bool),
 }
 
+impl GolemEventValue {
+    pub fn get_bool(&self) -> Option<bool> {
+        match self {
+            GolemEventValue::BoolValue(b) => Some(*b),
+            _ => None,
+        }
+    }
+}
+
 impl Display for GolemEventValue {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match self {

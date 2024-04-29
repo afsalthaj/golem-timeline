@@ -1,13 +1,17 @@
 use std::cell::RefCell;
 use timeline::event_predicate::EventColumnName;
 use timeline::golem_event::GolemEventValue;
+use timeline::state_dynamic_timeline;
 use timeline::state_dynamic_timeline::StateDynamicsTimeLine;
-use crate::bindings::exports::timeline::timeline_processor::api::{EventValue, Guest, TypedTimelineResultWorker};
+use crate::bindings::exports::timeline::timeline_processor::api::{EventValue, Guest, TimelineResult, TypedTimelineResultWorker, DerivedTimelineNode, LeafTimelineNode, TimelineResultWorker};
 use crate::bindings::timeline::event_processor_stub::stub_event_processor;
-//use crate::bindings::timeline::timeline_processor_stub::stub_timeline_processor;
+use crate::bindings::timeline::timeline_processor_stub::stub_timeline_processor;
 use crate::bindings::golem::rpc::types::Uri;
-
+use extensions::WorkerResultExt;
+use conversions::Conversion;;
 mod bindings;
+mod extensions;
+mod conversions;
 
 struct Component;
 
@@ -52,6 +56,8 @@ struct TLOr {
 
 
 thread_local! {
+    static ACTIVE_STATE: RefCell<Option<ActiveState>> = RefCell::new(None);
+
     static TL_EQUAL_STATE: RefCell<TLEqual> = RefCell::new(TLEqual {
         child_worker: None,
         event_value: None
@@ -156,6 +162,14 @@ fn with_not_state<T>(
     return result;
 }
 
+fn with_active_state<T>(
+    f: impl FnOnce(&mut Option<ActiveState>) -> T,
+) -> T {
+    let result = ACTIVE_STATE.with_borrow_mut(|state| f(state));
+
+    return result;
+}
+
 
 
 impl Guest for Component {
@@ -165,6 +179,10 @@ impl Guest for Component {
             state.event_value = Some(event_value);
             Ok("Successfully initiated equal computation worker".to_string())
         })?;
+
+        with_active_state(|state| {
+            *state = Some(ActiveState::Equal);
+        });
 
         Ok("Successfully initiated the worker to compute equals".to_string())
     }
@@ -176,6 +194,10 @@ impl Guest for Component {
             Ok("Successfully initiated greater than computation worker".to_string())
         })?;
 
+        with_active_state(|state| {
+            *state = Some(ActiveState::GreaterThan);
+        });
+
         Ok("Successfully initiated the worker to compute greater than".to_string())
     }
 
@@ -185,6 +207,10 @@ impl Guest for Component {
             state.event_value = Some(event_value);
             Ok("Successfully initiated greater than or equal to computation worker".to_string())
         })?;
+
+        with_active_state(|state| {
+            *state = Some(ActiveState::GreaterThanOrEqualTo);
+        });
 
         Ok("Successfully initiated the worker to compute greater than or equal to".to_string())
     }
@@ -196,6 +222,10 @@ impl Guest for Component {
             Ok("Successfully initiated less than computation worker".to_string())
         })?;
 
+        with_active_state(|state| {
+            *state = Some(ActiveState::LessThan);
+        });
+
         Ok("Successfully initiated the worker to compute less than".to_string())
     }
 
@@ -205,6 +235,10 @@ impl Guest for Component {
             state.event_value = Some(event_value);
             Ok("Successfully initiated less than or equal to computation worker".to_string())
         })?;
+
+        with_active_state(|state| {
+            *state = Some(ActiveState::LessThanOrEqualTo);
+        });
 
         Ok("Successfully initiated the worker to compute less than or equal to".to_string())
     }
@@ -216,6 +250,10 @@ impl Guest for Component {
             Ok("Successfully initiated and computation worker".to_string())
         })?;
 
+        with_active_state(|state| {
+            *state = Some(ActiveState::And);
+        });
+
         Ok("Successfully initiated the worker to compute and".to_string())
     }
 
@@ -226,6 +264,10 @@ impl Guest for Component {
             Ok("Successfully initiated or computation worker".to_string())
         })?;
 
+        with_active_state(|state| {
+            *state = Some(ActiveState::Or);
+        });
+
         Ok("Successfully initiated the worker to compute or".to_string())
     }
 
@@ -235,6 +277,141 @@ impl Guest for Component {
             Ok("Successfully initiated not computation worker".to_string())
         })?;
 
+        with_active_state(|state| {
+            *state = Some(ActiveState::Not);
+        });
+
         Ok("Successfully initiated the worker to compute not".to_string())
     }
+
+    fn get_timeline_result(t1: u64) -> Result<TimelineResult, String> {
+        with_active_state(|state| {
+            match state {
+                Some(ActiveState::Equal) => {
+                    with_equal_state(|state| {
+                        let child_worker = state.child_worker.as_ref().unwrap();
+                        let event_value = state.event_value.as_ref().unwrap();
+                        let golem_event_value = GolemEventValue::from_wit(event_value.clone());
+                        let time_line_result = child_worker.get_timeline_result(t1)?;
+                        let state_dynamic_timeline = StateDynamicsTimeLine::from_wit(time_line_result);
+                        let result = state_dynamic_timeline.equal_to(golem_event_value).map(|x| GolemEventValue::BoolValue(*x));
+
+                        Ok(result.to_wit())
+                    })
+                }
+                Some(ActiveState::GreaterThan) => {
+                    with_greater_than_state(|state| {
+                        let child_worker = state.child_worker.as_ref().unwrap();
+                        let event_value = state.event_value.as_ref().unwrap();
+                        let golem_event_value = GolemEventValue::from_wit(event_value.clone());
+                        let time_line_result = child_worker.get_timeline_result(t1)?;
+                        let state_dynamic_timeline = StateDynamicsTimeLine::from_wit(time_line_result);
+                        let result = state_dynamic_timeline.greater_than(golem_event_value).map(|x| GolemEventValue::BoolValue(*x));
+
+                        Ok(result.to_wit())
+                    })
+                }
+                Some(ActiveState::GreaterThanOrEqualTo) => {
+                    with_greater_than_or_equal_to_state(|state| {
+                        let child_worker = state.child_worker.as_ref().unwrap();
+                        let event_value = state.event_value.as_ref().unwrap();
+                        let golem_event_value = GolemEventValue::from_wit(event_value.clone());
+                        let time_line_result = child_worker.get_timeline_result(t1)?;
+                        let state_dynamic_timeline = StateDynamicsTimeLine::from_wit(time_line_result);
+                        let result = state_dynamic_timeline.greater_than_or_equal_to(golem_event_value).map(|x| GolemEventValue::BoolValue(*x));
+
+                        Ok(result.to_wit())
+                    })
+                }
+
+                Some(ActiveState::LessThan) => {
+                    with_less_than_state(|state| {
+                        let child_worker = state.child_worker.as_ref().unwrap();
+                        let event_value = state.event_value.as_ref().unwrap();
+                        let golem_event_value = GolemEventValue::from_wit(event_value.clone());
+                        let time_line_result = child_worker.get_timeline_result(t1)?;
+                        let state_dynamic_timeline = StateDynamicsTimeLine::from_wit(time_line_result);
+                        let result = state_dynamic_timeline.less_than(golem_event_value).map(|x| GolemEventValue::BoolValue(*x));
+
+                        Ok(result.to_wit())
+                    })
+                }
+
+                Some(ActiveState::LessThanOrEqualTo) => {
+                    with_less_than_or_equal_to_state(|state| {
+                        let child_worker = state.child_worker.as_ref().unwrap();
+                        let event_value = state.event_value.as_ref().unwrap();
+                        let golem_event_value = GolemEventValue::from_wit(event_value.clone());
+                        let time_line_result = child_worker.get_timeline_result(t1)?;
+                        let state_dynamic_timeline = StateDynamicsTimeLine::from_wit(time_line_result);
+                        let result = state_dynamic_timeline.less_than_or_equal_to(golem_event_value).map(|x| GolemEventValue::BoolValue(*x));
+
+                        Ok(result.to_wit())
+                    })
+                }
+
+                Some(ActiveState::And) => {
+                    with_and_state(|state| {
+                        let child_worker1 = state.child_worker1.as_ref().unwrap();
+                        let child_worker2 = state.child_worker2.as_ref().unwrap();
+                        let time_line_result1 = child_worker1.get_timeline_result(t1)?;
+                        let time_line_result2 = child_worker2.get_timeline_result(t1)?;
+                        let state_dynamic_timeline1 =
+                            StateDynamicsTimeLine::from_wit(time_line_result1)
+                                .map_fallible(|x| x.get_bool().ok_or("Timeline is not a boolean timeline to apply AND logic".to_string()))?;
+                        let state_dynamic_timeline2 =
+                            StateDynamicsTimeLine::from_wit(time_line_result2)
+                                .map_fallible(|x| x.get_bool().ok_or("Timeline is not a boolean timeline to apply AND logic".to_string()))?;
+                        let result = state_dynamic_timeline1.and(state_dynamic_timeline2).map(|x| GolemEventValue::BoolValue(*x));
+
+                        Ok(result.to_wit())
+                    })
+                }
+
+                Some(ActiveState::Or) => {
+                    with_or_state(|state| {
+                        let child_worker1 = state.child_worker1.as_ref().unwrap();
+                        let child_worker2 = state.child_worker2.as_ref().unwrap();
+                        let time_line_result1 = child_worker1.get_timeline_result(t1)?;
+                        let time_line_result2 = child_worker2.get_timeline_result(t1)?;
+                        let state_dynamic_timeline1 =
+                            StateDynamicsTimeLine::from_wit(time_line_result1)
+                                .map_fallible(|x| x.get_bool().ok_or("Timeline is not a boolean timeline to apply OR logic".to_string()))?;
+                        let state_dynamic_timeline2 =
+                            StateDynamicsTimeLine::from_wit(time_line_result2)
+                                .map_fallible(|x| x.get_bool().ok_or("Timeline is not a boolean timeline to apply OR logic".to_string()))?;
+                        let result = state_dynamic_timeline1.or(state_dynamic_timeline2).map(|x| GolemEventValue::BoolValue(*x));
+
+                        Ok(result.to_wit())
+                    })
+                }
+
+                Some(ActiveState::Not) => {
+                    with_not_state(|state| {
+                        let child_worker = state.child_worker.as_ref().unwrap();
+                        let time_line_result = child_worker.get_timeline_result(t1)?;
+                        let state_dynamic_timeline = StateDynamicsTimeLine::from_wit(time_line_result);
+                        let result = state_dynamic_timeline.map_fallible(|x| x.get_bool().map(|bool | GolemEventValue::BoolValue(!bool)).ok_or("Timeline is not a boolean timeline to apply NOT logic".to_string()))?;
+
+                        Ok(result.to_wit())
+                    })
+                }
+
+                None => {
+                    Err("No active state to compute in derived timeline workers".to_string())
+                }
+            }
+        })
+    }
+}
+
+enum ActiveState {
+    Equal,
+    GreaterThan,
+    GreaterThanOrEqualTo,
+    LessThan,
+    LessThanOrEqualTo,
+    And,
+    Or,
+    Not,
 }

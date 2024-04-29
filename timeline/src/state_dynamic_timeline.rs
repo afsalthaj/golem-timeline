@@ -14,6 +14,39 @@ pub struct StateDynamicsTimeLine<T> {
 }
 
 impl<T: Clone + PartialEq> StateDynamicsTimeLine<T> {
+
+    pub fn map<B>(&self, f: impl Fn(&T) -> B) -> StateDynamicsTimeLine<B> {
+        let mut new_points = BTreeMap::new();
+        for (k, v) in &self.points {
+            new_points.insert(*k, StateDynamicsTimeLinePoint {
+                t1: v.t1,
+                t2: v.t2,
+                value: f(&v.value),
+            });
+        }
+        StateDynamicsTimeLine { points: new_points }
+    }
+
+    pub fn map_fallible<B>(&self, f: impl Fn(&T) -> Result<B, String>) -> Result<StateDynamicsTimeLine<B>, String> {
+        let mut new_points = BTreeMap::new();
+        for (k, v) in &self.points {
+            new_points.insert(*k, StateDynamicsTimeLinePoint {
+                t1: v.t1,
+                t2: v.t2,
+                value: f(&v.value)?,
+            });
+        }
+        Ok(StateDynamicsTimeLine { points: new_points })
+    }
+
+    pub fn from(vec: Vec<StateDynamicsTimeLinePoint<T>>) -> StateDynamicsTimeLine<T> {
+        let mut points = BTreeMap::new();
+        for point in vec {
+            points.insert(point.t1, point);
+        }
+        StateDynamicsTimeLine { points }
+    }
+
     pub fn last(&self) -> Option<StateDynamicsTimeLinePoint<T>> {
         self.points.last_key_value().map(|x| x.1.clone())
     }
@@ -252,7 +285,7 @@ impl StateDynamicsTimeLine<bool> {
     }
 }
 
-impl<T: Debug + Clone + Eq + PartialOrd> StateDynamicsTimeLine<T> {
+impl<T: Debug + Clone + PartialOrd> StateDynamicsTimeLine<T> {
     // This turned out to be a mere conversion of events to state
     pub fn tl_latest_event_to_state(
         event_time_line: &EventTimeLine<T>,
@@ -332,12 +365,34 @@ impl<T: Debug + Clone + Eq + PartialOrd> StateDynamicsTimeLine<T> {
         state_dynamics_time_line
     }
 
+    pub fn greater_than_or_equal_to(&self, constant: T) -> StateDynamicsTimeLine<bool> {
+        let mut state_dynamics_time_line = StateDynamicsTimeLine::default();
+
+        for point in &self.points {
+            let is_greater_than_or_equal = point.1.value >= constant;
+            state_dynamics_time_line.add_state_dynamic_info(point.0.clone(), is_greater_than_or_equal);
+        }
+
+        state_dynamics_time_line
+    }
+
     pub fn less_than(&self, constant: T) -> StateDynamicsTimeLine<bool> {
         let mut state_dynamics_time_line = StateDynamicsTimeLine::default();
 
         for point in &self.points {
             let is_less_than = point.1.value < constant;
             state_dynamics_time_line.add_state_dynamic_info(point.0.clone(), is_less_than);
+        }
+
+        state_dynamics_time_line
+    }
+
+    pub fn less_than_or_equal_to(&self, constant: T) -> StateDynamicsTimeLine<bool> {
+        let mut state_dynamics_time_line = StateDynamicsTimeLine::default();
+
+        for point in &self.points {
+            let is_less_than_or_equal = point.1.value <= constant;
+            state_dynamics_time_line.add_state_dynamic_info(point.0.clone(), is_less_than_or_equal);
         }
 
         state_dynamics_time_line
@@ -427,9 +482,10 @@ impl<T: Debug + Clone + Eq + PartialOrd> StateDynamicsTimeLine<T> {
 // ~~ represents `forever`
 // -- denotes a finite boundary
 mod tests {
-    
-
-    
+    use std::collections::BTreeMap;
+    use crate::event_timeline::{EventTimeLine, EventTimeLinePoint};
+    use crate::state_dynamic_timeline::StateDynamicsTimeLine;
+    use crate::state_dynamic_timeline_point::StateDynamicsTimeLinePoint;
 
     // t1~~~~(playing)~~~~~~~~~~~~>
     //       t2~~~~(movie)~~~~~~~~~~>

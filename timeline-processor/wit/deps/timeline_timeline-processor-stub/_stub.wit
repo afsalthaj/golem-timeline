@@ -2,12 +2,35 @@ package timeline:timeline-processor-stub;
 
 interface stub-timeline-processor {
   use golem:rpc/types@0.1.0.{uri};
-  use timeline:timeline-processor/api.{event-value};
-  use timeline:timeline-processor/api.{timeline-result};
-  use timeline:timeline-processor/api.{timeline-result-worker};
-  use timeline:timeline-processor/api.{leaf-timeline-node};
-  use timeline:timeline-processor/api.{derived-timeline-node};
-  use timeline:timeline-processor/api.{typed-timeline-result-worker};
+  use timeline:event-processor/api.{event-value};
+  use timeline:event-processor/api.{timeline-result};
+
+  record timeline-result-worker {
+    worker-id: string,
+    template-id: string
+  }
+
+  variant typed-timeline-result-worker {
+    leaf-timeline(leaf-timeline-node),
+    derived-timeline(derived-timeline-node)
+  }
+
+  variant leaf-timeline-node {
+    tl-has-existed(timeline-result-worker),
+    tl-has-existed-within(timeline-result-worker),
+    tl-latest-event-to-state(timeline-result-worker),
+  }
+
+  variant derived-timeline-node {
+    equal-to(timeline-result-worker),
+    greater-than(timeline-result-worker),
+    greater-than-or-equal-to(timeline-result-worker),
+    less-than(timeline-result-worker),
+    less-than-or-equal-to(timeline-result-worker),
+    and(timeline-result-worker),
+    or(timeline-result-worker),
+    not(timeline-result-worker)
+  }
 
   resource api {
     constructor(location: uri);
