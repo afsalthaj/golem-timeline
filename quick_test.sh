@@ -4,20 +4,18 @@ echo "Welcome to that BAD shell script! Keep being sad until it disappears"
 
 current_epoch=$(date +%s)
 
-driver_with_core_template_name="driver_with_core${current_epoch}"
-
-core_composed_template_id=$(golem-cli -F json component add --component-name core_composed_all${current_epoch} target/wasm32-wasi/debug/core_composed_leaf.wasm | jq .componentId)
-event_processor_template_id=$(golem-cli -F json component add --component-name raw_event${current_epoch} target/wasm32-wasi/debug/event_processor.wasm | jq .componentId)
-driver_template_id=$(golem-cli -F json component add --component-name "$driver_with_core_template_name" target/wasm32-wasi/debug/driver_composed.wasm| jq .componentId)
-timeline_processor_final_template_id=$(golem-cli -F json component add --component-name timeline_processor_final${current_epoch} target/wasm32-wasi/debug/timeline_processor_final.wasm | jq .componentId)
+driver_with_core=$(golem-cli -F json component add --component-name driver_with_core${current_epoch} target/wasm32-wasi/debug/driver_with_core.wasm| jq .componentId)
+core_with_event_with_timeline=$(golem-cli -F json component add --component-name core_with_event_with_timeline${current_epoch} target/wasm32-wasi/debug/core_with_event_with_timeline.wasm | jq .componentId)
+event_processor=$(golem-cli -F json component add --component-name event_processor${current_epoch} target/wasm32-wasi/debug/event_processor.wasm | jq .componentId)
+timeline_with_event_with_timeline=$(golem-cli -F json component add --component-name timeline_with_event_with_timeline${current_epoch} target/wasm32-wasi/debug/timeline_with_event_with_timeline.wasm | jq .componentId)
 
 echo "Template IDs:"
-echo "Core Composed: $core_composed_template_id"
-echo "Raw Events: $event_processor_template_id"
-echo "Driver: $driver_template_id"
+echo "Core Composed: $core_with_event_with_timeline"
+echo "Raw Events: $event_processor"
+echo "Driver: $driver_with_core"
 
 # Construct the command with properly formatted parameters
-command="golem-cli worker invoke-and-await --component-id \"$driver_template_id\" --worker-name first-try --function timeline:driver/api/run --parameters '[$core_composed_template_id, $event_processor_template_id, \"dummy\"]'"
+command="golem-cli worker invoke-and-await --component-id \"$driver_with_core\" --worker-name first-try --function timeline:driver/api/run --parameters '[$core_with_event_with_timeline, $event_processor, $timeline_with_event_with_timeline]'"
 
 # Output the constructed command
 echo "A dry run on deployed timeline..."
@@ -37,10 +35,10 @@ api_definition='{
       "path": "/{user-id}/instantiate-timeline",
       "binding": {
         "type": "wit-worker",
-        "component": REPLACE_DRIVER_TEMPLATE_ID,
+        "component": REPLACE_DRIVER_WITH_CORE,
         "workerId": "first-try",
         "functionName": "timeline:driver/api/run",
-        "functionParams": [REPLACE_CORE_COMPOSED, REPLACE_event_processor, "dummy"],
+        "functionParams": [REPLACE_CORE_WITH_EVENT_WITH_TIMELINE, REPLACE_EVENT_PROCESSOR, REPLACE_TIMELINE_WITH_EVENT_WITH_TIMELINE],
         "response" : "${ { body: worker.response, status: 200 } }"
       }
     }
@@ -49,9 +47,10 @@ api_definition='{
 
 # Replace placeholders with actual values
 api_definition="${api_definition/REPLACE_VERSION/$current_epoch}"
-api_definition="${api_definition/REPLACE_DRIVER_TEMPLATE_ID/$driver_template_id}"
-api_definition="${api_definition/REPLACE_CORE_COMPOSED/$core_composed_template_id}"
-api_definition="${api_definition/REPLACE_event_processor/$event_processor_template_id}"
+api_definition="${api_definition/REPLACE_DRIVER_WITH_CORE/$driver_with_core}"
+api_definition="${api_definition/REPLACE_CORE_WITH_EVENT_WITH_TIMELINE/$core_with_event_with_timeline}"
+api_definition="${api_definition/REPLACE_EVENT_PROCESSOR/$event_processor}"
+api_definition="${api_definition/REPLACE_TIMELINE_WITH_EVENT_WITH_TIMELINE/$timeline_with_event_with_timeline}"
 
 echo $api_definition
 
