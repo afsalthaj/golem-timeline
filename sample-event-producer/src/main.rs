@@ -8,13 +8,13 @@ use pulsar::{
 use serde::{Deserialize, Serialize};
 use tokio;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Event {
     pub time: u64,
     pub event: Vec<(String, EventValue)>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "kebab-case")]
 pub enum EventValue{
     StringValue(String),
@@ -69,25 +69,27 @@ async fn main() -> Result<(), pulsar::Error> {
         .build()
         .await?;
 
-    let mut counter = 0usize;
-    loop {
+    let events = vec![Event{
+        time: 1,
+        event: vec![("playerStateChange".to_string(), EventValue::StringValue("play".to_string()))],
+    }, Event {
+        time: 2,
+        event: vec![("playerStateChange".to_string(), EventValue::StringValue("seek".to_string()))],
+    }, Event {
+        time: 3,
+        event: vec![("playerStateChange".to_string(), EventValue::StringValue("buffer".to_string()))],
+    }];
+
+    for event in events {
         producer
-            .send(Event {
-                time: 1,
-                event: vec![("playerStateChange".to_string(), EventValue::StringValue("buffer".to_string()))],
-            })
+            .send(event.clone())
             .await?
             .await
             .unwrap();
 
-        counter += 1;
-        log::info!("{counter} messages");
+        log::info!("Sending event: {:?}", &event);
         tokio::time::sleep(std::time::Duration::from_millis(1000)).await;
-
-        if counter > 10 {
-            producer.close().await.expect("Unable to close connection");
-            break;
-        }
     }
+
     Ok(())
 }
