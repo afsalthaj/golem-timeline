@@ -26,6 +26,9 @@ echo "A sample invocation succeeded!"
 
 echo "Exposing Timeline as API for users..."
 
+response_body='{ body: match worker.response[0] { ok(value) => value, err(msg) => msg }, status: match worker.response[0]{ ok(_) => 200, err(_) => 500 } }'
+
+
 api_definition='{
   "id": "golem-timeline",
   "version": REPLACE_VERSION,
@@ -39,17 +42,7 @@ api_definition='{
         "workerId": "first-try",
         "functionName": "timeline:driver/api/run",
         "functionParams": [REPLACE_CORE_WITH_EVENT_WITH_TIMELINE, REPLACE_EVENT_PROCESSOR, REPLACE_TIMELINE_WITH_EVENT_WITH_TIMELINE],
-        "response" : "${ {
-           body: match worker.response[0] {
-             ok(value) => value,
-             err(msg) => msg
-           },
-           status: match worker.response[0]{
-             ok(_) => 200,
-             err(_) => 500
-           }
-         }
-       }"
+        "response" : "${ {body: match worker.response[0] { ok(value) => value, err(msg) => msg }, status: match worker.response[0]{ ok(_) => 200, err(_) => 500 } }}"
       }
     }
   ]
@@ -86,4 +79,5 @@ curl -X POST http://localhost:9881/v1/api/deployments/deploy -H "Content-Type: a
 
 echo ""
 echo "Deployment succeeded!"
-echo "Now you can try curl -X GET http://localhost:9006/afsal/instantiate-timeline"
+echo "Testing with 'curl -X GET http://localhost:9006/afsal/instantiate-timeline| jq -r . | jq .'"
+curl -X GET http://localhost:9006/afsal/instantiate-timeline | jq -r . | jq .
