@@ -84,7 +84,7 @@ async fn main() -> Result<(), pulsar::Error> {
 
 
     let component_id = env::var("COMPONENT_ID").expect("Provide COMPONENT_ID. You can understand from the output logs of quick_test.sh which was used to register timeline with Golem");
-    let worker_name = env::var("WORKER_NAME").expect("Provide WORKER_ID. This should correspond to the worker that directly process events. You can understand from the output logs of quick_test.sh which was used to register timeline with Golem");
+    let worker_name = env::var("WORKER_NAME").expect("Provide WORKER_NAME. This should correspond to the worker that directly process events. You can understand from the output logs of quick_test.sh which was used to register timeline with Golem");
 
 
     let url = format!("http://localhost:9005/v2/components/{}/workers/{}/key", component_id, worker_name);
