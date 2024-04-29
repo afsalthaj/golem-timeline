@@ -6,7 +6,7 @@ use conversions::Conversion;
 use timeline::timeline_node_worker::{TimeLineResultWorker, TimeLineWorkerId, TypedTimeLineResultWorker};
 use timeline::timeline_op::TimeLineOp as CoreTimeLineOp;
 
-use crate::bindings::exports::timeline::core::api::Guest;
+use crate::bindings::exports::timeline::core::api::{Guest, TypedTimelineResultWorker, WorkerDetails};
 use crate::bindings::exports::timeline::core::api::{TypedTimelineResultWorker as WitTypedTimelineResultWorker, TimelineOp};
 use crate::bindings::golem::rpc::types::Uri;
 use crate::bindings::timeline::event_processor_stub::stub_event_processor;
@@ -21,10 +21,11 @@ pub mod conversions;
 struct Component;
 
 impl Guest for Component {
-    fn initialize_timeline(timeline: TimelineOp) -> Result<WitTypedTimelineResultWorker, String> {
+    fn initialize_timeline(timeline: TimelineOp) -> Result<WorkerDetails, String> {
         let timeline: CoreTimeLineOp = CoreTimeLineOp::from_wit(timeline);
+        let mut event_processor_workers = vec![];
 
-        fn go(core_time_line_op: &CoreTimeLineOp) -> Result<TypedTimeLineResultWorker, String> {
+        fn go(core_time_line_op: &CoreTimeLineOp, event_processors: &mut Vec<TypedTimelineResultWorker>) -> Result<TypedTimeLineResultWorker, String> {
             match core_time_line_op {
                 CoreTimeLineOp::EqualTo(worker, left, right) => {
                     let template_id = &worker.template_id;
@@ -41,7 +42,7 @@ impl Guest for Component {
                     let timeline_processor_api = stub_timeline_processor::Api::new(&uri);
 
                     // Specifying the worker the timeline-equal worker should fetch the results from to compare with a constant
-                    let child_worker = go(left)?;
+                    let child_worker = go(left, event_processors)?;
 
                     timeline_processor_api.initialize_equal(&child_worker.to_wit(), &right.to_wit())?;
 
@@ -70,7 +71,7 @@ impl Guest for Component {
                     let timeline_processor_api = stub_timeline_processor::Api::new(&uri);
 
                     // Specifying the worker the timeline-equal worker should fetch the results from to compare with a constant
-                    let child_worker = go(timeline)?;
+                    let child_worker = go(timeline, event_processors)?;
 
                     // We initialise this node into some worker along with the information about child worker that it needs to fetch the result from
                     timeline_processor_api.initialize_greater_than(&child_worker.to_wit(), &value.to_wit())?;
@@ -100,7 +101,7 @@ impl Guest for Component {
                     let timeline_processor_api = stub_timeline_processor::Api::new(&uri);
 
                     // Specifying the worker the timeline-equal worker should fetch the results from to compare with a constant
-                    let child_worker = go(timeline)?;
+                    let child_worker = go(timeline, event_processors)?;
 
                     // We initialise this node into some worker along with the information about child worker that it needs to fetch the result from
                     timeline_processor_api.initialize_greater_than_or_equal_to(&child_worker.to_wit(), &value.to_wit())?;
@@ -130,7 +131,7 @@ impl Guest for Component {
                     let timeline_processor_api = stub_timeline_processor::Api::new(&uri);
 
                     // Specifying the worker the timeline-equal worker should fetch the results from to compare with a constant
-                    let child_worker = go(timeline)?;
+                    let child_worker = go(timeline, event_processors)?;
 
                     // We initialise this node into some worker along with the information about child worker that it needs to fetch the result from
                     timeline_processor_api.initialize_less_than(&child_worker.to_wit(), &event_value.to_wit())?;
@@ -160,7 +161,7 @@ impl Guest for Component {
                     let timeline_processor_api = stub_timeline_processor::Api::new(&uri);
 
                     // Specifying the worker the timeline-equal worker should fetch the results from to compare with a constant
-                    let child_worker = go(timeline)?;
+                    let child_worker = go(timeline, event_processors)?;
 
                     timeline_processor_api.initialize_less_than_or_equal_to(&child_worker.to_wit(), &event_value.to_wit())?;
 
@@ -187,8 +188,8 @@ impl Guest for Component {
 
                     let core = stub_timeline_processor::Api::new(&uri);
 
-                    let left_worker = go(left)?;
-                    let right_worker = go(right)?;
+                    let left_worker = go(left, event_processors)?;
+                    let right_worker = go(right, event_processors)?;
 
                     // We initialise this node into some worker along with the information about children workers that it needs to fetch the result from and apply and logic
                     core.initialize_and(
@@ -219,8 +220,8 @@ impl Guest for Component {
 
                     let core = stub_timeline_processor::Api::new(&uri);
 
-                    let left_worker = go(left)?;
-                    let right_worker = go(right)?;
+                    let left_worker = go(left, event_processors)?;
+                    let right_worker = go(right, event_processors)?;
 
                     // We initialise this node into some worker along with the information about children workers that it needs to fetch the result from and apply or logic
                     core.initialize_or(
@@ -251,7 +252,7 @@ impl Guest for Component {
 
                     let core = stub_timeline_processor::Api::new(&uri);
 
-                    let child_worker = go(timeline)?;
+                    let child_worker = go(timeline, event_processors)?;
 
                     // We initialise this node into some worker along with the information about child worker that it needs to fetch the result from and apply not logic
                     core.initialize_not(
@@ -293,6 +294,8 @@ impl Guest for Component {
                         }
                     });
 
+                    event_processors.push(typed_timeline_result_worker.to_wit());
+
                     Ok(typed_timeline_result_worker)
                 }
                 CoreTimeLineOp::TlHasExistedWithin(worker, predicate, within) => {
@@ -322,6 +325,8 @@ impl Guest for Component {
                         }
                     });
 
+                    event_processors.push(typed_timeline_result_worker.to_wit());
+
                     Ok(typed_timeline_result_worker)
                 }
                 CoreTimeLineOp::TlLatestEventToState(worker, event_column_name) => {
@@ -347,6 +352,8 @@ impl Guest for Component {
                         }
                     });
 
+                    event_processors.push(typed_timeline_result_worker.to_wit());
+
                     Ok(typed_timeline_result_worker)
                 }
                 CoreTimeLineOp::TlDurationWhere(_, _) => Err("Not implemented".to_string()),
@@ -354,6 +361,12 @@ impl Guest for Component {
             }
         }
 
-        go(&timeline).map(|typed_worker_info| typed_worker_info.to_wit())
+        let result_worker = go(&timeline, &mut event_processor_workers).map(|typed_worker_info| typed_worker_info.to_wit())?;
+
+        Ok(WorkerDetails {
+            result_worker,
+            event_processor_workers
+        })
+
     }
 }

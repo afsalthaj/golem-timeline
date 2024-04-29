@@ -83,7 +83,16 @@ interface api {
     time: u64,
   }
 
-  initialize-timeline: func(timeline: timeline-op) -> result<typed-timeline-result-worker, string>;
+  record event-processor-workers {
+    nodes: list<typed-timeline-result-worker>
+  }
+
+  record worker-details {
+     event-processor-workers: list<typed-timeline-result-worker>,
+     result-worker: typed-timeline-result-worker
+  }
+
+  initialize-timeline: func(timeline: timeline-op) -> result<worker-details, string>;
 }
 
 world core {

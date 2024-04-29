@@ -18,10 +18,12 @@ interface stub-core {
   use timeline:core/api.{server-with-event-predicate-within};
   use timeline:core/api.{timeline-node};
   use timeline:core/api.{timeline-op};
+  use timeline:core/api.{event-processor-workers};
+  use timeline:core/api.{worker-details};
 
   resource api {
     constructor(location: uri);
-    initialize-timeline: func(timeline: timeline-op) -> result<typed-timeline-result-worker, string>;
+    initialize-timeline: func(timeline: timeline-op) -> result<worker-details, string>;
   }
 
 }

@@ -1,4 +1,5 @@
 use std::fmt::Display;
+use serde::Serialize;
 
 
 #[derive(Clone, Debug)]
@@ -22,7 +23,7 @@ impl Display for TimeLineNodeWorkerInput {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize)]
 pub struct TimeLineWorkerId(pub String);
 
 impl Display for TimeLineWorkerId {
@@ -35,7 +36,7 @@ impl Display for TimeLineWorkerId {
 // the timeline is available. Unlike TimeLineNodeWorkerInput,
 // this is a worker-id than just a prefix
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize)]
 pub struct TimeLineResultWorker {
     pub worker_id: TimeLineWorkerId,
     pub template_id: String,
@@ -43,7 +44,7 @@ pub struct TimeLineResultWorker {
 
 // This not only says the worker in which result is available,
 // but also specifies the type of computation that was done as part of the worker
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize)]
 pub enum TypedTimeLineResultWorker {
     LeafTimeLine(LeafTimeLineNode),
     DerivedTimeLine(DerivedTimeLineNode)
@@ -117,7 +118,7 @@ impl TypedTimeLineResultWorker {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize)]
 pub enum LeafTimeLineNode {
     TLHasExisted {
         time_line_worker: TimeLineResultWorker,
@@ -132,7 +133,7 @@ pub enum LeafTimeLineNode {
     },
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize)]
 pub enum DerivedTimeLineNode {
     EqualTo {
         result_worker: TimeLineResultWorker,

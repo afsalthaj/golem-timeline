@@ -1,3 +1,4 @@
+use std::fmt::format;
 use crate::bindings::exports::timeline::driver::api::Guest;
 use crate::bindings::golem::rpc::types::Uri;
 use crate::bindings::timeline::core::api::{Server, TypedTimelineResultWorker};
@@ -5,10 +6,12 @@ use crate::bindings::timeline::core::api::TimelineNode::{TlLatestEventToState, T
 use crate::bindings::timeline::core::api::{ServerWithEventColumnName, TimelineOp, TimelineNegated};
 use crate::bindings::timeline::core_stub::stub_core;
 use crate::bindings::timeline::timeline_processor::api::{DerivedTimelineNode, LeafTimelineNode};
+use conversions::Conversion;
 
 #[allow(dead_code)]
 #[rustfmt::skip]
 mod bindings;
+mod conversions;
 struct Component;
 
 impl Guest for Component {
@@ -41,7 +44,23 @@ impl Guest for Component {
         match core.initialize_timeline(&timeline_op) {
             Ok(result) => {
                 dbg!("Driver Log: Timeline initialized");
-                Ok(print_typed_time_line_result_worker(result))
+
+                let serializable_result_worker =
+                    serde_json::to_value(timeline::timeline_node_worker::TypedTimeLineResultWorker::from_wit(result.result_worker)).map_err(|err| err.to_string())?;
+
+                let mut event_processors = vec![];
+
+                for worker in result.event_processor_workers.iter() {
+                    let event_processor = timeline::timeline_node_worker::TypedTimeLineResultWorker::from_wit(worker.clone());
+                    event_processors.push(serde_json::to_value(event_processor).map_err(|err| err.to_string())?);
+                }
+
+                let driver_result: String = serde_json::Value::Object(serde_json::Map::from_iter(vec![
+                    ("result_worker".to_string(), serializable_result_worker),
+                    ("event_processors".to_string(), serde_json::Value::Array(event_processors)),
+                ])).to_string();
+
+                Ok(driver_result)
             }
             Err(error) => {
                 dbg!("Driver Log: Error initializing timeline");

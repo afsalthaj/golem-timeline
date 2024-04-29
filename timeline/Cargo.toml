@@ -10,6 +10,7 @@ chrono = "0.4.33"
 futures = "0.3.30"
 serde_json = "1.0.113"
 tokio = "1.36.0"
+serde = { version = "1.0.198", features = ["derive"] }
 
 [lib]
 path = "src/lib.rs"
