@@ -55,13 +55,219 @@ impl Guest for Component {
 
                     Ok(typed_timeline_result_worker)
                 }
-                CoreTimeLineOp::GreaterThan(_, _, _) => Err("Not implemented".to_string()),
-                CoreTimeLineOp::GreaterThanOrEqual(_, _, _) => Err("Not implemented".to_string()),
-                CoreTimeLineOp::LessThan(_, _, _) => Err("Not implemented".to_string()),
-                CoreTimeLineOp::LessThanOrEqual(_, _, _) => Err("Not implemented".to_string()),
-                CoreTimeLineOp::And(_, _, _) => Err("Not implemented".to_string()),
-                CoreTimeLineOp::Or(_, _, _) => Err("Not implemented".to_string()),
-                CoreTimeLineOp::Not(_, _) => Err("Not implemented".to_string()),
+                CoreTimeLineOp::GreaterThan(worker, timeline, value) => {
+                    let template_id = &worker.template_id;
+                    let worker_id_prefix = &worker.worker_id_prefix;
+                    let uuid = Uuid::new_v4();
+
+                    // Connecting to the worker that should compute equal
+                    let worker_id = TimeLineWorkerId(format!("{}-tlgt-{}", worker_id_prefix, uuid.to_string()));
+
+                    let uri = Uri {
+                        value: format!("worker://{template_id}/{}", &worker_id),
+                    };
+
+                    let timeline_processor_api = stub_timeline_processor::Api::new(&uri);
+
+                    // Specifying the worker the timeline-equal worker should fetch the results from to compare with a constant
+                    let child_worker = go(timeline)?;
+
+                    // We initialise this node into some worker along with the information about child worker that it needs to fetch the result from
+                    timeline_processor_api.initialize_greater_than(&child_worker.to_wit(), &value.to_wit())?;
+
+                    // The worker in which the comparison with a constant actually executes
+                    let typed_timeline_result_worker = TypedTimeLineResultWorker::greater_than({
+                        TimeLineResultWorker {
+                            template_id: template_id.clone(),
+                            worker_id
+                        }
+                    });
+
+                    Ok(typed_timeline_result_worker)
+                }
+                CoreTimeLineOp::GreaterThanOrEqual(worker, timeline, value) => {
+                    let template_id = &worker.template_id;
+                    let worker_id_prefix = &worker.worker_id_prefix;
+                    let uuid = Uuid::new_v4();
+
+                    // Connecting to the worker that should compute equal
+                    let worker_id = TimeLineWorkerId(format!("{}-tlgteq-{}", worker_id_prefix, uuid.to_string()));
+
+                    let uri = Uri {
+                        value: format!("worker://{template_id}/{}", &worker_id),
+                    };
+
+                    let timeline_processor_api = stub_timeline_processor::Api::new(&uri);
+
+                    // Specifying the worker the timeline-equal worker should fetch the results from to compare with a constant
+                    let child_worker = go(timeline)?;
+
+                    // We initialise this node into some worker along with the information about child worker that it needs to fetch the result from
+                    timeline_processor_api.initialize_greater_than_or_equal_to(&child_worker.to_wit(), &value.to_wit())?;
+
+                    // The worker in which the comparison with a constant actually executes
+                    let typed_timeline_result_worker = TypedTimeLineResultWorker::greater_than_or_equal_to({
+                        TimeLineResultWorker {
+                            template_id: template_id.clone(),
+                            worker_id
+                        }
+                    });
+
+                    Ok(typed_timeline_result_worker)
+                }
+                CoreTimeLineOp::LessThan(worker,timeline, event_value) => {
+                    let template_id = &worker.template_id;
+                    let worker_id_prefix = &worker.worker_id_prefix;
+                    let uuid = Uuid::new_v4();
+
+                    // Connecting to the worker that should compute equal
+                    let worker_id = TimeLineWorkerId(format!("{}-tllt-{}", worker_id_prefix, uuid.to_string()));
+
+                    let uri = Uri {
+                        value: format!("worker://{template_id}/{}", &worker_id),
+                    };
+
+                    let timeline_processor_api = stub_timeline_processor::Api::new(&uri);
+
+                    // Specifying the worker the timeline-equal worker should fetch the results from to compare with a constant
+                    let child_worker = go(timeline)?;
+
+                    // We initialise this node into some worker along with the information about child worker that it needs to fetch the result from
+                    timeline_processor_api.initialize_less_than(&child_worker.to_wit(), &event_value.to_wit())?;
+
+                    // The worker in which the comparison with a constant actually executes
+                    let typed_timeline_result_worker = TypedTimeLineResultWorker::greater_than({
+                        TimeLineResultWorker {
+                            template_id: template_id.clone(),
+                            worker_id
+                        }
+                    });
+
+                    Ok(typed_timeline_result_worker)
+                }
+                CoreTimeLineOp::LessThanOrEqual(worker, timeline, event_value) => {
+                    let template_id = &worker.template_id;
+                    let worker_id_prefix = &worker.worker_id_prefix;
+                    let uuid = Uuid::new_v4();
+
+                    // Connecting to the worker that should compute equal
+                    let worker_id = TimeLineWorkerId(format!("{}-tllteq-{}", worker_id_prefix, uuid.to_string()));
+
+                    let uri = Uri {
+                        value: format!("worker://{template_id}/{}", &worker_id),
+                    };
+
+                    let timeline_processor_api = stub_timeline_processor::Api::new(&uri);
+
+                    // Specifying the worker the timeline-equal worker should fetch the results from to compare with a constant
+                    let child_worker = go(timeline)?;
+
+                    timeline_processor_api.initialize_less_than_or_equal_to(&child_worker.to_wit(), &event_value.to_wit())?;
+
+                    // The worker in which the comparison with a constant actually executes
+                    let typed_timeline_result_worker = TypedTimeLineResultWorker::less_than_or_equal_to({
+                        TimeLineResultWorker {
+                            template_id: template_id.clone(),
+                            worker_id
+                        }
+                    });
+
+                    Ok(typed_timeline_result_worker)
+                }
+                CoreTimeLineOp::And(worker, left, right) => {
+                    let template_id = &worker.template_id;
+                    let worker_id_prefix = &worker.worker_id_prefix;
+                    let uuid = Uuid::new_v4();
+
+                    let worker_id = TimeLineWorkerId(format!("{}-tl-and-{}", worker_id_prefix, uuid.to_string()));
+
+                    let uri = Uri {
+                        value: format!("worker://{template_id}/{}", &worker_id),
+                    };
+
+                    let core = stub_timeline_processor::Api::new(&uri);
+
+                    let left_worker = go(left)?;
+                    let right_worker = go(right)?;
+
+                    // We initialise this node into some worker along with the information about children workers that it needs to fetch the result from and apply and logic
+                    core.initialize_and(
+                        &left_worker.to_wit(),
+                        &right_worker.to_wit(),
+                    )?;
+
+                    // The result of this node will be available in this worker
+                    let typed_timeline_result_worker = TypedTimeLineResultWorker::and({
+                        TimeLineResultWorker {
+                            template_id: template_id.clone(),
+                            worker_id
+                        }
+                    });
+
+                    Ok(typed_timeline_result_worker)
+                }
+                CoreTimeLineOp::Or(worker, left, right) => {
+                    let template_id = &worker.template_id;
+                    let worker_id_prefix = &worker.worker_id_prefix;
+                    let uuid = Uuid::new_v4();
+
+                    let worker_id = TimeLineWorkerId(format!("{}-tl-and-{}", worker_id_prefix, uuid.to_string()));
+
+                    let uri = Uri {
+                        value: format!("worker://{template_id}/{}", &worker_id),
+                    };
+
+                    let core = stub_timeline_processor::Api::new(&uri);
+
+                    let left_worker = go(left)?;
+                    let right_worker = go(right)?;
+
+                    // We initialise this node into some worker along with the information about children workers that it needs to fetch the result from and apply or logic
+                    core.initialize_or(
+                        &left_worker.to_wit(),
+                        &right_worker.to_wit(),
+                    )?;
+
+                    // The result of this node will be available in this worker
+                    let typed_timeline_result_worker = TypedTimeLineResultWorker::or({
+                        TimeLineResultWorker {
+                            template_id: template_id.clone(),
+                            worker_id
+                        }
+                    });
+
+                    Ok(typed_timeline_result_worker)
+                }
+                CoreTimeLineOp::Not(worker, timeline) =>{
+                    let template_id = &worker.template_id;
+                    let worker_id_prefix = &worker.worker_id_prefix;
+                    let uuid = Uuid::new_v4();
+
+                    let worker_id = TimeLineWorkerId(format!("{}-tl-not-{}", worker_id_prefix, uuid.to_string()));
+
+                    let uri = Uri {
+                        value: format!("worker://{template_id}/{}", &worker_id),
+                    };
+
+                    let core = stub_timeline_processor::Api::new(&uri);
+
+                    let child_worker = go(timeline)?;
+
+                    // We initialise this node into some worker along with the information about child worker that it needs to fetch the result from and apply not logic
+                    core.initialize_not(
+                        &child_worker.to_wit(),
+                    )?;
+
+                    // The result of this node will be available in this worker
+                    let typed_timeline_result_worker = TypedTimeLineResultWorker::not({
+                        TimeLineResultWorker {
+                            template_id: template_id.clone(),
+                            worker_id
+                        }
+                    });
+
+                    Ok(typed_timeline_result_worker)
+                }
                 CoreTimeLineOp::TlHasExisted(worker, predicate) => {
                     let template_id = &worker.template_id;
                     let worker_id_prefix = &worker.worker_id_prefix;
