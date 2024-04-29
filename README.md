@@ -115,9 +115,9 @@ golem-cli 0.0.96
 
 ## Quick Start to spin up Golem Timeline with Golem OSS
 
-Mostly all you need is:
 
-## Spin up golem
+
+#### Spin up golem and Pulsar streaming 
 
 ```sh
 docker-compose up -d
@@ -130,7 +130,7 @@ The docker version should correspond to 0.0.96 similar to CLI.
 It's good to download the latest dockeer-compose from golem website or repository, to avoid any issues.
 
 
-## Generate all required code and build timeline project
+#### Generate all required code and build timeline project
 
 ```bash
 cargo make build-flow
@@ -150,7 +150,7 @@ golem-cli stubgen generate -s timeline-processor/wit -d timeline-processor-stub
 And then explicitly delete the new wit directories that was created, followed by `cargo component build`, which will direct you further on what to do!
 But be aware that this can be slightly tricky.
 
-### Run a quick test
+## Run a quick test
 
 ```bash
 ./quick-test.sh
