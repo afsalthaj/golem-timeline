@@ -31,6 +31,7 @@ response_body='{ body: match worker.response[0] { ok(value) => value, err(msg) =
 
 api_definition='{
   "id": "golem-timeline",
+  "draft": true,
   "version": REPLACE_VERSION,
   "routes": [
     {
