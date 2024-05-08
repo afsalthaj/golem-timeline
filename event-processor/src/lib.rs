@@ -4,7 +4,9 @@ use timeline::event_predicate::{EventColumnName, GolemEventPredicate};
 use timeline::golem_event::{GolemEvent, GolemEventValue};
 use timeline::state_dynamic_timeline::StateDynamicsTimeLine;
 
-use crate::bindings::exports::timeline::event_processor::api::{Event, EventPredicate, TimelineResult, Guest, TimelineResultPoint, TimePeriod, EventValue};
+use crate::bindings::exports::timeline::event_processor::api::{
+    Event, EventPredicate, EventValue, Guest, TimePeriod, TimelineResult, TimelineResultPoint,
+};
 use crate::conversions::Conversion;
 
 #[allow(dead_code)]
@@ -33,7 +35,7 @@ impl TLHasExistedTracker {
 struct TLHasExistedWithinTracker {
     state_dynamic_timeline: StateDynamicsTimeLine<bool>,
     predicate_and_within: Option<PredicateWithin>,
-    time_elapsed_from_last_true: Option<u64>
+    time_elapsed_from_last_true: Option<u64>,
 }
 
 struct PredicateWithin {
@@ -42,11 +44,12 @@ struct PredicateWithin {
 }
 
 impl TLHasExistedWithinTracker {
-    fn with_predicate_within(&mut self, predicate: GolemEventPredicate<GolemEventValue>, within: u64) {
-        self.predicate_and_within = Some(PredicateWithin {
-            predicate,
-            within
-        });
+    fn with_predicate_within(
+        &mut self,
+        predicate: GolemEventPredicate<GolemEventValue>,
+        within: u64,
+    ) {
+        self.predicate_and_within = Some(PredicateWithin { predicate, within });
     }
 
     fn with_time_elapsed_from_last_true(&mut self, time_elapsed_from_last_true: u64) {
@@ -97,25 +100,24 @@ fn with_tl_has_existed_within<T>(
 }
 
 impl Guest for Component {
-    fn initialize_latest_event_state(
-        event_column_name: String,
-    ) -> Result<String, String> {
+    fn initialize_latest_event_state(event_column_name: String) -> Result<String, String> {
         with_latest_event_to_state(|state| {
             state.col_name = Some(EventColumnName(event_column_name.clone()));
             Ok("Successfully initiated latest-event-to-state".to_string())
         })
     }
 
-    fn initialize_tl_has_existed(
-        event_predicate: EventPredicate,
-    ) -> Result<String, String> {
+    fn initialize_tl_has_existed(event_predicate: EventPredicate) -> Result<String, String> {
         with_tl_has_existed(|state| {
             state.predicate = Some(GolemEventPredicate::from_wit(event_predicate));
             Ok("Successfully initiated tl-has-existed".to_string())
         })
     }
 
-    fn initialize_tl_has_existed_within(event_predicate: EventPredicate, time: u64) -> Result<String, String> {
+    fn initialize_tl_has_existed_within(
+        event_predicate: EventPredicate,
+        time: u64,
+    ) -> Result<String, String> {
         with_tl_has_existed_within(|state| {
             let predicate = GolemEventPredicate::from_wit(event_predicate);
             state.with_predicate_within(predicate, time);
@@ -196,7 +198,9 @@ impl Guest for Component {
                 if state.state_dynamic_timeline.is_empty()
                     || state.state_dynamic_timeline.future_is(false)
                 {
-                    let predicate_result = predicate_within.predicate.evaluate(&GolemEvent::from_wit(event.clone()));
+                    let predicate_result = predicate_within
+                        .predicate
+                        .evaluate(&GolemEvent::from_wit(event.clone()));
 
                     if predicate_result {
                         dbg!(
@@ -207,7 +211,9 @@ impl Guest for Component {
                             .state_dynamic_timeline
                             .add_state_dynamic_info(event.time, true);
 
-                        state.state_dynamic_timeline.add_state_dynamic_info(event.time + predicate_within.within, false);
+                        state
+                            .state_dynamic_timeline
+                            .add_state_dynamic_info(event.time + predicate_within.within, false);
                     } else {
                         // If predicate is false, and if the future is not yet set to false, then set it to false once and for all
                         if !state.state_dynamic_timeline.future_is(false) {
@@ -222,7 +228,6 @@ impl Guest for Component {
 
             Ok(())
         })?;
-
 
         Ok("Event tracked successfully".to_string())
     }
@@ -249,9 +254,7 @@ impl Guest for Component {
                     },
                 },
 
-                None => TimelineResult {
-                    results: vec![],
-                },
+                None => TimelineResult { results: vec![] },
             };
 
             Ok(result)
@@ -276,9 +279,7 @@ impl Guest for Component {
                     },
                 },
 
-                None => TimelineResult {
-                    results: vec![],
-                },
+                None => TimelineResult { results: vec![] },
             };
 
             Ok(timeline_result)
@@ -303,9 +304,7 @@ impl Guest for Component {
                     },
                 },
 
-                None => TimelineResult {
-                    results: vec![],
-                },
+                None => TimelineResult { results: vec![] },
             };
 
             Ok(timeline_result)
