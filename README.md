@@ -103,6 +103,9 @@ cargo install --force --locked cargo-component@0.7.0
 
 # Install golem-cli (OSS, for enterprise edition, golem-cloud-cli)
 cargo install golem-cli
+
+# Install cargo make
+cargo install cargo-make
 ```
 
 
