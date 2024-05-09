@@ -325,7 +325,7 @@ impl Conversion for TimeLineOp {
     }
 
     fn to_wit(&self) -> Self::WitType {
-        panic!("Conversion from TimeLineOp to corresponding WIT type hasn't been done yet")
+        match self {}
     }
 }
 
