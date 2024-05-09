@@ -17,9 +17,10 @@ impl WitValueBuilder {
         self.nodes.len() as NodeIndex - 1
     }
 
+    // FIXME: Clone is not needed
     pub(crate) fn build(&self) -> WitTimeLineOp {
        WitTimeLineOp {
-           nodes: self.nodes.clone() ///FIXME: Clone is not needed
+           nodes: self.nodes.clone()
        }
     }
 
