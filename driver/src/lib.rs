@@ -9,6 +9,7 @@ use crate::bindings::timeline::core_stub::stub_core;
 use crate::bindings::timeline::timeline_processor::api::{DerivedTimelineNode, LeafTimelineNode};
 use conversions::Conversion;
 use std::fmt::format;
+use timeline::timeline_op::TimeLineOp;
 
 #[allow(dead_code)]
 #[rustfmt::skip]

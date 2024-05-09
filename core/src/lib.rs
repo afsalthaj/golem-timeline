@@ -20,6 +20,8 @@ mod bindings;
 
 pub mod conversions;
 
+pub mod builder;
+
 struct Component;
 
 impl Guest for Component {

@@ -17,6 +17,7 @@ use crate::bindings::timeline::timeline_processor::api::DerivedTimelineNode as W
 use crate::bindings::timeline::timeline_processor::api::LeafTimelineNode as WitLeafTimeLineNode;
 use crate::bindings::timeline::timeline_processor::api::TimelineResultWorker as WitTimeLineResultWorker;
 use crate::bindings::timeline::timeline_processor::api::TypedTimelineResultWorker as WitTypedTimeLineResultWorker;
+use crate::builder::WitValueBuilder;
 
 // TODO: Some of these conversions are repeated even after reusing WIT files. Make sure to fix it
 
@@ -325,7 +326,9 @@ impl Conversion for TimeLineOp {
     }
 
     fn to_wit(&self) -> Self::WitType {
-        panic!("Conversion from TimeLineOp to corresponding WIT type hasn't been done yet")
+        let mut builder = WitValueBuilder::new();
+        builder.build_timeline_op(self);
+        builder.build()
     }
 }
 
