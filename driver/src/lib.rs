@@ -1,7 +1,7 @@
 use crate::bindings::exports::timeline::driver::api::Guest;
 use crate::bindings::golem::rpc::types::Uri;
 use crate::bindings::timeline::core::api::TimelineNode::{TimelineNegation, TlLatestEventToState};
-use crate::bindings::timeline::core::api::{Server, TypedTimelineResultWorker};
+use crate::bindings::timeline::core::api::{Server, TypedTimelineResultWorker, WorkerDetails};
 use crate::bindings::timeline::core::api::{
     ServerWithEventColumnName, TimelineNegated, TimelineOp,
 };
@@ -21,7 +21,7 @@ impl Guest for Component {
         core_template_id: String,
         event_processor_template_id: String,
         timeline_processor_template_id: String,
-    ) -> Result<String, String> {
+    ) -> Result<WorkerDetails, String> {
         let uri = Uri {
             value: format!("worker://{core_template_id}/{}", "initialize-timeline"),
         };
@@ -50,36 +50,36 @@ impl Guest for Component {
             Ok(result) => {
                 dbg!("Driver Log: Timeline initialized");
 
-                let serializable_result_worker = serde_json::to_value(
-                    timeline::timeline_node_worker::TypedTimeLineResultWorker::from_wit(
-                        result.result_worker,
-                    ),
-                )
-                .map_err(|err| err.to_string())?;
+                // let serializable_result_worker = serde_json::to_value(
+                //     timeline::timeline_node_worker::TypedTimeLineResultWorker::from_wit(
+                //         result.result_worker,
+                //     ),
+                // )
+                // .map_err(|err| err.to_string())?;
+                //
+                // let mut event_processors = vec![];
+                //
+                // for worker in result.event_processor_workers.iter() {
+                //     let event_processor =
+                //         timeline::timeline_node_worker::TypedTimeLineResultWorker::from_wit(
+                //             worker.clone(),
+                //         );
+                //     event_processors.push(
+                //         serde_json::to_value(event_processor).map_err(|err| err.to_string())?,
+                //     );
+                // }
+                //
+                // let driver_result: String =
+                //     serde_json::Value::Object(serde_json::Map::from_iter(vec![
+                //         ("result_worker".to_string(), serializable_result_worker),
+                //         (
+                //             "event_processors".to_string(),
+                //             serde_json::Value::Array(event_processors),
+                //         ),
+                //     ]))
+                //     .to_string();
 
-                let mut event_processors = vec![];
-
-                for worker in result.event_processor_workers.iter() {
-                    let event_processor =
-                        timeline::timeline_node_worker::TypedTimeLineResultWorker::from_wit(
-                            worker.clone(),
-                        );
-                    event_processors.push(
-                        serde_json::to_value(event_processor).map_err(|err| err.to_string())?,
-                    );
-                }
-
-                let driver_result: String =
-                    serde_json::Value::Object(serde_json::Map::from_iter(vec![
-                        ("result_worker".to_string(), serializable_result_worker),
-                        (
-                            "event_processors".to_string(),
-                            serde_json::Value::Array(event_processors),
-                        ),
-                    ]))
-                    .to_string();
-
-                Ok(driver_result)
+                Ok(result)
             }
             Err(error) => {
                 dbg!("Driver Log: Error initializing timeline");
