@@ -2,8 +2,8 @@ use std::env;
 
 use log;
 use pulsar::{
-    Authentication, authentication::oauth2::OAuth2Authentication, Error as PulsarError, message::proto,
-    producer, Pulsar, SerializeMessage, TokioExecutor,
+    authentication::oauth2::OAuth2Authentication, producer, Authentication, Error as PulsarError,
+    Pulsar, SerializeMessage, TokioExecutor,
 };
 use serde::{Deserialize, Serialize};
 use tokio;
@@ -16,7 +16,7 @@ pub struct Event {
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "kebab-case")]
-pub enum EventValue{
+pub enum EventValue {
     StringValue(String),
     IntValue(i64),
     FloatValue(f64),
@@ -26,10 +26,7 @@ pub enum EventValue{
 impl SerializeMessage for Event {
     fn serialize_message(input: Self) -> Result<producer::Message, PulsarError> {
         let payload = serde_json::to_vec(&input).map_err(|e| PulsarError::Custom(e.to_string()))?;
-        Ok(producer::Message {
-            payload,
-            ..Default::default()
-        })
+        Ok(producer::Message { payload, ..Default::default() })
     }
 }
 
@@ -37,9 +34,8 @@ impl SerializeMessage for Event {
 async fn main() -> Result<(), pulsar::Error> {
     env_logger::init();
 
-    let addr = env::var("PULSAR_ADDRESS")
-        .ok()
-        .unwrap_or_else(|| "pulsar://127.0.0.1:6650".to_string());
+    let addr =
+        env::var("PULSAR_ADDRESS").ok().unwrap_or_else(|| "pulsar://127.0.0.1:6650".to_string());
     let topic = env::var("PULSAR_TOPIC")
         .ok()
         .unwrap_or_else(|| "non-persistent://public/default/test".to_string());
@@ -47,10 +43,7 @@ async fn main() -> Result<(), pulsar::Error> {
     let mut builder = Pulsar::builder(addr, TokioExecutor);
 
     if let Ok(token) = env::var("PULSAR_TOKEN") {
-        let authentication = Authentication {
-            name: "token".to_string(),
-            data: token.into_bytes(),
-        };
+        let authentication = Authentication { name: "token".to_string(), data: token.into_bytes() };
 
         builder = builder.with_auth(authentication);
     } else if let Ok(oauth2_cfg) = env::var("PULSAR_OAUTH2") {
@@ -60,32 +53,36 @@ async fn main() -> Result<(), pulsar::Error> {
         ));
     }
 
-
     let pulsar: Pulsar<_> = builder.build().await?;
-    let mut producer = pulsar
-        .producer()
-        .with_topic(topic)
-        .with_name("sample-playback-events")
-        .build()
-        .await?;
+    let mut producer =
+        pulsar.producer().with_topic(topic).with_name("sample-playback-events").build().await?;
 
-    let events = vec![Event{
-        time: 1,
-        event: vec![("playerStateChange".to_string(), EventValue::StringValue("play".to_string()))],
-    }, Event {
-        time: 2,
-        event: vec![("playerStateChange".to_string(), EventValue::StringValue("seek".to_string()))],
-    }, Event {
-        time: 3,
-        event: vec![("playerStateChange".to_string(), EventValue::StringValue("buffer".to_string()))],
-    }];
+    let events = vec![
+        Event {
+            time: 1,
+            event: vec![(
+                "playerStateChange".to_string(),
+                EventValue::StringValue("play".to_string()),
+            )],
+        },
+        Event {
+            time: 2,
+            event: vec![(
+                "playerStateChange".to_string(),
+                EventValue::StringValue("seek".to_string()),
+            )],
+        },
+        Event {
+            time: 3,
+            event: vec![(
+                "playerStateChange".to_string(),
+                EventValue::StringValue("buffer".to_string()),
+            )],
+        },
+    ];
 
     for event in events {
-        producer
-            .send(event.clone())
-            .await?
-            .await
-            .unwrap();
+        producer.send(event.clone()).await?.await.unwrap();
 
         log::info!("Sending event: {:?}", &event);
         tokio::time::sleep(std::time::Duration::from_millis(1000)).await;
