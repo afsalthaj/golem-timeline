@@ -77,25 +77,17 @@ impl Conversion for GolemEvent<GolemEventValue> {
     type WitType = Event;
 
     fn from_wit(input: Self::WitType) -> Self {
-        let mut event = GolemEvent {
-            time: input.time,
-            event: HashMap::new(),
-        };
+        let mut event = GolemEvent { time: input.time, event: HashMap::new() };
 
         for (key, value) in input.event {
-            event
-                .event
-                .insert(EventColumnName(key), GolemEventValue::from_wit(value));
+            event.event.insert(EventColumnName(key), GolemEventValue::from_wit(value));
         }
 
         event
     }
 
     fn to_wit(&self) -> Self::WitType {
-        let mut event = Event {
-            time: self.time,
-            event: vec![],
-        };
+        let mut event = Event { time: self.time, event: vec![] };
 
         for (key, value) in self.event.iter() {
             event.event.push((key.0.clone(), value.to_wit()));

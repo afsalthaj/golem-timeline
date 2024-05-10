@@ -23,9 +23,7 @@ impl WitValueBuilder {
 
     // FIXME: Clone is not needed
     pub(crate) fn build(&self) -> WitTimeLineOp {
-        WitTimeLineOp {
-            nodes: self.nodes.clone(),
-        }
+        WitTimeLineOp { nodes: self.nodes.clone() }
     }
 
     pub(crate) fn build_timeline_op(&mut self, timeline_op: &TimeLineOp) -> NodeIndex {
@@ -54,10 +52,8 @@ impl WitValueBuilder {
 
             TimeLineOp::Not(timeline_worker_input, timeline_op) => {
                 let server = timeline_worker_input.to_wit();
-                let parent_idx = self.add(TimelineNode::TimelineNegation(TimelineNegated {
-                    server,
-                    timeline: -1,
-                }));
+                let parent_idx = self
+                    .add(TimelineNode::TimelineNegation(TimelineNegated { server, timeline: -1 }));
 
                 let child_idx = self.build_timeline_op(timeline_op);
 
@@ -215,15 +211,13 @@ impl WitValueBuilder {
                 parent_idx
             }
             TimeLineOp::TlHasExistedWithin(timeline_worker_input, event_predicate, time) => self
-                .add(TimelineNode::TlHasExistedWithin(
-                    ServerWithEventPredicateWithin {
-                        filtered: ServerWithEventPredicate {
-                            server: timeline_worker_input.to_wit(),
-                            event_predicate: event_predicate.to_wit(),
-                        },
-                        time: *time,
+                .add(TimelineNode::TlHasExistedWithin(ServerWithEventPredicateWithin {
+                    filtered: ServerWithEventPredicate {
+                        server: timeline_worker_input.to_wit(),
+                        event_predicate: event_predicate.to_wit(),
                     },
-                )),
+                    time: *time,
+                })),
             TimeLineOp::And(_timeline_worker_input, _timeline_op1, _timeline_op2) => {
                 unimplemented!("And") //FIXME
             }

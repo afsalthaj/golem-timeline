@@ -128,10 +128,8 @@ impl Guest for Component {
     fn add_event(event: Event) -> Result<String, String> {
         with_latest_event_to_state(|state| {
             if let Some(state_col_name) = state.col_name.as_ref() {
-                let event_value = event
-                    .event
-                    .iter()
-                    .find(|(key, _)| key == state_col_name.0.as_str());
+                let event_value =
+                    event.event.iter().find(|(key, _)| key == state_col_name.0.as_str());
 
                 match event_value {
                     Some((_, value)) => {
@@ -146,10 +144,7 @@ impl Guest for Component {
                         );
                     }
                     None => {
-                        dbg!(
-                            "No event value found for the column name: {}",
-                            &state_col_name.0
-                        );
+                        dbg!("No event value found for the column name: {}", &state_col_name.0);
                     }
                 }
             };
@@ -172,16 +167,12 @@ impl Guest for Component {
                             "Setting timeline as true from time {} since the predicate is true!",
                             event.time
                         );
-                        state
-                            .state_dynamic_timeline
-                            .add_state_dynamic_info(event.time, true);
+                        state.state_dynamic_timeline.add_state_dynamic_info(event.time, true);
                     } else {
                         // If predicate is false, and if the future is not yet set to false, then set it to false once and for all
                         if !state.state_dynamic_timeline.future_is(false) {
                             dbg!("Setting timeline as false from time {} since the predicate is false!", event.time);
-                            state
-                                .state_dynamic_timeline
-                                .add_state_dynamic_info(event.time, false);
+                            state.state_dynamic_timeline.add_state_dynamic_info(event.time, false);
                         }
                     }
                 }
@@ -198,18 +189,15 @@ impl Guest for Component {
                 if state.state_dynamic_timeline.is_empty()
                     || state.state_dynamic_timeline.future_is(false)
                 {
-                    let predicate_result = predicate_within
-                        .predicate
-                        .evaluate(&GolemEvent::from_wit(event.clone()));
+                    let predicate_result =
+                        predicate_within.predicate.evaluate(&GolemEvent::from_wit(event.clone()));
 
                     if predicate_result {
                         dbg!(
                             "Setting timeline as true from time {} since the predicate is true!",
                             event.time
                         );
-                        state
-                            .state_dynamic_timeline
-                            .add_state_dynamic_info(event.time, true);
+                        state.state_dynamic_timeline.add_state_dynamic_info(event.time, true);
 
                         state
                             .state_dynamic_timeline
@@ -218,9 +206,7 @@ impl Guest for Component {
                         // If predicate is false, and if the future is not yet set to false, then set it to false once and for all
                         if !state.state_dynamic_timeline.future_is(false) {
                             dbg!("Setting timeline as false from time {} since the predicate is false!", event.time);
-                            state
-                                .state_dynamic_timeline
-                                .add_state_dynamic_info(event.time, false);
+                            state.state_dynamic_timeline.add_state_dynamic_info(event.time, false);
                         }
                     }
                 }

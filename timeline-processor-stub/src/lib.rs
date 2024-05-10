@@ -11,12 +11,8 @@ impl crate::bindings::exports::timeline::timeline_processor_stub::stub_timeline_
     for Api
 {
     fn new(location: crate::bindings::golem::rpc::types::Uri) -> Self {
-        let location = golem_wasm_rpc::Uri {
-            value: location.value,
-        };
-        Self {
-            rpc: WasmRpc::new(&location),
-        }
+        let location = golem_wasm_rpc::Uri { value: location.value };
+        Self { rpc: WasmRpc::new(&location) }
     }
     fn initialize_equal(
         &self,

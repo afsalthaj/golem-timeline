@@ -17,18 +17,13 @@ pub struct WorkerInfo {
 
 impl WorkerInfo {
     pub fn get_uri(&self) -> Uri {
-        Uri {
-            value: format!("worker://{}/{}", self.template_id, self.worker_id),
-        }
+        Uri { value: format!("worker://{}/{}", self.template_id, self.worker_id) }
     }
 }
 
 impl WorkerExt for TimelineResultWorker {
     fn get_worker_info(&self) -> WorkerInfo {
-        WorkerInfo {
-            worker_id: self.worker_id.clone(),
-            template_id: self.template_id.clone(),
-        }
+        WorkerInfo { worker_id: self.worker_id.clone(), template_id: self.template_id.clone() }
     }
 }
 
