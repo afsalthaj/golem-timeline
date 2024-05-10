@@ -14,17 +14,18 @@ use timeline::timeline_op::TimeLineOp as DslTimeLineOp;
 #[allow(dead_code)]
 #[rustfmt::skip]
 mod bindings;
+
 mod builder;
 mod conversions;
 struct Component;
 
 impl Guest for Component {
     fn run(
-        core_template_id: String,
+        core_component_id: String,
         event_processor_component_id: String,
         timeline_processor_component_id: String,
     ) -> Result<WorkerDetails, String> {
-        let uri = Uri { value: format!("worker://{core_template_id}/{}", "initialize-timeline") };
+        let uri = Uri { value: format!("worker://{core_component_id}/{}", "initialize-timeline") };
 
         let core = stub_core::Api::new(&uri);
         let simple_timeline = DslTimeLineOp::Not(
