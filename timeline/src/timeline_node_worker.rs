@@ -119,17 +119,11 @@ impl TypedTimeLineResultWorker {
 
 #[derive(Clone, Debug, Serialize)]
 pub enum LeafTimeLineNode {
-    TLHasExisted {
-        time_line_worker: TimeLineResultWorker,
-    },
+    TLHasExisted { time_line_worker: TimeLineResultWorker },
 
-    TLHasExistedWithin {
-        time_line_worker: TimeLineResultWorker,
-    },
+    TLHasExistedWithin { time_line_worker: TimeLineResultWorker },
 
-    TLEventToLatestState {
-        time_line_worker: TimeLineResultWorker,
-    },
+    TLEventToLatestState { time_line_worker: TimeLineResultWorker },
 }
 
 #[derive(Clone, Debug, Serialize)]

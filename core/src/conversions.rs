@@ -115,10 +115,7 @@ impl Conversion for TypedTimeLineResultWorker {
                     let component_id = time_line_worker.component_id.clone();
                     let worker_id = time_line_worker.worker_id.0.clone();
                     WitTypedTimeLineResultWorker::LeafTimeline(WitLeafTimeLineNode::TlHasExisted(
-                        WitTimeLineResultWorker {
-                            template_id: component_id,
-                            worker_id,
-                        },
+                        WitTimeLineResultWorker { template_id: component_id, worker_id },
                     ))
                 }
                 LeafTimeLineNode::TLHasExistedWithin { time_line_worker } => {
@@ -203,10 +200,7 @@ impl Conversion for TypedTimeLineResultWorker {
                         let component_id = result_worker.component_id.clone();
                         let worker_id = result_worker.worker_id.0.clone();
                         WitTypedTimeLineResultWorker::DerivedTimeline(WitDerivedTimeLineNode::And(
-                            WitTimeLineResultWorker {
-                                template_id: component_id,
-                                worker_id,
-                            },
+                            WitTimeLineResultWorker { template_id: component_id, worker_id },
                         ))
                     }
                     DerivedTimeLineNode::Or { result_worker } => {
@@ -224,10 +218,7 @@ impl Conversion for TypedTimeLineResultWorker {
                         let component_id = result_worker.component_id.clone();
                         let worker_id = result_worker.worker_id.0.clone();
                         WitTypedTimeLineResultWorker::DerivedTimeline(WitDerivedTimeLineNode::Not(
-                            WitTimeLineResultWorker {
-                                template_id: component_id,
-                                worker_id,
-                            },
+                            WitTimeLineResultWorker { template_id: component_id, worker_id },
                         ))
                     }
                 }
@@ -406,10 +397,7 @@ mod internals {
                 );
 
                 let filter = GolemEventPredicate::from_wit(
-                    server_with_event_predicate_within
-                        .filtered
-                        .event_predicate
-                        .clone(),
+                    server_with_event_predicate_within.filtered.event_predicate.clone(),
                 );
 
                 TimeLineOp::TlHasExistedWithin(server, filter, max_duration)

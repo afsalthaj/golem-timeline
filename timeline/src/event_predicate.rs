@@ -88,20 +88,17 @@ impl Display for GolemEventPredicate<GolemEventValue> {
 impl<T: PartialEq + PartialOrd + Clone + Debug> GolemEventPredicate<T> {
     pub fn evaluate(&self, event: &GolemEvent<T>) -> bool {
         match self {
-            GolemEventPredicate::Equals(event_column_name, event_value) => event
-                .event
-                .get(event_column_name)
-                .map_or(false, |v| v == &event_value.0),
+            GolemEventPredicate::Equals(event_column_name, event_value) => {
+                event.event.get(event_column_name).map_or(false, |v| v == &event_value.0)
+            }
 
-            GolemEventPredicate::GreaterThan(event_column_name, event_value) => event
-                .event
-                .get(event_column_name)
-                .map_or(false, |v| v > &event_value.0),
+            GolemEventPredicate::GreaterThan(event_column_name, event_value) => {
+                event.event.get(event_column_name).map_or(false, |v| v > &event_value.0)
+            }
 
-            GolemEventPredicate::LessThan(event_column_name, event_value) => event
-                .event
-                .get(event_column_name)
-                .map_or(false, |v| v < &event_value.0),
+            GolemEventPredicate::LessThan(event_column_name, event_value) => {
+                event.event.get(event_column_name).map_or(false, |v| v < &event_value.0)
+            }
             GolemEventPredicate::And(left, right) => left.evaluate(event) && right.evaluate(event),
             GolemEventPredicate::Or(left, right) => left.evaluate(event) || right.evaluate(event),
         }
