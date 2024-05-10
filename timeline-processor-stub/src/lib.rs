@@ -1,13 +1,15 @@
 #![allow(warnings)]
 use golem_wasm_rpc::*;
 #[allow(dead_code)]
+#[rustfmt::skip]
 mod bindings;
 pub struct Api {
     rpc: WasmRpc,
 }
 impl Api {}
 impl crate::bindings::exports::timeline::timeline_processor_stub::stub_timeline_processor::GuestApi
-for Api {
+    for Api
+{
     fn new(location: crate::bindings::golem::rpc::types::Uri) -> Self {
         let location = golem_wasm_rpc::Uri {
             value: location.value,
@@ -320,24 +322,16 @@ for Api {
                 .result()
                 .expect("result not found");
             match result {
-                Ok(ok_value) => {
-                    Ok(
-                        ok_value
-                            .expect("result ok value not found")
-                            .string()
-                            .expect("string not found")
-                            .to_string(),
-                    )
-                }
-                Err(err_value) => {
-                    Err(
-                        err_value
-                            .expect("result err value not found")
-                            .string()
-                            .expect("string not found")
-                            .to_string(),
-                    )
-                }
+                Ok(ok_value) => Ok(ok_value
+                    .expect("result ok value not found")
+                    .string()
+                    .expect("string not found")
+                    .to_string()),
+                Err(err_value) => Err(err_value
+                    .expect("result err value not found")
+                    .string()
+                    .expect("string not found")
+                    .to_string()),
             }
         })
     }
@@ -645,24 +639,16 @@ for Api {
                 .result()
                 .expect("result not found");
             match result {
-                Ok(ok_value) => {
-                    Ok(
-                        ok_value
-                            .expect("result ok value not found")
-                            .string()
-                            .expect("string not found")
-                            .to_string(),
-                    )
-                }
-                Err(err_value) => {
-                    Err(
-                        err_value
-                            .expect("result err value not found")
-                            .string()
-                            .expect("string not found")
-                            .to_string(),
-                    )
-                }
+                Ok(ok_value) => Ok(ok_value
+                    .expect("result ok value not found")
+                    .string()
+                    .expect("string not found")
+                    .to_string()),
+                Err(err_value) => Err(err_value
+                    .expect("result err value not found")
+                    .string()
+                    .expect("string not found")
+                    .to_string()),
             }
         })
     }
@@ -970,24 +956,16 @@ for Api {
                 .result()
                 .expect("result not found");
             match result {
-                Ok(ok_value) => {
-                    Ok(
-                        ok_value
-                            .expect("result ok value not found")
-                            .string()
-                            .expect("string not found")
-                            .to_string(),
-                    )
-                }
-                Err(err_value) => {
-                    Err(
-                        err_value
-                            .expect("result err value not found")
-                            .string()
-                            .expect("string not found")
-                            .to_string(),
-                    )
-                }
+                Ok(ok_value) => Ok(ok_value
+                    .expect("result ok value not found")
+                    .string()
+                    .expect("string not found")
+                    .to_string()),
+                Err(err_value) => Err(err_value
+                    .expect("result err value not found")
+                    .string()
+                    .expect("string not found")
+                    .to_string()),
             }
         })
     }
@@ -1295,24 +1273,16 @@ for Api {
                 .result()
                 .expect("result not found");
             match result {
-                Ok(ok_value) => {
-                    Ok(
-                        ok_value
-                            .expect("result ok value not found")
-                            .string()
-                            .expect("string not found")
-                            .to_string(),
-                    )
-                }
-                Err(err_value) => {
-                    Err(
-                        err_value
-                            .expect("result err value not found")
-                            .string()
-                            .expect("string not found")
-                            .to_string(),
-                    )
-                }
+                Ok(ok_value) => Ok(ok_value
+                    .expect("result ok value not found")
+                    .string()
+                    .expect("string not found")
+                    .to_string()),
+                Err(err_value) => Err(err_value
+                    .expect("result err value not found")
+                    .string()
+                    .expect("string not found")
+                    .to_string()),
             }
         })
     }
@@ -1620,24 +1590,16 @@ for Api {
                 .result()
                 .expect("result not found");
             match result {
-                Ok(ok_value) => {
-                    Ok(
-                        ok_value
-                            .expect("result ok value not found")
-                            .string()
-                            .expect("string not found")
-                            .to_string(),
-                    )
-                }
-                Err(err_value) => {
-                    Err(
-                        err_value
-                            .expect("result err value not found")
-                            .string()
-                            .expect("string not found")
-                            .to_string(),
-                    )
-                }
+                Ok(ok_value) => Ok(ok_value
+                    .expect("result ok value not found")
+                    .string()
+                    .expect("string not found")
+                    .to_string()),
+                Err(err_value) => Err(err_value
+                    .expect("result err value not found")
+                    .string()
+                    .expect("string not found")
+                    .to_string()),
             }
         })
     }
@@ -2134,24 +2096,16 @@ for Api {
                 .result()
                 .expect("result not found");
             match result {
-                Ok(ok_value) => {
-                    Ok(
-                        ok_value
-                            .expect("result ok value not found")
-                            .string()
-                            .expect("string not found")
-                            .to_string(),
-                    )
-                }
-                Err(err_value) => {
-                    Err(
-                        err_value
-                            .expect("result err value not found")
-                            .string()
-                            .expect("string not found")
-                            .to_string(),
-                    )
-                }
+                Ok(ok_value) => Ok(ok_value
+                    .expect("result ok value not found")
+                    .string()
+                    .expect("string not found")
+                    .to_string()),
+                Err(err_value) => Err(err_value
+                    .expect("result err value not found")
+                    .string()
+                    .expect("string not found")
+                    .to_string()),
             }
         })
     }
@@ -2648,24 +2602,16 @@ for Api {
                 .result()
                 .expect("result not found");
             match result {
-                Ok(ok_value) => {
-                    Ok(
-                        ok_value
-                            .expect("result ok value not found")
-                            .string()
-                            .expect("string not found")
-                            .to_string(),
-                    )
-                }
-                Err(err_value) => {
-                    Err(
-                        err_value
-                            .expect("result err value not found")
-                            .string()
-                            .expect("string not found")
-                            .to_string(),
-                    )
-                }
+                Ok(ok_value) => Ok(ok_value
+                    .expect("result ok value not found")
+                    .string()
+                    .expect("string not found")
+                    .to_string()),
+                Err(err_value) => Err(err_value
+                    .expect("result err value not found")
+                    .string()
+                    .expect("string not found")
+                    .to_string()),
             }
         })
     }
@@ -2927,46 +2873,33 @@ for Api {
                 .result()
                 .expect("result not found");
             match result {
-                Ok(ok_value) => {
-                    Ok(
-                        ok_value
-                            .expect("result ok value not found")
-                            .string()
-                            .expect("string not found")
-                            .to_string(),
-                    )
-                }
-                Err(err_value) => {
-                    Err(
-                        err_value
-                            .expect("result err value not found")
-                            .string()
-                            .expect("string not found")
-                            .to_string(),
-                    )
-                }
+                Ok(ok_value) => Ok(ok_value
+                    .expect("result ok value not found")
+                    .string()
+                    .expect("string not found")
+                    .to_string()),
+                Err(err_value) => Err(err_value
+                    .expect("result err value not found")
+                    .string()
+                    .expect("string not found")
+                    .to_string()),
             }
         })
     }
     fn get_timeline_result(
         &self,
         t1: u64,
-    ) -> Result<
-        crate::bindings::timeline::timeline_processor::api::TimelineResult,
-        String,
-    > {
+    ) -> Result<crate::bindings::timeline::timeline_processor::api::TimelineResult, String> {
         let result = self
             .rpc
             .invoke_and_await(
                 "timeline:timeline-processor/api/get-timeline-result",
                 &[WitValue::builder().u64(t1)],
             )
-            .expect(
-                &format!(
-                    "Failed to invoke remote {}",
-                    "timeline:timeline-processor/api/get-timeline-result"
-                ),
-            );
+            .expect(&format!(
+                "Failed to invoke remote {}",
+                "timeline:timeline-processor/api/get-timeline-result"
+            ));
         ({
             let result = result
                 .tuple_element(0)
@@ -2974,10 +2907,9 @@ for Api {
                 .result()
                 .expect("result not found");
             match result {
-                Ok(ok_value) => {
-                    Ok({
-                        let record = ok_value.expect("result ok value not found");
-                        crate::bindings::timeline::event_processor::api::TimelineResult {
+                Ok(ok_value) => Ok({
+                    let record = ok_value.expect("result ok value not found");
+                    crate::bindings::timeline::event_processor::api::TimelineResult {
                             results: record
                                 .field(0usize)
                                 .expect("record field not found")
@@ -3048,17 +2980,12 @@ for Api {
                                 })
                                 .expect("list not found"),
                         }
-                    })
-                }
-                Err(err_value) => {
-                    Err(
-                        err_value
-                            .expect("result err value not found")
-                            .string()
-                            .expect("string not found")
-                            .to_string(),
-                    )
-                }
+                }),
+                Err(err_value) => Err(err_value
+                    .expect("result err value not found")
+                    .string()
+                    .expect("string not found")
+                    .to_string()),
             }
         })
     }

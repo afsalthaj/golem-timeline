@@ -1,7 +1,6 @@
 use std::collections::BTreeMap;
 use std::fmt::Debug;
 
-
 use crate::event_timeline::EventTimeLine;
 use crate::internals::aligned_state_dynamic_timeline::AlignedStateDynamicsTimeLine;
 use crate::internals::boundaries::Boundaries;
@@ -14,27 +13,35 @@ pub struct StateDynamicsTimeLine<T> {
 }
 
 impl<T: Clone + PartialEq> StateDynamicsTimeLine<T> {
-
     pub fn map<B>(&self, f: impl Fn(&T) -> B) -> StateDynamicsTimeLine<B> {
         let mut new_points = BTreeMap::new();
         for (k, v) in &self.points {
-            new_points.insert(*k, StateDynamicsTimeLinePoint {
-                t1: v.t1,
-                t2: v.t2,
-                value: f(&v.value),
-            });
+            new_points.insert(
+                *k,
+                StateDynamicsTimeLinePoint {
+                    t1: v.t1,
+                    t2: v.t2,
+                    value: f(&v.value),
+                },
+            );
         }
         StateDynamicsTimeLine { points: new_points }
     }
 
-    pub fn map_fallible<B>(&self, f: impl Fn(&T) -> Result<B, String>) -> Result<StateDynamicsTimeLine<B>, String> {
+    pub fn map_fallible<B>(
+        &self,
+        f: impl Fn(&T) -> Result<B, String>,
+    ) -> Result<StateDynamicsTimeLine<B>, String> {
         let mut new_points = BTreeMap::new();
         for (k, v) in &self.points {
-            new_points.insert(*k, StateDynamicsTimeLinePoint {
-                t1: v.t1,
-                t2: v.t2,
-                value: f(&v.value)?,
-            });
+            new_points.insert(
+                *k,
+                StateDynamicsTimeLinePoint {
+                    t1: v.t1,
+                    t2: v.t2,
+                    value: f(&v.value)?,
+                },
+            );
         }
         Ok(StateDynamicsTimeLine { points: new_points })
     }
@@ -370,7 +377,8 @@ impl<T: Debug + Clone + PartialOrd> StateDynamicsTimeLine<T> {
 
         for point in &self.points {
             let is_greater_than_or_equal = point.1.value >= constant;
-            state_dynamics_time_line.add_state_dynamic_info(point.0.clone(), is_greater_than_or_equal);
+            state_dynamics_time_line
+                .add_state_dynamic_info(point.0.clone(), is_greater_than_or_equal);
         }
 
         state_dynamics_time_line
@@ -481,11 +489,12 @@ impl<T: Debug + Clone + PartialOrd> StateDynamicsTimeLine<T> {
 
 // ~~ represents `forever`
 // -- denotes a finite boundary
+#[cfg(test)]
 mod tests {
-    use std::collections::BTreeMap;
     use crate::event_timeline::{EventTimeLine, EventTimeLinePoint};
     use crate::state_dynamic_timeline::StateDynamicsTimeLine;
     use crate::state_dynamic_timeline_point::StateDynamicsTimeLinePoint;
+    use std::collections::BTreeMap;
 
     // t1~~~~(playing)~~~~~~~~~~~~>
     //       t2~~~~(movie)~~~~~~~~~~>

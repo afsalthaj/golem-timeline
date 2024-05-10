@@ -2,7 +2,7 @@ use std::fmt::Display;
 
 use crate::event_predicate::{EventColumnName, GolemEventPredicate};
 use crate::golem_event::GolemEventValue;
-use crate::timeline_node_worker::{TimeLineNodeWorkerInput, TimeLineResultWorker};
+use crate::timeline_node_worker::TimeLineNodeWorkerInput;
 
 #[derive(Clone, Debug)]
 pub enum TimeLineOp {
@@ -27,7 +27,10 @@ pub enum TimeLineOp {
     // Output
     // t1-t2: false
     // t2-t3: true
-    TlHasExisted(TimeLineNodeWorkerInput, GolemEventPredicate<GolemEventValue>),
+    TlHasExisted(
+        TimeLineNodeWorkerInput,
+        GolemEventPredicate<GolemEventValue>,
+    ),
     // This is more of tracking a StateDynamic event, as a cumulative OR
     // Input
     // Duration: D = 4

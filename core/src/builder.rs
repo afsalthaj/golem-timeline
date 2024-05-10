@@ -1,6 +1,10 @@
-use crate::bindings::exports::timeline::core::api::{NodeIndex, ServerWithEventColumnName, ServerWithEventPredicate, ServerWithEventPredicateWithin, TimelineConstantComparator, TimelineConstantCompared, TimelineNegated, TimelineNode, TimelineWithServer};
-use crate::conversions::Conversion;
 use crate::bindings::exports::timeline::core::api::TimelineOp as WitTimeLineOp;
+use crate::bindings::exports::timeline::core::api::{
+    NodeIndex, ServerWithEventColumnName, ServerWithEventPredicate, ServerWithEventPredicateWithin,
+    TimelineConstantComparator, TimelineConstantCompared, TimelineNegated, TimelineNode,
+    TimelineWithServer,
+};
+use crate::conversions::Conversion;
 use timeline::timeline_op::TimeLineOp;
 
 pub struct WitValueBuilder {
@@ -19,9 +23,9 @@ impl WitValueBuilder {
 
     // FIXME: Clone is not needed
     pub(crate) fn build(&self) -> WitTimeLineOp {
-       WitTimeLineOp {
-           nodes: self.nodes.clone()
-       }
+        WitTimeLineOp {
+            nodes: self.nodes.clone(),
+        }
     }
 
     pub(crate) fn build_timeline_op(&mut self, timeline_op: &TimeLineOp) -> NodeIndex {
@@ -52,7 +56,7 @@ impl WitValueBuilder {
                 let server = timeline_worker_input.to_wit();
                 let parent_idx = self.add(TimelineNode::TimelineNegation(TimelineNegated {
                     server,
-                    timeline: -1
+                    timeline: -1,
                 }));
 
                 let child_idx = self.build_timeline_op(timeline_op);
@@ -67,12 +71,13 @@ impl WitValueBuilder {
             }
 
             TimeLineOp::GreaterThan(timeline_worker_input, timeline_op, golem_event_value) => {
-                let parent_idx = self.add(TimelineNode::TimelineComparison(TimelineConstantCompared {
-                    op: TimelineConstantComparator::GreaterThan,
-                    timeline: -1,
-                    value: golem_event_value.to_wit(),
-                    server: timeline_worker_input.to_wit()
-                }));
+                let parent_idx =
+                    self.add(TimelineNode::TimelineComparison(TimelineConstantCompared {
+                        op: TimelineConstantComparator::GreaterThan,
+                        timeline: -1,
+                        value: golem_event_value.to_wit(),
+                        server: timeline_worker_input.to_wit(),
+                    }));
 
                 let child_idx = self.build_timeline_op(timeline_op);
 
@@ -86,13 +91,18 @@ impl WitValueBuilder {
                 parent_idx
             }
 
-            TimeLineOp::GreaterThanOrEqual(timeline_worker_input, timeline_op, golem_event_value) => {
-                let parent_idx = self.add(TimelineNode::TimelineComparison(TimelineConstantCompared {
-                    op: TimelineConstantComparator::GreaterThanEqual,
-                    timeline: -1,
-                    value: golem_event_value.to_wit(),
-                    server: timeline_worker_input.to_wit()
-                }));
+            TimeLineOp::GreaterThanOrEqual(
+                timeline_worker_input,
+                timeline_op,
+                golem_event_value,
+            ) => {
+                let parent_idx =
+                    self.add(TimelineNode::TimelineComparison(TimelineConstantCompared {
+                        op: TimelineConstantComparator::GreaterThanEqual,
+                        timeline: -1,
+                        value: golem_event_value.to_wit(),
+                        server: timeline_worker_input.to_wit(),
+                    }));
 
                 let child_idx = self.build_timeline_op(timeline_op);
 
@@ -107,12 +117,13 @@ impl WitValueBuilder {
             }
 
             TimeLineOp::LessThan(timeline_worker_input, timeline_op, golem_event_value) => {
-                let parent_idx = self.add(TimelineNode::TimelineComparison(TimelineConstantCompared {
-                    op: TimelineConstantComparator::LessThan,
-                    timeline: -1,
-                    value: golem_event_value.to_wit(),
-                    server: timeline_worker_input.to_wit()
-                }));
+                let parent_idx =
+                    self.add(TimelineNode::TimelineComparison(TimelineConstantCompared {
+                        op: TimelineConstantComparator::LessThan,
+                        timeline: -1,
+                        value: golem_event_value.to_wit(),
+                        server: timeline_worker_input.to_wit(),
+                    }));
 
                 let child_idx = self.build_timeline_op(timeline_op);
 
@@ -127,12 +138,13 @@ impl WitValueBuilder {
             }
 
             TimeLineOp::LessThanOrEqual(timeline_worker_input, timeline_op, golem_event_value) => {
-                let parent_idx = self.add(TimelineNode::TimelineComparison(TimelineConstantCompared {
-                    op: TimelineConstantComparator::LessThanEqual,
-                    timeline: -1,
-                    value: golem_event_value.to_wit(),
-                    server: timeline_worker_input.to_wit()
-                }));
+                let parent_idx =
+                    self.add(TimelineNode::TimelineComparison(TimelineConstantCompared {
+                        op: TimelineConstantComparator::LessThanEqual,
+                        timeline: -1,
+                        value: golem_event_value.to_wit(),
+                        server: timeline_worker_input.to_wit(),
+                    }));
 
                 let child_idx = self.build_timeline_op(timeline_op);
 
@@ -147,12 +159,13 @@ impl WitValueBuilder {
             }
 
             TimeLineOp::EqualTo(timeline_worker_input, timeline_op, golem_event_value) => {
-                let parent_idx = self.add(TimelineNode::TimelineComparison(TimelineConstantCompared {
-                    op: TimelineConstantComparator::GreaterThan, // FIXME: Add Equal to ConstantOp
-                    timeline: -1,
-                    value: golem_event_value.to_wit(),
-                    server: timeline_worker_input.to_wit()
-                }));
+                let parent_idx =
+                    self.add(TimelineNode::TimelineComparison(TimelineConstantCompared {
+                        op: TimelineConstantComparator::GreaterThan, // FIXME: Add Equal to ConstantOp
+                        timeline: -1,
+                        value: golem_event_value.to_wit(),
+                        server: timeline_worker_input.to_wit(),
+                    }));
 
                 let child_idx = self.build_timeline_op(timeline_op);
 
@@ -167,9 +180,9 @@ impl WitValueBuilder {
             }
 
             TimeLineOp::TlDurationInCurState(timeline_worker_input, timeline_op) => {
-                let parent_idx = self.add(TimelineNode::TlDurationInCurState(TimelineWithServer{
+                let parent_idx = self.add(TimelineNode::TlDurationInCurState(TimelineWithServer {
                     server: timeline_worker_input.to_wit(),
-                    timeline: -1
+                    timeline: -1,
                 }));
 
                 let child_idx = self.build_timeline_op(timeline_op);
@@ -185,9 +198,9 @@ impl WitValueBuilder {
             }
 
             TimeLineOp::TlDurationWhere(timeline_worker_input, timeline_op) => {
-                let parent_idx = self.add(TimelineNode::TlDurationWhere(TimelineWithServer{
+                let parent_idx = self.add(TimelineNode::TlDurationWhere(TimelineWithServer {
                     server: timeline_worker_input.to_wit(),
-                    timeline: -1
+                    timeline: -1,
                 }));
 
                 let child_idx = self.build_timeline_op(timeline_op);
@@ -201,22 +214,22 @@ impl WitValueBuilder {
 
                 parent_idx
             }
-            TimeLineOp::TlHasExistedWithin(timeline_worker_input, event_predicate, time) => {
-                self.add(TimelineNode::TlHasExistedWithin(ServerWithEventPredicateWithin {
-                    filtered: ServerWithEventPredicate {
-                        server: timeline_worker_input.to_wit(),
-                        event_predicate: event_predicate.to_wit()
+            TimeLineOp::TlHasExistedWithin(timeline_worker_input, event_predicate, time) => self
+                .add(TimelineNode::TlHasExistedWithin(
+                    ServerWithEventPredicateWithin {
+                        filtered: ServerWithEventPredicate {
+                            server: timeline_worker_input.to_wit(),
+                            event_predicate: event_predicate.to_wit(),
+                        },
+                        time: *time,
                     },
-                    time: *time
-                }))
-            }
-            TimeLineOp::And(timeline_worker_input, timeline_op1, timeline_op2) => {
+                )),
+            TimeLineOp::And(_timeline_worker_input, _timeline_op1, _timeline_op2) => {
                 unimplemented!("And") //FIXME
             }
             TimeLineOp::Or(_, _, _) => {
                 unimplemented!("Or") //FIXME
             }
-
         }
     }
 }

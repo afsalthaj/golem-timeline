@@ -27,7 +27,7 @@ struct TLHasExistedTracker {
 }
 
 impl TLHasExistedTracker {
-    fn with_predicate(&mut self, predicate: GolemEventPredicate<GolemEventValue>) {
+    fn _with_predicate(&mut self, predicate: GolemEventPredicate<GolemEventValue>) {
         self.predicate = Some(predicate);
     }
 }
@@ -35,7 +35,7 @@ impl TLHasExistedTracker {
 struct TLHasExistedWithinTracker {
     state_dynamic_timeline: StateDynamicsTimeLine<bool>,
     predicate_and_within: Option<PredicateWithin>,
-    time_elapsed_from_last_true: Option<u64>,
+    _time_elapsed_from_last_true: Option<u64>,
 }
 
 struct PredicateWithin {
@@ -52,8 +52,8 @@ impl TLHasExistedWithinTracker {
         self.predicate_and_within = Some(PredicateWithin { predicate, within });
     }
 
-    fn with_time_elapsed_from_last_true(&mut self, time_elapsed_from_last_true: u64) {
-        self.time_elapsed_from_last_true = Some(time_elapsed_from_last_true);
+    fn _with_time_elapsed_from_last_true(&mut self, time_elapsed_from_last_true: u64) {
+        self._time_elapsed_from_last_true = Some(time_elapsed_from_last_true);
     }
 }
 
@@ -71,7 +71,7 @@ thread_local! {
     static TL_HAS_EXISTED_WITHIN: RefCell<TLHasExistedWithinTracker> = RefCell::new(TLHasExistedWithinTracker {
         state_dynamic_timeline: StateDynamicsTimeLine::default(),
         predicate_and_within: None,
-        time_elapsed_from_last_true: None
+        _time_elapsed_from_last_true: None
     });
 }
 
@@ -235,10 +235,6 @@ impl Guest for Component {
     fn latest_event_to_state(t1: u64) -> Result<TimelineResult, String> {
         with_latest_event_to_state(|state| {
             let latest_event = state.state_dynamic_timeline.get_state_at(t1);
-
-            let column_name = state.col_name.as_ref().ok_or(
-                "Latest Event To State hasn't been initialised or part of the workflow yet",
-            )?;
 
             let result = match latest_event {
                 Some(event) => TimelineResult {
