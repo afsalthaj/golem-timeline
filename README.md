@@ -206,3 +206,7 @@ leaf timeline nodes. For now, our leaf node corresponds to tl_latest_event_to_st
 
 
 This is all still a work in progress, in terms of designing and implementing a well defined workflow with implementation of every DSL nodes in TimeLine.
+
+## Contributing
+
+RustRover and IntelliJ users should enable rustfmt instead of built-in formatter as described here: https://www.jetbrains.com/help/rust/rustfmt.html
