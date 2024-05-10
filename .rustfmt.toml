@@ -1,2 +1,5 @@
 reorder_modules = true
 use_small_heuristics = "Max"
+ignore = [
+    "*/src/bindings.rs",
+]
