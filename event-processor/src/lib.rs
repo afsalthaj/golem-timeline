@@ -78,25 +78,19 @@ thread_local! {
 fn with_latest_event_to_state<T>(
     f: impl FnOnce(&mut LatestEventToStateTracker) -> Result<T, String>,
 ) -> Result<T, String> {
-    let result = LATEST_EVENT_TO_STATE.with_borrow_mut(|state| f(state));
-
-    return result;
+    LATEST_EVENT_TO_STATE.with_borrow_mut(|state| f(state))
 }
 
 fn with_tl_has_existed<T>(
     f: impl FnOnce(&mut TLHasExistedTracker) -> Result<T, String>,
 ) -> Result<T, String> {
-    let result = TL_HAS_EXISTED.with_borrow_mut(|state| f(state));
-
-    return result;
+    TL_HAS_EXISTED.with_borrow_mut(|state| f(state))
 }
 
 fn with_tl_has_existed_within<T>(
     f: impl FnOnce(&mut TLHasExistedWithinTracker) -> Result<T, String>,
 ) -> Result<T, String> {
-    let result = TL_HAS_EXISTED_WITHIN.with_borrow_mut(|state| f(state));
-
-    return result;
+    TL_HAS_EXISTED_WITHIN.with_borrow_mut(|state| f(state))
 }
 
 impl Guest for Component {

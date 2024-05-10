@@ -27,10 +27,7 @@ pub enum TimeLineOp {
     // Output
     // t1-t2: false
     // t2-t3: true
-    TlHasExisted(
-        TimeLineNodeWorkerInput,
-        GolemEventPredicate<GolemEventValue>,
-    ),
+    TlHasExisted(TimeLineNodeWorkerInput, GolemEventPredicate<GolemEventValue>),
     // This is more of tracking a StateDynamic event, as a cumulative OR
     // Input
     // Duration: D = 4

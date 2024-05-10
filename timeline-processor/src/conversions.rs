@@ -18,18 +18,18 @@ impl Conversion for GolemEventValue {
     fn from_wit(input: Self::WitType) -> Self {
         match input {
             EventValue::StringValue(s) => GolemEventValue::StringValue(s.clone()),
-            EventValue::IntValue(i) => GolemEventValue::IntValue(i.clone()),
-            EventValue::FloatValue(fl) => GolemEventValue::FloatValue(fl.clone()),
-            EventValue::BoolValue(b) => GolemEventValue::BoolValue(b.clone()),
+            EventValue::IntValue(i) => GolemEventValue::IntValue(i),
+            EventValue::FloatValue(fl) => GolemEventValue::FloatValue(fl),
+            EventValue::BoolValue(b) => GolemEventValue::BoolValue(b),
         }
     }
 
     fn to_wit(&self) -> Self::WitType {
         match self {
             GolemEventValue::StringValue(s) => EventValue::StringValue(s.clone()),
-            GolemEventValue::IntValue(i) => EventValue::IntValue(i.clone()),
-            GolemEventValue::FloatValue(fl) => EventValue::FloatValue(fl.clone()),
-            GolemEventValue::BoolValue(b) => EventValue::BoolValue(b.clone()),
+            GolemEventValue::IntValue(i) => EventValue::IntValue(*i),
+            GolemEventValue::FloatValue(fl) => EventValue::FloatValue(*fl),
+            GolemEventValue::BoolValue(b) => EventValue::BoolValue(*b),
         }
     }
 }
