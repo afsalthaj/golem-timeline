@@ -1,17 +1,16 @@
 use crate::bindings::exports::timeline::timeline_processor::api::{
-    DerivedTimelineNode, EventValue, Guest, LeafTimelineNode, TimelineResult, TimelineResultWorker,
-    TypedTimelineResultWorker,
+    EventValue, Guest, TimelineResult, TypedTimelineResultWorker,
 };
-use crate::bindings::golem::rpc::types::Uri;
-use crate::bindings::timeline::event_processor_stub::stub_event_processor;
-use crate::bindings::timeline::timeline_processor_stub::stub_timeline_processor;
+
 use conversions::Conversion;
 use extensions::WorkerResultExt;
 use std::cell::RefCell;
-use timeline::event_predicate::EventColumnName;
+
 use timeline::golem_event::GolemEventValue;
-use timeline::state_dynamic_timeline;
 use timeline::state_dynamic_timeline::StateDynamicsTimeLine;
+
+#[allow(dead_code)]
+#[rustfmt::skip]
 mod bindings;
 mod conversions;
 mod extensions;
@@ -58,108 +57,90 @@ struct TLOr {
 }
 
 thread_local! {
-    static ACTIVE_STATE: RefCell<Option<ActiveState>> = RefCell::new(None);
+    static ACTIVE_STATE: RefCell<Option<ActiveState>> = const { RefCell::new(None) };
 
-    static TL_EQUAL_STATE: RefCell<TLEqual> = RefCell::new(TLEqual {
+    static TL_EQUAL_STATE: RefCell<TLEqual> = const {RefCell::new(TLEqual {
         child_worker: None,
         event_value: None
-    });
+    })};
 
-    static TL_GREATER_THAN_STATE: RefCell<TLGreaterThan> = RefCell::new(TLGreaterThan {
+    static TL_GREATER_THAN_STATE: RefCell<TLGreaterThan> = const { RefCell::new(TLGreaterThan {
         child_worker: None,
         event_value: None
-    });
+    })};
 
-    static TL_GREATER_THAN_OR_EQUAL_TO_STATE: RefCell<TLGreaterThanOrEqualTo> = RefCell::new(TLGreaterThanOrEqualTo {
+    static TL_GREATER_THAN_OR_EQUAL_TO_STATE: RefCell<TLGreaterThanOrEqualTo> = const { RefCell::new(TLGreaterThanOrEqualTo {
         child_worker: None,
         event_value: None
-    });
+    })};
 
-    static TL_LESS_THAN_STATE: RefCell<TLLessThan> = RefCell::new(TLLessThan {
+    static TL_LESS_THAN_STATE: RefCell<TLLessThan> = const {RefCell::new(TLLessThan {
         child_worker: None,
         event_value: None
-    });
+    })};
 
-    static TL_LESS_THAN_OR_EQUAL_TO_STATE: RefCell<TLLessThanOrEqualTo> = RefCell::new(TLLessThanOrEqualTo {
+    static TL_LESS_THAN_OR_EQUAL_TO_STATE: RefCell<TLLessThanOrEqualTo> = const { RefCell::new(TLLessThanOrEqualTo {
         child_worker: None,
         event_value: None
-    });
+    })};
 
-    static TL_AND_STATE: RefCell<TLAnd> = RefCell::new(TLAnd {
+    static TL_AND_STATE: RefCell<TLAnd> = const { RefCell::new(TLAnd {
         child_worker1: None,
         child_worker2: None
-    });
+    })};
 
-    static TL_OR_STATE: RefCell<TLOr> = RefCell::new(TLOr {
+    static TL_OR_STATE: RefCell<TLOr> = const {RefCell::new(TLOr {
         child_worker1: None,
         child_worker2: None
-    });
+    })};
 
-    static TL_NOT_STATE: RefCell<TLNot> = RefCell::new( TLNot {
+    static TL_NOT_STATE: RefCell<TLNot> = const { RefCell::new( TLNot {
         child_worker: None
-    });
+    })};
 }
 
 fn with_equal_state<T>(f: impl FnOnce(&mut TLEqual) -> Result<T, String>) -> Result<T, String> {
-    let result = TL_EQUAL_STATE.with_borrow_mut(|state| f(state));
-
-    return result;
+    TL_EQUAL_STATE.with_borrow_mut(|state| f(state))
 }
 
 fn with_greater_than_state<T>(
     f: impl FnOnce(&mut TLGreaterThan) -> Result<T, String>,
 ) -> Result<T, String> {
-    let result = TL_GREATER_THAN_STATE.with_borrow_mut(|state| f(state));
-
-    return result;
+    TL_GREATER_THAN_STATE.with_borrow_mut(|state| f(state))
 }
 
 fn with_greater_than_or_equal_to_state<T>(
     f: impl FnOnce(&mut TLGreaterThanOrEqualTo) -> Result<T, String>,
 ) -> Result<T, String> {
-    let result = TL_GREATER_THAN_OR_EQUAL_TO_STATE.with_borrow_mut(|state| f(state));
-
-    return result;
+    TL_GREATER_THAN_OR_EQUAL_TO_STATE.with_borrow_mut(|state| f(state))
 }
 
 fn with_less_than_state<T>(
     f: impl FnOnce(&mut TLLessThan) -> Result<T, String>,
 ) -> Result<T, String> {
-    let result = TL_LESS_THAN_STATE.with_borrow_mut(|state| f(state));
-
-    return result;
+    TL_LESS_THAN_STATE.with_borrow_mut(|state| f(state))
 }
 
 fn with_less_than_or_equal_to_state<T>(
     f: impl FnOnce(&mut TLLessThanOrEqualTo) -> Result<T, String>,
 ) -> Result<T, String> {
-    let result = TL_LESS_THAN_OR_EQUAL_TO_STATE.with_borrow_mut(|state| f(state));
-
-    return result;
+    TL_LESS_THAN_OR_EQUAL_TO_STATE.with_borrow_mut(|state| f(state))
 }
 
 fn with_and_state<T>(f: impl FnOnce(&mut TLAnd) -> Result<T, String>) -> Result<T, String> {
-    let result = TL_AND_STATE.with_borrow_mut(|state| f(state));
-
-    return result;
+    TL_AND_STATE.with_borrow_mut(|state| f(state))
 }
 
 fn with_or_state<T>(f: impl FnOnce(&mut TLOr) -> Result<T, String>) -> Result<T, String> {
-    let result = TL_OR_STATE.with_borrow_mut(|state| f(state));
-
-    return result;
+    TL_OR_STATE.with_borrow_mut(|state| f(state))
 }
 
 fn with_not_state<T>(f: impl FnOnce(&mut TLNot) -> Result<T, String>) -> Result<T, String> {
-    let result = TL_NOT_STATE.with_borrow_mut(|state| f(state));
-
-    return result;
+    TL_NOT_STATE.with_borrow_mut(|state| f(state))
 }
 
 fn with_active_state<T>(f: impl FnOnce(&mut Option<ActiveState>) -> T) -> T {
-    let result = ACTIVE_STATE.with_borrow_mut(|state| f(state));
-
-    return result;
+    ACTIVE_STATE.with_borrow_mut(|state| f(state))
 }
 
 impl Guest for Component {

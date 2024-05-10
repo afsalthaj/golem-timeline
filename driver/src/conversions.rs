@@ -9,7 +9,7 @@ use crate::bindings::timeline::timeline_processor::api::TypedTimelineResultWorke
 
 pub trait Conversion: Clone + Debug {
     type WitType: Clone;
-    fn from_wit(input: Self::WitType) -> Self;
+    fn _from_wit(input: Self::WitType) -> Self;
 }
 
 // FIXME: This is repeated in core module because api::TypedTimeLineResultWorker is different because of binding differences
@@ -17,7 +17,7 @@ pub trait Conversion: Clone + Debug {
 impl Conversion for TypedTimeLineResultWorker {
     type WitType = WitTypedTimeLineResultWorker;
 
-    fn from_wit(input: Self::WitType) -> Self {
+    fn _from_wit(input: Self::WitType) -> Self {
         match input {
             WitTypedTimeLineResultWorker::LeafTimeline(leaf_time_line) => match leaf_time_line {
                 WitLeafTimeLineNode::TlHasExisted(timeline_result_worker) => {

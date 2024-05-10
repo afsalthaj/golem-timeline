@@ -218,7 +218,7 @@ impl WitValueBuilder {
                     },
                     time: *time,
                 })),
-            TimeLineOp::And(timeline_worker_input, timeline_op1, timeline_op2) => {
+            TimeLineOp::And(_timeline_worker_input, _timeline_op1, _timeline_op2) => {
                 unimplemented!("And") //FIXME
             }
             TimeLineOp::Or(_, _, _) => {

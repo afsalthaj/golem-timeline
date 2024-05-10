@@ -10,7 +10,7 @@ pub(crate) trait WorkerExt {
     fn get_worker_info(&self) -> WorkerInfo;
 }
 
-struct WorkerInfo {
+pub struct WorkerInfo {
     worker_id: String,
     template_id: String,
 }

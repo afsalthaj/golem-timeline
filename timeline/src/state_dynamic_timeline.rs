@@ -101,14 +101,14 @@ impl<T: Clone + PartialEq> StateDynamicsTimeLine<T> {
                     let l = &left.t1;
                     let r = new_time;
                     let updated_left: StateDynamicsTimeLinePoint<T> = StateDynamicsTimeLinePoint {
-                        t1: l.clone(),
+                        t1: *l,
                         t2: Some(r),
                         value: left.value.clone(),
                     };
 
                     let new_point = StateDynamicsTimeLinePoint { t1: r, t2: left.t2, value };
 
-                    self.points.insert(l.clone(), updated_left);
+                    self.points.insert(*l, updated_left);
                     self.points.insert(r, new_point);
                 }
             }
@@ -137,7 +137,7 @@ impl<T: Clone + PartialEq> StateDynamicsTimeLine<T> {
                             let l = &left.t1;
                             let r = new_time;
                             let updated_left = StateDynamicsTimeLinePoint {
-                                t1: l.clone(),
+                                t1: *l,
                                 t2: Some(r),
                                 value: left.value.clone(),
                             };
@@ -145,7 +145,7 @@ impl<T: Clone + PartialEq> StateDynamicsTimeLine<T> {
                             let new_point =
                                 StateDynamicsTimeLinePoint { t1: r, t2: left.t2, value };
 
-                            self.points.insert(l.clone(), updated_left);
+                            self.points.insert(*l, updated_left);
                             self.points.insert(r, new_point);
                         } else if left.t2.is_some() || left.t2.unwrap() < new_time {
                             let updated_left = StateDynamicsTimeLinePoint {
@@ -206,7 +206,7 @@ impl StateDynamicsTimeLine<bool> {
 
         for point in &self.points {
             let negated_value = !point.1.value;
-            negated_timeline.add_state_dynamic_info(point.0.clone(), negated_value);
+            negated_timeline.add_state_dynamic_info(*point.0, negated_value);
         }
 
         negated_timeline
@@ -227,7 +227,7 @@ impl StateDynamicsTimeLine<bool> {
                         let mut i = 0;
                         while (start + i) < end {
                             event_time_line.add_event_info(start + i, duration);
-                            duration = duration + 1;
+                            duration += 1;
                             i += 1;
                         }
                     } else {
@@ -322,7 +322,7 @@ impl<T: Debug + Clone + PartialOrd> StateDynamicsTimeLine<T> {
 
         for point in &self.points {
             let is_equal = point.1.value == constant;
-            state_dynamics_time_line.add_state_dynamic_info(point.0.clone(), is_equal);
+            state_dynamics_time_line.add_state_dynamic_info(*point.0, is_equal);
         }
 
         state_dynamics_time_line
@@ -333,7 +333,7 @@ impl<T: Debug + Clone + PartialOrd> StateDynamicsTimeLine<T> {
 
         for point in &self.points {
             let is_greater_than = point.1.value > constant;
-            state_dynamics_time_line.add_state_dynamic_info(point.0.clone(), is_greater_than);
+            state_dynamics_time_line.add_state_dynamic_info(*point.0, is_greater_than);
         }
 
         state_dynamics_time_line
@@ -344,8 +344,7 @@ impl<T: Debug + Clone + PartialOrd> StateDynamicsTimeLine<T> {
 
         for point in &self.points {
             let is_greater_than_or_equal = point.1.value >= constant;
-            state_dynamics_time_line
-                .add_state_dynamic_info(point.0.clone(), is_greater_than_or_equal);
+            state_dynamics_time_line.add_state_dynamic_info(*point.0, is_greater_than_or_equal);
         }
 
         state_dynamics_time_line
@@ -356,7 +355,7 @@ impl<T: Debug + Clone + PartialOrd> StateDynamicsTimeLine<T> {
 
         for point in &self.points {
             let is_less_than = point.1.value < constant;
-            state_dynamics_time_line.add_state_dynamic_info(point.0.clone(), is_less_than);
+            state_dynamics_time_line.add_state_dynamic_info(*point.0, is_less_than);
         }
 
         state_dynamics_time_line
@@ -367,7 +366,7 @@ impl<T: Debug + Clone + PartialOrd> StateDynamicsTimeLine<T> {
 
         for point in &self.points {
             let is_less_than_or_equal = point.1.value <= constant;
-            state_dynamics_time_line.add_state_dynamic_info(point.0.clone(), is_less_than_or_equal);
+            state_dynamics_time_line.add_state_dynamic_info(*point.0, is_less_than_or_equal);
         }
 
         state_dynamics_time_line
@@ -391,13 +390,13 @@ impl<T: Debug + Clone + PartialOrd> StateDynamicsTimeLine<T> {
 
         if let Some(removed_time_lines) = &aligned_time_lines.removed_points_timeline1 {
             for point in &removed_time_lines.points {
-                flattened_time_line_points.insert(point.0.clone(), point.1.clone());
+                flattened_time_line_points.insert(*point.0, point.1.clone());
             }
         }
 
         if let Some(removed_time_lines) = &aligned_time_lines.removed_points_timeline2 {
             for point in &removed_time_lines.points {
-                flattened_time_line_points.insert(point.0.clone(), point.1.clone());
+                flattened_time_line_points.insert(*point.0, point.1.clone());
             }
         }
 
@@ -451,6 +450,7 @@ impl<T: Debug + Clone + PartialOrd> StateDynamicsTimeLine<T> {
 
 // ~~ represents `forever`
 // -- denotes a finite boundary
+#[cfg(test)]
 mod tests {
     use crate::event_timeline::{EventTimeLine, EventTimeLinePoint};
     use crate::state_dynamic_timeline::StateDynamicsTimeLine;

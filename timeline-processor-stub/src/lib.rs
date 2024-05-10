@@ -1,6 +1,7 @@
 #![allow(warnings)]
 use golem_wasm_rpc::*;
 #[allow(dead_code)]
+#[rustfmt::skip]
 mod bindings;
 pub struct Api {
     rpc: WasmRpc,

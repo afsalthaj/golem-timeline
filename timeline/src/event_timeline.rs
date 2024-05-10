@@ -1,14 +1,10 @@
 // EventTimeLine can represent Numerical TimeLine or Event TimeLine
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Default)]
 pub struct EventTimeLine<T> {
     pub points: Vec<EventTimeLinePoint<T>>,
 }
 
 impl<T> EventTimeLine<T> {
-    pub fn default() -> EventTimeLine<T> {
-        EventTimeLine { points: Vec::new() }
-    }
-
     pub fn add_event_info(&mut self, t1: u64, value: T) -> &mut EventTimeLine<T> {
         self.points.push(EventTimeLinePoint { t1, value });
         self

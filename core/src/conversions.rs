@@ -403,7 +403,7 @@ mod internals {
                 TimeLineOp::TlHasExistedWithin(server, filter, max_duration)
             }
             WitTimeLineNode::TlDurationWhere(tl) => {
-                let time_line = build_timeline_tree(&nodes[tl.timeline.clone() as usize], nodes);
+                let time_line = build_timeline_tree(&nodes[tl.timeline as usize], nodes);
 
                 TimeLineOp::TlDurationWhere(
                     TimeLineNodeWorkerInput::from_wit(tl.server.clone()),

@@ -40,8 +40,7 @@ impl Guest for Component {
                     let uuid = Uuid::new_v4();
 
                     // Connecting to the worker that should compute equal
-                    let worker_id =
-                        TimeLineWorkerId(format!("{}-tleq-{}", worker_id_prefix, uuid.to_string()));
+                    let worker_id = TimeLineWorkerId(format!("{}-tleq-{}", worker_id_prefix, uuid));
 
                     let uri = Uri { value: format!("worker://{component_id}/{}", &worker_id) };
 
@@ -66,8 +65,7 @@ impl Guest for Component {
                     let uuid = Uuid::new_v4();
 
                     // Connecting to the worker that should compute equal
-                    let worker_id =
-                        TimeLineWorkerId(format!("{}-tlgt-{}", worker_id_prefix, uuid.to_string()));
+                    let worker_id = TimeLineWorkerId(format!("{}-tlgt-{}", worker_id_prefix, uuid));
 
                     let uri = Uri { value: format!("worker://{component_id}/{}", &worker_id) };
 
@@ -93,11 +91,8 @@ impl Guest for Component {
                     let uuid = Uuid::new_v4();
 
                     // Connecting to the worker that should compute equal
-                    let worker_id = TimeLineWorkerId(format!(
-                        "{}-tlgteq-{}",
-                        worker_id_prefix,
-                        uuid.to_string()
-                    ));
+                    let worker_id =
+                        TimeLineWorkerId(format!("{}-tlgteq-{}", worker_id_prefix, uuid));
 
                     let uri = Uri { value: format!("worker://{template_id}/{}", &worker_id) };
 
@@ -126,8 +121,7 @@ impl Guest for Component {
                     let uuid = Uuid::new_v4();
 
                     // Connecting to the worker that should compute equal
-                    let worker_id =
-                        TimeLineWorkerId(format!("{}-tllt-{}", worker_id_prefix, uuid.to_string()));
+                    let worker_id = TimeLineWorkerId(format!("{}-tllt-{}", worker_id_prefix, uuid));
 
                     let uri = Uri { value: format!("worker://{template_id}/{}", &worker_id) };
 
@@ -153,11 +147,8 @@ impl Guest for Component {
                     let uuid = Uuid::new_v4();
 
                     // Connecting to the worker that should compute equal
-                    let worker_id = TimeLineWorkerId(format!(
-                        "{}-tllteq-{}",
-                        worker_id_prefix,
-                        uuid.to_string()
-                    ));
+                    let worker_id =
+                        TimeLineWorkerId(format!("{}-tllteq-{}", worker_id_prefix, uuid));
 
                     let uri = Uri { value: format!("worker://{template_id}/{}", &worker_id) };
 
@@ -184,11 +175,8 @@ impl Guest for Component {
                     let worker_id_prefix = &worker.worker_id_prefix;
                     let uuid = Uuid::new_v4();
 
-                    let worker_id = TimeLineWorkerId(format!(
-                        "{}-tl-and-{}",
-                        worker_id_prefix,
-                        uuid.to_string()
-                    ));
+                    let worker_id =
+                        TimeLineWorkerId(format!("{}-tl-and-{}", worker_id_prefix, uuid));
 
                     let uri = Uri { value: format!("worker://{template_id}/{}", &worker_id) };
 
@@ -212,11 +200,8 @@ impl Guest for Component {
                     let worker_id_prefix = &worker.worker_id_prefix;
                     let uuid = Uuid::new_v4();
 
-                    let worker_id = TimeLineWorkerId(format!(
-                        "{}-tl-and-{}",
-                        worker_id_prefix,
-                        uuid.to_string()
-                    ));
+                    let worker_id =
+                        TimeLineWorkerId(format!("{}-tl-and-{}", worker_id_prefix, uuid));
 
                     let uri = Uri { value: format!("worker://{template_id}/{}", &worker_id) };
 
@@ -240,11 +225,8 @@ impl Guest for Component {
                     let worker_id_prefix = &worker.worker_id_prefix;
                     let uuid = Uuid::new_v4();
 
-                    let worker_id = TimeLineWorkerId(format!(
-                        "{}-tl-not-{}",
-                        worker_id_prefix,
-                        uuid.to_string()
-                    ));
+                    let worker_id =
+                        TimeLineWorkerId(format!("{}-tl-not-{}", worker_id_prefix, uuid));
 
                     let uri = Uri { value: format!("worker://{template_id}/{}", &worker_id) };
 
@@ -267,8 +249,7 @@ impl Guest for Component {
                     let worker_id_prefix = &worker.worker_id_prefix;
                     let uuid = Uuid::new_v4();
 
-                    let worker_id =
-                        TimeLineWorkerId(format!("{}-tlhe-{}", worker_id_prefix, uuid.to_string()));
+                    let worker_id = TimeLineWorkerId(format!("{}-tlhe-{}", worker_id_prefix, uuid));
 
                     let uri = Uri { value: format!("worker://{template_id}/{}", &worker_id) };
 
@@ -290,11 +271,8 @@ impl Guest for Component {
                     let worker_id_prefix = &worker.worker_id_prefix;
                     let uuid = Uuid::new_v4();
 
-                    let worker_id = TimeLineWorkerId(format!(
-                        "{}-tlhew-{}",
-                        worker_id_prefix,
-                        uuid.to_string()
-                    ));
+                    let worker_id =
+                        TimeLineWorkerId(format!("{}-tlhew-{}", worker_id_prefix, uuid));
 
                     let uri = Uri { value: format!("worker://{template_id}/{}", worker_id) };
 

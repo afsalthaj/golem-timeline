@@ -1,15 +1,12 @@
 use crate::bindings::exports::timeline::driver::api::Guest;
 use crate::bindings::golem::rpc::types::Uri;
 use crate::bindings::timeline::core::api::TimelineNode::{TimelineNegation, TlLatestEventToState};
-use crate::bindings::timeline::core::api::{Server, TypedTimelineResultWorker, WorkerDetails};
+use crate::bindings::timeline::core::api::{Server, WorkerDetails};
 use crate::bindings::timeline::core::api::{
     ServerWithEventColumnName, TimelineNegated, TimelineOp,
 };
 use crate::bindings::timeline::core_stub::stub_core;
-use crate::bindings::timeline::timeline_processor::api::{DerivedTimelineNode, LeafTimelineNode};
-use conversions::Conversion;
-use std::fmt::format;
-use timeline::timeline_op::TimeLineOp;
+
 
 #[allow(dead_code)]
 #[rustfmt::skip]

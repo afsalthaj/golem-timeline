@@ -2,7 +2,7 @@ use std::fmt::Display;
 
 use crate::event_predicate::{EventColumnName, GolemEventPredicate};
 use crate::golem_event::GolemEventValue;
-use crate::timeline_node_worker::{TimeLineNodeWorkerInput, TimeLineResultWorker};
+use crate::timeline_node_worker::TimeLineNodeWorkerInput;
 
 #[derive(Clone, Debug)]
 pub enum TimeLineOp {
