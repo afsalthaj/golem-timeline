@@ -43,9 +43,7 @@ impl Guest for Component {
                     let worker_id =
                         TimeLineWorkerId(format!("{}-tleq-{}", worker_id_prefix, uuid.to_string()));
 
-                    let uri = Uri {
-                        value: format!("worker://{component_id}/{}", &worker_id),
-                    };
+                    let uri = Uri { value: format!("worker://{component_id}/{}", &worker_id) };
 
                     let timeline_processor_api = stub_timeline_processor::Api::new(&uri);
 
@@ -57,10 +55,7 @@ impl Guest for Component {
 
                     // The worker in which the comparison with a constant actually executes
                     let typed_timeline_result_worker = TypedTimeLineResultWorker::equal_to({
-                        TimeLineResultWorker {
-                            component_id: component_id.clone(),
-                            worker_id,
-                        }
+                        TimeLineResultWorker { component_id: component_id.clone(), worker_id }
                     });
 
                     Ok(typed_timeline_result_worker)
@@ -74,9 +69,7 @@ impl Guest for Component {
                     let worker_id =
                         TimeLineWorkerId(format!("{}-tlgt-{}", worker_id_prefix, uuid.to_string()));
 
-                    let uri = Uri {
-                        value: format!("worker://{component_id}/{}", &worker_id),
-                    };
+                    let uri = Uri { value: format!("worker://{component_id}/{}", &worker_id) };
 
                     let timeline_processor_api = stub_timeline_processor::Api::new(&uri);
 
@@ -89,10 +82,7 @@ impl Guest for Component {
 
                     // The worker in which the comparison with a constant actually executes
                     let typed_timeline_result_worker = TypedTimeLineResultWorker::greater_than({
-                        TimeLineResultWorker {
-                            component_id: component_id.clone(),
-                            worker_id,
-                        }
+                        TimeLineResultWorker { component_id: component_id.clone(), worker_id }
                     });
 
                     Ok(typed_timeline_result_worker)
@@ -109,9 +99,7 @@ impl Guest for Component {
                         uuid.to_string()
                     ));
 
-                    let uri = Uri {
-                        value: format!("worker://{template_id}/{}", &worker_id),
-                    };
+                    let uri = Uri { value: format!("worker://{template_id}/{}", &worker_id) };
 
                     let timeline_processor_api = stub_timeline_processor::Api::new(&uri);
 
@@ -127,10 +115,7 @@ impl Guest for Component {
                     // The worker in which the comparison with a constant actually executes
                     let typed_timeline_result_worker =
                         TypedTimeLineResultWorker::greater_than_or_equal_to({
-                            TimeLineResultWorker {
-                                component_id: template_id.clone(),
-                                worker_id,
-                            }
+                            TimeLineResultWorker { component_id: template_id.clone(), worker_id }
                         });
 
                     Ok(typed_timeline_result_worker)
@@ -144,9 +129,7 @@ impl Guest for Component {
                     let worker_id =
                         TimeLineWorkerId(format!("{}-tllt-{}", worker_id_prefix, uuid.to_string()));
 
-                    let uri = Uri {
-                        value: format!("worker://{template_id}/{}", &worker_id),
-                    };
+                    let uri = Uri { value: format!("worker://{template_id}/{}", &worker_id) };
 
                     let timeline_processor_api = stub_timeline_processor::Api::new(&uri);
 
@@ -159,10 +142,7 @@ impl Guest for Component {
 
                     // The worker in which the comparison with a constant actually executes
                     let typed_timeline_result_worker = TypedTimeLineResultWorker::greater_than({
-                        TimeLineResultWorker {
-                            component_id: template_id.clone(),
-                            worker_id,
-                        }
+                        TimeLineResultWorker { component_id: template_id.clone(), worker_id }
                     });
 
                     Ok(typed_timeline_result_worker)
@@ -179,9 +159,7 @@ impl Guest for Component {
                         uuid.to_string()
                     ));
 
-                    let uri = Uri {
-                        value: format!("worker://{template_id}/{}", &worker_id),
-                    };
+                    let uri = Uri { value: format!("worker://{template_id}/{}", &worker_id) };
 
                     let timeline_processor_api = stub_timeline_processor::Api::new(&uri);
 
@@ -196,10 +174,7 @@ impl Guest for Component {
                     // The worker in which the comparison with a constant actually executes
                     let typed_timeline_result_worker =
                         TypedTimeLineResultWorker::less_than_or_equal_to({
-                            TimeLineResultWorker {
-                                component_id: template_id.clone(),
-                                worker_id,
-                            }
+                            TimeLineResultWorker { component_id: template_id.clone(), worker_id }
                         });
 
                     Ok(typed_timeline_result_worker)
@@ -215,9 +190,7 @@ impl Guest for Component {
                         uuid.to_string()
                     ));
 
-                    let uri = Uri {
-                        value: format!("worker://{template_id}/{}", &worker_id),
-                    };
+                    let uri = Uri { value: format!("worker://{template_id}/{}", &worker_id) };
 
                     let core = stub_timeline_processor::Api::new(&uri);
 
@@ -229,10 +202,7 @@ impl Guest for Component {
 
                     // The result of this node will be available in this worker
                     let typed_timeline_result_worker = TypedTimeLineResultWorker::and({
-                        TimeLineResultWorker {
-                            component_id: template_id.clone(),
-                            worker_id,
-                        }
+                        TimeLineResultWorker { component_id: template_id.clone(), worker_id }
                     });
 
                     Ok(typed_timeline_result_worker)
@@ -248,9 +218,7 @@ impl Guest for Component {
                         uuid.to_string()
                     ));
 
-                    let uri = Uri {
-                        value: format!("worker://{template_id}/{}", &worker_id),
-                    };
+                    let uri = Uri { value: format!("worker://{template_id}/{}", &worker_id) };
 
                     let core = stub_timeline_processor::Api::new(&uri);
 
@@ -262,10 +230,7 @@ impl Guest for Component {
 
                     // The result of this node will be available in this worker
                     let typed_timeline_result_worker = TypedTimeLineResultWorker::or({
-                        TimeLineResultWorker {
-                            component_id: template_id.clone(),
-                            worker_id,
-                        }
+                        TimeLineResultWorker { component_id: template_id.clone(), worker_id }
                     });
 
                     Ok(typed_timeline_result_worker)
@@ -281,9 +246,7 @@ impl Guest for Component {
                         uuid.to_string()
                     ));
 
-                    let uri = Uri {
-                        value: format!("worker://{template_id}/{}", &worker_id),
-                    };
+                    let uri = Uri { value: format!("worker://{template_id}/{}", &worker_id) };
 
                     let core = stub_timeline_processor::Api::new(&uri);
 
@@ -294,10 +257,7 @@ impl Guest for Component {
 
                     // The result of this node will be available in this worker
                     let typed_timeline_result_worker = TypedTimeLineResultWorker::not({
-                        TimeLineResultWorker {
-                            component_id: template_id.clone(),
-                            worker_id,
-                        }
+                        TimeLineResultWorker { component_id: template_id.clone(), worker_id }
                     });
 
                     Ok(typed_timeline_result_worker)
@@ -310,9 +270,7 @@ impl Guest for Component {
                     let worker_id =
                         TimeLineWorkerId(format!("{}-tlhe-{}", worker_id_prefix, uuid.to_string()));
 
-                    let uri = Uri {
-                        value: format!("worker://{template_id}/{}", &worker_id),
-                    };
+                    let uri = Uri { value: format!("worker://{template_id}/{}", &worker_id) };
 
                     let core = stub_event_processor::Api::new(&uri);
 
@@ -320,10 +278,7 @@ impl Guest for Component {
 
                     // The result of this node will be available in this worker
                     let typed_timeline_result_worker = TypedTimeLineResultWorker::tl_has_existed({
-                        TimeLineResultWorker {
-                            component_id: template_id.clone(),
-                            worker_id,
-                        }
+                        TimeLineResultWorker { component_id: template_id.clone(), worker_id }
                     });
 
                     event_processors.push(typed_timeline_result_worker.to_wit());
@@ -341,9 +296,7 @@ impl Guest for Component {
                         uuid.to_string()
                     ));
 
-                    let uri = Uri {
-                        value: format!("worker://{template_id}/{}", worker_id),
-                    };
+                    let uri = Uri { value: format!("worker://{template_id}/{}", worker_id) };
 
                     let core = stub_event_processor::Api::new(&uri);
 
@@ -353,10 +306,7 @@ impl Guest for Component {
                     // The result of this node will be available in this worker
                     let typed_timeline_result_worker =
                         TypedTimeLineResultWorker::tl_has_existed_within({
-                            TimeLineResultWorker {
-                                component_id: template_id.clone(),
-                                worker_id,
-                            }
+                            TimeLineResultWorker { component_id: template_id.clone(), worker_id }
                         });
 
                     event_processors.push(typed_timeline_result_worker.to_wit());
@@ -371,9 +321,7 @@ impl Guest for Component {
                         worker_id_prefix, event_column_name
                     ));
 
-                    let uri = Uri {
-                        value: format!("worker://{template_id}/{}", worker_id),
-                    };
+                    let uri = Uri { value: format!("worker://{template_id}/{}", worker_id) };
 
                     let core = stub_event_processor::Api::new(&uri);
 
@@ -382,10 +330,7 @@ impl Guest for Component {
                     // The result of this node will be available in this worker
                     let typed_timeline_result_worker =
                         TypedTimeLineResultWorker::tl_has_existed_within({
-                            TimeLineResultWorker {
-                                component_id: template_id.clone(),
-                                worker_id,
-                            }
+                            TimeLineResultWorker { component_id: template_id.clone(), worker_id }
                         });
 
                     event_processors.push(typed_timeline_result_worker.to_wit());
@@ -400,9 +345,6 @@ impl Guest for Component {
         let result_worker = go(&timeline, &mut event_processor_workers)
             .map(|typed_worker_info| typed_worker_info.to_wit())?;
 
-        Ok(WorkerDetails {
-            result_worker,
-            event_processor_workers,
-        })
+        Ok(WorkerDetails { result_worker, event_processor_workers })
     }
 }

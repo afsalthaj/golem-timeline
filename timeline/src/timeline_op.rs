@@ -39,11 +39,7 @@ pub enum TimeLineOp {
     // t3-t7: true
     // t7-t9: false
     // t9-t13: true
-    TlHasExistedWithin(
-        TimeLineNodeWorkerInput,
-        GolemEventPredicate<GolemEventValue>,
-        u64,
-    ),
+    TlHasExistedWithin(TimeLineNodeWorkerInput, GolemEventPredicate<GolemEventValue>, u64),
     // This is more or less making number of events to a very simple
     // timeline. Obviously this is corresponding to the events that are state dynamic in nature
     // t1 - t10 : CDN2
@@ -162,20 +158,12 @@ impl Display for TimeLineOp {
         }
 
         match self {
-            TimeLineOp::EqualTo(server, time_line, golem_event_value) => write!(
-                f,
-                "EqualTo({}, {}, {})",
-                server,
-                time_line,
-                text_of(golem_event_value)
-            ),
-            TimeLineOp::GreaterThan(server, time_line, golem_event_value) => write!(
-                f,
-                "GreaterThan({}, {}, {})",
-                server,
-                time_line,
-                text_of(golem_event_value)
-            ),
+            TimeLineOp::EqualTo(server, time_line, golem_event_value) => {
+                write!(f, "EqualTo({}, {}, {})", server, time_line, text_of(golem_event_value))
+            }
+            TimeLineOp::GreaterThan(server, time_line, golem_event_value) => {
+                write!(f, "GreaterThan({}, {}, {})", server, time_line, text_of(golem_event_value))
+            }
             TimeLineOp::GreaterThanOrEqual(server, time_line, golem_event_value) => write!(
                 f,
                 "GreaterThanOrEqual({}, {}, {})",
@@ -183,13 +171,9 @@ impl Display for TimeLineOp {
                 time_line,
                 text_of(golem_event_value)
             ),
-            TimeLineOp::LessThan(server, time_line, golem_event_value) => write!(
-                f,
-                "LessThan({}, {}, {})",
-                server,
-                time_line,
-                text_of(golem_event_value)
-            ),
+            TimeLineOp::LessThan(server, time_line, golem_event_value) => {
+                write!(f, "LessThan({}, {}, {})", server, time_line, text_of(golem_event_value))
+            }
             TimeLineOp::LessThanOrEqual(server, time_line, golem_event_value) => write!(
                 f,
                 "LessThanOrEqual({}, {}, {})",
@@ -207,11 +191,9 @@ impl Display for TimeLineOp {
             TimeLineOp::TlHasExisted(server, event_predicate) => {
                 write!(f, "TlHasExisted({}, {})", server, event_predicate)
             }
-            TimeLineOp::TlHasExistedWithin(server, event_predicate, within_time) => write!(
-                f,
-                "TlHasExistedWithin({}, {}, {})",
-                server, event_predicate, within_time
-            ),
+            TimeLineOp::TlHasExistedWithin(server, event_predicate, within_time) => {
+                write!(f, "TlHasExistedWithin({}, {}, {})", server, event_predicate, within_time)
+            }
             TimeLineOp::TlLatestEventToState(server, event_column) => {
                 write!(f, "TlLatestEventToState({}, {})", server, event_column)
             }

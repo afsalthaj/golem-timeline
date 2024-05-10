@@ -1,8 +1,10 @@
+use crate::bindings::timeline::event_processor::api::{
+    EventValue, TimePeriod, TimelineResult, TimelineResultPoint,
+};
 use std::fmt::Debug;
 use timeline::golem_event::GolemEventValue;
 use timeline::state_dynamic_timeline::StateDynamicsTimeLine;
 use timeline::state_dynamic_timeline_point::StateDynamicsTimeLinePoint;
-use crate::bindings::timeline::event_processor::api::{EventValue, TimelineResult, TimelineResultPoint, TimePeriod};
 
 pub trait Conversion: Clone + Debug {
     type WitType: Clone;
@@ -30,7 +32,6 @@ impl Conversion for GolemEventValue {
             GolemEventValue::BoolValue(b) => EventValue::BoolValue(b.clone()),
         }
     }
-
 }
 
 impl Conversion for StateDynamicsTimeLinePoint<GolemEventValue> {
@@ -46,10 +47,7 @@ impl Conversion for StateDynamicsTimeLinePoint<GolemEventValue> {
 
     fn to_wit(&self) -> Self::WitType {
         TimelineResultPoint {
-            time_period: TimePeriod {
-                t1: self.t1,
-                t2: self.t2.unwrap(),
-            },
+            time_period: TimePeriod { t1: self.t1, t2: self.t2.unwrap() },
             value: self.value.to_wit(),
         }
     }
@@ -60,13 +58,15 @@ impl Conversion for StateDynamicsTimeLine<GolemEventValue> {
 
     fn from_wit(input: Self::WitType) -> Self {
         StateDynamicsTimeLine::from(
-            input.results.iter().map(|point| StateDynamicsTimeLinePoint::from_wit(point.clone())).collect(),
+            input
+                .results
+                .iter()
+                .map(|point| StateDynamicsTimeLinePoint::from_wit(point.clone()))
+                .collect(),
         )
     }
 
     fn to_wit(&self) -> Self::WitType {
-        TimelineResult {
-            results: self.points.iter().map(|point| point.1.to_wit()).collect(),
-        }
+        TimelineResult { results: self.points.iter().map(|point| point.1.to_wit()).collect() }
     }
 }

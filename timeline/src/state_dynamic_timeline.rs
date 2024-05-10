@@ -1,7 +1,6 @@
 use std::collections::BTreeMap;
 use std::fmt::Debug;
 
-
 use crate::event_timeline::EventTimeLine;
 use crate::internals::aligned_state_dynamic_timeline::AlignedStateDynamicsTimeLine;
 use crate::internals::boundaries::Boundaries;
@@ -14,27 +13,23 @@ pub struct StateDynamicsTimeLine<T> {
 }
 
 impl<T: Clone + PartialEq> StateDynamicsTimeLine<T> {
-
     pub fn map<B>(&self, f: impl Fn(&T) -> B) -> StateDynamicsTimeLine<B> {
         let mut new_points = BTreeMap::new();
         for (k, v) in &self.points {
-            new_points.insert(*k, StateDynamicsTimeLinePoint {
-                t1: v.t1,
-                t2: v.t2,
-                value: f(&v.value),
-            });
+            new_points
+                .insert(*k, StateDynamicsTimeLinePoint { t1: v.t1, t2: v.t2, value: f(&v.value) });
         }
         StateDynamicsTimeLine { points: new_points }
     }
 
-    pub fn map_fallible<B>(&self, f: impl Fn(&T) -> Result<B, String>) -> Result<StateDynamicsTimeLine<B>, String> {
+    pub fn map_fallible<B>(
+        &self,
+        f: impl Fn(&T) -> Result<B, String>,
+    ) -> Result<StateDynamicsTimeLine<B>, String> {
         let mut new_points = BTreeMap::new();
         for (k, v) in &self.points {
-            new_points.insert(*k, StateDynamicsTimeLinePoint {
-                t1: v.t1,
-                t2: v.t2,
-                value: f(&v.value)?,
-            });
+            new_points
+                .insert(*k, StateDynamicsTimeLinePoint { t1: v.t1, t2: v.t2, value: f(&v.value)? });
         }
         Ok(StateDynamicsTimeLine { points: new_points })
     }
@@ -56,9 +51,7 @@ impl<T: Clone + PartialEq> StateDynamicsTimeLine<T> {
     }
 
     pub fn future_is(&self, value: T) -> bool {
-        self.last()
-            .map(|x| x.t2.is_none() && x.value == value)
-            .unwrap_or(false)
+        self.last().map(|x| x.t2.is_none() && x.value == value).unwrap_or(false)
     }
 
     pub fn is_empty(&self) -> bool {
@@ -113,11 +106,7 @@ impl<T: Clone + PartialEq> StateDynamicsTimeLine<T> {
                         value: left.value.clone(),
                     };
 
-                    let new_point = StateDynamicsTimeLinePoint {
-                        t1: r,
-                        t2: left.t2,
-                        value,
-                    };
+                    let new_point = StateDynamicsTimeLinePoint { t1: r, t2: left.t2, value };
 
                     self.points.insert(l.clone(), updated_left);
                     self.points.insert(r, new_point);
@@ -153,11 +142,8 @@ impl<T: Clone + PartialEq> StateDynamicsTimeLine<T> {
                                 value: left.value.clone(),
                             };
 
-                            let new_point = StateDynamicsTimeLinePoint {
-                                t1: r,
-                                t2: left.t2,
-                                value,
-                            };
+                            let new_point =
+                                StateDynamicsTimeLinePoint { t1: r, t2: left.t2, value };
 
                             self.points.insert(l.clone(), updated_left);
                             self.points.insert(r, new_point);
@@ -168,11 +154,8 @@ impl<T: Clone + PartialEq> StateDynamicsTimeLine<T> {
                                 value: left.value.clone(),
                             };
 
-                            let new_point = StateDynamicsTimeLinePoint {
-                                t1: new_time,
-                                t2: None,
-                                value,
-                            };
+                            let new_point =
+                                StateDynamicsTimeLinePoint { t1: new_time, t2: None, value };
 
                             self.points.insert(left.t1, updated_left);
                             self.points.insert(new_time, new_point);
@@ -194,11 +177,8 @@ impl<T: Clone + PartialEq> StateDynamicsTimeLine<T> {
                     self.points.remove_entry(&right.t1);
                     self.points.insert(new_time, updated_right);
                 } else {
-                    let new_point = StateDynamicsTimeLinePoint {
-                        t1: new_time,
-                        t2: Some(right.t1),
-                        value,
-                    };
+                    let new_point =
+                        StateDynamicsTimeLinePoint { t1: new_time, t2: Some(right.t1), value };
                     self.points.insert(new_time, new_point);
                 }
             }
@@ -207,11 +187,7 @@ impl<T: Clone + PartialEq> StateDynamicsTimeLine<T> {
             (None, None) => {
                 let l = new_time;
                 let r = None;
-                let new_point = StateDynamicsTimeLinePoint {
-                    t1: l,
-                    t2: r,
-                    value,
-                };
+                let new_point = StateDynamicsTimeLinePoint { t1: l, t2: r, value };
                 self.points.insert(l, new_point);
             }
         }
@@ -220,9 +196,7 @@ impl<T: Clone + PartialEq> StateDynamicsTimeLine<T> {
 
 impl<T> Default for StateDynamicsTimeLine<T> {
     fn default() -> Self {
-        StateDynamicsTimeLine {
-            points: BTreeMap::new(),
-        }
+        StateDynamicsTimeLine { points: BTreeMap::new() }
     }
 }
 
@@ -370,7 +344,8 @@ impl<T: Debug + Clone + PartialOrd> StateDynamicsTimeLine<T> {
 
         for point in &self.points {
             let is_greater_than_or_equal = point.1.value >= constant;
-            state_dynamics_time_line.add_state_dynamic_info(point.0.clone(), is_greater_than_or_equal);
+            state_dynamics_time_line
+                .add_state_dynamic_info(point.0.clone(), is_greater_than_or_equal);
         }
 
         state_dynamics_time_line
@@ -430,11 +405,8 @@ impl<T: Debug + Clone + PartialOrd> StateDynamicsTimeLine<T> {
             let self_point = self_iter.next().unwrap();
             let other_point = other_iter.next().unwrap();
 
-            let Boundaries {
-                left: left_ex,
-                intersection,
-                right: right_ex,
-            } = Boundaries::get_boundaries(self_point.1, other_point.1);
+            let Boundaries { left: left_ex, intersection, right: right_ex } =
+                Boundaries::get_boundaries(self_point.1, other_point.1);
 
             flattened_time_line_points.insert(intersection.t1, intersection.apply_f(&f));
 
@@ -473,19 +445,17 @@ impl<T: Debug + Clone + PartialOrd> StateDynamicsTimeLine<T> {
             }
         }
 
-        StateDynamicsTimeLine {
-            points: flattened_time_line_points,
-        }
+        StateDynamicsTimeLine { points: flattened_time_line_points }
     }
 }
 
 // ~~ represents `forever`
 // -- denotes a finite boundary
 mod tests {
-    use std::collections::BTreeMap;
     use crate::event_timeline::{EventTimeLine, EventTimeLinePoint};
     use crate::state_dynamic_timeline::StateDynamicsTimeLine;
     use crate::state_dynamic_timeline_point::StateDynamicsTimeLinePoint;
+    use std::collections::BTreeMap;
 
     // t1~~~~(playing)~~~~~~~~~~~~>
     //       t2~~~~(movie)~~~~~~~~~~>
@@ -507,20 +477,12 @@ mod tests {
         let mut btree_map1 = BTreeMap::new();
         btree_map1.insert(
             5,
-            StateDynamicsTimeLinePoint {
-                t1: 5,
-                t2: Some(7),
-                value: "playing".to_string(),
-            },
+            StateDynamicsTimeLinePoint { t1: 5, t2: Some(7), value: "playing".to_string() },
         );
 
         btree_map1.insert(
             7,
-            StateDynamicsTimeLinePoint {
-                t1: 7,
-                t2: None,
-                value: "playing movie".to_string(),
-            },
+            StateDynamicsTimeLinePoint { t1: 7, t2: None, value: "playing movie".to_string() },
         );
 
         let expected1 = StateDynamicsTimeLine { points: btree_map1 };
@@ -529,20 +491,12 @@ mod tests {
 
         btree_map2.insert(
             5,
-            StateDynamicsTimeLinePoint {
-                t1: 5,
-                t2: Some(7),
-                value: "playing".to_string(),
-            },
+            StateDynamicsTimeLinePoint { t1: 5, t2: Some(7), value: "playing".to_string() },
         );
 
         btree_map2.insert(
             7,
-            StateDynamicsTimeLinePoint {
-                t1: 7,
-                t2: None,
-                value: "movie playing".to_string(),
-            },
+            StateDynamicsTimeLinePoint { t1: 7, t2: None, value: "movie playing".to_string() },
         );
 
         let expected2 = StateDynamicsTimeLine { points: btree_map2 };
@@ -574,38 +528,22 @@ mod tests {
 
         btree_map.insert(
             5,
-            StateDynamicsTimeLinePoint {
-                t1: 5,
-                t2: Some(7),
-                value: "playing".to_string(),
-            },
+            StateDynamicsTimeLinePoint { t1: 5, t2: Some(7), value: "playing".to_string() },
         );
 
         btree_map.insert(
             7,
-            StateDynamicsTimeLinePoint {
-                t1: 7,
-                t2: Some(8),
-                value: "movie playing".to_string(),
-            },
+            StateDynamicsTimeLinePoint { t1: 7, t2: Some(8), value: "movie playing".to_string() },
         );
 
         btree_map.insert(
             8,
-            StateDynamicsTimeLinePoint {
-                t1: 8,
-                t2: Some(9),
-                value: "movie pause".to_string(),
-            },
+            StateDynamicsTimeLinePoint { t1: 8, t2: Some(9), value: "movie pause".to_string() },
         );
 
         btree_map.insert(
             9,
-            StateDynamicsTimeLinePoint {
-                t1: 9,
-                t2: None,
-                value: "cartoon pause".to_string(),
-            },
+            StateDynamicsTimeLinePoint { t1: 9, t2: None, value: "cartoon pause".to_string() },
         );
 
         let expected = StateDynamicsTimeLine { points: btree_map };
@@ -636,38 +574,22 @@ mod tests {
 
         btree_map.insert(
             1,
-            StateDynamicsTimeLinePoint {
-                t1: 1,
-                t2: Some(2),
-                value: "playing".to_string(),
-            },
+            StateDynamicsTimeLinePoint { t1: 1, t2: Some(2), value: "playing".to_string() },
         );
 
         btree_map.insert(
             2,
-            StateDynamicsTimeLinePoint {
-                t1: 2,
-                t2: Some(3),
-                value: "movie playing".to_string(),
-            },
+            StateDynamicsTimeLinePoint { t1: 2, t2: Some(3), value: "movie playing".to_string() },
         );
 
         btree_map.insert(
             3,
-            StateDynamicsTimeLinePoint {
-                t1: 3,
-                t2: Some(4),
-                value: "cartoon playing".to_string(),
-            },
+            StateDynamicsTimeLinePoint { t1: 3, t2: Some(4), value: "cartoon playing".to_string() },
         );
 
         btree_map.insert(
             4,
-            StateDynamicsTimeLinePoint {
-                t1: 4,
-                t2: None,
-                value: "cartoon pause".to_string(),
-            },
+            StateDynamicsTimeLinePoint { t1: 4, t2: None, value: "cartoon pause".to_string() },
         );
 
         let expected = StateDynamicsTimeLine { points: btree_map };
@@ -696,29 +618,17 @@ mod tests {
 
         btree_map.insert(
             1,
-            StateDynamicsTimeLinePoint {
-                t1: 1,
-                t2: Some(2),
-                value: "pause".to_string(),
-            },
+            StateDynamicsTimeLinePoint { t1: 1, t2: Some(2), value: "pause".to_string() },
         );
 
         btree_map.insert(
             2,
-            StateDynamicsTimeLinePoint {
-                t1: 2,
-                t2: Some(3),
-                value: "playing".to_string(),
-            },
+            StateDynamicsTimeLinePoint { t1: 2, t2: Some(3), value: "playing".to_string() },
         );
 
         btree_map.insert(
             3,
-            StateDynamicsTimeLinePoint {
-                t1: 3,
-                t2: None,
-                value: "playing movie".to_string(),
-            },
+            StateDynamicsTimeLinePoint { t1: 3, t2: None, value: "playing movie".to_string() },
         );
 
         let expected = StateDynamicsTimeLine { points: btree_map };
@@ -835,32 +745,11 @@ mod tests {
 
         let mut btree_map = BTreeMap::new();
 
-        btree_map.insert(
-            1,
-            StateDynamicsTimeLinePoint {
-                t1: 1,
-                t2: Some(2),
-                value: false,
-            },
-        );
+        btree_map.insert(1, StateDynamicsTimeLinePoint { t1: 1, t2: Some(2), value: false });
 
-        btree_map.insert(
-            2,
-            StateDynamicsTimeLinePoint {
-                t1: 2,
-                t2: Some(3),
-                value: true,
-            },
-        );
+        btree_map.insert(2, StateDynamicsTimeLinePoint { t1: 2, t2: Some(3), value: true });
 
-        btree_map.insert(
-            3,
-            StateDynamicsTimeLinePoint {
-                t1: 3,
-                t2: None,
-                value: false,
-            },
-        );
+        btree_map.insert(3, StateDynamicsTimeLinePoint { t1: 3, t2: None, value: false });
 
         let expected = StateDynamicsTimeLine { points: btree_map };
 
