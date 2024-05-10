@@ -41,9 +41,7 @@ impl Guest for Component {
             )),
         );
 
-        let foo = &simple_timeline.to_wit();
-
-        match core.initialize_timeline(foo) {
+        match core.initialize_timeline(&simple_timeline.to_wit()) {
             Ok(result) => {
                 dbg!("Driver Log: Timeline initialized");
                 Ok(result)
