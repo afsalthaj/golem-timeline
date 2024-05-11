@@ -20,7 +20,7 @@ struct Component;
 impl Guest for Component {
     fn run(
         core_component_id: String,
-        even_processor_id: String,
+        event_processor_id: String,
         timeline_processor_id: String,
     ) -> Result<WorkerDetails, String> {
         let uri = Uri { value: format!("worker://{core_component_id}/{}", "initialize-timeline") };
@@ -29,7 +29,7 @@ impl Guest for Component {
 
         let simple_timeline =
             tl_not(tl_latest_event_to_state(DslEventColumnName("playerStateChange".to_string())))
-                .with_worker_details("cirr".to_string(), even_processor_id, timeline_processor_id);
+                .with_worker_details("cirr".to_string(), event_processor_id, timeline_processor_id);
 
         match core.initialize_timeline(&simple_timeline.to_wit()) {
             Ok(result) => {
