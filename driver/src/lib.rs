@@ -30,15 +30,15 @@ impl Guest for Component {
         let core = stub_core::Api::new(&uri);
         let simple_timeline = DslTimeLineOp::Not(
             DslTimeLineNodeWorkerInput {
-                worker_id_prefix: DslTimeLineWorkerIdPrefix("not".to_string()),
+                worker_id_prefix: DslTimeLineWorkerIdPrefix("cirr".to_string()),
                 component_id: timeline_processor_component_id,
             },
             Box::new(DslTimeLineOp::TlLatestEventToState(
                 DslTimeLineNodeWorkerInput {
-                    worker_id_prefix: DslTimeLineWorkerIdPrefix("cdn-change".to_string()),
+                    worker_id_prefix: DslTimeLineWorkerIdPrefix("cirr".to_string()),
                     component_id: event_processor_component_id,
                 },
-                DslEventColumnName("cdnChange".to_string()),
+                DslEventColumnName("playerStateChange".to_string()),
             )),
         );
 
