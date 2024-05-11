@@ -10,23 +10,23 @@ package = "timeline:core"
 world = "wasm-rpc-stub-core"
 path = "wit"
 
-[package.metadata.component.target.dependencies."timeline:core"]
-path = "wit/deps/timeline_core"
-
-[package.metadata.component.target.dependencies."timeline:timeline-processor-stub"]
-path = "wit/deps/timeline_timeline-processor-stub"
-
 [package.metadata.component.target.dependencies."timeline:event-processor-stub"]
 path = "wit/deps/timeline_event-processor-stub"
 
-[package.metadata.component.target.dependencies."golem:rpc"]
-path = "wit/deps/wasm-rpc"
+[package.metadata.component.target.dependencies."timeline:timeline-processor-stub"]
+path = "wit/deps/timeline_timeline-processor-stub"
 
 [package.metadata.component.target.dependencies."timeline:event-processor"]
 path = "wit/deps/timeline_event-processor"
 
 [package.metadata.component.target.dependencies."timeline:timeline-processor"]
 path = "wit/deps/timeline_timeline-processor"
+
+[package.metadata.component.target.dependencies."timeline:core"]
+path = "wit/deps/timeline_core"
+
+[package.metadata.component.target.dependencies."golem:rpc"]
+path = "wit/deps/wasm-rpc"
 
 [dependencies.golem-wasm-rpc]
 version = "0.0.22"
