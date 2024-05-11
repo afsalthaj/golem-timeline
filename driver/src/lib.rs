@@ -7,8 +7,7 @@ use crate::bindings::timeline::core_stub::stub_core;
 
 use conversions::Conversion;
 use timeline::event_predicate::EventColumnName as DslEventColumnName;
-use timeline::timeline_op::SimpleGolemTimelineDsl;
-use timeline::timeline_op::TimeLineOpBuilder;
+use timeline::timeline_op::{tl_latest_event_to_state, tl_not};
 
 #[allow(dead_code)]
 #[rustfmt::skip]
@@ -21,22 +20,16 @@ struct Component;
 impl Guest for Component {
     fn run(
         core_component_id: String,
-        leaf_node_component_id: String,
-        derived_node_component_id: String,
+        even_processor_id: String,
+        timeline_processor_id: String,
     ) -> Result<WorkerDetails, String> {
         let uri = Uri { value: format!("worker://{core_component_id}/{}", "initialize-timeline") };
 
         let core = stub_core::Api::new(&uri);
 
-        let dsl = SimpleGolemTimelineDsl::new(
-            "cirr".to_string(),
-            leaf_node_component_id,
-            derived_node_component_id,
-        );
-
-        let simple_timeline = dsl.tl_not(
-            dsl.tl_latest_event_to_state(DslEventColumnName("playerStateChange".to_string())),
-        );
+        let simple_timeline =
+            tl_not(tl_latest_event_to_state(DslEventColumnName("playerStateChange".to_string())))
+                .with_worker_details("cirr".to_string(), even_processor_id, timeline_processor_id);
 
         match core.initialize_timeline(&simple_timeline.to_wit()) {
             Ok(result) => {
