@@ -21,8 +21,8 @@ struct Component;
 impl Guest for Component {
     fn run(
         core_component_id: String,
-        event_processor_component_id: String,
-        timeline_processor_component_id: String,
+        leaf_node_component_id: String,
+        derived_node_component_id: String,
     ) -> Result<WorkerDetails, String> {
         let uri = Uri { value: format!("worker://{core_component_id}/{}", "initialize-timeline") };
 
@@ -30,8 +30,8 @@ impl Guest for Component {
 
         let dsl = SimpleGolemTimelineDsl::new(
             "cirr".to_string(),
-            event_processor_component_id,
-            timeline_processor_component_id,
+            leaf_node_component_id,
+            derived_node_component_id,
         );
 
         let simple_timeline =
