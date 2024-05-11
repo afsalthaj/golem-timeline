@@ -150,105 +150,347 @@ impl TimeLineOp {
 
 #[derive(Debug)]
 pub struct SimpleGolemTimelineDsl {
-    leaf_node_worker_spec: TimeLineNodeWorkerInput,
-    derived_node_worker_spec: TimeLineNodeWorkerInput,
+    event_processor_spec: TimeLineNodeWorkerInput,
+    timeline_processor_spec: TimeLineNodeWorkerInput,
 }
 
 impl SimpleGolemTimelineDsl {
     pub fn new(
         name: String,
-        leaf_node_component_id: String,
-        derived_node_component_id: String,
+        event_processor_component_id: String,
+        timeline_processor_component_id: String,
     ) -> Self {
         SimpleGolemTimelineDsl {
-            leaf_node_worker_spec: TimeLineNodeWorkerInput {
+            event_processor_spec: TimeLineNodeWorkerInput {
                 worker_id_prefix: TimeLineWorkerIdPrefix(name.clone()),
-                component_id: leaf_node_component_id,
+                component_id: event_processor_component_id,
             },
-            derived_node_worker_spec: TimeLineNodeWorkerInput {
+            timeline_processor_spec: TimeLineNodeWorkerInput {
                 worker_id_prefix: TimeLineWorkerIdPrefix(name.clone()),
-                component_id: derived_node_component_id,
+                component_id: timeline_processor_component_id,
             },
         }
     }
 }
 
+#[derive(Clone, Debug)]
+pub enum TimeLineBuilderOp {
+    EqualTo(Option<TimeLineNodeWorkerInput>, Box<TimeLineBuilderOp>, GolemEventValue),
+    GreaterThan(Option<TimeLineNodeWorkerInput>, Box<TimeLineBuilderOp>, GolemEventValue),
+    GreaterThanOrEqual(Option<TimeLineNodeWorkerInput>, Box<TimeLineBuilderOp>, GolemEventValue),
+    LessThan(Option<TimeLineNodeWorkerInput>, Box<TimeLineBuilderOp>, GolemEventValue),
+    LessThanOrEqual(Option<TimeLineNodeWorkerInput>, Box<TimeLineBuilderOp>, GolemEventValue),
+    And(Option<TimeLineNodeWorkerInput>, Box<TimeLineBuilderOp>, Box<TimeLineBuilderOp>),
+    Or(Option<TimeLineNodeWorkerInput>, Box<TimeLineBuilderOp>, Box<TimeLineBuilderOp>),
+    Not(Option<TimeLineNodeWorkerInput>, Box<TimeLineBuilderOp>),
+
+    TlHasExisted(Option<TimeLineNodeWorkerInput>, GolemEventPredicate<GolemEventValue>),
+    TlHasExistedWithin(Option<TimeLineNodeWorkerInput>, GolemEventPredicate<GolemEventValue>, u64),
+    TlLatestEventToState(Option<TimeLineNodeWorkerInput>, EventColumnName),
+    TlDurationWhere(Option<TimeLineNodeWorkerInput>, Box<TimeLineBuilderOp>),
+    TlDurationInCurState(Option<TimeLineNodeWorkerInput>, Box<TimeLineBuilderOp>),
+}
+
+impl TimeLineBuilderOp {
+    pub fn tl_has_existed(predicate: GolemEventPredicate<GolemEventValue>) -> TimeLineBuilderOp {
+        TimeLineBuilderOp::TlHasExisted(None, predicate)
+    }
+
+    pub fn with_worker_details(
+        &self,
+        worker_prefix: String,
+        event_processor_id: String,
+        timeline_proecessor_id: String,
+    ) -> TimeLineOp {
+        let event_processor_worker_details = TimeLineNodeWorkerInput {
+            worker_id_prefix: TimeLineWorkerIdPrefix(worker_prefix.clone()),
+            component_id: event_processor_id,
+        };
+
+        let timeline_processor_worker_details = TimeLineNodeWorkerInput {
+            worker_id_prefix: TimeLineWorkerIdPrefix(worker_prefix.clone()),
+            component_id: timeline_proecessor_id,
+        };
+
+        fn go(
+            op_builder: Box<TimeLineBuilderOp>,
+            event_processor_worker_details: &TimeLineNodeWorkerInput,
+            timeline_processor_worker_details: &TimeLineNodeWorkerInput,
+        ) -> TimeLineOp {
+            match *op_builder {
+                TimeLineBuilderOp::EqualTo(None, op, value) => {
+                    let child_op =
+                        go(op, event_processor_worker_details, timeline_processor_worker_details);
+                    TimeLineOp::EqualTo(
+                        timeline_processor_worker_details.clone(),
+                        Box::new(child_op),
+                        value,
+                    )
+                }
+                TimeLineBuilderOp::EqualTo(Some(worker_details), op, value) => {
+                    let child_op =
+                        go(op, event_processor_worker_details, timeline_processor_worker_details);
+                    TimeLineOp::EqualTo(worker_details, Box::new(child_op), value)
+                }
+                TimeLineBuilderOp::GreaterThan(None, op, value) => {
+                    let child_op =
+                        go(op, event_processor_worker_details, timeline_processor_worker_details);
+                    TimeLineOp::GreaterThan(
+                        timeline_processor_worker_details.clone(),
+                        Box::new(child_op),
+                        value,
+                    )
+                }
+                TimeLineBuilderOp::GreaterThan(Some(worker_details), op, value) => {
+                    let child_op =
+                        go(op, event_processor_worker_details, timeline_processor_worker_details);
+                    TimeLineOp::GreaterThan(worker_details, Box::new(child_op), value)
+                }
+                TimeLineBuilderOp::GreaterThanOrEqual(None, op, value) => {
+                    let child_op =
+                        go(op, event_processor_worker_details, timeline_processor_worker_details);
+                    TimeLineOp::GreaterThanOrEqual(
+                        timeline_processor_worker_details.clone(),
+                        Box::new(child_op),
+                        value,
+                    )
+                }
+                TimeLineBuilderOp::GreaterThanOrEqual(Some(worker_details), op, value) => {
+                    let child_op =
+                        go(op, event_processor_worker_details, timeline_processor_worker_details);
+                    TimeLineOp::GreaterThanOrEqual(worker_details, Box::new(child_op), value)
+                }
+                TimeLineBuilderOp::LessThan(None, op, value) => {
+                    let child_op =
+                        go(op, event_processor_worker_details, timeline_processor_worker_details);
+                    TimeLineOp::LessThan(
+                        timeline_processor_worker_details.clone(),
+                        Box::new(child_op),
+                        value,
+                    )
+                }
+                TimeLineBuilderOp::LessThan(Some(worker_details), op, value) => {
+                    let child_op =
+                        go(op, event_processor_worker_details, timeline_processor_worker_details);
+                    TimeLineOp::LessThan(worker_details, Box::new(child_op), value)
+                }
+                TimeLineBuilderOp::LessThanOrEqual(None, op, value) => {
+                    let child_op =
+                        go(op, event_processor_worker_details, timeline_processor_worker_details);
+                    TimeLineOp::LessThanOrEqual(
+                        timeline_processor_worker_details.clone(),
+                        Box::new(child_op),
+                        value,
+                    )
+                }
+                TimeLineBuilderOp::LessThanOrEqual(Some(worker_details), op, value) => {
+                    let child_op =
+                        go(op, event_processor_worker_details, timeline_processor_worker_details);
+                    TimeLineOp::LessThanOrEqual(worker_details, Box::new(child_op), value)
+                }
+                TimeLineBuilderOp::And(None, left, right) => {
+                    let left_child_op =
+                        go(left, event_processor_worker_details, timeline_processor_worker_details);
+                    let right_child_op = go(
+                        right,
+                        event_processor_worker_details,
+                        timeline_processor_worker_details,
+                    );
+                    TimeLineOp::And(
+                        timeline_processor_worker_details.clone(),
+                        Box::new(left_child_op),
+                        Box::new(right_child_op),
+                    )
+                }
+                TimeLineBuilderOp::And(Some(worker_details), left, right) => {
+                    let left_child_op =
+                        go(left, event_processor_worker_details, timeline_processor_worker_details);
+                    let right_child_op = go(
+                        right,
+                        event_processor_worker_details,
+                        timeline_processor_worker_details,
+                    );
+                    TimeLineOp::And(
+                        worker_details,
+                        Box::new(left_child_op),
+                        Box::new(right_child_op),
+                    )
+                }
+                TimeLineBuilderOp::Or(None, left, right) => {
+                    let left_child_op =
+                        go(left, event_processor_worker_details, timeline_processor_worker_details);
+                    let right_child_op = go(
+                        right,
+                        event_processor_worker_details,
+                        timeline_processor_worker_details,
+                    );
+                    TimeLineOp::Or(
+                        timeline_processor_worker_details.clone(),
+                        Box::new(left_child_op),
+                        Box::new(right_child_op),
+                    )
+                }
+                TimeLineBuilderOp::Or(Some(worker_details), left, right) => {
+                    let left_child_op =
+                        go(left, event_processor_worker_details, timeline_processor_worker_details);
+                    let right_child_op = go(
+                        right,
+                        event_processor_worker_details,
+                        timeline_processor_worker_details,
+                    );
+                    TimeLineOp::Or(
+                        worker_details,
+                        Box::new(left_child_op),
+                        Box::new(right_child_op),
+                    )
+                }
+                TimeLineBuilderOp::Not(None, op) => {
+                    let child_op =
+                        go(op, event_processor_worker_details, timeline_processor_worker_details);
+                    TimeLineOp::Not(timeline_processor_worker_details.clone(), Box::new(child_op))
+                }
+                TimeLineBuilderOp::Not(Some(worker_details), op) => {
+                    let child_op =
+                        go(op, event_processor_worker_details, timeline_processor_worker_details);
+                    TimeLineOp::Not(worker_details, Box::new(child_op))
+                }
+                TimeLineBuilderOp::TlHasExisted(None, predicate) => {
+                    TimeLineOp::TlHasExisted(event_processor_worker_details.clone(), predicate)
+                }
+                TimeLineBuilderOp::TlHasExisted(Some(worker_details), predicate) => {
+                    TimeLineOp::TlHasExisted(worker_details, predicate)
+                }
+                TimeLineBuilderOp::TlHasExistedWithin(None, predicate, duration) => {
+                    TimeLineOp::TlHasExistedWithin(
+                        event_processor_worker_details.clone(),
+                        predicate,
+                        duration,
+                    )
+                }
+                TimeLineBuilderOp::TlHasExistedWithin(
+                    Some(worker_details),
+                    predicate,
+                    duration,
+                ) => TimeLineOp::TlHasExistedWithin(worker_details, predicate, duration),
+                TimeLineBuilderOp::TlLatestEventToState(None, column) => {
+                    TimeLineOp::TlLatestEventToState(event_processor_worker_details.clone(), column)
+                }
+                TimeLineBuilderOp::TlLatestEventToState(Some(worker_details), column) => {
+                    TimeLineOp::TlLatestEventToState(worker_details, column)
+                }
+                TimeLineBuilderOp::TlDurationWhere(None, op) => {
+                    let child_op =
+                        go(op, event_processor_worker_details, timeline_processor_worker_details);
+                    TimeLineOp::TlDurationWhere(
+                        timeline_processor_worker_details.clone(),
+                        Box::new(child_op),
+                    )
+                }
+                TimeLineBuilderOp::TlDurationWhere(Some(worker_details), op) => {
+                    let child_op =
+                        go(op, event_processor_worker_details, timeline_processor_worker_details);
+                    TimeLineOp::TlDurationWhere(worker_details, Box::new(child_op))
+                }
+                TimeLineBuilderOp::TlDurationInCurState(None, op) => {
+                    let child_op =
+                        go(op, event_processor_worker_details, timeline_processor_worker_details);
+                    TimeLineOp::TlDurationInCurState(
+                        timeline_processor_worker_details.clone(),
+                        Box::new(child_op),
+                    )
+                }
+                TimeLineBuilderOp::TlDurationInCurState(Some(worker_details), op) => {
+                    let child_op =
+                        go(op, event_processor_worker_details, timeline_processor_worker_details);
+                    TimeLineOp::TlDurationInCurState(worker_details, Box::new(child_op))
+                }
+            }
+        }
+
+        go(
+            Box::new(self.clone()),
+            &event_processor_worker_details,
+            &timeline_processor_worker_details,
+        )
+    }
+}
+
 pub trait TimeLineOpBuilder {
-    fn has_existed(&self, predicate: GolemEventPredicate<GolemEventValue>) -> TimeLineOp;
-    fn has_existed_within(
+    fn tl_has_existed(&self, predicate: GolemEventPredicate<GolemEventValue>) -> TimeLineOp;
+    fn tl_has_existed_within(
         &self,
         predicate: GolemEventPredicate<GolemEventValue>,
         d: u64,
     ) -> TimeLineOp;
-    fn latest_event_to_state(&self, event_col_name: EventColumnName) -> TimeLineOp;
-    fn duration_where(&self, op: TimeLineOp) -> TimeLineOp;
-    fn duration_in_cur_state(&self, op: TimeLineOp) -> TimeLineOp;
+    fn tl_latest_event_to_state(&self, event_col_name: EventColumnName) -> TimeLineOp;
+    fn tl_duration_where(&self, op: TimeLineOp) -> TimeLineOp;
+    fn tl_duration_in_cur_state(&self, op: TimeLineOp) -> TimeLineOp;
 
-    fn equal_to(&self, op: TimeLineOp, value: GolemEventValue) -> TimeLineOp;
-    fn greater_than(&self, op: TimeLineOp, value: GolemEventValue) -> TimeLineOp;
-    fn greater_than_or_equal(&self, op: TimeLineOp, value: GolemEventValue) -> TimeLineOp;
-    fn less_than(&self, op: TimeLineOp, value: GolemEventValue) -> TimeLineOp;
-    fn less_than_or_equal(&self, op: TimeLineOp, value: GolemEventValue) -> TimeLineOp;
-    fn and(&self, left: TimeLineOp, right: TimeLineOp) -> TimeLineOp;
-    fn or(&self, left: TimeLineOp, right: TimeLineOp) -> TimeLineOp;
-    fn not(&self, op: TimeLineOp) -> TimeLineOp;
+    fn tl_equal_to(&self, op: TimeLineOp, value: GolemEventValue) -> TimeLineOp;
+    fn tl_greater_than(&self, op: TimeLineOp, value: GolemEventValue) -> TimeLineOp;
+    fn tl_greater_than_or_equal(&self, op: TimeLineOp, value: GolemEventValue) -> TimeLineOp;
+    fn tl_less_than(&self, op: TimeLineOp, value: GolemEventValue) -> TimeLineOp;
+    fn tl_less_than_or_equal(&self, op: TimeLineOp, value: GolemEventValue) -> TimeLineOp;
+    fn tl_and(&self, left: TimeLineOp, right: TimeLineOp) -> TimeLineOp;
+    fn tl_or(&self, left: TimeLineOp, right: TimeLineOp) -> TimeLineOp;
+    fn tl_not(&self, op: TimeLineOp) -> TimeLineOp;
 }
 
 impl TimeLineOpBuilder for SimpleGolemTimelineDsl {
-    fn has_existed(&self, predicate: GolemEventPredicate<GolemEventValue>) -> TimeLineOp {
-        TimeLineOp::TlHasExisted(self.leaf_node_worker_spec.clone(), predicate)
+    fn tl_has_existed(&self, predicate: GolemEventPredicate<GolemEventValue>) -> TimeLineOp {
+        TimeLineOp::TlHasExisted(self.event_processor_spec.clone(), predicate)
     }
 
-    fn has_existed_within(
+    fn tl_has_existed_within(
         &self,
         predicate: GolemEventPredicate<GolemEventValue>,
         d: u64,
     ) -> TimeLineOp {
-        TimeLineOp::TlHasExistedWithin(self.leaf_node_worker_spec.clone(), predicate, d)
+        TimeLineOp::TlHasExistedWithin(self.event_processor_spec.clone(), predicate, d)
     }
 
-    fn latest_event_to_state(&self, event_col_name: EventColumnName) -> TimeLineOp {
-        TimeLineOp::TlLatestEventToState(self.leaf_node_worker_spec.clone(), event_col_name)
+    fn tl_latest_event_to_state(&self, event_col_name: EventColumnName) -> TimeLineOp {
+        TimeLineOp::TlLatestEventToState(self.event_processor_spec.clone(), event_col_name)
     }
 
-    fn duration_where(&self, op: TimeLineOp) -> TimeLineOp {
-        TimeLineOp::TlDurationWhere(self.leaf_node_worker_spec.clone(), Box::new(op))
+    fn tl_duration_where(&self, op: TimeLineOp) -> TimeLineOp {
+        TimeLineOp::TlDurationWhere(self.event_processor_spec.clone(), Box::new(op))
     }
 
-    fn duration_in_cur_state(&self, op: TimeLineOp) -> TimeLineOp {
-        TimeLineOp::TlDurationInCurState(self.leaf_node_worker_spec.clone(), Box::new(op))
+    fn tl_duration_in_cur_state(&self, op: TimeLineOp) -> TimeLineOp {
+        TimeLineOp::TlDurationInCurState(self.event_processor_spec.clone(), Box::new(op))
     }
 
-    fn equal_to(&self, op: TimeLineOp, value: GolemEventValue) -> TimeLineOp {
-        TimeLineOp::EqualTo(self.derived_node_worker_spec.clone(), Box::new(op), value)
+    fn tl_equal_to(&self, op: TimeLineOp, value: GolemEventValue) -> TimeLineOp {
+        TimeLineOp::EqualTo(self.timeline_processor_spec.clone(), Box::new(op), value)
     }
 
-    fn greater_than(&self, op: TimeLineOp, value: GolemEventValue) -> TimeLineOp {
-        TimeLineOp::GreaterThan(self.derived_node_worker_spec.clone(), Box::new(op), value)
+    fn tl_greater_than(&self, op: TimeLineOp, value: GolemEventValue) -> TimeLineOp {
+        TimeLineOp::GreaterThan(self.timeline_processor_spec.clone(), Box::new(op), value)
     }
 
-    fn greater_than_or_equal(&self, op: TimeLineOp, value: GolemEventValue) -> TimeLineOp {
-        TimeLineOp::GreaterThanOrEqual(self.derived_node_worker_spec.clone(), Box::new(op), value)
+    fn tl_greater_than_or_equal(&self, op: TimeLineOp, value: GolemEventValue) -> TimeLineOp {
+        TimeLineOp::GreaterThanOrEqual(self.timeline_processor_spec.clone(), Box::new(op), value)
     }
 
-    fn less_than(&self, op: TimeLineOp, value: GolemEventValue) -> TimeLineOp {
-        TimeLineOp::LessThan(self.derived_node_worker_spec.clone(), Box::new(op), value)
+    fn tl_less_than(&self, op: TimeLineOp, value: GolemEventValue) -> TimeLineOp {
+        TimeLineOp::LessThan(self.timeline_processor_spec.clone(), Box::new(op), value)
     }
 
-    fn less_than_or_equal(&self, op: TimeLineOp, value: GolemEventValue) -> TimeLineOp {
-        TimeLineOp::LessThanOrEqual(self.derived_node_worker_spec.clone(), Box::new(op), value)
+    fn tl_less_than_or_equal(&self, op: TimeLineOp, value: GolemEventValue) -> TimeLineOp {
+        TimeLineOp::LessThanOrEqual(self.timeline_processor_spec.clone(), Box::new(op), value)
     }
 
-    fn and(&self, left: TimeLineOp, right: TimeLineOp) -> TimeLineOp {
-        TimeLineOp::And(self.derived_node_worker_spec.clone(), Box::new(right), Box::new(left))
+    fn tl_and(&self, left: TimeLineOp, right: TimeLineOp) -> TimeLineOp {
+        TimeLineOp::And(self.timeline_processor_spec.clone(), Box::new(right), Box::new(left))
     }
 
-    fn or(&self, left: TimeLineOp, right: TimeLineOp) -> TimeLineOp {
-        TimeLineOp::Or(self.derived_node_worker_spec.clone(), Box::new(right), Box::new(left))
+    fn tl_or(&self, left: TimeLineOp, right: TimeLineOp) -> TimeLineOp {
+        TimeLineOp::Or(self.timeline_processor_spec.clone(), Box::new(right), Box::new(left))
     }
 
-    fn not(&self, op: TimeLineOp) -> TimeLineOp {
-        TimeLineOp::Not(self.derived_node_worker_spec.clone(), Box::new(op))
+    fn tl_not(&self, op: TimeLineOp) -> TimeLineOp {
+        TimeLineOp::Not(self.timeline_processor_spec.clone(), Box::new(op))
     }
 }
 

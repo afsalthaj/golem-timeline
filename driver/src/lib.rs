@@ -34,8 +34,9 @@ impl Guest for Component {
             derived_node_component_id,
         );
 
-        let simple_timeline =
-            dsl.not(dsl.latest_event_to_state(DslEventColumnName("playerStateChange".to_string())));
+        let simple_timeline = dsl.tl_not(
+            dsl.tl_latest_event_to_state(DslEventColumnName("playerStateChange".to_string())),
+        );
 
         match core.initialize_timeline(&simple_timeline.to_wit()) {
             Ok(result) => {
