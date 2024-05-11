@@ -3,9 +3,11 @@ use std::fmt::Display;
 use crate::event_predicate::{EventColumnName, GolemEventPredicate};
 use crate::golem_event::GolemEventValue;
 use crate::timeline_node_worker::TimeLineNodeWorkerInput;
+use crate::timeline_node_worker::TimeLineWorkerIdPrefix;
 
 #[derive(Clone, Debug)]
 pub enum TimeLineOp {
+    // FIXME TimeLineNodeWorkerInput can maybe be reference using a lifetime???
     // Pretty much represents the event-timeline (not state dynamics) - source (through workerid) and collection
     EqualTo(TimeLineNodeWorkerInput, Box<TimeLineOp>, GolemEventValue),
     GreaterThan(TimeLineNodeWorkerInput, Box<TimeLineOp>, GolemEventValue),
@@ -143,6 +145,110 @@ impl TimeLineOp {
         }
 
         servers_of(self)
+    }
+}
+
+#[derive(Debug)]
+pub struct SimpleGolemTimelineDsl {
+    leaf_node_worker: TimeLineNodeWorkerInput,
+    derived_node_worker: TimeLineNodeWorkerInput,
+}
+
+impl SimpleGolemTimelineDsl {
+    pub fn new(
+        metric_name: String,
+        leaf_node_component_id: String,
+        derived_node_component_id: String,
+    ) -> Self {
+        SimpleGolemTimelineDsl {
+            leaf_node_worker: TimeLineNodeWorkerInput {
+                worker_id_prefix: TimeLineWorkerIdPrefix(metric_name.clone()),
+                component_id: leaf_node_component_id,
+            },
+            derived_node_worker: TimeLineNodeWorkerInput {
+                worker_id_prefix: TimeLineWorkerIdPrefix(metric_name.clone()),
+                component_id: derived_node_component_id,
+            },
+        }
+    }
+}
+
+pub trait TimeLineOpBuilder {
+    fn has_existed(&self, predicate: GolemEventPredicate<GolemEventValue>) -> TimeLineOp;
+    fn has_existed_within(
+        &self,
+        predicate: GolemEventPredicate<GolemEventValue>,
+        d: u64,
+    ) -> TimeLineOp;
+    fn latest_event_to_state(&self, event_col_name: EventColumnName) -> TimeLineOp;
+    fn duration_where(&self, op: TimeLineOp) -> TimeLineOp;
+    fn duration_in_cur_state(&self, op: TimeLineOp) -> TimeLineOp;
+
+    fn equal_to(&self, op: TimeLineOp, value: GolemEventValue) -> TimeLineOp;
+    fn greater_than(&self, op: TimeLineOp, value: GolemEventValue) -> TimeLineOp;
+    fn greater_than_or_equal(&self, op: TimeLineOp, value: GolemEventValue) -> TimeLineOp;
+    fn less_than(&self, op: TimeLineOp, value: GolemEventValue) -> TimeLineOp;
+    fn less_than_or_equal(&self, op: TimeLineOp, value: GolemEventValue) -> TimeLineOp;
+    fn and(&self, left: TimeLineOp, right: TimeLineOp) -> TimeLineOp;
+    fn or(&self, left: TimeLineOp, right: TimeLineOp) -> TimeLineOp;
+    fn not(&self, op: TimeLineOp) -> TimeLineOp;
+}
+
+impl TimeLineOpBuilder for SimpleGolemTimelineDsl {
+    fn has_existed(&self, predicate: GolemEventPredicate<GolemEventValue>) -> TimeLineOp {
+        TimeLineOp::TlHasExisted(self.leaf_node_worker.clone(), predicate)
+    }
+
+    fn has_existed_within(
+        &self,
+        predicate: GolemEventPredicate<GolemEventValue>,
+        d: u64,
+    ) -> TimeLineOp {
+        TimeLineOp::TlHasExistedWithin(self.leaf_node_worker.clone(), predicate, d)
+    }
+
+    fn latest_event_to_state(&self, event_col_name: EventColumnName) -> TimeLineOp {
+        TimeLineOp::TlLatestEventToState(self.leaf_node_worker.clone(), event_col_name)
+    }
+
+    fn duration_where(&self, op: TimeLineOp) -> TimeLineOp {
+        TimeLineOp::TlDurationWhere(self.leaf_node_worker.clone(), Box::new(op))
+    }
+
+    fn duration_in_cur_state(&self, op: TimeLineOp) -> TimeLineOp {
+        TimeLineOp::TlDurationInCurState(self.leaf_node_worker.clone(), Box::new(op))
+    }
+
+    fn equal_to(&self, op: TimeLineOp, value: GolemEventValue) -> TimeLineOp {
+        TimeLineOp::EqualTo(self.derived_node_worker.clone(), Box::new(op), value)
+    }
+
+    fn greater_than(&self, op: TimeLineOp, value: GolemEventValue) -> TimeLineOp {
+        TimeLineOp::GreaterThan(self.derived_node_worker.clone(), Box::new(op), value)
+    }
+
+    fn greater_than_or_equal(&self, op: TimeLineOp, value: GolemEventValue) -> TimeLineOp {
+        TimeLineOp::GreaterThanOrEqual(self.derived_node_worker.clone(), Box::new(op), value)
+    }
+
+    fn less_than(&self, op: TimeLineOp, value: GolemEventValue) -> TimeLineOp {
+        TimeLineOp::LessThan(self.derived_node_worker.clone(), Box::new(op), value)
+    }
+
+    fn less_than_or_equal(&self, op: TimeLineOp, value: GolemEventValue) -> TimeLineOp {
+        TimeLineOp::LessThanOrEqual(self.derived_node_worker.clone(), Box::new(op), value)
+    }
+
+    fn and(&self, left: TimeLineOp, right: TimeLineOp) -> TimeLineOp {
+        TimeLineOp::And(self.derived_node_worker.clone(), Box::new(right), Box::new(left))
+    }
+
+    fn or(&self, left: TimeLineOp, right: TimeLineOp) -> TimeLineOp {
+        TimeLineOp::Or(self.derived_node_worker.clone(), Box::new(right), Box::new(left))
+    }
+
+    fn not(&self, op: TimeLineOp) -> TimeLineOp {
+        TimeLineOp::Not(self.derived_node_worker.clone(), Box::new(op))
     }
 }
 
