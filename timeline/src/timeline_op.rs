@@ -156,17 +156,17 @@ pub struct SimpleGolemTimelineDsl {
 
 impl SimpleGolemTimelineDsl {
     pub fn new(
-        metric_name: String,
+        name: String,
         leaf_node_component_id: String,
         derived_node_component_id: String,
     ) -> Self {
         SimpleGolemTimelineDsl {
             leaf_node_worker: TimeLineNodeWorkerInput {
-                worker_id_prefix: TimeLineWorkerIdPrefix(metric_name.clone()),
+                worker_id_prefix: TimeLineWorkerIdPrefix(name.clone()),
                 component_id: leaf_node_component_id,
             },
             derived_node_worker: TimeLineNodeWorkerInput {
-                worker_id_prefix: TimeLineWorkerIdPrefix(metric_name.clone()),
+                worker_id_prefix: TimeLineWorkerIdPrefix(name.clone()),
                 component_id: derived_node_component_id,
             },
         }
