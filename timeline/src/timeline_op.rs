@@ -171,7 +171,7 @@ impl TimeLineOpBuilder {
         &self,
         worker_prefix: String,
         event_processor_id: String,
-        timeline_proecessor_id: String,
+        timeline_processor_id: String,
     ) -> TimeLineOp {
         let event_processor_worker_details = TimeLineNodeWorkerInput {
             worker_id_prefix: TimeLineWorkerIdPrefix(worker_prefix.clone()),
@@ -180,7 +180,7 @@ impl TimeLineOpBuilder {
 
         let timeline_processor_worker_details = TimeLineNodeWorkerInput {
             worker_id_prefix: TimeLineWorkerIdPrefix(worker_prefix.clone()),
-            component_id: timeline_proecessor_id,
+            component_id: timeline_processor_id,
         };
 
         fn go(
