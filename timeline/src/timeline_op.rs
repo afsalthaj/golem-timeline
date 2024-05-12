@@ -149,9 +149,9 @@ impl TimeLineOp {
     }
 }
 
-impl From<TimeLineOp> for BuildableOp {
+impl From<TimeLineOp> for OpBuildStage {
     fn from(value: TimeLineOp) -> Self {
-        BuildableOp::Built(value)
+        OpBuildStage::Built(value)
     }
 }
 
@@ -204,9 +204,9 @@ pub enum TimeLineOpBuilder {
     PartiallyBuiltTlDurationInCurState(Option<TimeLineNodeWorkerInput>, Box<TimeLineOp>),
 }
 
-impl From<TimeLineOpBuilder> for BuildableOp {
+impl From<TimeLineOpBuilder> for OpBuildStage {
     fn from(value: TimeLineOpBuilder) -> Self {
-        BuildableOp::BeingBuilt(value)
+        OpBuildStage::BeingBuilt(value)
     }
 }
 
@@ -592,7 +592,7 @@ impl TimeLineOpBuilder {
     }
 }
 
-pub enum BuildableOp {
+pub enum OpBuildStage {
     BeingBuilt(TimeLineOpBuilder),
     Built(TimeLineOp),
 }
@@ -612,138 +612,141 @@ pub fn tl_latest_event_to_state(event_col_name: EventColumnName) -> TimeLineOpBu
     TimeLineOpBuilder::TlLatestEventToState(None, event_col_name)
 }
 
-pub fn tl_duration_where<T: Into<BuildableOp>>(op: T) -> TimeLineOpBuilder {
-    let buildable_op = op.into();
+pub fn tl_duration_where<T: Into<OpBuildStage>>(op: T) -> TimeLineOpBuilder {
+    let op_build_stage = op.into();
 
-    match buildable_op {
-        BuildableOp::BeingBuilt(op) => TimeLineOpBuilder::TlDurationWhere(None, Box::new(op)),
-        BuildableOp::Built(op) => {
+    match op_build_stage {
+        OpBuildStage::BeingBuilt(op) => TimeLineOpBuilder::TlDurationWhere(None, Box::new(op)),
+        OpBuildStage::Built(op) => {
             TimeLineOpBuilder::PartiallyBuiltTlDurationWhere(None, Box::new(op))
         }
     }
 }
 
-pub fn tl_duration_in_cur_state<T: Into<BuildableOp>>(op: T) -> TimeLineOpBuilder {
-    let buildable_op = op.into();
+pub fn tl_duration_in_cur_state<T: Into<OpBuildStage>>(op: T) -> TimeLineOpBuilder {
+    let op_build_stage = op.into();
 
-    match buildable_op {
-        BuildableOp::BeingBuilt(op) => TimeLineOpBuilder::TlDurationInCurState(None, Box::new(op)),
-        BuildableOp::Built(op) => {
+    match op_build_stage {
+        OpBuildStage::BeingBuilt(op) => TimeLineOpBuilder::TlDurationInCurState(None, Box::new(op)),
+        OpBuildStage::Built(op) => {
             TimeLineOpBuilder::PartiallyBuiltTlDurationInCurState(None, Box::new(op))
         }
     }
 }
 
-pub fn tl_equal_to<T: Into<BuildableOp>>(op: T, value: GolemEventValue) -> TimeLineOpBuilder {
-    let buildable_op = op.into();
+pub fn tl_equal_to<T: Into<OpBuildStage>>(op: T, value: GolemEventValue) -> TimeLineOpBuilder {
+    let op_build_stage = op.into();
 
-    match buildable_op {
-        BuildableOp::BeingBuilt(op) => TimeLineOpBuilder::EqualTo(None, Box::new(op), value),
-        BuildableOp::Built(op) => {
+    match op_build_stage {
+        OpBuildStage::BeingBuilt(op) => TimeLineOpBuilder::EqualTo(None, Box::new(op), value),
+        OpBuildStage::Built(op) => {
             TimeLineOpBuilder::PartiallyBuiltEqualTo(None, Box::new(op), value)
         }
     }
 }
 
-pub fn tl_greater_than<T: Into<BuildableOp>>(op: T, value: GolemEventValue) -> TimeLineOpBuilder {
-    let buildable_op = op.into();
+pub fn tl_greater_than<T: Into<OpBuildStage>>(op: T, value: GolemEventValue) -> TimeLineOpBuilder {
+    let op_build_stage = op.into();
 
-    match buildable_op {
-        BuildableOp::BeingBuilt(op) => TimeLineOpBuilder::GreaterThan(None, Box::new(op), value),
-        BuildableOp::Built(op) => {
+    match op_build_stage {
+        OpBuildStage::BeingBuilt(op) => TimeLineOpBuilder::GreaterThan(None, Box::new(op), value),
+        OpBuildStage::Built(op) => {
             TimeLineOpBuilder::PartiallyBuiltGreaterThan(None, Box::new(op), value)
         }
     }
 }
 
-pub fn tl_greater_than_or_equal<T: Into<BuildableOp>>(
+pub fn tl_greater_than_or_equal<T: Into<OpBuildStage>>(
     op: T,
     value: GolemEventValue,
 ) -> TimeLineOpBuilder {
-    let buildable_op = op.into();
+    let op_build_stage = op.into();
 
-    match buildable_op {
-        BuildableOp::BeingBuilt(op) => {
+    match op_build_stage {
+        OpBuildStage::BeingBuilt(op) => {
             TimeLineOpBuilder::GreaterThanOrEqual(None, Box::new(op), value)
         }
-        BuildableOp::Built(op) => {
+        OpBuildStage::Built(op) => {
             TimeLineOpBuilder::PartiallyBuiltGreaterThanOrEqual(None, Box::new(op), value)
         }
     }
 }
-pub fn tl_less_than<T: Into<BuildableOp>>(op: T, value: GolemEventValue) -> TimeLineOpBuilder {
-    let buildable_op = op.into();
+pub fn tl_less_than<T: Into<OpBuildStage>>(op: T, value: GolemEventValue) -> TimeLineOpBuilder {
+    let op_build_stage = op.into();
 
-    match buildable_op {
-        BuildableOp::BeingBuilt(op) => TimeLineOpBuilder::LessThan(None, Box::new(op), value),
-        BuildableOp::Built(op) => {
+    match op_build_stage {
+        OpBuildStage::BeingBuilt(op) => TimeLineOpBuilder::LessThan(None, Box::new(op), value),
+        OpBuildStage::Built(op) => {
             TimeLineOpBuilder::PartiallyBuiltLessThan(None, Box::new(op), value)
         }
     }
 }
 
-pub fn tl_less_than_or_equal<T: Into<BuildableOp>>(
+pub fn tl_less_than_or_equal<T: Into<OpBuildStage>>(
     op: T,
     value: GolemEventValue,
 ) -> TimeLineOpBuilder {
-    let buildable_op = op.into();
+    let op_build_stage = op.into();
 
-    match buildable_op {
-        BuildableOp::BeingBuilt(op) => {
+    match op_build_stage {
+        OpBuildStage::BeingBuilt(op) => {
             TimeLineOpBuilder::LessThanOrEqual(None, Box::new(op), value)
         }
-        BuildableOp::Built(op) => {
+        OpBuildStage::Built(op) => {
             TimeLineOpBuilder::PartiallyBuiltLessThanOrEqual(None, Box::new(op), value)
         }
     }
 }
 
-pub fn tl_and<S: Into<BuildableOp>, T: Into<BuildableOp>>(left: S, right: T) -> TimeLineOpBuilder {
-    let left_buildable_op = left.into();
-    let right_buildable_op = right.into();
+pub fn tl_and<S: Into<OpBuildStage>, T: Into<OpBuildStage>>(
+    left: S,
+    right: T,
+) -> TimeLineOpBuilder {
+    let left_op_build_stage = left.into();
+    let right_op_build_stage = right.into();
 
-    match (left_buildable_op, right_buildable_op) {
-        (BuildableOp::Built(left), BuildableOp::Built(right)) => {
+    match (left_op_build_stage, right_op_build_stage) {
+        (OpBuildStage::Built(left), OpBuildStage::Built(right)) => {
             TimeLineOpBuilder::PartiallyBuiltAnd(None, Box::new(left), Box::new(right))
         }
-        (BuildableOp::Built(left), BuildableOp::BeingBuilt(right)) => {
+        (OpBuildStage::Built(left), OpBuildStage::BeingBuilt(right)) => {
             TimeLineOpBuilder::PartiallyBuiltLeftAnd(None, Box::new(left), Box::new(right))
         }
-        (BuildableOp::BeingBuilt(left), BuildableOp::Built(right)) => {
+        (OpBuildStage::BeingBuilt(left), OpBuildStage::Built(right)) => {
             TimeLineOpBuilder::PartiallyBuiltRightAnd(None, Box::new(left), Box::new(right))
         }
-        (BuildableOp::BeingBuilt(left), BuildableOp::BeingBuilt(right)) => {
+        (OpBuildStage::BeingBuilt(left), OpBuildStage::BeingBuilt(right)) => {
             TimeLineOpBuilder::And(None, Box::new(left), Box::new(right))
         }
     }
 }
 
-pub fn tl_or<S: Into<BuildableOp>, T: Into<BuildableOp>>(left: S, right: T) -> TimeLineOpBuilder {
-    let left_buildable_op = left.into();
-    let right_buildable_op = right.into();
+pub fn tl_or<S: Into<OpBuildStage>, T: Into<OpBuildStage>>(left: S, right: T) -> TimeLineOpBuilder {
+    let left_op_build_stage = left.into();
+    let right_op_build_stage = right.into();
 
-    match (left_buildable_op, right_buildable_op) {
-        (BuildableOp::Built(left), BuildableOp::Built(right)) => {
+    match (left_op_build_stage, right_op_build_stage) {
+        (OpBuildStage::Built(left), OpBuildStage::Built(right)) => {
             TimeLineOpBuilder::PartiallyBuiltOr(None, Box::new(left), Box::new(right))
         }
-        (BuildableOp::Built(left), BuildableOp::BeingBuilt(right)) => {
+        (OpBuildStage::Built(left), OpBuildStage::BeingBuilt(right)) => {
             TimeLineOpBuilder::PartiallyBuiltLeftOr(None, Box::new(left), Box::new(right))
         }
-        (BuildableOp::BeingBuilt(left), BuildableOp::Built(right)) => {
+        (OpBuildStage::BeingBuilt(left), OpBuildStage::Built(right)) => {
             TimeLineOpBuilder::PartiallyBuiltRightOr(None, Box::new(left), Box::new(right))
         }
-        (BuildableOp::BeingBuilt(left), BuildableOp::BeingBuilt(right)) => {
+        (OpBuildStage::BeingBuilt(left), OpBuildStage::BeingBuilt(right)) => {
             TimeLineOpBuilder::Or(None, Box::new(left), Box::new(right))
         }
     }
 }
 
-pub fn tl_not<T: Into<BuildableOp>>(op: T) -> TimeLineOpBuilder {
-    let buildable_op = op.into();
+pub fn tl_not<T: Into<OpBuildStage>>(op: T) -> TimeLineOpBuilder {
+    let op_build_stage = op.into();
 
-    match buildable_op {
-        BuildableOp::BeingBuilt(op) => TimeLineOpBuilder::Not(None, Box::new(op)),
-        BuildableOp::Built(op) => TimeLineOpBuilder::PartiallyBuiltNot(None, Box::new(op)),
+    match op_build_stage {
+        OpBuildStage::BeingBuilt(op) => TimeLineOpBuilder::Not(None, Box::new(op)),
+        OpBuildStage::Built(op) => TimeLineOpBuilder::PartiallyBuiltNot(None, Box::new(op)),
     }
 }
 
