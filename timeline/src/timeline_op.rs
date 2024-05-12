@@ -4,6 +4,7 @@ use crate::event_predicate::{EventColumnName, GolemEventPredicate};
 use crate::golem_event::GolemEventValue;
 use crate::timeline_node_worker::TimeLineNodeWorkerInput;
 use crate::timeline_node_worker::TimeLineWorkerIdPrefix;
+use std::convert::From;
 
 #[derive(Clone, Debug)]
 pub enum TimeLineOp {
@@ -148,6 +149,12 @@ impl TimeLineOp {
     }
 }
 
+impl From<TimeLineOp> for BuildableOp {
+    fn from(value: TimeLineOp) -> Self {
+        BuildableOp::Built(value)
+    }
+}
+
 #[derive(Clone, Debug)]
 pub enum TimeLineOpBuilder {
     EqualTo(Option<TimeLineNodeWorkerInput>, Box<TimeLineOpBuilder>, GolemEventValue),
@@ -164,6 +171,43 @@ pub enum TimeLineOpBuilder {
     TlLatestEventToState(Option<TimeLineNodeWorkerInput>, EventColumnName),
     TlDurationWhere(Option<TimeLineNodeWorkerInput>, Box<TimeLineOpBuilder>),
     TlDurationInCurState(Option<TimeLineNodeWorkerInput>, Box<TimeLineOpBuilder>),
+
+    PartiallyBuiltEqualTo(Option<TimeLineNodeWorkerInput>, Box<TimeLineOp>, GolemEventValue),
+    PartiallyBuiltGreaterThan(Option<TimeLineNodeWorkerInput>, Box<TimeLineOp>, GolemEventValue),
+    PartiallyBuiltGreaterThanOrEqual(
+        Option<TimeLineNodeWorkerInput>,
+        Box<TimeLineOp>,
+        GolemEventValue,
+    ),
+    PartiallyBuiltLessThan(Option<TimeLineNodeWorkerInput>, Box<TimeLineOp>, GolemEventValue),
+    PartiallyBuiltLessThanOrEqual(
+        Option<TimeLineNodeWorkerInput>,
+        Box<TimeLineOp>,
+        GolemEventValue,
+    ),
+
+    PartiallyBuiltLeftAnd(Option<TimeLineNodeWorkerInput>, Box<TimeLineOp>, Box<TimeLineOpBuilder>),
+    PartiallyBuiltRightAnd(
+        Option<TimeLineNodeWorkerInput>,
+        Box<TimeLineOpBuilder>,
+        Box<TimeLineOp>,
+    ),
+    PartiallyBuiltAnd(Option<TimeLineNodeWorkerInput>, Box<TimeLineOp>, Box<TimeLineOp>),
+
+    PartiallyBuiltLeftOr(Option<TimeLineNodeWorkerInput>, Box<TimeLineOp>, Box<TimeLineOpBuilder>),
+    PartiallyBuiltRightOr(Option<TimeLineNodeWorkerInput>, Box<TimeLineOpBuilder>, Box<TimeLineOp>),
+    PartiallyBuiltOr(Option<TimeLineNodeWorkerInput>, Box<TimeLineOp>, Box<TimeLineOp>),
+
+    PartiallyBuiltNot(Option<TimeLineNodeWorkerInput>, Box<TimeLineOp>),
+
+    PartiallyBuiltTlDurationWhere(Option<TimeLineNodeWorkerInput>, Box<TimeLineOp>),
+    PartiallyBuiltTlDurationInCurState(Option<TimeLineNodeWorkerInput>, Box<TimeLineOp>),
+}
+
+impl From<TimeLineOpBuilder> for BuildableOp {
+    fn from(value: TimeLineOpBuilder) -> Self {
+        BuildableOp::BeingBuilt(value)
+    }
 }
 
 impl TimeLineOpBuilder {
@@ -387,11 +431,170 @@ impl TimeLineOpBuilder {
                         go(*op, event_processor_worker_details, timeline_processor_worker_details);
                     TimeLineOp::TlDurationInCurState(worker_details, Box::new(child_op))
                 }
+
+                TimeLineOpBuilder::PartiallyBuiltEqualTo(None, op, value) => {
+                    TimeLineOp::EqualTo(timeline_processor_worker_details.clone(), op, value)
+                }
+                TimeLineOpBuilder::PartiallyBuiltEqualTo(Some(worker_details), op, value) => {
+                    TimeLineOp::EqualTo(worker_details, op, value)
+                }
+                TimeLineOpBuilder::PartiallyBuiltGreaterThan(None, op, value) => {
+                    TimeLineOp::GreaterThan(timeline_processor_worker_details.clone(), op, value)
+                }
+                TimeLineOpBuilder::PartiallyBuiltGreaterThan(Some(worker_details), op, value) => {
+                    TimeLineOp::GreaterThan(worker_details, op, value)
+                }
+                TimeLineOpBuilder::PartiallyBuiltGreaterThanOrEqual(None, op, value) => {
+                    TimeLineOp::GreaterThanOrEqual(
+                        timeline_processor_worker_details.clone(),
+                        op,
+                        value,
+                    )
+                }
+                TimeLineOpBuilder::PartiallyBuiltGreaterThanOrEqual(
+                    Some(worker_details),
+                    op,
+                    value,
+                ) => TimeLineOp::GreaterThanOrEqual(worker_details, op, value),
+                TimeLineOpBuilder::PartiallyBuiltLessThan(None, op, value) => {
+                    TimeLineOp::LessThan(timeline_processor_worker_details.clone(), op, value)
+                }
+                TimeLineOpBuilder::PartiallyBuiltLessThan(Some(worker_details), op, value) => {
+                    TimeLineOp::LessThan(worker_details, op, value)
+                }
+                TimeLineOpBuilder::PartiallyBuiltLessThanOrEqual(None, op, value) => {
+                    TimeLineOp::LessThanOrEqual(
+                        timeline_processor_worker_details.clone(),
+                        op,
+                        value,
+                    )
+                }
+                TimeLineOpBuilder::PartiallyBuiltLessThanOrEqual(
+                    Some(worker_details),
+                    op,
+                    value,
+                ) => TimeLineOp::LessThanOrEqual(worker_details, op, value),
+                TimeLineOpBuilder::PartiallyBuiltLeftAnd(None, left, right) => {
+                    let right_child = go(
+                        *right,
+                        event_processor_worker_details,
+                        timeline_processor_worker_details,
+                    );
+                    TimeLineOp::And(
+                        timeline_processor_worker_details.clone(),
+                        left,
+                        Box::new(right_child),
+                    )
+                }
+                TimeLineOpBuilder::PartiallyBuiltLeftAnd(Some(worker_details), left, right) => {
+                    let right_child = go(
+                        *right,
+                        event_processor_worker_details,
+                        timeline_processor_worker_details,
+                    );
+                    TimeLineOp::And(worker_details, left, Box::new(right_child))
+                }
+                TimeLineOpBuilder::PartiallyBuiltRightAnd(None, left, right) => {
+                    let left_child = go(
+                        *left,
+                        event_processor_worker_details,
+                        timeline_processor_worker_details,
+                    );
+                    TimeLineOp::And(
+                        timeline_processor_worker_details.clone(),
+                        Box::new(left_child),
+                        right,
+                    )
+                }
+                TimeLineOpBuilder::PartiallyBuiltRightAnd(Some(worker_details), left, right) => {
+                    let left_child = go(
+                        *left,
+                        event_processor_worker_details,
+                        timeline_processor_worker_details,
+                    );
+                    TimeLineOp::And(worker_details, Box::new(left_child), right)
+                }
+                TimeLineOpBuilder::PartiallyBuiltAnd(None, left, right) => {
+                    TimeLineOp::And(timeline_processor_worker_details.clone(), left, right)
+                }
+                TimeLineOpBuilder::PartiallyBuiltAnd(Some(worker_details), left, right) => {
+                    TimeLineOp::And(worker_details, left, right)
+                }
+
+                TimeLineOpBuilder::PartiallyBuiltLeftOr(None, left, right) => {
+                    let right_child = go(
+                        *right,
+                        event_processor_worker_details,
+                        timeline_processor_worker_details,
+                    );
+                    TimeLineOp::Or(
+                        timeline_processor_worker_details.clone(),
+                        left,
+                        Box::new(right_child),
+                    )
+                }
+                TimeLineOpBuilder::PartiallyBuiltLeftOr(Some(worker_details), left, right) => {
+                    let right_child = go(
+                        *right,
+                        event_processor_worker_details,
+                        timeline_processor_worker_details,
+                    );
+                    TimeLineOp::Or(worker_details, left, Box::new(right_child))
+                }
+                TimeLineOpBuilder::PartiallyBuiltRightOr(None, left, right) => {
+                    let left_child = go(
+                        *left,
+                        event_processor_worker_details,
+                        timeline_processor_worker_details,
+                    );
+                    TimeLineOp::Or(
+                        timeline_processor_worker_details.clone(),
+                        Box::new(left_child),
+                        right,
+                    )
+                }
+                TimeLineOpBuilder::PartiallyBuiltRightOr(Some(worker_details), left, right) => {
+                    let left_child = go(
+                        *left,
+                        event_processor_worker_details,
+                        timeline_processor_worker_details,
+                    );
+                    TimeLineOp::Or(worker_details, Box::new(left_child), right)
+                }
+                TimeLineOpBuilder::PartiallyBuiltOr(None, left, right) => {
+                    TimeLineOp::Or(timeline_processor_worker_details.clone(), left, right)
+                }
+                TimeLineOpBuilder::PartiallyBuiltOr(Some(worker_details), left, right) => {
+                    TimeLineOp::Or(worker_details, left, right)
+                }
+                TimeLineOpBuilder::PartiallyBuiltNot(None, op) => {
+                    TimeLineOp::Not(timeline_processor_worker_details.clone(), op)
+                }
+                TimeLineOpBuilder::PartiallyBuiltNot(Some(worker_details), op) => {
+                    TimeLineOp::Not(worker_details, op)
+                }
+                TimeLineOpBuilder::PartiallyBuiltTlDurationWhere(None, op) => {
+                    TimeLineOp::TlDurationWhere(timeline_processor_worker_details.clone(), op)
+                }
+                TimeLineOpBuilder::PartiallyBuiltTlDurationWhere(Some(worker_details), op) => {
+                    TimeLineOp::TlDurationWhere(worker_details, op)
+                }
+                TimeLineOpBuilder::PartiallyBuiltTlDurationInCurState(None, op) => {
+                    TimeLineOp::TlDurationInCurState(timeline_processor_worker_details.clone(), op)
+                }
+                TimeLineOpBuilder::PartiallyBuiltTlDurationInCurState(Some(worker_details), op) => {
+                    TimeLineOp::TlDurationInCurState(worker_details, op)
+                }
             }
         }
 
         go(self.clone(), &event_processor_worker_details, &timeline_processor_worker_details)
     }
+}
+
+pub enum BuildableOp {
+    BeingBuilt(TimeLineOpBuilder),
+    Built(TimeLineOp),
 }
 
 pub fn tl_has_existed(predicate: GolemEventPredicate<GolemEventValue>) -> TimeLineOpBuilder {
@@ -409,45 +612,139 @@ pub fn tl_latest_event_to_state(event_col_name: EventColumnName) -> TimeLineOpBu
     TimeLineOpBuilder::TlLatestEventToState(None, event_col_name)
 }
 
-pub fn tl_duration_where(op: TimeLineOpBuilder) -> TimeLineOpBuilder {
-    TimeLineOpBuilder::TlDurationWhere(None, Box::new(op))
-}
-pub fn tl_duration_in_cur_state(op: TimeLineOpBuilder) -> TimeLineOpBuilder {
-    TimeLineOpBuilder::TlDurationInCurState(None, Box::new(op))
+pub fn tl_duration_where<T: Into<BuildableOp>>(op: T) -> TimeLineOpBuilder {
+    let buildable_op = op.into();
+
+    match buildable_op {
+        BuildableOp::BeingBuilt(op) => TimeLineOpBuilder::TlDurationWhere(None, Box::new(op)),
+        BuildableOp::Built(op) => {
+            TimeLineOpBuilder::PartiallyBuiltTlDurationWhere(None, Box::new(op))
+        }
+    }
 }
 
-pub fn tl_equal_to(op: TimeLineOpBuilder, value: GolemEventValue) -> TimeLineOpBuilder {
-    TimeLineOpBuilder::EqualTo(None, Box::new(op), value)
+pub fn tl_duration_in_cur_state<T: Into<BuildableOp>>(op: T) -> TimeLineOpBuilder {
+    let buildable_op = op.into();
+
+    match buildable_op {
+        BuildableOp::BeingBuilt(op) => TimeLineOpBuilder::TlDurationInCurState(None, Box::new(op)),
+        BuildableOp::Built(op) => {
+            TimeLineOpBuilder::PartiallyBuiltTlDurationInCurState(None, Box::new(op))
+        }
+    }
 }
 
-pub fn tl_greater_than(op: TimeLineOpBuilder, value: GolemEventValue) -> TimeLineOpBuilder {
-    TimeLineOpBuilder::GreaterThan(None, Box::new(op), value)
+pub fn tl_equal_to<T: Into<BuildableOp>>(op: T, value: GolemEventValue) -> TimeLineOpBuilder {
+    let buildable_op = op.into();
+
+    match buildable_op {
+        BuildableOp::BeingBuilt(op) => TimeLineOpBuilder::EqualTo(None, Box::new(op), value),
+        BuildableOp::Built(op) => {
+            TimeLineOpBuilder::PartiallyBuiltEqualTo(None, Box::new(op), value)
+        }
+    }
 }
 
-pub fn tl_greater_than_or_equal(
-    op: TimeLineOpBuilder,
+pub fn tl_greater_than<T: Into<BuildableOp>>(op: T, value: GolemEventValue) -> TimeLineOpBuilder {
+    let buildable_op = op.into();
+
+    match buildable_op {
+        BuildableOp::BeingBuilt(op) => TimeLineOpBuilder::GreaterThan(None, Box::new(op), value),
+        BuildableOp::Built(op) => {
+            TimeLineOpBuilder::PartiallyBuiltGreaterThan(None, Box::new(op), value)
+        }
+    }
+}
+
+pub fn tl_greater_than_or_equal<T: Into<BuildableOp>>(
+    op: T,
     value: GolemEventValue,
 ) -> TimeLineOpBuilder {
-    TimeLineOpBuilder::GreaterThan(None, Box::new(op), value)
+    let buildable_op = op.into();
+
+    match buildable_op {
+        BuildableOp::BeingBuilt(op) => {
+            TimeLineOpBuilder::GreaterThanOrEqual(None, Box::new(op), value)
+        }
+        BuildableOp::Built(op) => {
+            TimeLineOpBuilder::PartiallyBuiltGreaterThanOrEqual(None, Box::new(op), value)
+        }
+    }
 }
-pub fn tl_less_than(op: TimeLineOpBuilder, value: GolemEventValue) -> TimeLineOpBuilder {
-    TimeLineOpBuilder::LessThan(None, Box::new(op), value)
+pub fn tl_less_than<T: Into<BuildableOp>>(op: T, value: GolemEventValue) -> TimeLineOpBuilder {
+    let buildable_op = op.into();
+
+    match buildable_op {
+        BuildableOp::BeingBuilt(op) => TimeLineOpBuilder::LessThan(None, Box::new(op), value),
+        BuildableOp::Built(op) => {
+            TimeLineOpBuilder::PartiallyBuiltLessThan(None, Box::new(op), value)
+        }
+    }
 }
 
-pub fn tl_less_than_or_equal(op: TimeLineOpBuilder, value: GolemEventValue) -> TimeLineOpBuilder {
-    TimeLineOpBuilder::LessThanOrEqual(None, Box::new(op), value)
+pub fn tl_less_than_or_equal<T: Into<BuildableOp>>(
+    op: T,
+    value: GolemEventValue,
+) -> TimeLineOpBuilder {
+    let buildable_op = op.into();
+
+    match buildable_op {
+        BuildableOp::BeingBuilt(op) => {
+            TimeLineOpBuilder::LessThanOrEqual(None, Box::new(op), value)
+        }
+        BuildableOp::Built(op) => {
+            TimeLineOpBuilder::PartiallyBuiltLessThanOrEqual(None, Box::new(op), value)
+        }
+    }
 }
 
-pub fn tl_and(left: TimeLineOpBuilder, right: TimeLineOpBuilder) -> TimeLineOpBuilder {
-    TimeLineOpBuilder::And(None, Box::new(left), Box::new(right))
+pub fn tl_and<S: Into<BuildableOp>, T: Into<BuildableOp>>(left: S, right: T) -> TimeLineOpBuilder {
+    let left_buildable_op = left.into();
+    let right_buildable_op = right.into();
+
+    match (left_buildable_op, right_buildable_op) {
+        (BuildableOp::Built(left), BuildableOp::Built(right)) => {
+            TimeLineOpBuilder::PartiallyBuiltAnd(None, Box::new(left), Box::new(right))
+        }
+        (BuildableOp::Built(left), BuildableOp::BeingBuilt(right)) => {
+            TimeLineOpBuilder::PartiallyBuiltLeftAnd(None, Box::new(left), Box::new(right))
+        }
+        (BuildableOp::BeingBuilt(left), BuildableOp::Built(right)) => {
+            TimeLineOpBuilder::PartiallyBuiltRightAnd(None, Box::new(left), Box::new(right))
+        }
+        (BuildableOp::BeingBuilt(left), BuildableOp::BeingBuilt(right)) => {
+            TimeLineOpBuilder::And(None, Box::new(left), Box::new(right))
+        }
+    }
 }
 
-pub fn tl_or(left: TimeLineOpBuilder, right: TimeLineOpBuilder) -> TimeLineOpBuilder {
-    TimeLineOpBuilder::Or(None, Box::new(left), Box::new(right))
+pub fn tl_or<S: Into<BuildableOp>, T: Into<BuildableOp>>(left: S, right: T) -> TimeLineOpBuilder {
+    let left_buildable_op = left.into();
+    let right_buildable_op = right.into();
+
+    match (left_buildable_op, right_buildable_op) {
+        (BuildableOp::Built(left), BuildableOp::Built(right)) => {
+            TimeLineOpBuilder::PartiallyBuiltOr(None, Box::new(left), Box::new(right))
+        }
+        (BuildableOp::Built(left), BuildableOp::BeingBuilt(right)) => {
+            TimeLineOpBuilder::PartiallyBuiltLeftOr(None, Box::new(left), Box::new(right))
+        }
+        (BuildableOp::BeingBuilt(left), BuildableOp::Built(right)) => {
+            TimeLineOpBuilder::PartiallyBuiltRightOr(None, Box::new(left), Box::new(right))
+        }
+        (BuildableOp::BeingBuilt(left), BuildableOp::BeingBuilt(right)) => {
+            TimeLineOpBuilder::Or(None, Box::new(left), Box::new(right))
+        }
+    }
 }
 
-pub fn tl_not(op: TimeLineOpBuilder) -> TimeLineOpBuilder {
-    TimeLineOpBuilder::Not(None, Box::new(op))
+pub fn tl_not<T: Into<BuildableOp>>(op: T) -> TimeLineOpBuilder {
+    let buildable_op = op.into();
+
+    match buildable_op {
+        BuildableOp::BeingBuilt(op) => TimeLineOpBuilder::Not(None, Box::new(op)),
+        BuildableOp::Built(op) => TimeLineOpBuilder::PartiallyBuiltNot(None, Box::new(op)),
+    }
 }
 
 impl Display for TimeLineOp {

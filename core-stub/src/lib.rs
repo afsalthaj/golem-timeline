@@ -8,12 +8,8 @@ pub struct Api {
 impl Api {}
 impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api {
     fn new(location: crate::bindings::golem::rpc::types::Uri) -> Self {
-        let location = golem_wasm_rpc::Uri {
-            value: location.value,
-        };
-        Self {
-            rpc: WasmRpc::new(&location),
-        }
+        let location = golem_wasm_rpc::Uri { value: location.value };
+        Self { rpc: WasmRpc::new(&location) }
     }
     fn initialize_timeline(
         &self,
@@ -401,10 +397,9 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                 .result()
                 .expect("result not found");
             match result {
-                Ok(ok_value) => {
-                    Ok({
-                        let record = ok_value.expect("result ok value not found");
-                        crate::bindings::timeline::core::api::WorkerDetails {
+                Ok(ok_value) => Ok({
+                    let record = ok_value.expect("result ok value not found");
+                    crate::bindings::timeline::core::api::WorkerDetails {
                             event_processor_workers: record
                                 .field(0usize)
                                 .expect("record field not found")
@@ -890,17 +885,12 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                 }
                             },
                         }
-                    })
-                }
-                Err(err_value) => {
-                    Err(
-                        err_value
-                            .expect("result err value not found")
-                            .string()
-                            .expect("string not found")
-                            .to_string(),
-                    )
-                }
+                }),
+                Err(err_value) => Err(err_value
+                    .expect("result err value not found")
+                    .string()
+                    .expect("string not found")
+                    .to_string()),
             }
         })
     }
