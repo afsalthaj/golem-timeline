@@ -4,7 +4,7 @@ use conversions::Conversion;
 use timeline::timeline_node_worker::{
     TimeLineResultWorker, TimeLineWorkerId, TypedTimeLineResultWorker,
 };
-use timeline::timeline_op::TimeLineOp as CoreTimeLineOp;
+use timeline::TimeLineOp as CoreTimeLineOp;
 
 use crate::bindings::exports::timeline::core::api::TimelineOp;
 use crate::bindings::exports::timeline::core::api::{

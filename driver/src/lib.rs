@@ -6,8 +6,8 @@ use crate::bindings::timeline::core::api::WorkerDetails;
 use crate::bindings::timeline::core_stub::stub_core;
 
 use conversions::Conversion;
-use timeline::event_predicate::EventColumnName as DslEventColumnName;
-use timeline::timeline_op::{tl_latest_event_to_state, tl_not};
+use timeline::event_predicate::col;
+use timeline::*;
 
 #[allow(dead_code)]
 #[rustfmt::skip]
@@ -27,9 +27,8 @@ impl Guest for Component {
 
         let core = stub_core::Api::new(&uri);
 
-        let simple_timeline =
-            tl_not(tl_latest_event_to_state(DslEventColumnName("playerStateChange".to_string())))
-                .with_worker_details("cirr".to_string(), event_processor_id, timeline_processor_id);
+        let simple_timeline = tl_not(tl_latest_event_to_state(col("playerStateChange")))
+            .with_worker_details("cirr".to_string(), event_processor_id, timeline_processor_id);
 
         match core.initialize_timeline(&simple_timeline.to_wit()) {
             Ok(result) => {

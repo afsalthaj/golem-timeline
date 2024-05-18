@@ -5,7 +5,7 @@ use crate::bindings::exports::timeline::core::api::{
     TimelineWithServer,
 };
 use crate::conversions::Conversion;
-use timeline::timeline_op::TimeLineOp;
+use timeline::TimeLineOp;
 
 pub struct WitValueBuilder {
     nodes: Vec<TimelineNode>,

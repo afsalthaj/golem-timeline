@@ -2,7 +2,7 @@ use std::fmt::Debug;
 use timeline::event_predicate::{EventColumnName, EventColumnValue, GolemEventPredicate};
 use timeline::golem_event::GolemEventValue;
 use timeline::timeline_node_worker::{TimeLineNodeWorkerInput, TimeLineWorkerIdPrefix};
-use timeline::timeline_op::TimeLineOp;
+use timeline::TimeLineOp;
 
 use crate::bindings::timeline::event_processor::api::EventPredicate as WitEventPredicate;
 
@@ -119,7 +119,7 @@ mod internals {
     use timeline::event_predicate::{EventColumnName, GolemEventPredicate};
     use timeline::golem_event::GolemEventValue;
     use timeline::timeline_node_worker::TimeLineNodeWorkerInput;
-    use timeline::timeline_op::TimeLineOp;
+    use timeline::TimeLineOp;
 
     use crate::bindings::timeline::core::api::{
         TimelineConstantComparator, TimelineNode as WitTimeLineNode, TimelineNode,

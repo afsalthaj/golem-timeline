@@ -6,7 +6,7 @@ use timeline::timeline_node_worker::{
     DerivedTimeLineNode, LeafTimeLineNode, TimeLineNodeWorkerInput, TimeLineResultWorker,
     TimeLineWorkerId, TimeLineWorkerIdPrefix, TypedTimeLineResultWorker,
 };
-use timeline::timeline_op::TimeLineOp;
+use timeline::TimeLineOp;
 
 use crate::bindings::exports::timeline::core::api::Server as WitTimeLineNodeWorker;
 use crate::bindings::exports::timeline::core::api::TimelineOp as WitTimeLineOp;
@@ -327,7 +327,7 @@ mod internals {
     use timeline::event_predicate::{EventColumnName, GolemEventPredicate};
     use timeline::golem_event::GolemEventValue;
     use timeline::timeline_node_worker::TimeLineNodeWorkerInput;
-    use timeline::timeline_op::TimeLineOp;
+    use timeline::TimeLineOp;
 
     use crate::bindings::exports::timeline::core::api::{
         TimelineConstantComparator, TimelineNode as WitTimeLineNode, TimelineNode,
