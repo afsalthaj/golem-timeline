@@ -1,7 +1,7 @@
 use uuid::Uuid;
 
 use conversions::Conversion;
-use timeline::timeline_node_worker::{
+use timeline::{
     TimeLineResultWorker, TimeLineWorkerId, TimeLineWorkerIdPrefix, TypedTimeLineResultWorker,
 };
 use timeline::TimeLineOp as CoreTimeLineOp;

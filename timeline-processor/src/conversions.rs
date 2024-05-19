@@ -2,9 +2,7 @@ use crate::bindings::timeline::event_processor::api::{
     EventValue, TimePeriod, TimelineResult, TimelineResultPoint,
 };
 use std::fmt::Debug;
-use timeline::golem_event::GolemEventValue;
-use timeline::state_dynamic_timeline::StateDynamicsTimeLine;
-use timeline::state_dynamic_timeline_point::StateDynamicsTimeLinePoint;
+use timeline::*;
 
 pub trait Conversion: Clone + Debug {
     type WitType: Clone;
