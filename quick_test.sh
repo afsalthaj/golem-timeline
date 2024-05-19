@@ -39,11 +39,11 @@ api_definition='{
       "path": "/{user-id}/instantiate-timeline",
       "binding": {
         "type": "wit-worker",
-        "component": REPLACE_DRIVER_WITH_CORE,
-        "workerId": "first-try",
+        "componentId": REPLACE_DRIVER_WITH_CORE,
+        "workerName": "first-try",
         "functionName": "timeline:driver/api/run",
         "functionParams": [REPLACE_CORE_WITH_EVENT_WITH_TIMELINE, REPLACE_EVENT_PROCESSOR, REPLACE_TIMELINE_WITH_EVENT_WITH_TIMELINE],
-        "response" : "${ {body: match worker.response[0] { ok(value) => value, err(msg) => msg }, status: match worker.response[0]{ ok(_) => 200, err(_) => 500 } }}"
+        "response" : "${ {body: match worker.response { ok(value) => value, err(msg) => msg }, status: match worker.response { ok(_) => 200, err(_) => 500 } }}"
       }
     }
   ]
