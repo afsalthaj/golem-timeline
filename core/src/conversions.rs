@@ -1,8 +1,8 @@
 use std::fmt::Debug;
 
-use timeline::event_predicate::{EventColumnName, EventColumnValue, GolemEventPredicate};
-use timeline::golem_event::GolemEventValue;
-use timeline::timeline_node_worker::{
+use timeline::{EventColumnName, EventColumnValue, GolemEventPredicate};
+use timeline::GolemEventValue;
+use timeline::{
     DerivedTimeLineNode, LeafTimeLineNode, TimeLineNodeWorkerInput, TimeLineResultWorker,
     TimeLineWorkerId, TimeLineWorkerIdPrefix, TypedTimeLineResultWorker,
 };
@@ -324,9 +324,9 @@ impl Conversion for TimeLineOp {
 }
 
 mod internals {
-    use timeline::event_predicate::{EventColumnName, GolemEventPredicate};
-    use timeline::golem_event::GolemEventValue;
-    use timeline::timeline_node_worker::TimeLineNodeWorkerInput;
+    use timeline::{EventColumnName, GolemEventPredicate};
+    use timeline::GolemEventValue;
+    use timeline::TimeLineNodeWorkerInput;
     use timeline::TimeLineOp;
 
     use crate::bindings::exports::timeline::core::api::{

@@ -1,8 +1,6 @@
 use std::cell::RefCell;
 
-use timeline::event_predicate::{EventColumnName, GolemEventPredicate};
-use timeline::golem_event::{GolemEvent, GolemEventValue};
-use timeline::state_dynamic_timeline::StateDynamicsTimeLine;
+use timeline::*;
 
 use crate::bindings::exports::timeline::event_processor::api::{
     Event, EventPredicate, EventValue, Guest, TimePeriod, TimelineResult, TimelineResultPoint,

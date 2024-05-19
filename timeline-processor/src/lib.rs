@@ -6,8 +6,7 @@ use conversions::Conversion;
 use extensions::WorkerResultExt;
 use std::cell::RefCell;
 
-use timeline::golem_event::GolemEventValue;
-use timeline::state_dynamic_timeline::StateDynamicsTimeLine;
+use timeline::*;
 
 #[allow(dead_code)]
 #[rustfmt::skip]

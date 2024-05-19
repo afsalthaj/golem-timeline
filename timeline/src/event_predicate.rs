@@ -4,10 +4,12 @@ use crate::golem_event::{GolemEvent, GolemEventValue};
 
 #[derive(Clone, Debug, Eq, PartialEq, Hash)]
 pub struct EventColumnName(pub String);
+
 impl EventColumnName {
     pub fn equal_to<T: Debug + Clone>(self, value: EventColumnValue<T>) -> GolemEventPredicate<T> {
         GolemEventPredicate::Equals(self, value)
     }
+
 
     pub fn greater_than<T: Debug + Clone>(
         self,
@@ -46,20 +48,20 @@ impl<T: Debug + Clone> From<T> for EventColumnValue<T> {
     }
 }
 
-pub fn string(value: &str) -> EventColumnValue<String> {
-    EventColumnValue(value.to_string())
+pub fn string(value: &str) -> EventColumnValue<GolemEventValue> {
+    EventColumnValue(GolemEventValue::StringValue(value.to_string()))
 }
 
-pub fn int(value: &str) -> EventColumnValue<i64> {
-    EventColumnValue(value.parse().unwrap())
+pub fn int(value: i64) -> EventColumnValue<GolemEventValue> {
+    EventColumnValue(GolemEventValue::IntValue(value))
 }
 
-pub fn float(value: &str) -> EventColumnValue<f64> {
-    EventColumnValue(value.parse().unwrap())
+pub fn float(value: f64) -> EventColumnValue<GolemEventValue> {
+    EventColumnValue(GolemEventValue::FloatValue(value))
 }
 
-pub fn boolean(value: bool) -> EventColumnValue<bool> {
-    EventColumnValue(value)
+pub fn boolean(value: bool) -> EventColumnValue<GolemEventValue> {
+    EventColumnValue(GolemEventValue::BoolValue(value))
 }
 
 pub fn col(column_name: &str) -> EventColumnName {
