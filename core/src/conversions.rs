@@ -324,10 +324,7 @@ impl Conversion for TimeLineOp {
 }
 
 mod internals {
-    use timeline::{EventColumnName, GolemEventPredicate};
-    use timeline::GolemEventValue;
-    use timeline::TimeLineNodeWorkerInput;
-    use timeline::TimeLineOp;
+    use timeline::*;
 
     use crate::bindings::exports::timeline::core::api::{
         TimelineConstantComparator, TimelineNode as WitTimeLineNode, TimelineNode,
