@@ -85,12 +85,18 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                                 case_builder
                                                     .record()
                                                     .item()
-                                                    .record()
-                                                    .item()
-                                                    .string(&inner.server.worker_id_prefix)
-                                                    .item()
-                                                    .string(&inner.server.template_id)
-                                                    .finish()
+                                                    .option_fn(
+                                                        inner.server.is_some(),
+                                                        |some_builder| {
+                                                            some_builder
+                                                                .record()
+                                                                .item()
+                                                                .string(&inner.server.as_ref().unwrap().worker_id_prefix)
+                                                                .item()
+                                                                .string(&inner.server.as_ref().unwrap().template_id)
+                                                                .finish()
+                                                        },
+                                                    )
                                                     .item()
                                                     .string(&inner.event_column_name)
                                                     .finish()
@@ -165,12 +171,18 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                                     )
                                                     .finish()
                                                     .item()
-                                                    .record()
-                                                    .item()
-                                                    .string(&inner.server.worker_id_prefix)
-                                                    .item()
-                                                    .string(&inner.server.template_id)
-                                                    .finish()
+                                                    .option_fn(
+                                                        inner.server.is_some(),
+                                                        |some_builder| {
+                                                            some_builder
+                                                                .record()
+                                                                .item()
+                                                                .string(&inner.server.as_ref().unwrap().worker_id_prefix)
+                                                                .item()
+                                                                .string(&inner.server.as_ref().unwrap().template_id)
+                                                                .finish()
+                                                        },
+                                                    )
                                                     .finish()
                                             }
                                             crate::bindings::timeline::core::api::TimelineNode::TlHasExistedWithin(
@@ -245,12 +257,22 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                                     )
                                                     .finish()
                                                     .item()
-                                                    .record()
-                                                    .item()
-                                                    .string(&inner.filtered.server.worker_id_prefix)
-                                                    .item()
-                                                    .string(&inner.filtered.server.template_id)
-                                                    .finish()
+                                                    .option_fn(
+                                                        inner.filtered.server.is_some(),
+                                                        |some_builder| {
+                                                            some_builder
+                                                                .record()
+                                                                .item()
+                                                                .string(
+                                                                    &inner.filtered.server.as_ref().unwrap().worker_id_prefix,
+                                                                )
+                                                                .item()
+                                                                .string(
+                                                                    &inner.filtered.server.as_ref().unwrap().template_id,
+                                                                )
+                                                                .finish()
+                                                        },
+                                                    )
                                                     .finish()
                                                     .item()
                                                     .u64(inner.time)
@@ -326,12 +348,18 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                                         },
                                                     )
                                                     .item()
-                                                    .record()
-                                                    .item()
-                                                    .string(&inner.server.worker_id_prefix)
-                                                    .item()
-                                                    .string(&inner.server.template_id)
-                                                    .finish()
+                                                    .option_fn(
+                                                        inner.server.is_some(),
+                                                        |some_builder| {
+                                                            some_builder
+                                                                .record()
+                                                                .item()
+                                                                .string(&inner.server.as_ref().unwrap().worker_id_prefix)
+                                                                .item()
+                                                                .string(&inner.server.as_ref().unwrap().template_id)
+                                                                .finish()
+                                                        },
+                                                    )
                                                     .finish()
                                             }
                                             crate::bindings::timeline::core::api::TimelineNode::TimelineNegation(
@@ -342,12 +370,18 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                                     .item()
                                                     .s32(inner.timeline)
                                                     .item()
-                                                    .record()
-                                                    .item()
-                                                    .string(&inner.server.worker_id_prefix)
-                                                    .item()
-                                                    .string(&inner.server.template_id)
-                                                    .finish()
+                                                    .option_fn(
+                                                        inner.server.is_some(),
+                                                        |some_builder| {
+                                                            some_builder
+                                                                .record()
+                                                                .item()
+                                                                .string(&inner.server.as_ref().unwrap().worker_id_prefix)
+                                                                .item()
+                                                                .string(&inner.server.as_ref().unwrap().template_id)
+                                                                .finish()
+                                                        },
+                                                    )
                                                     .finish()
                                             }
                                             crate::bindings::timeline::core::api::TimelineNode::TlDurationWhere(
@@ -356,12 +390,18 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                                 case_builder
                                                     .record()
                                                     .item()
-                                                    .record()
-                                                    .item()
-                                                    .string(&inner.server.worker_id_prefix)
-                                                    .item()
-                                                    .string(&inner.server.template_id)
-                                                    .finish()
+                                                    .option_fn(
+                                                        inner.server.is_some(),
+                                                        |some_builder| {
+                                                            some_builder
+                                                                .record()
+                                                                .item()
+                                                                .string(&inner.server.as_ref().unwrap().worker_id_prefix)
+                                                                .item()
+                                                                .string(&inner.server.as_ref().unwrap().template_id)
+                                                                .finish()
+                                                        },
+                                                    )
                                                     .item()
                                                     .s32(inner.timeline)
                                                     .finish()
@@ -372,12 +412,18 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                                 case_builder
                                                     .record()
                                                     .item()
-                                                    .record()
-                                                    .item()
-                                                    .string(&inner.server.worker_id_prefix)
-                                                    .item()
-                                                    .string(&inner.server.template_id)
-                                                    .finish()
+                                                    .option_fn(
+                                                        inner.server.is_some(),
+                                                        |some_builder| {
+                                                            some_builder
+                                                                .record()
+                                                                .item()
+                                                                .string(&inner.server.as_ref().unwrap().worker_id_prefix)
+                                                                .item()
+                                                                .string(&inner.server.as_ref().unwrap().template_id)
+                                                                .finish()
+                                                        },
+                                                    )
                                                     .item()
                                                     .s32(inner.timeline)
                                                     .finish()

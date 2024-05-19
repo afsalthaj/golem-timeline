@@ -6,10 +6,8 @@ use crate::bindings::timeline::core::api::WorkerDetails;
 use crate::bindings::timeline::core_stub::stub_core;
 
 use conversions::Conversion;
-use timeline::event_predicate::EventColumnName as DslEventColumnName;
-use timeline::timeline_node_worker::TimeLineNodeWorkerInput as DslTimeLineNodeWorkerInput;
-use timeline::timeline_node_worker::TimeLineWorkerIdPrefix as DslTimeLineWorkerIdPrefix;
-use timeline::timeline_op::TimeLineOp as DslTimeLineOp;
+use timeline::event_predicate::col;
+use timeline::*;
 
 #[allow(dead_code)]
 #[rustfmt::skip]
@@ -22,25 +20,15 @@ struct Component;
 impl Guest for Component {
     fn run(
         core_component_id: String,
-        event_processor_component_id: String,
-        timeline_processor_component_id: String,
+        event_processor_id: String,
+        timeline_processor_id: String,
     ) -> Result<WorkerDetails, String> {
         let uri = Uri { value: format!("worker://{core_component_id}/{}", "initialize-timeline") };
 
         let core = stub_core::Api::new(&uri);
-        let simple_timeline = DslTimeLineOp::Not(
-            DslTimeLineNodeWorkerInput {
-                worker_id_prefix: DslTimeLineWorkerIdPrefix("cirr".to_string()),
-                component_id: timeline_processor_component_id,
-            },
-            Box::new(DslTimeLineOp::TlLatestEventToState(
-                DslTimeLineNodeWorkerInput {
-                    worker_id_prefix: DslTimeLineWorkerIdPrefix("cirr".to_string()),
-                    component_id: event_processor_component_id,
-                },
-                DslEventColumnName("playerStateChange".to_string()),
-            )),
-        );
+
+        let simple_timeline = tl_not(tl_latest_event_to_state(col("playerStateChange")))
+            .with_worker_details("cirr".to_string(), event_processor_id, timeline_processor_id);
 
         match core.initialize_timeline(&simple_timeline.to_wit()) {
             Ok(result) => {

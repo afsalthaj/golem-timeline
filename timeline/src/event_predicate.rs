@@ -19,6 +19,10 @@ impl EventColumnName {
     pub fn less_than<T: Debug + Clone>(self, value: EventColumnValue<T>) -> GolemEventPredicate<T> {
         GolemEventPredicate::LessThan(self, value)
     }
+
+    pub fn col<A: AsRef<str>>(event_column_name: A) -> EventColumnName {
+        EventColumnName(event_column_name.as_ref().to_string())
+    }
 }
 
 impl Display for EventColumnName {
