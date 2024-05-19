@@ -21,12 +21,12 @@ interface api {
   }
 
  record server-with-event-column-name {
-   server: server,
+   server: option<server>,
    event-column-name: string
  }
 
  record timeline-with-server {
-    server: server,
+    server: option<server>,
     timeline: node-index
   }
 
@@ -59,12 +59,12 @@ interface api {
     op: timeline-constant-comparator,
     timeline: node-index,
     value: event-value,
-    server: server
+    server: option<server>
   }
 
   record timeline-negated{
     timeline: node-index,
-    server: server
+    server: option<server>
   }
 
   // A filtered timeline is operation on state dynamic timelines
@@ -75,7 +75,7 @@ interface api {
   // A filtered timeline is also maintained in a separate worker/server
   record server-with-event-predicate {
     event-predicate: event-predicate,
-    server: server
+    server: option<server>
   }
 
   record server-with-event-predicate-within {

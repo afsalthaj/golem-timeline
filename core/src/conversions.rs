@@ -347,8 +347,10 @@ mod internals {
                 );
                 let golem_event_value: GolemEventValue =
                     GolemEventValue::from_wit(timeline_constant_compared.value.clone());
-                let timeline_node_worker =
-                    TimeLineNodeWorkerInput::from_wit(timeline_constant_compared.server.clone());
+                let timeline_node_worker = timeline_constant_compared
+                    .server
+                    .clone()
+                    .map(TimeLineNodeWorkerInput::from_wit);
 
                 match timeline_constant_compared.op {
                     TimelineConstantComparator::GreaterThan => TimeLineOp::GreaterThan(
@@ -376,14 +378,17 @@ mod internals {
             WitTimeLineNode::TimelineNegation(timeline_negation) => {
                 let time_line =
                     build_timeline_tree(&nodes[timeline_negation.timeline as usize], nodes);
-                let timeline_node_worker: TimeLineNodeWorkerInput =
-                    TimeLineNodeWorkerInput::from_wit(timeline_negation.server.clone());
+                let timeline_node_worker =
+                    timeline_negation.server.clone().map(TimeLineNodeWorkerInput::from_wit);
 
                 TimeLineOp::Not(timeline_node_worker, Box::new(time_line))
             }
             WitTimeLineNode::TlHasExisted(server_with_event_predicate) => {
-                let server: TimeLineNodeWorkerInput =
-                    TimeLineNodeWorkerInput::from_wit(server_with_event_predicate.server.clone());
+                let server = server_with_event_predicate
+                    .server
+                    .clone()
+                    .map(TimeLineNodeWorkerInput::from_wit);
+
                 let filter = GolemEventPredicate::from_wit(
                     server_with_event_predicate.event_predicate.clone(),
                 );
@@ -392,9 +397,11 @@ mod internals {
 
             WitTimeLineNode::TlHasExistedWithin(server_with_event_predicate_within) => {
                 let max_duration = server_with_event_predicate_within.time;
-                let server: TimeLineNodeWorkerInput = TimeLineNodeWorkerInput::from_wit(
-                    server_with_event_predicate_within.filtered.server.clone(),
-                );
+                let server = server_with_event_predicate_within
+                    .filtered
+                    .server
+                    .clone()
+                    .map(TimeLineNodeWorkerInput::from_wit);
 
                 let filter = GolemEventPredicate::from_wit(
                     server_with_event_predicate_within.filtered.event_predicate.clone(),
@@ -405,19 +412,22 @@ mod internals {
             WitTimeLineNode::TlDurationWhere(tl) => {
                 let time_line = build_timeline_tree(&nodes[tl.timeline as usize], nodes);
 
-                TimeLineOp::TlDurationWhere(
-                    TimeLineNodeWorkerInput::from_wit(tl.server.clone()),
-                    Box::new(time_line),
-                )
+                let server = tl.server.clone().map(TimeLineNodeWorkerInput::from_wit);
+
+                TimeLineOp::TlDurationWhere(server, Box::new(time_line))
             }
             WitTimeLineNode::TlDurationInCurState(tl) => {
                 let time_line = build_timeline_tree(&nodes[tl.timeline as usize], nodes);
-                let timeline_node_worker = TimeLineNodeWorkerInput::from_wit(tl.server.clone());
+                let timeline_node_worker = tl.server.clone().map(TimeLineNodeWorkerInput::from_wit);
+
                 TimeLineOp::TlDurationInCurState(timeline_node_worker, Box::new(time_line))
             }
             TimelineNode::TlLatestEventToState(server_with_event_column_name) => {
-                let server =
-                    TimeLineNodeWorkerInput::from_wit(server_with_event_column_name.server.clone());
+                let server = server_with_event_column_name
+                    .server
+                    .clone()
+                    .map(TimeLineNodeWorkerInput::from_wit);
+
                 let event_column_name =
                     EventColumnName(server_with_event_column_name.event_column_name.clone());
                 TimeLineOp::TlLatestEventToState(server, event_column_name)
