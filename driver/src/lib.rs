@@ -26,8 +26,26 @@ impl Guest for Component {
 
         let core = stub_core::Api::new(&uri);
 
+        let cirr = tl_duration_where(tl_and(
+            tl_and(
+                tl_and(
+                    tl_equal_to(
+                        tl_latest_event_to_state(col("playerStateChange")),
+                        string_value("buffer"),
+                    ),
+                    tl_has_existed(col("playerStateChange").equal_to(string("play"))),
+                ),
+                tl_not(tl_has_existed_within(col("userAction").equal_to(string("seek")), 5)),
+            ),
+            tl_equal_to(tl_latest_event_to_state(col("cdnChange")), string_value("CDN1")),
+        ));
+
         let simple_timeline = tl_not(tl_latest_event_to_state(col("playerStateChange")))
-            .with_worker_details("cirr".to_string(), event_processor_component_id, timeline_processor_component_id);
+            .with_worker_details(
+                "cirr".to_string(),
+                event_processor_component_id,
+                timeline_processor_component_id,
+            );
 
         match core.initialize_timeline(&simple_timeline.to_wit()) {
             Ok(result) => {
