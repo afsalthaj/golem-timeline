@@ -26,7 +26,7 @@ impl Guest for Component {
 
         let core = stub_core::Api::new(&uri);
 
-        let cirr = tl_duration_where(tl_and(
+        let cirr = tl_and(
             tl_and(
                 tl_and(
                     tl_equal_to(
@@ -38,16 +38,21 @@ impl Guest for Component {
                 tl_not(tl_has_existed_within(col("userAction").equal_to(string("seek")), 5)),
             ),
             tl_equal_to(tl_latest_event_to_state(col("cdnChange")), string_value("CDN1")),
-        ));
+        )
+        .with_worker_details(
+            "cirr".to_string(),
+            event_processor_component_id,
+            timeline_processor_component_id,
+        );
 
-        let simple_timeline = tl_not(tl_latest_event_to_state(col("playerStateChange")))
-            .with_worker_details(
-                "cirr".to_string(),
-                event_processor_component_id,
-                timeline_processor_component_id,
-            );
+        // let simple_timeline = tl_not(tl_latest_event_to_state(col("playerStateChange")))
+        //     .with_worker_details(
+        //         "cirr".to_string(),
+        //         event_processor_component_id,
+        //         timeline_processor_component_id,
+        //     );
 
-        match core.initialize_timeline(&simple_timeline.to_wit()) {
+        match core.initialize_timeline(&cirr.to_wit()) {
             Ok(result) => {
                 dbg!("Driver Log: Timeline initialized");
                 Ok(result)

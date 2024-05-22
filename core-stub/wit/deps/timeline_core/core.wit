@@ -18,11 +18,18 @@ interface api {
     timeline-negation(timeline-negated),
     tl-duration-where(timeline-with-server),
     tl-duration-in-cur-state(timeline-with-server),
+    tl-and(bi-timeline-with-server)
   }
 
  record server-with-event-column-name {
    server: option<server>,
    event-column-name: string
+ }
+
+ record bi-timeline-with-server {
+    server: option<server>,
+    left:  node-index,
+    right: node-index
  }
 
  record timeline-with-server {

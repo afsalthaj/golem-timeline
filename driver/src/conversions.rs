@@ -113,10 +113,10 @@ impl Conversion for TimeLineOp {
 }
 
 mod internals {
-    use timeline::{EventColumnName, GolemEventPredicate};
     use timeline::GolemEventValue;
     use timeline::TimeLineNodeWorkerInput;
     use timeline::TimeLineOp;
+    use timeline::{EventColumnName, GolemEventPredicate};
 
     use crate::bindings::timeline::core::api::{
         TimelineConstantComparator, TimelineNode as WitTimeLineNode, TimelineNode,
@@ -217,6 +217,15 @@ mod internals {
                 let event_column_name =
                     EventColumnName(server_with_event_column_name.event_column_name.clone());
                 TimeLineOp::TlLatestEventToState(server, event_column_name)
+            }
+            WitTimeLineNode::TlAnd(bi) => {
+                let timeline_node_worker = bi.server.clone().map(TimeLineNodeWorkerInput::from_wit);
+
+                let left = build_timeline_tree(&nodes[bi.left as usize], nodes);
+
+                let right = build_timeline_tree(&nodes[bi.right as usize], nodes);
+
+                TimeLineOp::And(timeline_node_worker, Box::new(left), Box::new(right))
             }
         }
     }

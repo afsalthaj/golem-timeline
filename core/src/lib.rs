@@ -1,10 +1,10 @@
 use uuid::Uuid;
 
 use conversions::Conversion;
+use timeline::TimeLineOp as CoreTimeLineOp;
 use timeline::{
     TimeLineResultWorker, TimeLineWorkerId, TimeLineWorkerIdPrefix, TypedTimeLineResultWorker,
 };
-use timeline::TimeLineOp as CoreTimeLineOp;
 
 use crate::bindings::exports::timeline::core::api::TimelineOp;
 use crate::bindings::exports::timeline::core::api::{
@@ -330,7 +330,7 @@ impl Guest for Component {
 
                     // The result of this node will be available in this worker
                     let typed_timeline_result_worker =
-                        TypedTimeLineResultWorker::tl_has_existed_within({
+                        TypedTimeLineResultWorker::tl_event_to_latest_state({
                             TimeLineResultWorker { component_id: component_id.clone(), worker_id }
                         });
 

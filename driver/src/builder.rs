@@ -1,8 +1,8 @@
 use crate::bindings::timeline::core::api::TimelineOp as WitTimeLineOp;
 use crate::bindings::timeline::core::api::{
-    NodeIndex, ServerWithEventColumnName, ServerWithEventPredicate, ServerWithEventPredicateWithin,
-    TimelineConstantComparator, TimelineConstantCompared, TimelineNegated, TimelineNode,
-    TimelineWithServer,
+    BiTimelineWithServer, NodeIndex, ServerWithEventColumnName, ServerWithEventPredicate,
+    ServerWithEventPredicateWithin, TimelineConstantComparator, TimelineConstantCompared,
+    TimelineNegated, TimelineNode, TimelineWithServer,
 };
 use crate::conversions::Conversion;
 use timeline::TimeLineOp;
@@ -218,8 +218,26 @@ impl WitValueBuilder {
                     },
                     time: *time,
                 })),
-            TimeLineOp::And(_timeline_worker_input, _timeline_op1, _timeline_op2) => {
-                unimplemented!("And") //FIXME
+            TimeLineOp::And(timeline_worker_input, left, right) => {
+                let server = timeline_worker_input.clone().map(|wd| wd.to_wit());
+
+                let parent_idx = self.add(TimelineNode::TlAnd(BiTimelineWithServer {
+                    server,
+                    left: -1,
+                    right: -1,
+                }));
+
+                let left_child_idx = self.build_timeline_op(left);
+                let right_child_idx = self.build_timeline_op(right);
+
+                match &mut self.nodes[parent_idx as usize] {
+                    TimelineNode::TlAnd(bi) => {
+                        bi.left = left_child_idx;
+                        bi.right = right_child_idx
+                    }
+                    _ => unreachable!(),
+                }
+                parent_idx
             }
             TimeLineOp::Or(_, _, _) => {
                 unimplemented!("Or") //FIXME

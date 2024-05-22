@@ -54,6 +54,9 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                             crate::bindings::timeline::core::api::TimelineNode::TlDurationInCurState(
                                                 _,
                                             ) => 6u32,
+                                            crate::bindings::timeline::core::api::TimelineNode::TlAnd(
+                                                _,
+                                            ) => 7u32,
                                         },
                                         match &item {
                                             crate::bindings::timeline::core::api::TimelineNode::TlLatestEventToState(
@@ -75,6 +78,9 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                                 _,
                                             ) => false,
                                             crate::bindings::timeline::core::api::TimelineNode::TlDurationInCurState(
+                                                _,
+                                            ) => false,
+                                            crate::bindings::timeline::core::api::TimelineNode::TlAnd(
                                                 _,
                                             ) => false,
                                         },
@@ -426,6 +432,30 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                                     )
                                                     .item()
                                                     .s32(inner.timeline)
+                                                    .finish()
+                                            }
+                                            crate::bindings::timeline::core::api::TimelineNode::TlAnd(
+                                                inner,
+                                            ) => {
+                                                case_builder
+                                                    .record()
+                                                    .item()
+                                                    .option_fn(
+                                                        inner.server.is_some(),
+                                                        |some_builder| {
+                                                            some_builder
+                                                                .record()
+                                                                .item()
+                                                                .string(&inner.server.as_ref().unwrap().worker_id_prefix)
+                                                                .item()
+                                                                .string(&inner.server.as_ref().unwrap().template_id)
+                                                                .finish()
+                                                        },
+                                                    )
+                                                    .item()
+                                                    .s32(inner.left)
+                                                    .item()
+                                                    .s32(inner.right)
                                                     .finish()
                                             }
                                         },
