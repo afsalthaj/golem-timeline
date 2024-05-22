@@ -36,3 +36,19 @@ impl Display for GolemEventValue {
         }
     }
 }
+
+pub fn string_value(value: &str) -> GolemEventValue {
+    GolemEventValue::StringValue(value.to_string())
+}
+
+pub fn int_value(value: i64) -> GolemEventValue {
+    GolemEventValue::IntValue(value)
+}
+
+pub fn float_value(value: f64) -> GolemEventValue {
+    GolemEventValue::FloatValue(value)
+}
+
+pub fn boolean_value(value: bool) -> GolemEventValue {
+    GolemEventValue::BoolValue(value)
+}

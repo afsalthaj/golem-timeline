@@ -1,12 +1,12 @@
 use std::fmt::Debug;
 
-use timeline::{EventColumnName, EventColumnValue, GolemEventPredicate};
 use timeline::GolemEventValue;
+use timeline::TimeLineOp;
 use timeline::{
     DerivedTimeLineNode, LeafTimeLineNode, TimeLineNodeWorkerInput, TimeLineResultWorker,
     TimeLineWorkerId, TimeLineWorkerIdPrefix, TypedTimeLineResultWorker,
 };
-use timeline::TimeLineOp;
+use timeline::{EventColumnName, EventColumnValue, GolemEventPredicate};
 
 use crate::bindings::exports::timeline::core::api::Server as WitTimeLineNodeWorker;
 use crate::bindings::exports::timeline::core::api::TimelineOp as WitTimeLineOp;
@@ -428,6 +428,15 @@ mod internals {
                 let event_column_name =
                     EventColumnName(server_with_event_column_name.event_column_name.clone());
                 TimeLineOp::TlLatestEventToState(server, event_column_name)
+            }
+            WitTimeLineNode::TlAnd(bi) => {
+                let timeline_node_worker = bi.server.clone().map(TimeLineNodeWorkerInput::from_wit);
+
+                let left = build_timeline_tree(&nodes[bi.left as usize], nodes);
+
+                let right = build_timeline_tree(&nodes[bi.right as usize], nodes);
+
+                TimeLineOp::And(timeline_node_worker, Box::new(left), Box::new(right))
             }
         }
     }
