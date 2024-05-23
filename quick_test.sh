@@ -31,7 +31,7 @@ response_body='{ body: match worker.response[0] { ok(value) => value, err(msg) =
 program = '
  let result = timeline:driver/api/run(REPLACE_CORE_WITH_EVENT_WITH_TIMELINE, REPLACE_EVENT_PROCESSOR, REPLACE_TIMELINE_WITH_EVENT_WITH_TIMELINE);
  let body = match result { ok(value) => value, err(msg) => msg }
- let status = match worker.response { ok(_) => 200, err(_) => 500 }
+ let status = match result { ok(_) => 200, err(_) => 500 }
  { body, status }
 '
 program="${expression/REPLACE_CORE_WITH_EVENT_WITH_TIMELINE/$core_with_event_with_timeline}"
