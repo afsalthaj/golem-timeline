@@ -242,7 +242,7 @@ impl WitValueBuilder {
             TimeLineOp::Or(timeline_worker_input, left, right) => {
                 let server = timeline_worker_input.clone().map(|wd| wd.to_wit());
 
-                let parent_idx = self.add(TimelineNode::TlAnd(BiTimelineWithServer {
+                let parent_idx = self.add(TimelineNode::TlOr(BiTimelineWithServer {
                     server,
                     left: -1,
                     right: -1,
