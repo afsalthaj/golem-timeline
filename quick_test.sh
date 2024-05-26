@@ -26,7 +26,7 @@ echo "A sample invocation succeeded!"
 
 echo "Exposing Timeline as API for users..."
 
-program='let result = timeline:driver/api/run(REPLACE_CORE_WITH_EVENT_WITH_TIMELINE, REPLACE_EVENT_PROCESSOR, REPLACE_TIMELINE_WITH_EVENT_WITH_TIMELINE); { body: match result { ok(value) => value, err(msg) => msg }, status: match result { ok(value) => 200, err(msg) => 500 } }'
+program='let result = timeline:driver/api/run(REPLACE_CORE_WITH_EVENT_WITH_TIMELINE, REPLACE_EVENT_PROCESSOR, REPLACE_TIMELINE_WITH_EVENT_WITH_TIMELINE); { body: match result { ok(value) => value, err(msg) => msg }, status: match result { ok(value) => 200, err(msg) => 500 }, headers : {} }'
 program="${program/REPLACE_CORE_WITH_EVENT_WITH_TIMELINE/$(echo $core_with_event_with_timeline | sed 's/"/\\"/g')}"
 program="${program/REPLACE_EVENT_PROCESSOR/$(echo $event_processor | sed 's/"/\\"/g')}"
 program="${program/REPLACE_TIMELINE_WITH_EVENT_WITH_TIMELINE/$(echo $timeline_with_event_with_timeline | sed 's/"/\\"/g')}"
