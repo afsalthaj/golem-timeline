@@ -8,9 +8,9 @@ mod state_dynamic_timeline;
 
 pub mod event_timeline;
 mod internals;
-pub use timeline_op::*;
 pub use event_predicate::*;
 pub use golem_event::*;
-pub use state_dynamic_timeline_point::*;
 pub use state_dynamic_timeline::*;
+pub use state_dynamic_timeline_point::*;
 pub use timeline_node_worker::*;
+pub use timeline_op::*;

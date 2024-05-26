@@ -241,8 +241,26 @@ impl WitValueBuilder {
                 }
                 parent_idx
             }
-            TimeLineOp::Or(_, _, _) => {
-                unimplemented!("Or") //FIXME
+            TimeLineOp::Or(timeline_worker_input, left, right) => {
+                let server = timeline_worker_input.clone().map(|wd| wd.to_wit());
+
+                let parent_idx = self.add(TimelineNode::TlOr(BiTimelineWithServer {
+                    server,
+                    left: -1,
+                    right: -1,
+                }));
+
+                let left_child_idx = self.build_timeline_op(left);
+                let right_child_idx = self.build_timeline_op(right);
+
+                match &mut self.nodes[parent_idx as usize] {
+                    TimelineNode::TlOr(bi) => {
+                        bi.left = left_child_idx;
+                        bi.right = right_child_idx
+                    }
+                    _ => unreachable!(),
+                }
+                parent_idx
             }
         }
     }

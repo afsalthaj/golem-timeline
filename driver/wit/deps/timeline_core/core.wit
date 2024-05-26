@@ -18,7 +18,8 @@ interface api {
     timeline-negation(timeline-negated),
     tl-duration-where(timeline-with-server),
     tl-duration-in-cur-state(timeline-with-server),
-    tl-and(bi-timeline-with-server)
+    tl-and(bi-timeline-with-server),
+    tl-or(bi-timeline-with-server)
   }
 
  record server-with-event-column-name {
