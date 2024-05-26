@@ -26,17 +26,12 @@ echo "A sample invocation succeeded!"
 
 echo "Exposing Timeline as API for users..."
 
-response_body='{ body: match worker.response[0] { ok(value) => value, err(msg) => msg }, status: match worker.response[0]{ ok(_) => 200, err(_) => 500 } }'
+program='let result = timeline:driver/api/run(REPLACE_CORE_WITH_EVENT_WITH_TIMELINE, REPLACE_EVENT_PROCESSOR, REPLACE_TIMELINE_WITH_EVENT_WITH_TIMELINE); { body: match result { ok(value) => value, err(msg) => msg }, status: match result { ok(value) => 200, err(msg) => 500 } }'
+program="${program/REPLACE_CORE_WITH_EVENT_WITH_TIMELINE/$(echo $core_with_event_with_timeline | sed 's/"/\\"/g')}"
+program="${program/REPLACE_EVENT_PROCESSOR/$(echo $event_processor | sed 's/"/\\"/g')}"
+program="${program/REPLACE_TIMELINE_WITH_EVENT_WITH_TIMELINE/$(echo $timeline_with_event_with_timeline | sed 's/"/\\"/g')}"
 
-program = '
- let result = timeline:driver/api/run(REPLACE_CORE_WITH_EVENT_WITH_TIMELINE, REPLACE_EVENT_PROCESSOR, REPLACE_TIMELINE_WITH_EVENT_WITH_TIMELINE);
- let body = match result { ok(value) => value, err(msg) => msg }
- let status = match result { ok(_) => 200, err(_) => 500 }
- { body, status }
-'
-program="${expression/REPLACE_CORE_WITH_EVENT_WITH_TIMELINE/$core_with_event_with_timeline}"
-program="${expression/REPLACE_EVENT_PROCESSOR/$event_processor}"
-program="${expression/REPLACE_TIMELINE_WITH_EVENT_WITH_TIMELINE/$timeline_with_event_with_timeline}"
+echo $program
 
 api_definition='{
   "id": "golem-timeline",
@@ -74,9 +69,8 @@ deployment='{
    "apiDefinitionId": "golem-timeline",
    "version": REPLACE_VERSION,
    "site": {
-      "host" : "localhost:9006",
-      "subdomain" : ""
-    }
+      "host" : "localhost:9006"
+  }
 }'
 
 deployment="${deployment/REPLACE_VERSION/$current_epoch}"
