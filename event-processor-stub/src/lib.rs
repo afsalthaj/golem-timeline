@@ -435,8 +435,9 @@ for Api {
                                                 t2: record
                                                     .field(1usize)
                                                     .expect("record field not found")
-                                                    .u64()
-                                                    .expect("u64 not found"),
+                                                    .option()
+                                                    .expect("option not found")
+                                                    .map(|inner| inner.u64().expect("u64 not found")),
                                             }
                                         },
                                         value: {
@@ -549,8 +550,9 @@ for Api {
                                                 t2: record
                                                     .field(1usize)
                                                     .expect("record field not found")
-                                                    .u64()
-                                                    .expect("u64 not found"),
+                                                    .option()
+                                                    .expect("option not found")
+                                                    .map(|inner| inner.u64().expect("u64 not found")),
                                             }
                                         },
                                         value: {
@@ -663,8 +665,9 @@ for Api {
                                                 t2: record
                                                     .field(1usize)
                                                     .expect("record field not found")
-                                                    .u64()
-                                                    .expect("u64 not found"),
+                                                    .option()
+                                                    .expect("option not found")
+                                                    .map(|inner| inner.u64().expect("u64 not found")),
                                             }
                                         },
                                         value: {

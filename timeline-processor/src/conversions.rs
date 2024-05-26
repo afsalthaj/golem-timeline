@@ -38,14 +38,14 @@ impl Conversion for StateDynamicsTimeLinePoint<GolemEventValue> {
     fn from_wit(input: Self::WitType) -> Self {
         StateDynamicsTimeLinePoint {
             t1: input.time_period.t1,
-            t2: Some(input.time_period.t2), // FIXME: Mak time_period.t2 an Option<u64>
+            t2: input.time_period.t2,
             value: GolemEventValue::from_wit(input.value),
         }
     }
 
     fn to_wit(&self) -> Self::WitType {
         TimelineResultPoint {
-            time_period: TimePeriod { t1: self.t1, t2: self.t2.unwrap() },
+            time_period: TimePeriod { t1: self.t1, t2: self.t2 },
             value: self.value.to_wit(),
         }
     }

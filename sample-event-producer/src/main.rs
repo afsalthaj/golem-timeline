@@ -62,23 +62,79 @@ async fn main() -> Result<(), pulsar::Error> {
             time: 1,
             event: vec![(
                 "playerStateChange".to_string(),
-                EventValue::StringValue("play".to_string()),
+                EventValue::StringValue("init".to_string()),
             )],
         },
         Event {
             time: 2,
             event: vec![(
-                "playerStateChange".to_string(),
-                EventValue::StringValue("seek".to_string()),
+                "cdnChange".to_string(),
+                EventValue::StringValue("CDN1".to_string()),
             )],
         },
         Event {
-            time: 3,
+            time: 4,
             event: vec![(
                 "playerStateChange".to_string(),
                 EventValue::StringValue("buffer".to_string()),
             )],
         },
+        Event {
+            time: 5,
+            event: vec![(
+                "playerStateChange".to_string(),
+                EventValue::StringValue("play".to_string()),
+            )],
+        },
+        Event {
+            time: 6,
+            event: vec![(
+                "playerStateChange".to_string(),
+                EventValue::StringValue("buffer".to_string()),
+            )],
+        },
+        Event {
+            time: 7,
+            event: vec![(
+                "userAction".to_string(),
+                EventValue::StringValue("seek".to_string()),
+            )],
+        },
+        Event {
+            time: 9,
+            event: vec![(
+                "playerStateChange".to_string(),
+                EventValue::StringValue("play".to_string()),
+            )],
+        },
+        Event {
+            time: 10,
+            event: vec![(
+                "playerStateChange".to_string(),
+                EventValue::StringValue("pause".to_string()),
+            )],
+        },
+        Event {
+            time: 11,
+            event: vec![(
+                "cdnChange".to_string(),
+                EventValue::StringValue("CDN2".to_string()),
+            )],
+        },
+        Event {
+            time: 13,
+            event: vec![(
+                "playerStateChange".to_string(),
+                EventValue::StringValue("buffer".to_string()),
+            )],
+        },
+        Event {
+            time: 14,
+            event: vec![(
+                "playerStateChange".to_string(),
+                EventValue::StringValue("play".to_string()),
+            )],
+        }
     ];
 
     for event in events {

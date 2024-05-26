@@ -79,9 +79,8 @@ impl WorkerResultExt for TypedTimelineResultWorker {
                     api.tl_has_existed_within(t1)
                 }
                 LeafTimelineNode::TlLatestEventToState(worker) => {
-                    let api =
-                        stub_timeline_processor::Api::new(&worker.get_worker_info().get_uri());
-                    api.get_timeline_result(t1)
+                    let api = stub_event_processor::Api::new(&worker.get_worker_info().get_uri());
+                    api.latest_event_to_state(t1)
                 }
             },
         }

@@ -322,6 +322,7 @@ impl<T: Debug + Clone + PartialOrd> StateDynamicsTimeLine<T> {
 
         for point in &self.points {
             let is_equal = point.1.value == constant;
+            dbg!("{} == {} is {}", point.1.value.clone(), constant.clone(), is_equal);
             state_dynamics_time_line.add_state_dynamic_info(*point.0, is_equal);
         }
 

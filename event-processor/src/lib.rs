@@ -218,10 +218,7 @@ impl Guest for Component {
                 Some(event) => TimelineResult {
                     results: {
                         let event_result = TimelineResultPoint {
-                            time_period: TimePeriod {
-                                t1: event.t1,
-                                t2: event.t2.unwrap_or(u64::MAX),
-                            },
+                            time_period: TimePeriod { t1: event.t1, t2: event.t2 },
                             value: event.value.to_wit(),
                         };
                         vec![event_result]
@@ -243,10 +240,7 @@ impl Guest for Component {
                 Some(event) => TimelineResult {
                     results: {
                         let event_result = TimelineResultPoint {
-                            time_period: TimePeriod {
-                                t1: event.t1,
-                                t2: event.t2.unwrap_or(u64::MAX),
-                            },
+                            time_period: TimePeriod { t1: event.t1, t2: event.t2 },
                             value: EventValue::BoolValue(event.value),
                         };
                         vec![event_result]
@@ -268,10 +262,7 @@ impl Guest for Component {
                 Some(event) => TimelineResult {
                     results: {
                         let event_result = TimelineResultPoint {
-                            time_period: TimePeriod {
-                                t1: event.t1,
-                                t2: event.t2.unwrap_or(u64::MAX),
-                            },
+                            time_period: TimePeriod { t1: event.t1, t2: event.t2 },
                             value: EventValue::BoolValue(event.value),
                         };
                         vec![event_result]
