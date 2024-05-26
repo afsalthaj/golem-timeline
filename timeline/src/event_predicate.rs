@@ -10,7 +10,6 @@ impl EventColumnName {
         GolemEventPredicate::Equals(self, value)
     }
 
-
     pub fn greater_than<T: Debug + Clone>(
         self,
         value: EventColumnValue<T>,
