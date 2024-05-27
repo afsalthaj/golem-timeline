@@ -53,6 +53,7 @@ interface api {
 
   // Comparators used to compare a timeline with a constant
   enum timeline-constant-comparator {
+    equal-to,
     greater-than,
     greater-than-equal,
     less-than,

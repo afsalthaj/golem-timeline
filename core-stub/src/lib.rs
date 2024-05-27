@@ -292,17 +292,20 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                                                     .item()
                                                     .enum_value(
                                                         match inner.op {
-                                                            crate::bindings::timeline::core::api::TimelineConstantComparator::GreaterThan => {
+                                                            crate::bindings::timeline::core::api::TimelineConstantComparator::EqualTo => {
                                                                 0u32
                                                             }
-                                                            crate::bindings::timeline::core::api::TimelineConstantComparator::GreaterThanEqual => {
+                                                            crate::bindings::timeline::core::api::TimelineConstantComparator::GreaterThan => {
                                                                 1u32
                                                             }
-                                                            crate::bindings::timeline::core::api::TimelineConstantComparator::LessThan => {
+                                                            crate::bindings::timeline::core::api::TimelineConstantComparator::GreaterThanEqual => {
                                                                 2u32
                                                             }
-                                                            crate::bindings::timeline::core::api::TimelineConstantComparator::LessThanEqual => {
+                                                            crate::bindings::timeline::core::api::TimelineConstantComparator::LessThan => {
                                                                 3u32
+                                                            }
+                                                            crate::bindings::timeline::core::api::TimelineConstantComparator::LessThanEqual => {
+                                                                4u32
                                                             }
                                                         },
                                                     )

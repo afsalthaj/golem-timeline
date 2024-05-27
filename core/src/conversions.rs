@@ -370,6 +370,11 @@ mod internals {
                         Box::new(time_line),
                         golem_event_value,
                     ),
+                    TimelineConstantComparator::EqualTo => TimeLineOp::EqualTo(
+                        timeline_node_worker,
+                        Box::new(time_line),
+                        golem_event_value,
+                    ),
                 }
             }
             WitTimeLineNode::TimelineNegation(timeline_negation) => {

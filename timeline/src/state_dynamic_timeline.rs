@@ -322,7 +322,6 @@ impl<T: Debug + Clone + PartialOrd> StateDynamicsTimeLine<T> {
 
         for point in &self.points {
             let is_equal = point.1.value == constant;
-            dbg!("{} == {} is {}", point.1.value.clone(), constant.clone(), is_equal);
             state_dynamics_time_line.add_state_dynamic_info(*point.0, is_equal);
         }
 
@@ -457,6 +456,24 @@ mod tests {
     use crate::state_dynamic_timeline::StateDynamicsTimeLine;
     use crate::state_dynamic_timeline_point::StateDynamicsTimeLinePoint;
     use std::collections::BTreeMap;
+
+    #[test]
+    fn test_equal_to() {
+        let mut timeline: StateDynamicsTimeLine<String> = StateDynamicsTimeLine::default();
+        timeline.add_state_dynamic_info(5, "play".to_string());
+        timeline.add_state_dynamic_info(8, "pause".to_string());
+
+        let is_playing_timeline = timeline.equal_to("play".to_string());
+
+        let expected_points = BTreeMap::from([
+            (5, StateDynamicsTimeLinePoint { t1: 5, t2: Some(8), value: true }),
+            (8, StateDynamicsTimeLinePoint { t1: 8, t2: None, value: false }),
+        ]);
+
+        let expected = StateDynamicsTimeLine { points: expected_points };
+
+        assert_eq!(is_playing_timeline, expected)
+    }
 
     // t1~~~~(playing)~~~~~~~~~~~~>
     //       t2~~~~(movie)~~~~~~~~~~>

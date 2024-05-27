@@ -157,7 +157,7 @@ impl WitValueBuilder {
             TimeLineOp::EqualTo(timeline_worker_input, timeline_op, golem_event_value) => {
                 let parent_idx =
                     self.add(TimelineNode::TimelineComparison(TimelineConstantCompared {
-                        op: TimelineConstantComparator::GreaterThan, // FIXME: Add Equal to ConstantOp
+                        op: TimelineConstantComparator::EqualTo,
                         timeline: -1,
                         value: golem_event_value.to_wit(),
                         server: timeline_worker_input.clone().map(|s| s.to_wit()),
