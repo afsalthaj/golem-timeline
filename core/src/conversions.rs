@@ -443,6 +443,15 @@ mod internals {
 
                 TimeLineOp::And(timeline_node_worker, Box::new(left), Box::new(right))
             }
+            WitTimeLineNode::TlOr(bi) => {
+                let timeline_node_worker = bi.server.clone().map(TimeLineNodeWorkerInput::from_wit);
+
+                let left = build_timeline_tree(&nodes[bi.left as usize], nodes);
+
+                let right = build_timeline_tree(&nodes[bi.right as usize], nodes);
+
+                TimeLineOp::Or(timeline_node_worker, Box::new(left), Box::new(right))
+            }
         }
     }
 }

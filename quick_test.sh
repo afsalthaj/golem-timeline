@@ -26,8 +26,12 @@ echo "A sample invocation succeeded!"
 
 echo "Exposing Timeline as API for users..."
 
-response_body='{ body: match worker.response[0] { ok(value) => value, err(msg) => msg }, status: match worker.response[0]{ ok(_) => 200, err(_) => 500 } }'
+program='let result = timeline:driver/api/run(REPLACE_CORE_WITH_EVENT_WITH_TIMELINE, REPLACE_EVENT_PROCESSOR, REPLACE_TIMELINE_WITH_EVENT_WITH_TIMELINE); { body: match result { ok(value) => value, err(msg) => msg }, status: match result { ok(value) => 200, err(msg) => 500 }, headers : {} }'
+program="${program/REPLACE_CORE_WITH_EVENT_WITH_TIMELINE/$(echo $core_with_event_with_timeline | sed 's/"/\\"/g')}"
+program="${program/REPLACE_EVENT_PROCESSOR/$(echo $event_processor | sed 's/"/\\"/g')}"
+program="${program/REPLACE_TIMELINE_WITH_EVENT_WITH_TIMELINE/$(echo $timeline_with_event_with_timeline | sed 's/"/\\"/g')}"
 
+echo $program
 
 api_definition='{
   "id": "golem-timeline",
@@ -41,9 +45,7 @@ api_definition='{
         "type": "wit-worker",
         "componentId": REPLACE_DRIVER_WITH_CORE,
         "workerName": "first-try",
-        "functionName": "timeline:driver/api/run",
-        "functionParams": [REPLACE_CORE_WITH_EVENT_WITH_TIMELINE, REPLACE_EVENT_PROCESSOR, REPLACE_TIMELINE_WITH_EVENT_WITH_TIMELINE],
-        "response" : "${ {body: match worker.response { ok(value) => value, err(msg) => msg }, status: match worker.response { ok(_) => 200, err(_) => 500 } }}"
+        "response" : "${EXPRESSION}"
       }
     }
   ]
@@ -52,9 +54,7 @@ api_definition='{
 # Replace placeholders with actual values
 api_definition="${api_definition/REPLACE_VERSION/$current_epoch}"
 api_definition="${api_definition/REPLACE_DRIVER_WITH_CORE/$driver_with_core}"
-api_definition="${api_definition/REPLACE_CORE_WITH_EVENT_WITH_TIMELINE/$core_with_event_with_timeline}"
-api_definition="${api_definition/REPLACE_EVENT_PROCESSOR/$event_processor}"
-api_definition="${api_definition/REPLACE_TIMELINE_WITH_EVENT_WITH_TIMELINE/$timeline_with_event_with_timeline}"
+api_definition="${api_definition/EXPRESSION/$program}"
 
 echo $api_definition
 
@@ -69,9 +69,8 @@ deployment='{
    "apiDefinitionId": "golem-timeline",
    "version": REPLACE_VERSION,
    "site": {
-      "host" : "localhost:9006",
-      "subdomain" : ""
-    }
+      "host" : "localhost:9006"
+  }
 }'
 
 deployment="${deployment/REPLACE_VERSION/$current_epoch}"

@@ -1348,6 +1348,7 @@ pub mod golem {
                             TlDurationWhere(TimelineWithServer),
                             TlDurationInCurState(TimelineWithServer),
                             TlAnd(BiTimelineWithServer),
+                            TlOr(BiTimelineWithServer),
                           }
                           impl ::core::fmt::Debug for TimelineNode {
                             fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
@@ -1375,6 +1376,9 @@ pub mod golem {
                                 }
                                 TimelineNode::TlAnd(e) => {
                                   f.debug_tuple("TimelineNode::TlAnd").field(e).finish()
+                                }
+                                TimelineNode::TlOr(e) => {
+                                  f.debug_tuple("TimelineNode::TlOr").field(e).finish()
                                 }
                               }
                             }
@@ -1409,22 +1413,22 @@ pub mod golem {
                               struct RetArea([u8; 36]);
                               let mut ret_area = ::core::mem::MaybeUninit::<RetArea>::uninit();
                               let TimelineOp{ nodes:nodes0, } = timeline;
-                              let vec45 = nodes0;
-                              let len45 = vec45.len() as i32;
-                              let layout45 = alloc::Layout::from_size_align_unchecked(vec45.len() * 72, 8);
-                              let result45 = if layout45.size() != 0
+                              let vec49 = nodes0;
+                              let len49 = vec49.len() as i32;
+                              let layout49 = alloc::Layout::from_size_align_unchecked(vec49.len() * 72, 8);
+                              let result49 = if layout49.size() != 0
                               {
-                                let ptr = alloc::alloc(layout45);
+                                let ptr = alloc::alloc(layout49);
                                 if ptr.is_null()
                                 {
-                                  alloc::handle_alloc_error(layout45);
+                                  alloc::handle_alloc_error(layout49);
                                 }
                                 ptr
                               }else {{
                                 ::core::ptr::null_mut()
                               }};
-                              for (i, e) in vec45.into_iter().enumerate() {
-                                let base = result45 as i32 + (i as i32) * 72;
+                              for (i, e) in vec49.into_iter().enumerate() {
+                                let base = result49 as i32 + (i as i32) * 72;
                                 {
                                   match e {
                                     TimelineNode::TlLatestEventToState(e) => {
@@ -1716,10 +1720,36 @@ pub mod golem {
                                             };*((base + 28) as *mut i32) = wit_bindgen::rt::as_i32(left41);
                                             *((base + 32) as *mut i32) = wit_bindgen::rt::as_i32(right41);
                                           },
+                                          TimelineNode::TlOr(e) => {
+                                            *((base + 0) as *mut u8) = (8i32) as u8;
+                                            let BiTimelineWithServer{ server:server45, left:left45, right:right45, } = e;
+                                            match server45 {
+                                              Some(e) => {
+                                                *((base + 8) as *mut u8) = (1i32) as u8;
+                                                let Server{ worker_id_prefix:worker_id_prefix46, template_id:template_id46, } = e;
+                                                let vec47 = worker_id_prefix46;
+                                                let ptr47 = vec47.as_ptr() as i32;
+                                                let len47 = vec47.len() as i32;
+                                                *((base + 16) as *mut i32) = len47;
+                                                *((base + 12) as *mut i32) = ptr47;
+                                                let vec48 = template_id46;
+                                                let ptr48 = vec48.as_ptr() as i32;
+                                                let len48 = vec48.len() as i32;
+                                                *((base + 24) as *mut i32) = len48;
+                                                *((base + 20) as *mut i32) = ptr48;
+                                              },
+                                              None => {
+                                                {
+                                                  *((base + 8) as *mut u8) = (0i32) as u8;
+                                                }
+                                              },
+                                            };*((base + 28) as *mut i32) = wit_bindgen::rt::as_i32(left45);
+                                            *((base + 32) as *mut i32) = wit_bindgen::rt::as_i32(right45);
+                                          },
                                         }
                                       }
                                     }
-                                    let ptr46 = ret_area.as_mut_ptr() as i32;
+                                    let ptr50 = ret_area.as_mut_ptr() as i32;
                                     #[cfg(target_arch = "wasm32")]
                                     #[link(wasm_import_module = "timeline:core/api")]
                                     extern "C" {
@@ -1729,498 +1759,498 @@ pub mod golem {
                                     
                                     #[cfg(not(target_arch = "wasm32"))]
                                     fn wit_import(_: i32, _: i32, _: i32, ){ unreachable!() }
-                                    wit_import(result45 as i32, len45, ptr46);
-                                    let l47 = i32::from(*((ptr46 + 0) as *const u8));
-                                    if layout45.size() != 0 {
-                                      alloc::dealloc(result45, layout45);
+                                    wit_import(result49 as i32, len49, ptr50);
+                                    let l51 = i32::from(*((ptr50 + 0) as *const u8));
+                                    if layout49.size() != 0 {
+                                      alloc::dealloc(result49, layout49);
                                     }
-                                    match l47 {
+                                    match l51 {
                                       0 => {
                                         let e = {
-                                          let l48 = *((ptr46 + 4) as *const i32);
-                                          let l49 = *((ptr46 + 8) as *const i32);
-                                          let base122 = l48;
-                                          let len122 = l49;
-                                          let mut result122 = Vec::with_capacity(len122 as usize);
-                                          for i in 0..len122 {
-                                            let base = base122 + i * 24;
-                                            let e122 = {
-                                              let l50 = i32::from(*((base + 0) as *const u8));
-                                              use super::super::super::timeline::timeline_processor::api::TypedTimelineResultWorker as V121;
-                                              let v121 = match l50 {
+                                          let l52 = *((ptr50 + 4) as *const i32);
+                                          let l53 = *((ptr50 + 8) as *const i32);
+                                          let base126 = l52;
+                                          let len126 = l53;
+                                          let mut result126 = Vec::with_capacity(len126 as usize);
+                                          for i in 0..len126 {
+                                            let base = base126 + i * 24;
+                                            let e126 = {
+                                              let l54 = i32::from(*((base + 0) as *const u8));
+                                              use super::super::super::timeline::timeline_processor::api::TypedTimelineResultWorker as V125;
+                                              let v125 = match l54 {
                                                 0 => {
-                                                  let e121 = {
-                                                    let l51 = i32::from(*((base + 4) as *const u8));
-                                                    use super::super::super::timeline::timeline_processor::api::LeafTimelineNode as V70;
-                                                    let v70 = match l51 {
+                                                  let e125 = {
+                                                    let l55 = i32::from(*((base + 4) as *const u8));
+                                                    use super::super::super::timeline::timeline_processor::api::LeafTimelineNode as V74;
+                                                    let v74 = match l55 {
                                                       0 => {
-                                                        let e70 = {
-                                                          let l52 = *((base + 8) as *const i32);
-                                                          let l53 = *((base + 12) as *const i32);
-                                                          let len54 = l53 as usize;
-                                                          let bytes54 = Vec::from_raw_parts(l52 as *mut _, len54, len54);
-                                                          let l55 = *((base + 16) as *const i32);
-                                                          let l56 = *((base + 20) as *const i32);
-                                                          let len57 = l56 as usize;
-                                                          let bytes57 = Vec::from_raw_parts(l55 as *mut _, len57, len57);
+                                                        let e74 = {
+                                                          let l56 = *((base + 8) as *const i32);
+                                                          let l57 = *((base + 12) as *const i32);
+                                                          let len58 = l57 as usize;
+                                                          let bytes58 = Vec::from_raw_parts(l56 as *mut _, len58, len58);
+                                                          let l59 = *((base + 16) as *const i32);
+                                                          let l60 = *((base + 20) as *const i32);
+                                                          let len61 = l60 as usize;
+                                                          let bytes61 = Vec::from_raw_parts(l59 as *mut _, len61, len61);
                                                           
                                                           super::super::super::timeline::timeline_processor::api::TimelineResultWorker{
-                                                            worker_id: wit_bindgen::rt::string_lift(bytes54),
-                                                            template_id: wit_bindgen::rt::string_lift(bytes57),
+                                                            worker_id: wit_bindgen::rt::string_lift(bytes58),
+                                                            template_id: wit_bindgen::rt::string_lift(bytes61),
                                                           }
                                                         };
-                                                        V70::TlHasExisted(e70)
+                                                        V74::TlHasExisted(e74)
                                                       }
                                                       1 => {
-                                                        let e70 = {
-                                                          let l58 = *((base + 8) as *const i32);
-                                                          let l59 = *((base + 12) as *const i32);
-                                                          let len60 = l59 as usize;
-                                                          let bytes60 = Vec::from_raw_parts(l58 as *mut _, len60, len60);
-                                                          let l61 = *((base + 16) as *const i32);
-                                                          let l62 = *((base + 20) as *const i32);
-                                                          let len63 = l62 as usize;
-                                                          let bytes63 = Vec::from_raw_parts(l61 as *mut _, len63, len63);
+                                                        let e74 = {
+                                                          let l62 = *((base + 8) as *const i32);
+                                                          let l63 = *((base + 12) as *const i32);
+                                                          let len64 = l63 as usize;
+                                                          let bytes64 = Vec::from_raw_parts(l62 as *mut _, len64, len64);
+                                                          let l65 = *((base + 16) as *const i32);
+                                                          let l66 = *((base + 20) as *const i32);
+                                                          let len67 = l66 as usize;
+                                                          let bytes67 = Vec::from_raw_parts(l65 as *mut _, len67, len67);
                                                           
                                                           super::super::super::timeline::timeline_processor::api::TimelineResultWorker{
-                                                            worker_id: wit_bindgen::rt::string_lift(bytes60),
-                                                            template_id: wit_bindgen::rt::string_lift(bytes63),
+                                                            worker_id: wit_bindgen::rt::string_lift(bytes64),
+                                                            template_id: wit_bindgen::rt::string_lift(bytes67),
                                                           }
                                                         };
-                                                        V70::TlHasExistedWithin(e70)
+                                                        V74::TlHasExistedWithin(e74)
                                                       }
                                                       n => {
                                                         debug_assert_eq!(n, 2, "invalid enum discriminant");
-                                                        let e70 = {
-                                                          let l64 = *((base + 8) as *const i32);
-                                                          let l65 = *((base + 12) as *const i32);
-                                                          let len66 = l65 as usize;
-                                                          let bytes66 = Vec::from_raw_parts(l64 as *mut _, len66, len66);
-                                                          let l67 = *((base + 16) as *const i32);
-                                                          let l68 = *((base + 20) as *const i32);
-                                                          let len69 = l68 as usize;
-                                                          let bytes69 = Vec::from_raw_parts(l67 as *mut _, len69, len69);
+                                                        let e74 = {
+                                                          let l68 = *((base + 8) as *const i32);
+                                                          let l69 = *((base + 12) as *const i32);
+                                                          let len70 = l69 as usize;
+                                                          let bytes70 = Vec::from_raw_parts(l68 as *mut _, len70, len70);
+                                                          let l71 = *((base + 16) as *const i32);
+                                                          let l72 = *((base + 20) as *const i32);
+                                                          let len73 = l72 as usize;
+                                                          let bytes73 = Vec::from_raw_parts(l71 as *mut _, len73, len73);
                                                           
                                                           super::super::super::timeline::timeline_processor::api::TimelineResultWorker{
-                                                            worker_id: wit_bindgen::rt::string_lift(bytes66),
-                                                            template_id: wit_bindgen::rt::string_lift(bytes69),
+                                                            worker_id: wit_bindgen::rt::string_lift(bytes70),
+                                                            template_id: wit_bindgen::rt::string_lift(bytes73),
                                                           }
                                                         };
-                                                        V70::TlLatestEventToState(e70)
+                                                        V74::TlLatestEventToState(e74)
                                                       }
                                                     };
                                                     
-                                                    v70
+                                                    v74
                                                   };
-                                                  V121::LeafTimeline(e121)
+                                                  V125::LeafTimeline(e125)
                                                 }
                                                 n => {
                                                   debug_assert_eq!(n, 1, "invalid enum discriminant");
-                                                  let e121 = {
-                                                    let l71 = i32::from(*((base + 4) as *const u8));
-                                                    use super::super::super::timeline::timeline_processor::api::DerivedTimelineNode as V120;
-                                                    let v120 = match l71 {
+                                                  let e125 = {
+                                                    let l75 = i32::from(*((base + 4) as *const u8));
+                                                    use super::super::super::timeline::timeline_processor::api::DerivedTimelineNode as V124;
+                                                    let v124 = match l75 {
                                                       0 => {
-                                                        let e120 = {
-                                                          let l72 = *((base + 8) as *const i32);
-                                                          let l73 = *((base + 12) as *const i32);
-                                                          let len74 = l73 as usize;
-                                                          let bytes74 = Vec::from_raw_parts(l72 as *mut _, len74, len74);
-                                                          let l75 = *((base + 16) as *const i32);
-                                                          let l76 = *((base + 20) as *const i32);
-                                                          let len77 = l76 as usize;
-                                                          let bytes77 = Vec::from_raw_parts(l75 as *mut _, len77, len77);
+                                                        let e124 = {
+                                                          let l76 = *((base + 8) as *const i32);
+                                                          let l77 = *((base + 12) as *const i32);
+                                                          let len78 = l77 as usize;
+                                                          let bytes78 = Vec::from_raw_parts(l76 as *mut _, len78, len78);
+                                                          let l79 = *((base + 16) as *const i32);
+                                                          let l80 = *((base + 20) as *const i32);
+                                                          let len81 = l80 as usize;
+                                                          let bytes81 = Vec::from_raw_parts(l79 as *mut _, len81, len81);
                                                           
                                                           super::super::super::timeline::timeline_processor::api::TimelineResultWorker{
-                                                            worker_id: wit_bindgen::rt::string_lift(bytes74),
-                                                            template_id: wit_bindgen::rt::string_lift(bytes77),
+                                                            worker_id: wit_bindgen::rt::string_lift(bytes78),
+                                                            template_id: wit_bindgen::rt::string_lift(bytes81),
                                                           }
                                                         };
-                                                        V120::EqualTo(e120)
+                                                        V124::EqualTo(e124)
                                                       }
                                                       1 => {
-                                                        let e120 = {
-                                                          let l78 = *((base + 8) as *const i32);
-                                                          let l79 = *((base + 12) as *const i32);
-                                                          let len80 = l79 as usize;
-                                                          let bytes80 = Vec::from_raw_parts(l78 as *mut _, len80, len80);
-                                                          let l81 = *((base + 16) as *const i32);
-                                                          let l82 = *((base + 20) as *const i32);
-                                                          let len83 = l82 as usize;
-                                                          let bytes83 = Vec::from_raw_parts(l81 as *mut _, len83, len83);
+                                                        let e124 = {
+                                                          let l82 = *((base + 8) as *const i32);
+                                                          let l83 = *((base + 12) as *const i32);
+                                                          let len84 = l83 as usize;
+                                                          let bytes84 = Vec::from_raw_parts(l82 as *mut _, len84, len84);
+                                                          let l85 = *((base + 16) as *const i32);
+                                                          let l86 = *((base + 20) as *const i32);
+                                                          let len87 = l86 as usize;
+                                                          let bytes87 = Vec::from_raw_parts(l85 as *mut _, len87, len87);
                                                           
                                                           super::super::super::timeline::timeline_processor::api::TimelineResultWorker{
-                                                            worker_id: wit_bindgen::rt::string_lift(bytes80),
-                                                            template_id: wit_bindgen::rt::string_lift(bytes83),
+                                                            worker_id: wit_bindgen::rt::string_lift(bytes84),
+                                                            template_id: wit_bindgen::rt::string_lift(bytes87),
                                                           }
                                                         };
-                                                        V120::GreaterThan(e120)
+                                                        V124::GreaterThan(e124)
                                                       }
                                                       2 => {
-                                                        let e120 = {
-                                                          let l84 = *((base + 8) as *const i32);
-                                                          let l85 = *((base + 12) as *const i32);
-                                                          let len86 = l85 as usize;
-                                                          let bytes86 = Vec::from_raw_parts(l84 as *mut _, len86, len86);
-                                                          let l87 = *((base + 16) as *const i32);
-                                                          let l88 = *((base + 20) as *const i32);
-                                                          let len89 = l88 as usize;
-                                                          let bytes89 = Vec::from_raw_parts(l87 as *mut _, len89, len89);
+                                                        let e124 = {
+                                                          let l88 = *((base + 8) as *const i32);
+                                                          let l89 = *((base + 12) as *const i32);
+                                                          let len90 = l89 as usize;
+                                                          let bytes90 = Vec::from_raw_parts(l88 as *mut _, len90, len90);
+                                                          let l91 = *((base + 16) as *const i32);
+                                                          let l92 = *((base + 20) as *const i32);
+                                                          let len93 = l92 as usize;
+                                                          let bytes93 = Vec::from_raw_parts(l91 as *mut _, len93, len93);
                                                           
                                                           super::super::super::timeline::timeline_processor::api::TimelineResultWorker{
-                                                            worker_id: wit_bindgen::rt::string_lift(bytes86),
-                                                            template_id: wit_bindgen::rt::string_lift(bytes89),
+                                                            worker_id: wit_bindgen::rt::string_lift(bytes90),
+                                                            template_id: wit_bindgen::rt::string_lift(bytes93),
                                                           }
                                                         };
-                                                        V120::GreaterThanOrEqualTo(e120)
+                                                        V124::GreaterThanOrEqualTo(e124)
                                                       }
                                                       3 => {
-                                                        let e120 = {
-                                                          let l90 = *((base + 8) as *const i32);
-                                                          let l91 = *((base + 12) as *const i32);
-                                                          let len92 = l91 as usize;
-                                                          let bytes92 = Vec::from_raw_parts(l90 as *mut _, len92, len92);
-                                                          let l93 = *((base + 16) as *const i32);
-                                                          let l94 = *((base + 20) as *const i32);
-                                                          let len95 = l94 as usize;
-                                                          let bytes95 = Vec::from_raw_parts(l93 as *mut _, len95, len95);
+                                                        let e124 = {
+                                                          let l94 = *((base + 8) as *const i32);
+                                                          let l95 = *((base + 12) as *const i32);
+                                                          let len96 = l95 as usize;
+                                                          let bytes96 = Vec::from_raw_parts(l94 as *mut _, len96, len96);
+                                                          let l97 = *((base + 16) as *const i32);
+                                                          let l98 = *((base + 20) as *const i32);
+                                                          let len99 = l98 as usize;
+                                                          let bytes99 = Vec::from_raw_parts(l97 as *mut _, len99, len99);
                                                           
                                                           super::super::super::timeline::timeline_processor::api::TimelineResultWorker{
-                                                            worker_id: wit_bindgen::rt::string_lift(bytes92),
-                                                            template_id: wit_bindgen::rt::string_lift(bytes95),
+                                                            worker_id: wit_bindgen::rt::string_lift(bytes96),
+                                                            template_id: wit_bindgen::rt::string_lift(bytes99),
                                                           }
                                                         };
-                                                        V120::LessThan(e120)
+                                                        V124::LessThan(e124)
                                                       }
                                                       4 => {
-                                                        let e120 = {
-                                                          let l96 = *((base + 8) as *const i32);
-                                                          let l97 = *((base + 12) as *const i32);
-                                                          let len98 = l97 as usize;
-                                                          let bytes98 = Vec::from_raw_parts(l96 as *mut _, len98, len98);
-                                                          let l99 = *((base + 16) as *const i32);
-                                                          let l100 = *((base + 20) as *const i32);
-                                                          let len101 = l100 as usize;
-                                                          let bytes101 = Vec::from_raw_parts(l99 as *mut _, len101, len101);
+                                                        let e124 = {
+                                                          let l100 = *((base + 8) as *const i32);
+                                                          let l101 = *((base + 12) as *const i32);
+                                                          let len102 = l101 as usize;
+                                                          let bytes102 = Vec::from_raw_parts(l100 as *mut _, len102, len102);
+                                                          let l103 = *((base + 16) as *const i32);
+                                                          let l104 = *((base + 20) as *const i32);
+                                                          let len105 = l104 as usize;
+                                                          let bytes105 = Vec::from_raw_parts(l103 as *mut _, len105, len105);
                                                           
                                                           super::super::super::timeline::timeline_processor::api::TimelineResultWorker{
-                                                            worker_id: wit_bindgen::rt::string_lift(bytes98),
-                                                            template_id: wit_bindgen::rt::string_lift(bytes101),
+                                                            worker_id: wit_bindgen::rt::string_lift(bytes102),
+                                                            template_id: wit_bindgen::rt::string_lift(bytes105),
                                                           }
                                                         };
-                                                        V120::LessThanOrEqualTo(e120)
+                                                        V124::LessThanOrEqualTo(e124)
                                                       }
                                                       5 => {
-                                                        let e120 = {
-                                                          let l102 = *((base + 8) as *const i32);
-                                                          let l103 = *((base + 12) as *const i32);
-                                                          let len104 = l103 as usize;
-                                                          let bytes104 = Vec::from_raw_parts(l102 as *mut _, len104, len104);
-                                                          let l105 = *((base + 16) as *const i32);
-                                                          let l106 = *((base + 20) as *const i32);
-                                                          let len107 = l106 as usize;
-                                                          let bytes107 = Vec::from_raw_parts(l105 as *mut _, len107, len107);
+                                                        let e124 = {
+                                                          let l106 = *((base + 8) as *const i32);
+                                                          let l107 = *((base + 12) as *const i32);
+                                                          let len108 = l107 as usize;
+                                                          let bytes108 = Vec::from_raw_parts(l106 as *mut _, len108, len108);
+                                                          let l109 = *((base + 16) as *const i32);
+                                                          let l110 = *((base + 20) as *const i32);
+                                                          let len111 = l110 as usize;
+                                                          let bytes111 = Vec::from_raw_parts(l109 as *mut _, len111, len111);
                                                           
                                                           super::super::super::timeline::timeline_processor::api::TimelineResultWorker{
-                                                            worker_id: wit_bindgen::rt::string_lift(bytes104),
-                                                            template_id: wit_bindgen::rt::string_lift(bytes107),
+                                                            worker_id: wit_bindgen::rt::string_lift(bytes108),
+                                                            template_id: wit_bindgen::rt::string_lift(bytes111),
                                                           }
                                                         };
-                                                        V120::And(e120)
+                                                        V124::And(e124)
                                                       }
                                                       6 => {
-                                                        let e120 = {
-                                                          let l108 = *((base + 8) as *const i32);
-                                                          let l109 = *((base + 12) as *const i32);
-                                                          let len110 = l109 as usize;
-                                                          let bytes110 = Vec::from_raw_parts(l108 as *mut _, len110, len110);
-                                                          let l111 = *((base + 16) as *const i32);
-                                                          let l112 = *((base + 20) as *const i32);
-                                                          let len113 = l112 as usize;
-                                                          let bytes113 = Vec::from_raw_parts(l111 as *mut _, len113, len113);
+                                                        let e124 = {
+                                                          let l112 = *((base + 8) as *const i32);
+                                                          let l113 = *((base + 12) as *const i32);
+                                                          let len114 = l113 as usize;
+                                                          let bytes114 = Vec::from_raw_parts(l112 as *mut _, len114, len114);
+                                                          let l115 = *((base + 16) as *const i32);
+                                                          let l116 = *((base + 20) as *const i32);
+                                                          let len117 = l116 as usize;
+                                                          let bytes117 = Vec::from_raw_parts(l115 as *mut _, len117, len117);
                                                           
                                                           super::super::super::timeline::timeline_processor::api::TimelineResultWorker{
-                                                            worker_id: wit_bindgen::rt::string_lift(bytes110),
-                                                            template_id: wit_bindgen::rt::string_lift(bytes113),
+                                                            worker_id: wit_bindgen::rt::string_lift(bytes114),
+                                                            template_id: wit_bindgen::rt::string_lift(bytes117),
                                                           }
                                                         };
-                                                        V120::Or(e120)
+                                                        V124::Or(e124)
                                                       }
                                                       n => {
                                                         debug_assert_eq!(n, 7, "invalid enum discriminant");
-                                                        let e120 = {
-                                                          let l114 = *((base + 8) as *const i32);
-                                                          let l115 = *((base + 12) as *const i32);
-                                                          let len116 = l115 as usize;
-                                                          let bytes116 = Vec::from_raw_parts(l114 as *mut _, len116, len116);
-                                                          let l117 = *((base + 16) as *const i32);
-                                                          let l118 = *((base + 20) as *const i32);
-                                                          let len119 = l118 as usize;
-                                                          let bytes119 = Vec::from_raw_parts(l117 as *mut _, len119, len119);
+                                                        let e124 = {
+                                                          let l118 = *((base + 8) as *const i32);
+                                                          let l119 = *((base + 12) as *const i32);
+                                                          let len120 = l119 as usize;
+                                                          let bytes120 = Vec::from_raw_parts(l118 as *mut _, len120, len120);
+                                                          let l121 = *((base + 16) as *const i32);
+                                                          let l122 = *((base + 20) as *const i32);
+                                                          let len123 = l122 as usize;
+                                                          let bytes123 = Vec::from_raw_parts(l121 as *mut _, len123, len123);
                                                           
                                                           super::super::super::timeline::timeline_processor::api::TimelineResultWorker{
-                                                            worker_id: wit_bindgen::rt::string_lift(bytes116),
-                                                            template_id: wit_bindgen::rt::string_lift(bytes119),
+                                                            worker_id: wit_bindgen::rt::string_lift(bytes120),
+                                                            template_id: wit_bindgen::rt::string_lift(bytes123),
                                                           }
                                                         };
-                                                        V120::Not(e120)
+                                                        V124::Not(e124)
                                                       }
                                                     };
                                                     
-                                                    v120
+                                                    v124
                                                   };
-                                                  V121::DerivedTimeline(e121)
+                                                  V125::DerivedTimeline(e125)
                                                 }
                                               };
                                               
-                                              v121
+                                              v125
                                             };
-                                            result122.push(e122);
+                                            result126.push(e126);
                                           }
-                                          wit_bindgen::rt::dealloc(base122, (len122 as usize) * 24, 4);
-                                          let l123 = i32::from(*((ptr46 + 12) as *const u8));
-                                          use super::super::super::timeline::timeline_processor::api::TypedTimelineResultWorker as V194;
-                                          let v194 = match l123 {
+                                          wit_bindgen::rt::dealloc(base126, (len126 as usize) * 24, 4);
+                                          let l127 = i32::from(*((ptr50 + 12) as *const u8));
+                                          use super::super::super::timeline::timeline_processor::api::TypedTimelineResultWorker as V198;
+                                          let v198 = match l127 {
                                             0 => {
-                                              let e194 = {
-                                                let l124 = i32::from(*((ptr46 + 16) as *const u8));
-                                                use super::super::super::timeline::timeline_processor::api::LeafTimelineNode as V143;
-                                                let v143 = match l124 {
+                                              let e198 = {
+                                                let l128 = i32::from(*((ptr50 + 16) as *const u8));
+                                                use super::super::super::timeline::timeline_processor::api::LeafTimelineNode as V147;
+                                                let v147 = match l128 {
                                                   0 => {
-                                                    let e143 = {
-                                                      let l125 = *((ptr46 + 20) as *const i32);
-                                                      let l126 = *((ptr46 + 24) as *const i32);
-                                                      let len127 = l126 as usize;
-                                                      let bytes127 = Vec::from_raw_parts(l125 as *mut _, len127, len127);
-                                                      let l128 = *((ptr46 + 28) as *const i32);
-                                                      let l129 = *((ptr46 + 32) as *const i32);
-                                                      let len130 = l129 as usize;
-                                                      let bytes130 = Vec::from_raw_parts(l128 as *mut _, len130, len130);
+                                                    let e147 = {
+                                                      let l129 = *((ptr50 + 20) as *const i32);
+                                                      let l130 = *((ptr50 + 24) as *const i32);
+                                                      let len131 = l130 as usize;
+                                                      let bytes131 = Vec::from_raw_parts(l129 as *mut _, len131, len131);
+                                                      let l132 = *((ptr50 + 28) as *const i32);
+                                                      let l133 = *((ptr50 + 32) as *const i32);
+                                                      let len134 = l133 as usize;
+                                                      let bytes134 = Vec::from_raw_parts(l132 as *mut _, len134, len134);
                                                       
                                                       super::super::super::timeline::timeline_processor::api::TimelineResultWorker{
-                                                        worker_id: wit_bindgen::rt::string_lift(bytes127),
-                                                        template_id: wit_bindgen::rt::string_lift(bytes130),
+                                                        worker_id: wit_bindgen::rt::string_lift(bytes131),
+                                                        template_id: wit_bindgen::rt::string_lift(bytes134),
                                                       }
                                                     };
-                                                    V143::TlHasExisted(e143)
+                                                    V147::TlHasExisted(e147)
                                                   }
                                                   1 => {
-                                                    let e143 = {
-                                                      let l131 = *((ptr46 + 20) as *const i32);
-                                                      let l132 = *((ptr46 + 24) as *const i32);
-                                                      let len133 = l132 as usize;
-                                                      let bytes133 = Vec::from_raw_parts(l131 as *mut _, len133, len133);
-                                                      let l134 = *((ptr46 + 28) as *const i32);
-                                                      let l135 = *((ptr46 + 32) as *const i32);
-                                                      let len136 = l135 as usize;
-                                                      let bytes136 = Vec::from_raw_parts(l134 as *mut _, len136, len136);
+                                                    let e147 = {
+                                                      let l135 = *((ptr50 + 20) as *const i32);
+                                                      let l136 = *((ptr50 + 24) as *const i32);
+                                                      let len137 = l136 as usize;
+                                                      let bytes137 = Vec::from_raw_parts(l135 as *mut _, len137, len137);
+                                                      let l138 = *((ptr50 + 28) as *const i32);
+                                                      let l139 = *((ptr50 + 32) as *const i32);
+                                                      let len140 = l139 as usize;
+                                                      let bytes140 = Vec::from_raw_parts(l138 as *mut _, len140, len140);
                                                       
                                                       super::super::super::timeline::timeline_processor::api::TimelineResultWorker{
-                                                        worker_id: wit_bindgen::rt::string_lift(bytes133),
-                                                        template_id: wit_bindgen::rt::string_lift(bytes136),
+                                                        worker_id: wit_bindgen::rt::string_lift(bytes137),
+                                                        template_id: wit_bindgen::rt::string_lift(bytes140),
                                                       }
                                                     };
-                                                    V143::TlHasExistedWithin(e143)
+                                                    V147::TlHasExistedWithin(e147)
                                                   }
                                                   n => {
                                                     debug_assert_eq!(n, 2, "invalid enum discriminant");
-                                                    let e143 = {
-                                                      let l137 = *((ptr46 + 20) as *const i32);
-                                                      let l138 = *((ptr46 + 24) as *const i32);
-                                                      let len139 = l138 as usize;
-                                                      let bytes139 = Vec::from_raw_parts(l137 as *mut _, len139, len139);
-                                                      let l140 = *((ptr46 + 28) as *const i32);
-                                                      let l141 = *((ptr46 + 32) as *const i32);
-                                                      let len142 = l141 as usize;
-                                                      let bytes142 = Vec::from_raw_parts(l140 as *mut _, len142, len142);
+                                                    let e147 = {
+                                                      let l141 = *((ptr50 + 20) as *const i32);
+                                                      let l142 = *((ptr50 + 24) as *const i32);
+                                                      let len143 = l142 as usize;
+                                                      let bytes143 = Vec::from_raw_parts(l141 as *mut _, len143, len143);
+                                                      let l144 = *((ptr50 + 28) as *const i32);
+                                                      let l145 = *((ptr50 + 32) as *const i32);
+                                                      let len146 = l145 as usize;
+                                                      let bytes146 = Vec::from_raw_parts(l144 as *mut _, len146, len146);
                                                       
                                                       super::super::super::timeline::timeline_processor::api::TimelineResultWorker{
-                                                        worker_id: wit_bindgen::rt::string_lift(bytes139),
-                                                        template_id: wit_bindgen::rt::string_lift(bytes142),
+                                                        worker_id: wit_bindgen::rt::string_lift(bytes143),
+                                                        template_id: wit_bindgen::rt::string_lift(bytes146),
                                                       }
                                                     };
-                                                    V143::TlLatestEventToState(e143)
+                                                    V147::TlLatestEventToState(e147)
                                                   }
                                                 };
                                                 
-                                                v143
+                                                v147
                                               };
-                                              V194::LeafTimeline(e194)
+                                              V198::LeafTimeline(e198)
                                             }
                                             n => {
                                               debug_assert_eq!(n, 1, "invalid enum discriminant");
-                                              let e194 = {
-                                                let l144 = i32::from(*((ptr46 + 16) as *const u8));
-                                                use super::super::super::timeline::timeline_processor::api::DerivedTimelineNode as V193;
-                                                let v193 = match l144 {
+                                              let e198 = {
+                                                let l148 = i32::from(*((ptr50 + 16) as *const u8));
+                                                use super::super::super::timeline::timeline_processor::api::DerivedTimelineNode as V197;
+                                                let v197 = match l148 {
                                                   0 => {
-                                                    let e193 = {
-                                                      let l145 = *((ptr46 + 20) as *const i32);
-                                                      let l146 = *((ptr46 + 24) as *const i32);
-                                                      let len147 = l146 as usize;
-                                                      let bytes147 = Vec::from_raw_parts(l145 as *mut _, len147, len147);
-                                                      let l148 = *((ptr46 + 28) as *const i32);
-                                                      let l149 = *((ptr46 + 32) as *const i32);
-                                                      let len150 = l149 as usize;
-                                                      let bytes150 = Vec::from_raw_parts(l148 as *mut _, len150, len150);
+                                                    let e197 = {
+                                                      let l149 = *((ptr50 + 20) as *const i32);
+                                                      let l150 = *((ptr50 + 24) as *const i32);
+                                                      let len151 = l150 as usize;
+                                                      let bytes151 = Vec::from_raw_parts(l149 as *mut _, len151, len151);
+                                                      let l152 = *((ptr50 + 28) as *const i32);
+                                                      let l153 = *((ptr50 + 32) as *const i32);
+                                                      let len154 = l153 as usize;
+                                                      let bytes154 = Vec::from_raw_parts(l152 as *mut _, len154, len154);
                                                       
                                                       super::super::super::timeline::timeline_processor::api::TimelineResultWorker{
-                                                        worker_id: wit_bindgen::rt::string_lift(bytes147),
-                                                        template_id: wit_bindgen::rt::string_lift(bytes150),
+                                                        worker_id: wit_bindgen::rt::string_lift(bytes151),
+                                                        template_id: wit_bindgen::rt::string_lift(bytes154),
                                                       }
                                                     };
-                                                    V193::EqualTo(e193)
+                                                    V197::EqualTo(e197)
                                                   }
                                                   1 => {
-                                                    let e193 = {
-                                                      let l151 = *((ptr46 + 20) as *const i32);
-                                                      let l152 = *((ptr46 + 24) as *const i32);
-                                                      let len153 = l152 as usize;
-                                                      let bytes153 = Vec::from_raw_parts(l151 as *mut _, len153, len153);
-                                                      let l154 = *((ptr46 + 28) as *const i32);
-                                                      let l155 = *((ptr46 + 32) as *const i32);
-                                                      let len156 = l155 as usize;
-                                                      let bytes156 = Vec::from_raw_parts(l154 as *mut _, len156, len156);
+                                                    let e197 = {
+                                                      let l155 = *((ptr50 + 20) as *const i32);
+                                                      let l156 = *((ptr50 + 24) as *const i32);
+                                                      let len157 = l156 as usize;
+                                                      let bytes157 = Vec::from_raw_parts(l155 as *mut _, len157, len157);
+                                                      let l158 = *((ptr50 + 28) as *const i32);
+                                                      let l159 = *((ptr50 + 32) as *const i32);
+                                                      let len160 = l159 as usize;
+                                                      let bytes160 = Vec::from_raw_parts(l158 as *mut _, len160, len160);
                                                       
                                                       super::super::super::timeline::timeline_processor::api::TimelineResultWorker{
-                                                        worker_id: wit_bindgen::rt::string_lift(bytes153),
-                                                        template_id: wit_bindgen::rt::string_lift(bytes156),
+                                                        worker_id: wit_bindgen::rt::string_lift(bytes157),
+                                                        template_id: wit_bindgen::rt::string_lift(bytes160),
                                                       }
                                                     };
-                                                    V193::GreaterThan(e193)
+                                                    V197::GreaterThan(e197)
                                                   }
                                                   2 => {
-                                                    let e193 = {
-                                                      let l157 = *((ptr46 + 20) as *const i32);
-                                                      let l158 = *((ptr46 + 24) as *const i32);
-                                                      let len159 = l158 as usize;
-                                                      let bytes159 = Vec::from_raw_parts(l157 as *mut _, len159, len159);
-                                                      let l160 = *((ptr46 + 28) as *const i32);
-                                                      let l161 = *((ptr46 + 32) as *const i32);
-                                                      let len162 = l161 as usize;
-                                                      let bytes162 = Vec::from_raw_parts(l160 as *mut _, len162, len162);
+                                                    let e197 = {
+                                                      let l161 = *((ptr50 + 20) as *const i32);
+                                                      let l162 = *((ptr50 + 24) as *const i32);
+                                                      let len163 = l162 as usize;
+                                                      let bytes163 = Vec::from_raw_parts(l161 as *mut _, len163, len163);
+                                                      let l164 = *((ptr50 + 28) as *const i32);
+                                                      let l165 = *((ptr50 + 32) as *const i32);
+                                                      let len166 = l165 as usize;
+                                                      let bytes166 = Vec::from_raw_parts(l164 as *mut _, len166, len166);
                                                       
                                                       super::super::super::timeline::timeline_processor::api::TimelineResultWorker{
-                                                        worker_id: wit_bindgen::rt::string_lift(bytes159),
-                                                        template_id: wit_bindgen::rt::string_lift(bytes162),
+                                                        worker_id: wit_bindgen::rt::string_lift(bytes163),
+                                                        template_id: wit_bindgen::rt::string_lift(bytes166),
                                                       }
                                                     };
-                                                    V193::GreaterThanOrEqualTo(e193)
+                                                    V197::GreaterThanOrEqualTo(e197)
                                                   }
                                                   3 => {
-                                                    let e193 = {
-                                                      let l163 = *((ptr46 + 20) as *const i32);
-                                                      let l164 = *((ptr46 + 24) as *const i32);
-                                                      let len165 = l164 as usize;
-                                                      let bytes165 = Vec::from_raw_parts(l163 as *mut _, len165, len165);
-                                                      let l166 = *((ptr46 + 28) as *const i32);
-                                                      let l167 = *((ptr46 + 32) as *const i32);
-                                                      let len168 = l167 as usize;
-                                                      let bytes168 = Vec::from_raw_parts(l166 as *mut _, len168, len168);
+                                                    let e197 = {
+                                                      let l167 = *((ptr50 + 20) as *const i32);
+                                                      let l168 = *((ptr50 + 24) as *const i32);
+                                                      let len169 = l168 as usize;
+                                                      let bytes169 = Vec::from_raw_parts(l167 as *mut _, len169, len169);
+                                                      let l170 = *((ptr50 + 28) as *const i32);
+                                                      let l171 = *((ptr50 + 32) as *const i32);
+                                                      let len172 = l171 as usize;
+                                                      let bytes172 = Vec::from_raw_parts(l170 as *mut _, len172, len172);
                                                       
                                                       super::super::super::timeline::timeline_processor::api::TimelineResultWorker{
-                                                        worker_id: wit_bindgen::rt::string_lift(bytes165),
-                                                        template_id: wit_bindgen::rt::string_lift(bytes168),
+                                                        worker_id: wit_bindgen::rt::string_lift(bytes169),
+                                                        template_id: wit_bindgen::rt::string_lift(bytes172),
                                                       }
                                                     };
-                                                    V193::LessThan(e193)
+                                                    V197::LessThan(e197)
                                                   }
                                                   4 => {
-                                                    let e193 = {
-                                                      let l169 = *((ptr46 + 20) as *const i32);
-                                                      let l170 = *((ptr46 + 24) as *const i32);
-                                                      let len171 = l170 as usize;
-                                                      let bytes171 = Vec::from_raw_parts(l169 as *mut _, len171, len171);
-                                                      let l172 = *((ptr46 + 28) as *const i32);
-                                                      let l173 = *((ptr46 + 32) as *const i32);
-                                                      let len174 = l173 as usize;
-                                                      let bytes174 = Vec::from_raw_parts(l172 as *mut _, len174, len174);
+                                                    let e197 = {
+                                                      let l173 = *((ptr50 + 20) as *const i32);
+                                                      let l174 = *((ptr50 + 24) as *const i32);
+                                                      let len175 = l174 as usize;
+                                                      let bytes175 = Vec::from_raw_parts(l173 as *mut _, len175, len175);
+                                                      let l176 = *((ptr50 + 28) as *const i32);
+                                                      let l177 = *((ptr50 + 32) as *const i32);
+                                                      let len178 = l177 as usize;
+                                                      let bytes178 = Vec::from_raw_parts(l176 as *mut _, len178, len178);
                                                       
                                                       super::super::super::timeline::timeline_processor::api::TimelineResultWorker{
-                                                        worker_id: wit_bindgen::rt::string_lift(bytes171),
-                                                        template_id: wit_bindgen::rt::string_lift(bytes174),
+                                                        worker_id: wit_bindgen::rt::string_lift(bytes175),
+                                                        template_id: wit_bindgen::rt::string_lift(bytes178),
                                                       }
                                                     };
-                                                    V193::LessThanOrEqualTo(e193)
+                                                    V197::LessThanOrEqualTo(e197)
                                                   }
                                                   5 => {
-                                                    let e193 = {
-                                                      let l175 = *((ptr46 + 20) as *const i32);
-                                                      let l176 = *((ptr46 + 24) as *const i32);
-                                                      let len177 = l176 as usize;
-                                                      let bytes177 = Vec::from_raw_parts(l175 as *mut _, len177, len177);
-                                                      let l178 = *((ptr46 + 28) as *const i32);
-                                                      let l179 = *((ptr46 + 32) as *const i32);
-                                                      let len180 = l179 as usize;
-                                                      let bytes180 = Vec::from_raw_parts(l178 as *mut _, len180, len180);
+                                                    let e197 = {
+                                                      let l179 = *((ptr50 + 20) as *const i32);
+                                                      let l180 = *((ptr50 + 24) as *const i32);
+                                                      let len181 = l180 as usize;
+                                                      let bytes181 = Vec::from_raw_parts(l179 as *mut _, len181, len181);
+                                                      let l182 = *((ptr50 + 28) as *const i32);
+                                                      let l183 = *((ptr50 + 32) as *const i32);
+                                                      let len184 = l183 as usize;
+                                                      let bytes184 = Vec::from_raw_parts(l182 as *mut _, len184, len184);
                                                       
                                                       super::super::super::timeline::timeline_processor::api::TimelineResultWorker{
-                                                        worker_id: wit_bindgen::rt::string_lift(bytes177),
-                                                        template_id: wit_bindgen::rt::string_lift(bytes180),
+                                                        worker_id: wit_bindgen::rt::string_lift(bytes181),
+                                                        template_id: wit_bindgen::rt::string_lift(bytes184),
                                                       }
                                                     };
-                                                    V193::And(e193)
+                                                    V197::And(e197)
                                                   }
                                                   6 => {
-                                                    let e193 = {
-                                                      let l181 = *((ptr46 + 20) as *const i32);
-                                                      let l182 = *((ptr46 + 24) as *const i32);
-                                                      let len183 = l182 as usize;
-                                                      let bytes183 = Vec::from_raw_parts(l181 as *mut _, len183, len183);
-                                                      let l184 = *((ptr46 + 28) as *const i32);
-                                                      let l185 = *((ptr46 + 32) as *const i32);
-                                                      let len186 = l185 as usize;
-                                                      let bytes186 = Vec::from_raw_parts(l184 as *mut _, len186, len186);
+                                                    let e197 = {
+                                                      let l185 = *((ptr50 + 20) as *const i32);
+                                                      let l186 = *((ptr50 + 24) as *const i32);
+                                                      let len187 = l186 as usize;
+                                                      let bytes187 = Vec::from_raw_parts(l185 as *mut _, len187, len187);
+                                                      let l188 = *((ptr50 + 28) as *const i32);
+                                                      let l189 = *((ptr50 + 32) as *const i32);
+                                                      let len190 = l189 as usize;
+                                                      let bytes190 = Vec::from_raw_parts(l188 as *mut _, len190, len190);
                                                       
                                                       super::super::super::timeline::timeline_processor::api::TimelineResultWorker{
-                                                        worker_id: wit_bindgen::rt::string_lift(bytes183),
-                                                        template_id: wit_bindgen::rt::string_lift(bytes186),
+                                                        worker_id: wit_bindgen::rt::string_lift(bytes187),
+                                                        template_id: wit_bindgen::rt::string_lift(bytes190),
                                                       }
                                                     };
-                                                    V193::Or(e193)
+                                                    V197::Or(e197)
                                                   }
                                                   n => {
                                                     debug_assert_eq!(n, 7, "invalid enum discriminant");
-                                                    let e193 = {
-                                                      let l187 = *((ptr46 + 20) as *const i32);
-                                                      let l188 = *((ptr46 + 24) as *const i32);
-                                                      let len189 = l188 as usize;
-                                                      let bytes189 = Vec::from_raw_parts(l187 as *mut _, len189, len189);
-                                                      let l190 = *((ptr46 + 28) as *const i32);
-                                                      let l191 = *((ptr46 + 32) as *const i32);
-                                                      let len192 = l191 as usize;
-                                                      let bytes192 = Vec::from_raw_parts(l190 as *mut _, len192, len192);
+                                                    let e197 = {
+                                                      let l191 = *((ptr50 + 20) as *const i32);
+                                                      let l192 = *((ptr50 + 24) as *const i32);
+                                                      let len193 = l192 as usize;
+                                                      let bytes193 = Vec::from_raw_parts(l191 as *mut _, len193, len193);
+                                                      let l194 = *((ptr50 + 28) as *const i32);
+                                                      let l195 = *((ptr50 + 32) as *const i32);
+                                                      let len196 = l195 as usize;
+                                                      let bytes196 = Vec::from_raw_parts(l194 as *mut _, len196, len196);
                                                       
                                                       super::super::super::timeline::timeline_processor::api::TimelineResultWorker{
-                                                        worker_id: wit_bindgen::rt::string_lift(bytes189),
-                                                        template_id: wit_bindgen::rt::string_lift(bytes192),
+                                                        worker_id: wit_bindgen::rt::string_lift(bytes193),
+                                                        template_id: wit_bindgen::rt::string_lift(bytes196),
                                                       }
                                                     };
-                                                    V193::Not(e193)
+                                                    V197::Not(e197)
                                                   }
                                                 };
                                                 
-                                                v193
+                                                v197
                                               };
-                                              V194::DerivedTimeline(e194)
+                                              V198::DerivedTimeline(e198)
                                             }
                                           };
                                           
                                           WorkerDetails{
-                                            event_processor_workers: result122,
-                                            result_worker: v194,
+                                            event_processor_workers: result126,
+                                            result_worker: v198,
                                           }
                                         };
                                         Ok(e)
                                       }
                                       1 => {
                                         let e = {
-                                          let l195 = *((ptr46 + 4) as *const i32);
-                                          let l196 = *((ptr46 + 8) as *const i32);
-                                          let len197 = l196 as usize;
-                                          let bytes197 = Vec::from_raw_parts(l195 as *mut _, len197, len197);
+                                          let l199 = *((ptr50 + 4) as *const i32);
+                                          let l200 = *((ptr50 + 8) as *const i32);
+                                          let len201 = l200 as usize;
+                                          let bytes201 = Vec::from_raw_parts(l199 as *mut _, len201, len201);
                                           
-                                          wit_bindgen::rt::string_lift(bytes197)
+                                          wit_bindgen::rt::string_lift(bytes201)
                                         };
                                         Err(e)
                                       }
@@ -2327,26 +2357,26 @@ pub mod golem {
                                       struct RetArea([u8; 36]);
                                       let mut ret_area = ::core::mem::MaybeUninit::<RetArea>::uninit();
                                       let super::super::super::timeline::core::api::TimelineOp{ nodes:nodes0, } = timeline;
-                                      let vec46 = nodes0;
-                                      let len46 = vec46.len() as i32;
-                                      let layout46 = alloc::Layout::from_size_align_unchecked(vec46.len() * 72, 8);
-                                      let result46 = if layout46.size() != 0
+                                      let vec50 = nodes0;
+                                      let len50 = vec50.len() as i32;
+                                      let layout50 = alloc::Layout::from_size_align_unchecked(vec50.len() * 72, 8);
+                                      let result50 = if layout50.size() != 0
                                       {
-                                        let ptr = alloc::alloc(layout46);
+                                        let ptr = alloc::alloc(layout50);
                                         if ptr.is_null()
                                         {
-                                          alloc::handle_alloc_error(layout46);
+                                          alloc::handle_alloc_error(layout50);
                                         }
                                         ptr
                                       }else {{
                                         ::core::ptr::null_mut()
                                       }};
-                                      for (i, e) in vec46.into_iter().enumerate() {
-                                        let base = result46 as i32 + (i as i32) * 72;
+                                      for (i, e) in vec50.into_iter().enumerate() {
+                                        let base = result50 as i32 + (i as i32) * 72;
                                         {
-                                          use super::super::super::timeline::core::api::TimelineNode as V45;
+                                          use super::super::super::timeline::core::api::TimelineNode as V49;
                                           match e {
-                                            V45::TlLatestEventToState(e) => {
+                                            V49::TlLatestEventToState(e) => {
                                               *((base + 0) as *mut u8) = (0i32) as u8;
                                               let super::super::super::timeline::core::api::ServerWithEventColumnName{ server:server1, event_column_name:event_column_name1, } = e;
                                               match server1 {
@@ -2375,7 +2405,7 @@ pub mod golem {
                                               *((base + 32) as *mut i32) = len5;
                                               *((base + 28) as *mut i32) = ptr5;
                                             },
-                                            V45::TlHasExisted(e) => {
+                                            V49::TlHasExisted(e) => {
                                               *((base + 0) as *mut u8) = (1i32) as u8;
                                               let super::super::super::timeline::core::api::ServerWithEventPredicate{ event_predicate:event_predicate6, server:server6, } = e;
                                               let super::super::super::timeline::event_processor::api::EventPredicate{ col_name:col_name7, value:value7, op:op7, } = event_predicate6;
@@ -2429,7 +2459,7 @@ pub mod golem {
                                                   }
                                                 },
                                               };},
-                                              V45::TlHasExistedWithin(e) => {
+                                              V49::TlHasExistedWithin(e) => {
                                                 *((base + 0) as *mut u8) = (2i32) as u8;
                                                 let super::super::super::timeline::core::api::ServerWithEventPredicateWithin{ filtered:filtered14, time:time14, } = e;
                                                 let super::super::super::timeline::core::api::ServerWithEventPredicate{ event_predicate:event_predicate15, server:server15, } = filtered14;
@@ -2485,7 +2515,7 @@ pub mod golem {
                                                   },
                                                 };*((base + 64) as *mut i64) = wit_bindgen::rt::as_i64(time14);
                                               },
-                                              V45::TimelineComparison(e) => {
+                                              V49::TimelineComparison(e) => {
                                                 *((base + 0) as *mut u8) = (3i32) as u8;
                                                 let super::super::super::timeline::core::api::TimelineConstantCompared{ op:op23, timeline:timeline23, value:value23, server:server23, } = e;
                                                 *((base + 8) as *mut u8) = (op23.clone() as i32) as u8;
@@ -2534,7 +2564,7 @@ pub mod golem {
                                                     }
                                                   },
                                                 };},
-                                                V45::TimelineNegation(e) => {
+                                                V49::TimelineNegation(e) => {
                                                   *((base + 0) as *mut u8) = (4i32) as u8;
                                                   let super::super::super::timeline::core::api::TimelineNegated{ timeline:timeline29, server:server29, } = e;
                                                   *((base + 8) as *mut i32) = wit_bindgen::rt::as_i32(timeline29);
@@ -2559,7 +2589,7 @@ pub mod golem {
                                                       }
                                                     },
                                                   };},
-                                                  V45::TlDurationWhere(e) => {
+                                                  V49::TlDurationWhere(e) => {
                                                     *((base + 0) as *mut u8) = (5i32) as u8;
                                                     let super::super::super::timeline::core::api::TimelineWithServer{ server:server33, timeline:timeline33, } = e;
                                                     match server33 {
@@ -2584,7 +2614,7 @@ pub mod golem {
                                                       },
                                                     };*((base + 28) as *mut i32) = wit_bindgen::rt::as_i32(timeline33);
                                                   },
-                                                  V45::TlDurationInCurState(e) => {
+                                                  V49::TlDurationInCurState(e) => {
                                                     *((base + 0) as *mut u8) = (6i32) as u8;
                                                     let super::super::super::timeline::core::api::TimelineWithServer{ server:server37, timeline:timeline37, } = e;
                                                     match server37 {
@@ -2609,7 +2639,7 @@ pub mod golem {
                                                       },
                                                     };*((base + 28) as *mut i32) = wit_bindgen::rt::as_i32(timeline37);
                                                   },
-                                                  V45::TlAnd(e) => {
+                                                  V49::TlAnd(e) => {
                                                     *((base + 0) as *mut u8) = (7i32) as u8;
                                                     let super::super::super::timeline::core::api::BiTimelineWithServer{ server:server41, left:left41, right:right41, } = e;
                                                     match server41 {
@@ -2635,10 +2665,36 @@ pub mod golem {
                                                     };*((base + 28) as *mut i32) = wit_bindgen::rt::as_i32(left41);
                                                     *((base + 32) as *mut i32) = wit_bindgen::rt::as_i32(right41);
                                                   },
+                                                  V49::TlOr(e) => {
+                                                    *((base + 0) as *mut u8) = (8i32) as u8;
+                                                    let super::super::super::timeline::core::api::BiTimelineWithServer{ server:server45, left:left45, right:right45, } = e;
+                                                    match server45 {
+                                                      Some(e) => {
+                                                        *((base + 8) as *mut u8) = (1i32) as u8;
+                                                        let super::super::super::timeline::core::api::Server{ worker_id_prefix:worker_id_prefix46, template_id:template_id46, } = e;
+                                                        let vec47 = worker_id_prefix46;
+                                                        let ptr47 = vec47.as_ptr() as i32;
+                                                        let len47 = vec47.len() as i32;
+                                                        *((base + 16) as *mut i32) = len47;
+                                                        *((base + 12) as *mut i32) = ptr47;
+                                                        let vec48 = template_id46;
+                                                        let ptr48 = vec48.as_ptr() as i32;
+                                                        let len48 = vec48.len() as i32;
+                                                        *((base + 24) as *mut i32) = len48;
+                                                        *((base + 20) as *mut i32) = ptr48;
+                                                      },
+                                                      None => {
+                                                        {
+                                                          *((base + 8) as *mut u8) = (0i32) as u8;
+                                                        }
+                                                      },
+                                                    };*((base + 28) as *mut i32) = wit_bindgen::rt::as_i32(left45);
+                                                    *((base + 32) as *mut i32) = wit_bindgen::rt::as_i32(right45);
+                                                  },
                                                 }
                                               }
                                             }
-                                            let ptr47 = ret_area.as_mut_ptr() as i32;
+                                            let ptr51 = ret_area.as_mut_ptr() as i32;
                                             #[cfg(target_arch = "wasm32")]
                                             #[link(wasm_import_module = "timeline:core-stub/stub-core")]
                                             extern "C" {
@@ -2648,498 +2704,498 @@ pub mod golem {
                                             
                                             #[cfg(not(target_arch = "wasm32"))]
                                             fn wit_import(_: i32, _: i32, _: i32, _: i32, ){ unreachable!() }
-                                            wit_import((self).handle() as i32, result46 as i32, len46, ptr47);
-                                            let l48 = i32::from(*((ptr47 + 0) as *const u8));
-                                            if layout46.size() != 0 {
-                                              alloc::dealloc(result46, layout46);
+                                            wit_import((self).handle() as i32, result50 as i32, len50, ptr51);
+                                            let l52 = i32::from(*((ptr51 + 0) as *const u8));
+                                            if layout50.size() != 0 {
+                                              alloc::dealloc(result50, layout50);
                                             }
-                                            match l48 {
+                                            match l52 {
                                               0 => {
                                                 let e = {
-                                                  let l49 = *((ptr47 + 4) as *const i32);
-                                                  let l50 = *((ptr47 + 8) as *const i32);
-                                                  let base123 = l49;
-                                                  let len123 = l50;
-                                                  let mut result123 = Vec::with_capacity(len123 as usize);
-                                                  for i in 0..len123 {
-                                                    let base = base123 + i * 24;
-                                                    let e123 = {
-                                                      let l51 = i32::from(*((base + 0) as *const u8));
-                                                      use super::super::super::timeline::timeline_processor::api::TypedTimelineResultWorker as V122;
-                                                      let v122 = match l51 {
+                                                  let l53 = *((ptr51 + 4) as *const i32);
+                                                  let l54 = *((ptr51 + 8) as *const i32);
+                                                  let base127 = l53;
+                                                  let len127 = l54;
+                                                  let mut result127 = Vec::with_capacity(len127 as usize);
+                                                  for i in 0..len127 {
+                                                    let base = base127 + i * 24;
+                                                    let e127 = {
+                                                      let l55 = i32::from(*((base + 0) as *const u8));
+                                                      use super::super::super::timeline::timeline_processor::api::TypedTimelineResultWorker as V126;
+                                                      let v126 = match l55 {
                                                         0 => {
-                                                          let e122 = {
-                                                            let l52 = i32::from(*((base + 4) as *const u8));
-                                                            use super::super::super::timeline::timeline_processor::api::LeafTimelineNode as V71;
-                                                            let v71 = match l52 {
+                                                          let e126 = {
+                                                            let l56 = i32::from(*((base + 4) as *const u8));
+                                                            use super::super::super::timeline::timeline_processor::api::LeafTimelineNode as V75;
+                                                            let v75 = match l56 {
                                                               0 => {
-                                                                let e71 = {
-                                                                  let l53 = *((base + 8) as *const i32);
-                                                                  let l54 = *((base + 12) as *const i32);
-                                                                  let len55 = l54 as usize;
-                                                                  let bytes55 = Vec::from_raw_parts(l53 as *mut _, len55, len55);
-                                                                  let l56 = *((base + 16) as *const i32);
-                                                                  let l57 = *((base + 20) as *const i32);
-                                                                  let len58 = l57 as usize;
-                                                                  let bytes58 = Vec::from_raw_parts(l56 as *mut _, len58, len58);
+                                                                let e75 = {
+                                                                  let l57 = *((base + 8) as *const i32);
+                                                                  let l58 = *((base + 12) as *const i32);
+                                                                  let len59 = l58 as usize;
+                                                                  let bytes59 = Vec::from_raw_parts(l57 as *mut _, len59, len59);
+                                                                  let l60 = *((base + 16) as *const i32);
+                                                                  let l61 = *((base + 20) as *const i32);
+                                                                  let len62 = l61 as usize;
+                                                                  let bytes62 = Vec::from_raw_parts(l60 as *mut _, len62, len62);
                                                                   
                                                                   super::super::super::timeline::timeline_processor::api::TimelineResultWorker{
-                                                                    worker_id: wit_bindgen::rt::string_lift(bytes55),
-                                                                    template_id: wit_bindgen::rt::string_lift(bytes58),
+                                                                    worker_id: wit_bindgen::rt::string_lift(bytes59),
+                                                                    template_id: wit_bindgen::rt::string_lift(bytes62),
                                                                   }
                                                                 };
-                                                                V71::TlHasExisted(e71)
+                                                                V75::TlHasExisted(e75)
                                                               }
                                                               1 => {
-                                                                let e71 = {
-                                                                  let l59 = *((base + 8) as *const i32);
-                                                                  let l60 = *((base + 12) as *const i32);
-                                                                  let len61 = l60 as usize;
-                                                                  let bytes61 = Vec::from_raw_parts(l59 as *mut _, len61, len61);
-                                                                  let l62 = *((base + 16) as *const i32);
-                                                                  let l63 = *((base + 20) as *const i32);
-                                                                  let len64 = l63 as usize;
-                                                                  let bytes64 = Vec::from_raw_parts(l62 as *mut _, len64, len64);
+                                                                let e75 = {
+                                                                  let l63 = *((base + 8) as *const i32);
+                                                                  let l64 = *((base + 12) as *const i32);
+                                                                  let len65 = l64 as usize;
+                                                                  let bytes65 = Vec::from_raw_parts(l63 as *mut _, len65, len65);
+                                                                  let l66 = *((base + 16) as *const i32);
+                                                                  let l67 = *((base + 20) as *const i32);
+                                                                  let len68 = l67 as usize;
+                                                                  let bytes68 = Vec::from_raw_parts(l66 as *mut _, len68, len68);
                                                                   
                                                                   super::super::super::timeline::timeline_processor::api::TimelineResultWorker{
-                                                                    worker_id: wit_bindgen::rt::string_lift(bytes61),
-                                                                    template_id: wit_bindgen::rt::string_lift(bytes64),
+                                                                    worker_id: wit_bindgen::rt::string_lift(bytes65),
+                                                                    template_id: wit_bindgen::rt::string_lift(bytes68),
                                                                   }
                                                                 };
-                                                                V71::TlHasExistedWithin(e71)
+                                                                V75::TlHasExistedWithin(e75)
                                                               }
                                                               n => {
                                                                 debug_assert_eq!(n, 2, "invalid enum discriminant");
-                                                                let e71 = {
-                                                                  let l65 = *((base + 8) as *const i32);
-                                                                  let l66 = *((base + 12) as *const i32);
-                                                                  let len67 = l66 as usize;
-                                                                  let bytes67 = Vec::from_raw_parts(l65 as *mut _, len67, len67);
-                                                                  let l68 = *((base + 16) as *const i32);
-                                                                  let l69 = *((base + 20) as *const i32);
-                                                                  let len70 = l69 as usize;
-                                                                  let bytes70 = Vec::from_raw_parts(l68 as *mut _, len70, len70);
+                                                                let e75 = {
+                                                                  let l69 = *((base + 8) as *const i32);
+                                                                  let l70 = *((base + 12) as *const i32);
+                                                                  let len71 = l70 as usize;
+                                                                  let bytes71 = Vec::from_raw_parts(l69 as *mut _, len71, len71);
+                                                                  let l72 = *((base + 16) as *const i32);
+                                                                  let l73 = *((base + 20) as *const i32);
+                                                                  let len74 = l73 as usize;
+                                                                  let bytes74 = Vec::from_raw_parts(l72 as *mut _, len74, len74);
                                                                   
                                                                   super::super::super::timeline::timeline_processor::api::TimelineResultWorker{
-                                                                    worker_id: wit_bindgen::rt::string_lift(bytes67),
-                                                                    template_id: wit_bindgen::rt::string_lift(bytes70),
+                                                                    worker_id: wit_bindgen::rt::string_lift(bytes71),
+                                                                    template_id: wit_bindgen::rt::string_lift(bytes74),
                                                                   }
                                                                 };
-                                                                V71::TlLatestEventToState(e71)
+                                                                V75::TlLatestEventToState(e75)
                                                               }
                                                             };
                                                             
-                                                            v71
+                                                            v75
                                                           };
-                                                          V122::LeafTimeline(e122)
+                                                          V126::LeafTimeline(e126)
                                                         }
                                                         n => {
                                                           debug_assert_eq!(n, 1, "invalid enum discriminant");
-                                                          let e122 = {
-                                                            let l72 = i32::from(*((base + 4) as *const u8));
-                                                            use super::super::super::timeline::timeline_processor::api::DerivedTimelineNode as V121;
-                                                            let v121 = match l72 {
+                                                          let e126 = {
+                                                            let l76 = i32::from(*((base + 4) as *const u8));
+                                                            use super::super::super::timeline::timeline_processor::api::DerivedTimelineNode as V125;
+                                                            let v125 = match l76 {
                                                               0 => {
-                                                                let e121 = {
-                                                                  let l73 = *((base + 8) as *const i32);
-                                                                  let l74 = *((base + 12) as *const i32);
-                                                                  let len75 = l74 as usize;
-                                                                  let bytes75 = Vec::from_raw_parts(l73 as *mut _, len75, len75);
-                                                                  let l76 = *((base + 16) as *const i32);
-                                                                  let l77 = *((base + 20) as *const i32);
-                                                                  let len78 = l77 as usize;
-                                                                  let bytes78 = Vec::from_raw_parts(l76 as *mut _, len78, len78);
+                                                                let e125 = {
+                                                                  let l77 = *((base + 8) as *const i32);
+                                                                  let l78 = *((base + 12) as *const i32);
+                                                                  let len79 = l78 as usize;
+                                                                  let bytes79 = Vec::from_raw_parts(l77 as *mut _, len79, len79);
+                                                                  let l80 = *((base + 16) as *const i32);
+                                                                  let l81 = *((base + 20) as *const i32);
+                                                                  let len82 = l81 as usize;
+                                                                  let bytes82 = Vec::from_raw_parts(l80 as *mut _, len82, len82);
                                                                   
                                                                   super::super::super::timeline::timeline_processor::api::TimelineResultWorker{
-                                                                    worker_id: wit_bindgen::rt::string_lift(bytes75),
-                                                                    template_id: wit_bindgen::rt::string_lift(bytes78),
+                                                                    worker_id: wit_bindgen::rt::string_lift(bytes79),
+                                                                    template_id: wit_bindgen::rt::string_lift(bytes82),
                                                                   }
                                                                 };
-                                                                V121::EqualTo(e121)
+                                                                V125::EqualTo(e125)
                                                               }
                                                               1 => {
-                                                                let e121 = {
-                                                                  let l79 = *((base + 8) as *const i32);
-                                                                  let l80 = *((base + 12) as *const i32);
-                                                                  let len81 = l80 as usize;
-                                                                  let bytes81 = Vec::from_raw_parts(l79 as *mut _, len81, len81);
-                                                                  let l82 = *((base + 16) as *const i32);
-                                                                  let l83 = *((base + 20) as *const i32);
-                                                                  let len84 = l83 as usize;
-                                                                  let bytes84 = Vec::from_raw_parts(l82 as *mut _, len84, len84);
+                                                                let e125 = {
+                                                                  let l83 = *((base + 8) as *const i32);
+                                                                  let l84 = *((base + 12) as *const i32);
+                                                                  let len85 = l84 as usize;
+                                                                  let bytes85 = Vec::from_raw_parts(l83 as *mut _, len85, len85);
+                                                                  let l86 = *((base + 16) as *const i32);
+                                                                  let l87 = *((base + 20) as *const i32);
+                                                                  let len88 = l87 as usize;
+                                                                  let bytes88 = Vec::from_raw_parts(l86 as *mut _, len88, len88);
                                                                   
                                                                   super::super::super::timeline::timeline_processor::api::TimelineResultWorker{
-                                                                    worker_id: wit_bindgen::rt::string_lift(bytes81),
-                                                                    template_id: wit_bindgen::rt::string_lift(bytes84),
+                                                                    worker_id: wit_bindgen::rt::string_lift(bytes85),
+                                                                    template_id: wit_bindgen::rt::string_lift(bytes88),
                                                                   }
                                                                 };
-                                                                V121::GreaterThan(e121)
+                                                                V125::GreaterThan(e125)
                                                               }
                                                               2 => {
-                                                                let e121 = {
-                                                                  let l85 = *((base + 8) as *const i32);
-                                                                  let l86 = *((base + 12) as *const i32);
-                                                                  let len87 = l86 as usize;
-                                                                  let bytes87 = Vec::from_raw_parts(l85 as *mut _, len87, len87);
-                                                                  let l88 = *((base + 16) as *const i32);
-                                                                  let l89 = *((base + 20) as *const i32);
-                                                                  let len90 = l89 as usize;
-                                                                  let bytes90 = Vec::from_raw_parts(l88 as *mut _, len90, len90);
+                                                                let e125 = {
+                                                                  let l89 = *((base + 8) as *const i32);
+                                                                  let l90 = *((base + 12) as *const i32);
+                                                                  let len91 = l90 as usize;
+                                                                  let bytes91 = Vec::from_raw_parts(l89 as *mut _, len91, len91);
+                                                                  let l92 = *((base + 16) as *const i32);
+                                                                  let l93 = *((base + 20) as *const i32);
+                                                                  let len94 = l93 as usize;
+                                                                  let bytes94 = Vec::from_raw_parts(l92 as *mut _, len94, len94);
                                                                   
                                                                   super::super::super::timeline::timeline_processor::api::TimelineResultWorker{
-                                                                    worker_id: wit_bindgen::rt::string_lift(bytes87),
-                                                                    template_id: wit_bindgen::rt::string_lift(bytes90),
+                                                                    worker_id: wit_bindgen::rt::string_lift(bytes91),
+                                                                    template_id: wit_bindgen::rt::string_lift(bytes94),
                                                                   }
                                                                 };
-                                                                V121::GreaterThanOrEqualTo(e121)
+                                                                V125::GreaterThanOrEqualTo(e125)
                                                               }
                                                               3 => {
-                                                                let e121 = {
-                                                                  let l91 = *((base + 8) as *const i32);
-                                                                  let l92 = *((base + 12) as *const i32);
-                                                                  let len93 = l92 as usize;
-                                                                  let bytes93 = Vec::from_raw_parts(l91 as *mut _, len93, len93);
-                                                                  let l94 = *((base + 16) as *const i32);
-                                                                  let l95 = *((base + 20) as *const i32);
-                                                                  let len96 = l95 as usize;
-                                                                  let bytes96 = Vec::from_raw_parts(l94 as *mut _, len96, len96);
+                                                                let e125 = {
+                                                                  let l95 = *((base + 8) as *const i32);
+                                                                  let l96 = *((base + 12) as *const i32);
+                                                                  let len97 = l96 as usize;
+                                                                  let bytes97 = Vec::from_raw_parts(l95 as *mut _, len97, len97);
+                                                                  let l98 = *((base + 16) as *const i32);
+                                                                  let l99 = *((base + 20) as *const i32);
+                                                                  let len100 = l99 as usize;
+                                                                  let bytes100 = Vec::from_raw_parts(l98 as *mut _, len100, len100);
                                                                   
                                                                   super::super::super::timeline::timeline_processor::api::TimelineResultWorker{
-                                                                    worker_id: wit_bindgen::rt::string_lift(bytes93),
-                                                                    template_id: wit_bindgen::rt::string_lift(bytes96),
+                                                                    worker_id: wit_bindgen::rt::string_lift(bytes97),
+                                                                    template_id: wit_bindgen::rt::string_lift(bytes100),
                                                                   }
                                                                 };
-                                                                V121::LessThan(e121)
+                                                                V125::LessThan(e125)
                                                               }
                                                               4 => {
-                                                                let e121 = {
-                                                                  let l97 = *((base + 8) as *const i32);
-                                                                  let l98 = *((base + 12) as *const i32);
-                                                                  let len99 = l98 as usize;
-                                                                  let bytes99 = Vec::from_raw_parts(l97 as *mut _, len99, len99);
-                                                                  let l100 = *((base + 16) as *const i32);
-                                                                  let l101 = *((base + 20) as *const i32);
-                                                                  let len102 = l101 as usize;
-                                                                  let bytes102 = Vec::from_raw_parts(l100 as *mut _, len102, len102);
+                                                                let e125 = {
+                                                                  let l101 = *((base + 8) as *const i32);
+                                                                  let l102 = *((base + 12) as *const i32);
+                                                                  let len103 = l102 as usize;
+                                                                  let bytes103 = Vec::from_raw_parts(l101 as *mut _, len103, len103);
+                                                                  let l104 = *((base + 16) as *const i32);
+                                                                  let l105 = *((base + 20) as *const i32);
+                                                                  let len106 = l105 as usize;
+                                                                  let bytes106 = Vec::from_raw_parts(l104 as *mut _, len106, len106);
                                                                   
                                                                   super::super::super::timeline::timeline_processor::api::TimelineResultWorker{
-                                                                    worker_id: wit_bindgen::rt::string_lift(bytes99),
-                                                                    template_id: wit_bindgen::rt::string_lift(bytes102),
+                                                                    worker_id: wit_bindgen::rt::string_lift(bytes103),
+                                                                    template_id: wit_bindgen::rt::string_lift(bytes106),
                                                                   }
                                                                 };
-                                                                V121::LessThanOrEqualTo(e121)
+                                                                V125::LessThanOrEqualTo(e125)
                                                               }
                                                               5 => {
-                                                                let e121 = {
-                                                                  let l103 = *((base + 8) as *const i32);
-                                                                  let l104 = *((base + 12) as *const i32);
-                                                                  let len105 = l104 as usize;
-                                                                  let bytes105 = Vec::from_raw_parts(l103 as *mut _, len105, len105);
-                                                                  let l106 = *((base + 16) as *const i32);
-                                                                  let l107 = *((base + 20) as *const i32);
-                                                                  let len108 = l107 as usize;
-                                                                  let bytes108 = Vec::from_raw_parts(l106 as *mut _, len108, len108);
+                                                                let e125 = {
+                                                                  let l107 = *((base + 8) as *const i32);
+                                                                  let l108 = *((base + 12) as *const i32);
+                                                                  let len109 = l108 as usize;
+                                                                  let bytes109 = Vec::from_raw_parts(l107 as *mut _, len109, len109);
+                                                                  let l110 = *((base + 16) as *const i32);
+                                                                  let l111 = *((base + 20) as *const i32);
+                                                                  let len112 = l111 as usize;
+                                                                  let bytes112 = Vec::from_raw_parts(l110 as *mut _, len112, len112);
                                                                   
                                                                   super::super::super::timeline::timeline_processor::api::TimelineResultWorker{
-                                                                    worker_id: wit_bindgen::rt::string_lift(bytes105),
-                                                                    template_id: wit_bindgen::rt::string_lift(bytes108),
+                                                                    worker_id: wit_bindgen::rt::string_lift(bytes109),
+                                                                    template_id: wit_bindgen::rt::string_lift(bytes112),
                                                                   }
                                                                 };
-                                                                V121::And(e121)
+                                                                V125::And(e125)
                                                               }
                                                               6 => {
-                                                                let e121 = {
-                                                                  let l109 = *((base + 8) as *const i32);
-                                                                  let l110 = *((base + 12) as *const i32);
-                                                                  let len111 = l110 as usize;
-                                                                  let bytes111 = Vec::from_raw_parts(l109 as *mut _, len111, len111);
-                                                                  let l112 = *((base + 16) as *const i32);
-                                                                  let l113 = *((base + 20) as *const i32);
-                                                                  let len114 = l113 as usize;
-                                                                  let bytes114 = Vec::from_raw_parts(l112 as *mut _, len114, len114);
+                                                                let e125 = {
+                                                                  let l113 = *((base + 8) as *const i32);
+                                                                  let l114 = *((base + 12) as *const i32);
+                                                                  let len115 = l114 as usize;
+                                                                  let bytes115 = Vec::from_raw_parts(l113 as *mut _, len115, len115);
+                                                                  let l116 = *((base + 16) as *const i32);
+                                                                  let l117 = *((base + 20) as *const i32);
+                                                                  let len118 = l117 as usize;
+                                                                  let bytes118 = Vec::from_raw_parts(l116 as *mut _, len118, len118);
                                                                   
                                                                   super::super::super::timeline::timeline_processor::api::TimelineResultWorker{
-                                                                    worker_id: wit_bindgen::rt::string_lift(bytes111),
-                                                                    template_id: wit_bindgen::rt::string_lift(bytes114),
+                                                                    worker_id: wit_bindgen::rt::string_lift(bytes115),
+                                                                    template_id: wit_bindgen::rt::string_lift(bytes118),
                                                                   }
                                                                 };
-                                                                V121::Or(e121)
+                                                                V125::Or(e125)
                                                               }
                                                               n => {
                                                                 debug_assert_eq!(n, 7, "invalid enum discriminant");
-                                                                let e121 = {
-                                                                  let l115 = *((base + 8) as *const i32);
-                                                                  let l116 = *((base + 12) as *const i32);
-                                                                  let len117 = l116 as usize;
-                                                                  let bytes117 = Vec::from_raw_parts(l115 as *mut _, len117, len117);
-                                                                  let l118 = *((base + 16) as *const i32);
-                                                                  let l119 = *((base + 20) as *const i32);
-                                                                  let len120 = l119 as usize;
-                                                                  let bytes120 = Vec::from_raw_parts(l118 as *mut _, len120, len120);
+                                                                let e125 = {
+                                                                  let l119 = *((base + 8) as *const i32);
+                                                                  let l120 = *((base + 12) as *const i32);
+                                                                  let len121 = l120 as usize;
+                                                                  let bytes121 = Vec::from_raw_parts(l119 as *mut _, len121, len121);
+                                                                  let l122 = *((base + 16) as *const i32);
+                                                                  let l123 = *((base + 20) as *const i32);
+                                                                  let len124 = l123 as usize;
+                                                                  let bytes124 = Vec::from_raw_parts(l122 as *mut _, len124, len124);
                                                                   
                                                                   super::super::super::timeline::timeline_processor::api::TimelineResultWorker{
-                                                                    worker_id: wit_bindgen::rt::string_lift(bytes117),
-                                                                    template_id: wit_bindgen::rt::string_lift(bytes120),
+                                                                    worker_id: wit_bindgen::rt::string_lift(bytes121),
+                                                                    template_id: wit_bindgen::rt::string_lift(bytes124),
                                                                   }
                                                                 };
-                                                                V121::Not(e121)
+                                                                V125::Not(e125)
                                                               }
                                                             };
                                                             
-                                                            v121
+                                                            v125
                                                           };
-                                                          V122::DerivedTimeline(e122)
+                                                          V126::DerivedTimeline(e126)
                                                         }
                                                       };
                                                       
-                                                      v122
+                                                      v126
                                                     };
-                                                    result123.push(e123);
+                                                    result127.push(e127);
                                                   }
-                                                  wit_bindgen::rt::dealloc(base123, (len123 as usize) * 24, 4);
-                                                  let l124 = i32::from(*((ptr47 + 12) as *const u8));
-                                                  use super::super::super::timeline::timeline_processor::api::TypedTimelineResultWorker as V195;
-                                                  let v195 = match l124 {
+                                                  wit_bindgen::rt::dealloc(base127, (len127 as usize) * 24, 4);
+                                                  let l128 = i32::from(*((ptr51 + 12) as *const u8));
+                                                  use super::super::super::timeline::timeline_processor::api::TypedTimelineResultWorker as V199;
+                                                  let v199 = match l128 {
                                                     0 => {
-                                                      let e195 = {
-                                                        let l125 = i32::from(*((ptr47 + 16) as *const u8));
-                                                        use super::super::super::timeline::timeline_processor::api::LeafTimelineNode as V144;
-                                                        let v144 = match l125 {
+                                                      let e199 = {
+                                                        let l129 = i32::from(*((ptr51 + 16) as *const u8));
+                                                        use super::super::super::timeline::timeline_processor::api::LeafTimelineNode as V148;
+                                                        let v148 = match l129 {
                                                           0 => {
-                                                            let e144 = {
-                                                              let l126 = *((ptr47 + 20) as *const i32);
-                                                              let l127 = *((ptr47 + 24) as *const i32);
-                                                              let len128 = l127 as usize;
-                                                              let bytes128 = Vec::from_raw_parts(l126 as *mut _, len128, len128);
-                                                              let l129 = *((ptr47 + 28) as *const i32);
-                                                              let l130 = *((ptr47 + 32) as *const i32);
-                                                              let len131 = l130 as usize;
-                                                              let bytes131 = Vec::from_raw_parts(l129 as *mut _, len131, len131);
+                                                            let e148 = {
+                                                              let l130 = *((ptr51 + 20) as *const i32);
+                                                              let l131 = *((ptr51 + 24) as *const i32);
+                                                              let len132 = l131 as usize;
+                                                              let bytes132 = Vec::from_raw_parts(l130 as *mut _, len132, len132);
+                                                              let l133 = *((ptr51 + 28) as *const i32);
+                                                              let l134 = *((ptr51 + 32) as *const i32);
+                                                              let len135 = l134 as usize;
+                                                              let bytes135 = Vec::from_raw_parts(l133 as *mut _, len135, len135);
                                                               
                                                               super::super::super::timeline::timeline_processor::api::TimelineResultWorker{
-                                                                worker_id: wit_bindgen::rt::string_lift(bytes128),
-                                                                template_id: wit_bindgen::rt::string_lift(bytes131),
+                                                                worker_id: wit_bindgen::rt::string_lift(bytes132),
+                                                                template_id: wit_bindgen::rt::string_lift(bytes135),
                                                               }
                                                             };
-                                                            V144::TlHasExisted(e144)
+                                                            V148::TlHasExisted(e148)
                                                           }
                                                           1 => {
-                                                            let e144 = {
-                                                              let l132 = *((ptr47 + 20) as *const i32);
-                                                              let l133 = *((ptr47 + 24) as *const i32);
-                                                              let len134 = l133 as usize;
-                                                              let bytes134 = Vec::from_raw_parts(l132 as *mut _, len134, len134);
-                                                              let l135 = *((ptr47 + 28) as *const i32);
-                                                              let l136 = *((ptr47 + 32) as *const i32);
-                                                              let len137 = l136 as usize;
-                                                              let bytes137 = Vec::from_raw_parts(l135 as *mut _, len137, len137);
+                                                            let e148 = {
+                                                              let l136 = *((ptr51 + 20) as *const i32);
+                                                              let l137 = *((ptr51 + 24) as *const i32);
+                                                              let len138 = l137 as usize;
+                                                              let bytes138 = Vec::from_raw_parts(l136 as *mut _, len138, len138);
+                                                              let l139 = *((ptr51 + 28) as *const i32);
+                                                              let l140 = *((ptr51 + 32) as *const i32);
+                                                              let len141 = l140 as usize;
+                                                              let bytes141 = Vec::from_raw_parts(l139 as *mut _, len141, len141);
                                                               
                                                               super::super::super::timeline::timeline_processor::api::TimelineResultWorker{
-                                                                worker_id: wit_bindgen::rt::string_lift(bytes134),
-                                                                template_id: wit_bindgen::rt::string_lift(bytes137),
+                                                                worker_id: wit_bindgen::rt::string_lift(bytes138),
+                                                                template_id: wit_bindgen::rt::string_lift(bytes141),
                                                               }
                                                             };
-                                                            V144::TlHasExistedWithin(e144)
+                                                            V148::TlHasExistedWithin(e148)
                                                           }
                                                           n => {
                                                             debug_assert_eq!(n, 2, "invalid enum discriminant");
-                                                            let e144 = {
-                                                              let l138 = *((ptr47 + 20) as *const i32);
-                                                              let l139 = *((ptr47 + 24) as *const i32);
-                                                              let len140 = l139 as usize;
-                                                              let bytes140 = Vec::from_raw_parts(l138 as *mut _, len140, len140);
-                                                              let l141 = *((ptr47 + 28) as *const i32);
-                                                              let l142 = *((ptr47 + 32) as *const i32);
-                                                              let len143 = l142 as usize;
-                                                              let bytes143 = Vec::from_raw_parts(l141 as *mut _, len143, len143);
+                                                            let e148 = {
+                                                              let l142 = *((ptr51 + 20) as *const i32);
+                                                              let l143 = *((ptr51 + 24) as *const i32);
+                                                              let len144 = l143 as usize;
+                                                              let bytes144 = Vec::from_raw_parts(l142 as *mut _, len144, len144);
+                                                              let l145 = *((ptr51 + 28) as *const i32);
+                                                              let l146 = *((ptr51 + 32) as *const i32);
+                                                              let len147 = l146 as usize;
+                                                              let bytes147 = Vec::from_raw_parts(l145 as *mut _, len147, len147);
                                                               
                                                               super::super::super::timeline::timeline_processor::api::TimelineResultWorker{
-                                                                worker_id: wit_bindgen::rt::string_lift(bytes140),
-                                                                template_id: wit_bindgen::rt::string_lift(bytes143),
+                                                                worker_id: wit_bindgen::rt::string_lift(bytes144),
+                                                                template_id: wit_bindgen::rt::string_lift(bytes147),
                                                               }
                                                             };
-                                                            V144::TlLatestEventToState(e144)
+                                                            V148::TlLatestEventToState(e148)
                                                           }
                                                         };
                                                         
-                                                        v144
+                                                        v148
                                                       };
-                                                      V195::LeafTimeline(e195)
+                                                      V199::LeafTimeline(e199)
                                                     }
                                                     n => {
                                                       debug_assert_eq!(n, 1, "invalid enum discriminant");
-                                                      let e195 = {
-                                                        let l145 = i32::from(*((ptr47 + 16) as *const u8));
-                                                        use super::super::super::timeline::timeline_processor::api::DerivedTimelineNode as V194;
-                                                        let v194 = match l145 {
+                                                      let e199 = {
+                                                        let l149 = i32::from(*((ptr51 + 16) as *const u8));
+                                                        use super::super::super::timeline::timeline_processor::api::DerivedTimelineNode as V198;
+                                                        let v198 = match l149 {
                                                           0 => {
-                                                            let e194 = {
-                                                              let l146 = *((ptr47 + 20) as *const i32);
-                                                              let l147 = *((ptr47 + 24) as *const i32);
-                                                              let len148 = l147 as usize;
-                                                              let bytes148 = Vec::from_raw_parts(l146 as *mut _, len148, len148);
-                                                              let l149 = *((ptr47 + 28) as *const i32);
-                                                              let l150 = *((ptr47 + 32) as *const i32);
-                                                              let len151 = l150 as usize;
-                                                              let bytes151 = Vec::from_raw_parts(l149 as *mut _, len151, len151);
+                                                            let e198 = {
+                                                              let l150 = *((ptr51 + 20) as *const i32);
+                                                              let l151 = *((ptr51 + 24) as *const i32);
+                                                              let len152 = l151 as usize;
+                                                              let bytes152 = Vec::from_raw_parts(l150 as *mut _, len152, len152);
+                                                              let l153 = *((ptr51 + 28) as *const i32);
+                                                              let l154 = *((ptr51 + 32) as *const i32);
+                                                              let len155 = l154 as usize;
+                                                              let bytes155 = Vec::from_raw_parts(l153 as *mut _, len155, len155);
                                                               
                                                               super::super::super::timeline::timeline_processor::api::TimelineResultWorker{
-                                                                worker_id: wit_bindgen::rt::string_lift(bytes148),
-                                                                template_id: wit_bindgen::rt::string_lift(bytes151),
+                                                                worker_id: wit_bindgen::rt::string_lift(bytes152),
+                                                                template_id: wit_bindgen::rt::string_lift(bytes155),
                                                               }
                                                             };
-                                                            V194::EqualTo(e194)
+                                                            V198::EqualTo(e198)
                                                           }
                                                           1 => {
-                                                            let e194 = {
-                                                              let l152 = *((ptr47 + 20) as *const i32);
-                                                              let l153 = *((ptr47 + 24) as *const i32);
-                                                              let len154 = l153 as usize;
-                                                              let bytes154 = Vec::from_raw_parts(l152 as *mut _, len154, len154);
-                                                              let l155 = *((ptr47 + 28) as *const i32);
-                                                              let l156 = *((ptr47 + 32) as *const i32);
-                                                              let len157 = l156 as usize;
-                                                              let bytes157 = Vec::from_raw_parts(l155 as *mut _, len157, len157);
+                                                            let e198 = {
+                                                              let l156 = *((ptr51 + 20) as *const i32);
+                                                              let l157 = *((ptr51 + 24) as *const i32);
+                                                              let len158 = l157 as usize;
+                                                              let bytes158 = Vec::from_raw_parts(l156 as *mut _, len158, len158);
+                                                              let l159 = *((ptr51 + 28) as *const i32);
+                                                              let l160 = *((ptr51 + 32) as *const i32);
+                                                              let len161 = l160 as usize;
+                                                              let bytes161 = Vec::from_raw_parts(l159 as *mut _, len161, len161);
                                                               
                                                               super::super::super::timeline::timeline_processor::api::TimelineResultWorker{
-                                                                worker_id: wit_bindgen::rt::string_lift(bytes154),
-                                                                template_id: wit_bindgen::rt::string_lift(bytes157),
+                                                                worker_id: wit_bindgen::rt::string_lift(bytes158),
+                                                                template_id: wit_bindgen::rt::string_lift(bytes161),
                                                               }
                                                             };
-                                                            V194::GreaterThan(e194)
+                                                            V198::GreaterThan(e198)
                                                           }
                                                           2 => {
-                                                            let e194 = {
-                                                              let l158 = *((ptr47 + 20) as *const i32);
-                                                              let l159 = *((ptr47 + 24) as *const i32);
-                                                              let len160 = l159 as usize;
-                                                              let bytes160 = Vec::from_raw_parts(l158 as *mut _, len160, len160);
-                                                              let l161 = *((ptr47 + 28) as *const i32);
-                                                              let l162 = *((ptr47 + 32) as *const i32);
-                                                              let len163 = l162 as usize;
-                                                              let bytes163 = Vec::from_raw_parts(l161 as *mut _, len163, len163);
+                                                            let e198 = {
+                                                              let l162 = *((ptr51 + 20) as *const i32);
+                                                              let l163 = *((ptr51 + 24) as *const i32);
+                                                              let len164 = l163 as usize;
+                                                              let bytes164 = Vec::from_raw_parts(l162 as *mut _, len164, len164);
+                                                              let l165 = *((ptr51 + 28) as *const i32);
+                                                              let l166 = *((ptr51 + 32) as *const i32);
+                                                              let len167 = l166 as usize;
+                                                              let bytes167 = Vec::from_raw_parts(l165 as *mut _, len167, len167);
                                                               
                                                               super::super::super::timeline::timeline_processor::api::TimelineResultWorker{
-                                                                worker_id: wit_bindgen::rt::string_lift(bytes160),
-                                                                template_id: wit_bindgen::rt::string_lift(bytes163),
+                                                                worker_id: wit_bindgen::rt::string_lift(bytes164),
+                                                                template_id: wit_bindgen::rt::string_lift(bytes167),
                                                               }
                                                             };
-                                                            V194::GreaterThanOrEqualTo(e194)
+                                                            V198::GreaterThanOrEqualTo(e198)
                                                           }
                                                           3 => {
-                                                            let e194 = {
-                                                              let l164 = *((ptr47 + 20) as *const i32);
-                                                              let l165 = *((ptr47 + 24) as *const i32);
-                                                              let len166 = l165 as usize;
-                                                              let bytes166 = Vec::from_raw_parts(l164 as *mut _, len166, len166);
-                                                              let l167 = *((ptr47 + 28) as *const i32);
-                                                              let l168 = *((ptr47 + 32) as *const i32);
-                                                              let len169 = l168 as usize;
-                                                              let bytes169 = Vec::from_raw_parts(l167 as *mut _, len169, len169);
+                                                            let e198 = {
+                                                              let l168 = *((ptr51 + 20) as *const i32);
+                                                              let l169 = *((ptr51 + 24) as *const i32);
+                                                              let len170 = l169 as usize;
+                                                              let bytes170 = Vec::from_raw_parts(l168 as *mut _, len170, len170);
+                                                              let l171 = *((ptr51 + 28) as *const i32);
+                                                              let l172 = *((ptr51 + 32) as *const i32);
+                                                              let len173 = l172 as usize;
+                                                              let bytes173 = Vec::from_raw_parts(l171 as *mut _, len173, len173);
                                                               
                                                               super::super::super::timeline::timeline_processor::api::TimelineResultWorker{
-                                                                worker_id: wit_bindgen::rt::string_lift(bytes166),
-                                                                template_id: wit_bindgen::rt::string_lift(bytes169),
+                                                                worker_id: wit_bindgen::rt::string_lift(bytes170),
+                                                                template_id: wit_bindgen::rt::string_lift(bytes173),
                                                               }
                                                             };
-                                                            V194::LessThan(e194)
+                                                            V198::LessThan(e198)
                                                           }
                                                           4 => {
-                                                            let e194 = {
-                                                              let l170 = *((ptr47 + 20) as *const i32);
-                                                              let l171 = *((ptr47 + 24) as *const i32);
-                                                              let len172 = l171 as usize;
-                                                              let bytes172 = Vec::from_raw_parts(l170 as *mut _, len172, len172);
-                                                              let l173 = *((ptr47 + 28) as *const i32);
-                                                              let l174 = *((ptr47 + 32) as *const i32);
-                                                              let len175 = l174 as usize;
-                                                              let bytes175 = Vec::from_raw_parts(l173 as *mut _, len175, len175);
+                                                            let e198 = {
+                                                              let l174 = *((ptr51 + 20) as *const i32);
+                                                              let l175 = *((ptr51 + 24) as *const i32);
+                                                              let len176 = l175 as usize;
+                                                              let bytes176 = Vec::from_raw_parts(l174 as *mut _, len176, len176);
+                                                              let l177 = *((ptr51 + 28) as *const i32);
+                                                              let l178 = *((ptr51 + 32) as *const i32);
+                                                              let len179 = l178 as usize;
+                                                              let bytes179 = Vec::from_raw_parts(l177 as *mut _, len179, len179);
                                                               
                                                               super::super::super::timeline::timeline_processor::api::TimelineResultWorker{
-                                                                worker_id: wit_bindgen::rt::string_lift(bytes172),
-                                                                template_id: wit_bindgen::rt::string_lift(bytes175),
+                                                                worker_id: wit_bindgen::rt::string_lift(bytes176),
+                                                                template_id: wit_bindgen::rt::string_lift(bytes179),
                                                               }
                                                             };
-                                                            V194::LessThanOrEqualTo(e194)
+                                                            V198::LessThanOrEqualTo(e198)
                                                           }
                                                           5 => {
-                                                            let e194 = {
-                                                              let l176 = *((ptr47 + 20) as *const i32);
-                                                              let l177 = *((ptr47 + 24) as *const i32);
-                                                              let len178 = l177 as usize;
-                                                              let bytes178 = Vec::from_raw_parts(l176 as *mut _, len178, len178);
-                                                              let l179 = *((ptr47 + 28) as *const i32);
-                                                              let l180 = *((ptr47 + 32) as *const i32);
-                                                              let len181 = l180 as usize;
-                                                              let bytes181 = Vec::from_raw_parts(l179 as *mut _, len181, len181);
+                                                            let e198 = {
+                                                              let l180 = *((ptr51 + 20) as *const i32);
+                                                              let l181 = *((ptr51 + 24) as *const i32);
+                                                              let len182 = l181 as usize;
+                                                              let bytes182 = Vec::from_raw_parts(l180 as *mut _, len182, len182);
+                                                              let l183 = *((ptr51 + 28) as *const i32);
+                                                              let l184 = *((ptr51 + 32) as *const i32);
+                                                              let len185 = l184 as usize;
+                                                              let bytes185 = Vec::from_raw_parts(l183 as *mut _, len185, len185);
                                                               
                                                               super::super::super::timeline::timeline_processor::api::TimelineResultWorker{
-                                                                worker_id: wit_bindgen::rt::string_lift(bytes178),
-                                                                template_id: wit_bindgen::rt::string_lift(bytes181),
+                                                                worker_id: wit_bindgen::rt::string_lift(bytes182),
+                                                                template_id: wit_bindgen::rt::string_lift(bytes185),
                                                               }
                                                             };
-                                                            V194::And(e194)
+                                                            V198::And(e198)
                                                           }
                                                           6 => {
-                                                            let e194 = {
-                                                              let l182 = *((ptr47 + 20) as *const i32);
-                                                              let l183 = *((ptr47 + 24) as *const i32);
-                                                              let len184 = l183 as usize;
-                                                              let bytes184 = Vec::from_raw_parts(l182 as *mut _, len184, len184);
-                                                              let l185 = *((ptr47 + 28) as *const i32);
-                                                              let l186 = *((ptr47 + 32) as *const i32);
-                                                              let len187 = l186 as usize;
-                                                              let bytes187 = Vec::from_raw_parts(l185 as *mut _, len187, len187);
+                                                            let e198 = {
+                                                              let l186 = *((ptr51 + 20) as *const i32);
+                                                              let l187 = *((ptr51 + 24) as *const i32);
+                                                              let len188 = l187 as usize;
+                                                              let bytes188 = Vec::from_raw_parts(l186 as *mut _, len188, len188);
+                                                              let l189 = *((ptr51 + 28) as *const i32);
+                                                              let l190 = *((ptr51 + 32) as *const i32);
+                                                              let len191 = l190 as usize;
+                                                              let bytes191 = Vec::from_raw_parts(l189 as *mut _, len191, len191);
                                                               
                                                               super::super::super::timeline::timeline_processor::api::TimelineResultWorker{
-                                                                worker_id: wit_bindgen::rt::string_lift(bytes184),
-                                                                template_id: wit_bindgen::rt::string_lift(bytes187),
+                                                                worker_id: wit_bindgen::rt::string_lift(bytes188),
+                                                                template_id: wit_bindgen::rt::string_lift(bytes191),
                                                               }
                                                             };
-                                                            V194::Or(e194)
+                                                            V198::Or(e198)
                                                           }
                                                           n => {
                                                             debug_assert_eq!(n, 7, "invalid enum discriminant");
-                                                            let e194 = {
-                                                              let l188 = *((ptr47 + 20) as *const i32);
-                                                              let l189 = *((ptr47 + 24) as *const i32);
-                                                              let len190 = l189 as usize;
-                                                              let bytes190 = Vec::from_raw_parts(l188 as *mut _, len190, len190);
-                                                              let l191 = *((ptr47 + 28) as *const i32);
-                                                              let l192 = *((ptr47 + 32) as *const i32);
-                                                              let len193 = l192 as usize;
-                                                              let bytes193 = Vec::from_raw_parts(l191 as *mut _, len193, len193);
+                                                            let e198 = {
+                                                              let l192 = *((ptr51 + 20) as *const i32);
+                                                              let l193 = *((ptr51 + 24) as *const i32);
+                                                              let len194 = l193 as usize;
+                                                              let bytes194 = Vec::from_raw_parts(l192 as *mut _, len194, len194);
+                                                              let l195 = *((ptr51 + 28) as *const i32);
+                                                              let l196 = *((ptr51 + 32) as *const i32);
+                                                              let len197 = l196 as usize;
+                                                              let bytes197 = Vec::from_raw_parts(l195 as *mut _, len197, len197);
                                                               
                                                               super::super::super::timeline::timeline_processor::api::TimelineResultWorker{
-                                                                worker_id: wit_bindgen::rt::string_lift(bytes190),
-                                                                template_id: wit_bindgen::rt::string_lift(bytes193),
+                                                                worker_id: wit_bindgen::rt::string_lift(bytes194),
+                                                                template_id: wit_bindgen::rt::string_lift(bytes197),
                                                               }
                                                             };
-                                                            V194::Not(e194)
+                                                            V198::Not(e198)
                                                           }
                                                         };
                                                         
-                                                        v194
+                                                        v198
                                                       };
-                                                      V195::DerivedTimeline(e195)
+                                                      V199::DerivedTimeline(e199)
                                                     }
                                                   };
                                                   
                                                   super::super::super::timeline::core::api::WorkerDetails{
-                                                    event_processor_workers: result123,
-                                                    result_worker: v195,
+                                                    event_processor_workers: result127,
+                                                    result_worker: v199,
                                                   }
                                                 };
                                                 Ok(e)
                                               }
                                               1 => {
                                                 let e = {
-                                                  let l196 = *((ptr47 + 4) as *const i32);
-                                                  let l197 = *((ptr47 + 8) as *const i32);
-                                                  let len198 = l197 as usize;
-                                                  let bytes198 = Vec::from_raw_parts(l196 as *mut _, len198, len198);
+                                                  let l200 = *((ptr51 + 4) as *const i32);
+                                                  let l201 = *((ptr51 + 8) as *const i32);
+                                                  let len202 = l201 as usize;
+                                                  let bytes202 = Vec::from_raw_parts(l200 as *mut _, len202, len202);
                                                   
-                                                  wit_bindgen::rt::string_lift(bytes198)
+                                                  wit_bindgen::rt::string_lift(bytes202)
                                                 };
                                                 Err(e)
                                               }
