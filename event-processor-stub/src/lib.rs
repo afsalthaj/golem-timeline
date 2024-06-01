@@ -389,8 +389,9 @@ impl crate::bindings::exports::timeline::event_processor_stub::stub_event_proces
                                                 t2: record
                                                     .field(1usize)
                                                     .expect("record field not found")
-                                                    .u64()
-                                                    .expect("u64 not found"),
+                                                    .option()
+                                                    .expect("option not found")
+                                                    .map(|inner| inner.u64().expect("u64 not found")),
                                             }
                                         },
                                         value: {
@@ -492,8 +493,9 @@ impl crate::bindings::exports::timeline::event_processor_stub::stub_event_proces
                                                 t2: record
                                                     .field(1usize)
                                                     .expect("record field not found")
-                                                    .u64()
-                                                    .expect("u64 not found"),
+                                                    .option()
+                                                    .expect("option not found")
+                                                    .map(|inner| inner.u64().expect("u64 not found")),
                                             }
                                         },
                                         value: {
@@ -595,8 +597,9 @@ impl crate::bindings::exports::timeline::event_processor_stub::stub_event_proces
                                                 t2: record
                                                     .field(1usize)
                                                     .expect("record field not found")
-                                                    .u64()
-                                                    .expect("u64 not found"),
+                                                    .option()
+                                                    .expect("option not found")
+                                                    .map(|inner| inner.u64().expect("u64 not found")),
                                             }
                                         },
                                         value: {

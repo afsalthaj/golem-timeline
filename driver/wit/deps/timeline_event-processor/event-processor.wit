@@ -16,7 +16,7 @@ interface api {
 
   record time-period {
     t1: u64,
-    t2: u64
+    t2: option<u64>
   }
 
   record timeline-result-point {

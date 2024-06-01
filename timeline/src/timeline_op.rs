@@ -4,7 +4,6 @@ use crate::event_predicate::{EventColumnName, GolemEventPredicate};
 use crate::golem_event::GolemEventValue;
 use crate::timeline_node_worker::TimeLineNodeWorkerInput;
 use crate::timeline_node_worker::TimeLineWorkerIdPrefix;
-use std::convert::From;
 
 #[derive(Clone, Debug)]
 pub enum TimeLineOp {
@@ -371,72 +370,6 @@ impl TimeLineOp {
 
         go(self.clone(), &event_processor_worker_details, &timeline_processor_worker_details)
     }
-}
-
-impl From<TimeLineOp> for OpBuildStage {
-    fn from(value: TimeLineOp) -> Self {
-        OpBuildStage::Built(value)
-    }
-}
-
-#[derive(Clone, Debug)]
-pub enum TimeLineOpBuilder {
-    EqualTo(Option<TimeLineNodeWorkerInput>, Box<TimeLineOpBuilder>, GolemEventValue),
-    GreaterThan(Option<TimeLineNodeWorkerInput>, Box<TimeLineOpBuilder>, GolemEventValue),
-    GreaterThanOrEqual(Option<TimeLineNodeWorkerInput>, Box<TimeLineOpBuilder>, GolemEventValue),
-    LessThan(Option<TimeLineNodeWorkerInput>, Box<TimeLineOpBuilder>, GolemEventValue),
-    LessThanOrEqual(Option<TimeLineNodeWorkerInput>, Box<TimeLineOpBuilder>, GolemEventValue),
-    And(Option<TimeLineNodeWorkerInput>, Box<TimeLineOpBuilder>, Box<TimeLineOpBuilder>),
-    Or(Option<TimeLineNodeWorkerInput>, Box<TimeLineOpBuilder>, Box<TimeLineOpBuilder>),
-    Not(Option<TimeLineNodeWorkerInput>, Box<TimeLineOpBuilder>),
-
-    TlHasExisted(Option<TimeLineNodeWorkerInput>, GolemEventPredicate<GolemEventValue>),
-    TlHasExistedWithin(Option<TimeLineNodeWorkerInput>, GolemEventPredicate<GolemEventValue>, u64),
-    TlLatestEventToState(Option<TimeLineNodeWorkerInput>, EventColumnName),
-    TlDurationWhere(Option<TimeLineNodeWorkerInput>, Box<TimeLineOpBuilder>),
-    TlDurationInCurState(Option<TimeLineNodeWorkerInput>, Box<TimeLineOpBuilder>),
-
-    PartiallyBuiltEqualTo(Option<TimeLineNodeWorkerInput>, Box<TimeLineOp>, GolemEventValue),
-    PartiallyBuiltGreaterThan(Option<TimeLineNodeWorkerInput>, Box<TimeLineOp>, GolemEventValue),
-    PartiallyBuiltGreaterThanOrEqual(
-        Option<TimeLineNodeWorkerInput>,
-        Box<TimeLineOp>,
-        GolemEventValue,
-    ),
-    PartiallyBuiltLessThan(Option<TimeLineNodeWorkerInput>, Box<TimeLineOp>, GolemEventValue),
-    PartiallyBuiltLessThanOrEqual(
-        Option<TimeLineNodeWorkerInput>,
-        Box<TimeLineOp>,
-        GolemEventValue,
-    ),
-
-    PartiallyBuiltLeftAnd(Option<TimeLineNodeWorkerInput>, Box<TimeLineOp>, Box<TimeLineOpBuilder>),
-    PartiallyBuiltRightAnd(
-        Option<TimeLineNodeWorkerInput>,
-        Box<TimeLineOpBuilder>,
-        Box<TimeLineOp>,
-    ),
-    PartiallyBuiltAnd(Option<TimeLineNodeWorkerInput>, Box<TimeLineOp>, Box<TimeLineOp>),
-
-    PartiallyBuiltLeftOr(Option<TimeLineNodeWorkerInput>, Box<TimeLineOp>, Box<TimeLineOpBuilder>),
-    PartiallyBuiltRightOr(Option<TimeLineNodeWorkerInput>, Box<TimeLineOpBuilder>, Box<TimeLineOp>),
-    PartiallyBuiltOr(Option<TimeLineNodeWorkerInput>, Box<TimeLineOp>, Box<TimeLineOp>),
-
-    PartiallyBuiltNot(Option<TimeLineNodeWorkerInput>, Box<TimeLineOp>),
-
-    PartiallyBuiltTlDurationWhere(Option<TimeLineNodeWorkerInput>, Box<TimeLineOp>),
-    PartiallyBuiltTlDurationInCurState(Option<TimeLineNodeWorkerInput>, Box<TimeLineOp>),
-}
-
-impl From<TimeLineOpBuilder> for OpBuildStage {
-    fn from(value: TimeLineOpBuilder) -> Self {
-        OpBuildStage::BeingBuilt(value)
-    }
-}
-
-pub enum OpBuildStage {
-    BeingBuilt(TimeLineOpBuilder),
-    Built(TimeLineOp),
 }
 
 pub fn tl_has_existed(predicate: GolemEventPredicate<GolemEventValue>) -> TimeLineOp {

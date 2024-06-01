@@ -2925,8 +2925,7 @@ impl crate::bindings::exports::timeline::timeline_processor_stub::stub_timeline_
                                                 t2: record
                                                     .field(1usize)
                                                     .expect("record field not found")
-                                                    .u64()
-                                                    .expect("u64 not found"),
+                                                    .u64(),
                                             }
                                         },
                                         value: {
