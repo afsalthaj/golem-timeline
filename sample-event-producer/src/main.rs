@@ -57,6 +57,7 @@ async fn main() -> Result<(), pulsar::Error> {
     let mut producer =
         pulsar.producer().with_topic(topic).with_name("sample-playback-events").build().await?;
 
+    // CIRR events
     let events = vec![
         Event {
             time: 1,
