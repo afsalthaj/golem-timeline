@@ -5,7 +5,8 @@ on:
 
 jobs:
   run-benchmark:
-    runs-on: ubuntu-latest-large
+    if: ${{ github.event.issue.pull_request }}
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
