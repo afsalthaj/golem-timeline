@@ -34,9 +34,12 @@ jobs:
         run: |
           cp temporary.json benchmark_cold_storage_large.json
       - name: Checkout github_pages
-        run: |
-          git add benchmark_cold_storage_large.json
-          git commit -m "Add benchmark results"
-          git push origin HEAD:github_pages
+        uses: EndBug/add-and-commit@v9
+        with:
+          branch: github_pages
+          message: Add benchmark results
+          add: benchmark_cold_storage_large.json
+          new_branch: github_pages
+          push: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}          
