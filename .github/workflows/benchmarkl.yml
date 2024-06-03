@@ -39,3 +39,14 @@ jobs:
       - name: Run Benchmark
         run: |
           echo "Running Benchmark Job"
+      - name: Post results as a comment
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          REPORT="Dummy Benchmark Result"
+          COMMENT="### Benchmark Comparison Results\n\n${REPORT}"
+          curl -s -X POST \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"body\": \"$COMMENT\"}" \
+            ${{ github.event.issue.comments_url }}
