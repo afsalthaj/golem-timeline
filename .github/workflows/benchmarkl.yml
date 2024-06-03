@@ -5,7 +5,7 @@ on:
 
 jobs:
   run-benchmark:
-    if: ${{ github.event.issue.pull_request }}
+    if: ${{ github.event.issue.pull_request && contains(github.event.comment.body, '/run-benchmark') }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -38,4 +38,4 @@ jobs:
         run: cargo component build
       - name: Run Benchmark
         run: |
-          echo "Running Benchmark"
+          echo "Running Benchmark Job"
