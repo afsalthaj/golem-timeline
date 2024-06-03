@@ -79,5 +79,5 @@ curl -X POST http://localhost:9881/v1/api/deployments/deploy -H "Content-Type: a
 
 echo ""
 echo "Deployment succeeded!"
-echo "Testing with 'curl -X GET http://localhost:9006/afsal/instantiate-timeline| jq -r . | jq .'"
+echo "Testing with 'http://localhost:9006/afsal/instantiate-timeline"
 curl -H "Accept: application/json" -X GET http://localhost:9006/afsal/instantiate-timeline | jq -r . | jq .
