@@ -2,6 +2,11 @@
 
 Watch the talk from Afsal at LambdaConf:2024:Estes-Park:Colorado: https://www.youtube.com/watch?v=9WjUBOfgriY
 
+```scala
+
+
+```
+
 Forget imperative style and extremely complex and hefty data piplelines and streaming (probably with Spark and python/df, SQL queries) with the help of Timeline paper from Conviva backed by durable execution of Golem.
 
 https://www.cidrdb.org/cidr2023/papers/p22-milner.pdf
@@ -22,7 +27,7 @@ The project begins with building the library to get the following DSL working
       |
 seek  |                   seek
       |               
-buffer|               \                ---(buffer)---
+buffer|                               ---(buffer)---
 play  |         ---(play)--             
 t ---------------------------------------------->  
                 t1        t2          t3          t10
@@ -78,11 +83,12 @@ t1------t2----------t7
 
 ```
 
-The summary of the above timeline is as follows,
-user did start playing at some point. Although the user
-action was seek at some point, even after giving an extension of 5 seconds
-for seek, there still exists 3 seconds of buffering,
-contributing to the connection induced rebuffering.
+The summary of the above timeline is as follows:
+> User did start playing at some point. After playing user did perform a seek event
+> at some point. We extend this event to a configurable 5 seconds. Even after
+> extending the seek event to 5 seconds, we can see there still exists 3 seconds
+> of buffering, indicating this buffering may not be the direct outcome of seek -
+> contributing to the connection induced rebuffering!
 
 
 ### A simple credit card transaction outlier detection
