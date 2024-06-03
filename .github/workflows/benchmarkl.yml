@@ -34,7 +34,6 @@ jobs:
         run: |
           cp temporary.json benchmark_cold_storage_large.json
       - name: Checkout github_pages
-        if: github.event.review.state == 'APPROVED'
         uses: EndBug/add-and-commit@v9
         with:
           branch: github_pages
