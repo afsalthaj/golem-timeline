@@ -6,6 +6,7 @@ on:
 jobs:
   run-benchmark:
     if: ${{ github.event.issue.pull_request && contains(github.event.comment.body, '/run-benchmark') }}
+    permissions: write-all
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
