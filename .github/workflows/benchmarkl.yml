@@ -34,6 +34,7 @@ jobs:
         run: |
           cp temporary.json benchmark_cold_storage_large.json
       - name: Checkout github_pages
+        if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
         uses: EndBug/add-and-commit@v9
         with:
           branch: github_pages
