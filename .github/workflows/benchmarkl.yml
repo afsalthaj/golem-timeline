@@ -1,4 +1,4 @@
-name: Benchmark
+name: On Demand Benchmark
 on:
   issue_comment:
     types: [created]
