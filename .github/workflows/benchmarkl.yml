@@ -2,12 +2,10 @@ name: On Demand Benchmark
 on:
   issue_comment:
     types: [created]
-  pull_request:
-    types: [closed]
 
 jobs:
   run-benchmark:
-    if: ${{ (github.event_name == 'pull_request' && github.event.pull_request.merged == true) || contains(github.event.pull_request.body, '/run-benchmark') }}
+    if: ${{ github.event.issue.pull_request && contains(github.event.comment.body, '/run-benchmark') }}
     permissions: write-all
     runs-on: ubuntu-latest
     steps:
@@ -36,7 +34,7 @@ jobs:
         run: |
           cp temporary.json benchmark_cold_storage_large.json
       - name: Checkout github_pages
-        if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
+        if: github.event.review.state == 'APPROVED'
         uses: EndBug/add-and-commit@v9
         with:
           branch: github_pages
