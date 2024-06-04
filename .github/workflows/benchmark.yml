@@ -9,10 +9,6 @@ jobs:
     permissions: write-all
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          submodules: true
       - name: Run Benchmark
         run: |
           echo "Running Benchmark Job"
