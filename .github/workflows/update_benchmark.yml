@@ -21,7 +21,7 @@ jobs:
               let comment_body = "${{ github.event.comment.body }}";
               let run_id = comment_body.replace("/commit-benchmark ", '').trim();
               console.log("The benchmark run-id is ${run_id}");
-              console.log("Download the benchmar results from the artifactory of ${run_id}..")
+              console.log("Download the benchmar results from the artifactory of ${run_id}..");
               let allArtifacts = await github.rest.actions.listWorkflowRunArtifacts({
                  owner: context.repo.owner,
                  repo: context.repo.repo,
