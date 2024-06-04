@@ -1,6 +1,6 @@
 name: Commit Benchmark Results
 on:
-  pull_request_review:
+  issue_comment:
     types: [created]
 
 jobs:
@@ -17,8 +17,8 @@ jobs:
         id: download-artifact
         uses: actions/download-artifact@v3
         with:
-          name: benchmark-results-${{ github.event.pull_request.number }}
-          path: .
+          name: benchmark-results-${{ github.event.issue.number }}
+          path: benchmark_cold_storage_large.json
       - name: Check if artifact exists
         run: |
           if [ ! -f benchmark_cold_storage_large.json ]; then
