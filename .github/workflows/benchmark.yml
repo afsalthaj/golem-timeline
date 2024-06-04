@@ -36,6 +36,6 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: benchmark-results-${{ github.event.issue.number }}
+          name: benchmark-results-${{ github.event.number }}
           path: |
             benchmark_cold_storage_large.json      
