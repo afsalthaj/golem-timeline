@@ -40,40 +40,13 @@ jobs:
               let fs = require('fs');
               let issue_number = fs.readFileSync('./pr_number');
               console.log(String(issue_number));
-      - name: 'Download artifact'
-        uses: actions/github-script@v6
+      - name: Commit and push benchmark results
+        uses: EndBug/add-and-commit@v9
         with:
-          script: |
-              console.log(${{github.event.workflow_run.id }});
-              let allArtifacts = await github.rest.actions.listWorkflowRunArtifacts({
-                 owner: context.repo.owner,
-                 repo: context.repo.repo,
-                 run_id: ${{ github.event.workflow_run.id }},
-              });
-              let matchArtifact = allArtifacts[0];
-              if (matchArtifact) {
-                let download = await github.rest.actions.downloadArtifact({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  artifact_id: matchArtifact.id,
-                  archive_format: 'zip',
-                });
-                let fs = require('fs');
-                fs.writeFileSync(`${process.env.GITHUB_WORKSPACE}/benchmark_cold_storage_large.json.zip`, Buffer.from(download.data));
-              } else {
-                 console.log("Zero artefacts found");
-              }
-
-#      - name: 'Unzip artifact'
-#        run: unzip benchmark_cold_storage_large.json.zip
-#      - name: Commit and push benchmark results
-#        uses: EndBug/add-and-commit@v9
-#        with:
-#          branch: github_pages
-#          message: Add benchmark results
-#          add: |
-#            benchmark_cold_storage_large.json
-#          new_branch: github_pages
-#          push: true
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          branch: github_pages
+          message: Add benchmark results
+          add: pr_number
+          new_branch: github_pages
+          push: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
