@@ -17,13 +17,14 @@ jobs:
         uses: actions/github-script@v6
         with:
             script: |
-              let comment_body =  ${{ github.event.comment.body }} 
-              let run_id = comment_body.replace("commit-benchmark", '')
+              let comment_body =  ${{ github.event.comment.body }};
+              console.log(comment_body);
+              let run_id = comment_body.replace("commit-benchmark", '');
               console.log(run_id);
               let allArtifacts = await github.rest.actions.listWorkflowRunArtifacts({
                  owner: context.repo.owner,
                  repo: context.repo.repo,
-                 run_id: ${{ github.event.workflow_run.id }}
+                 run_id: run_id
               });
               let matchArtifact = allArtifacts.data.artifacts.filter((artifact) => {
                 return artifact.name == "benchmark_cold_storage_large.json"
