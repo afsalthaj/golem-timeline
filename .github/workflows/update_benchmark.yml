@@ -1,12 +1,12 @@
 name: Commit Benchmark Results
 on:
-  issue_comment:
-    types: [created]
+  workflow_run:
+    workflows: [On Demand Benchmark]
+    types:
+      - completed
 
 jobs:
   commit-results:
-    if: ${{ github.event.issue.pull_request && contains(github.event.comment.body, '/commit-benchmark') }}
-    permissions: write-all
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
