@@ -24,7 +24,7 @@ jobs:
                  run_id: ${{ github.event.workflow_run.id }},
               });
               let matchArtifact = allArtifacts.data.artifacts.filter((artifact) => {
-                return artifact.name == "pr_number"
+                return artifact.name == "benchmark_cold_storage_large.json"
               })[0];
               let download = await github.rest.actions.downloadArtifact({
                  owner: context.repo.owner,
@@ -33,9 +33,9 @@ jobs:
                  archive_format: 'zip',
               });
               let fs = require('fs');
-              fs.writeFileSync(`${process.env.GITHUB_WORKSPACE}/pr_number.zip`, Buffer.from(download.data));
+              fs.writeFileSync(`${process.env.GITHUB_WORKSPACE}/benchmark_cold_storage_large.json.zip`, Buffer.from(download.data));
       - name: 'Unzip artifact'
-        run: unzip pr_number.zip
+        run: unzip benchmark_cold_storage_large.json.zip
 
       - name: 'Comment on PR'
         uses: actions/github-script@v6
@@ -43,14 +43,14 @@ jobs:
             github-token: ${{ secrets.GITHUB_TOKEN }}
             script: |
               let fs = require('fs');
-              let issue_number = fs.readFileSync('./pr_number');
+              let issue_number = fs.readFileSync('./benchmark_cold_storage_large.json');
               console.log(String(issue_number));
       - name: Commit and push benchmark results
         uses: EndBug/add-and-commit@v9
         with:
           branch: github_pages
           message: Add benchmark results
-          add: pr_number
+          add: benchmark_cold_storage_large.json
           new_branch: github_pages
           push: true
         env:
