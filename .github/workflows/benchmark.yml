@@ -38,4 +38,10 @@ jobs:
         with:
           name: benchmark-results-${{ github.event.issue.number }}
           path: |
-            benchmark_cold_storage_large.json      
+            benchmark_cold_storage_large.json
+      - name: Download artifacts tests 
+        id: download-artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: benchmark-results-${{ github.event.number }}
+          path: benchmark_cold_storage_large.json         
