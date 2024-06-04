@@ -53,7 +53,7 @@ jobs:
         with:
           branch: github_pages
           message: Add benchmark results
-          add: benchmark_cold_storage_large.json
+          add: benchmark_cold_storage_large1.json
           new_branch: github_pages
           push: origin github_pages --force
 
