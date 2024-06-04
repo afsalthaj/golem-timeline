@@ -52,6 +52,8 @@ jobs:
           message: Add benchmark results
           add: benchmark_cold_storage_large.json
           new_branch: github_pages
+          pull: '--rebase --autostash ...'
           push: true
+
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
