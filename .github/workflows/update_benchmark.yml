@@ -1,9 +1,5 @@
 name: Commit Benchmark Results
 on:
-  workflow_run:
-    workflows: [On Demand Benchmark]
-    types:
-      - completed
   issue_comment:
     types: [ created ]
 
@@ -21,10 +17,12 @@ jobs:
         uses: actions/github-script@v6
         with:
             script: |
+              let 
+              console.log( ${{ github.event.workflow_run.id }});
               let allArtifacts = await github.rest.actions.listWorkflowRunArtifacts({
                  owner: context.repo.owner,
                  repo: context.repo.repo,
-                 run_id: ${{ github.event.workflow_run.id }},
+                 run_id: ${{ github.event.workflow_run.id }}
               });
               let matchArtifact = allArtifacts.data.artifacts.filter((artifact) => {
                 return artifact.name == "benchmark_cold_storage_large.json"
