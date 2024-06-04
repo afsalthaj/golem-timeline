@@ -1,24 +1,24 @@
 name: Commit Benchmark Results
 on:
-  issue_comment:
-    types: [created]
+  workflow_run:
+    workflows: [On Demand Benchmark]
+    types:
+      - completed
 
 jobs:
   commit-results:
-    if: ${{ github.event.issue.pull_request && contains(github.event.comment.body, '/commit-benchmark') }}
-    permissions: write-all
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
         with:
           submodules: true
-      - name: Download artifact
+      - name: Download artifacts tests 
         id: download-artifact
         uses: actions/download-artifact@v3
         with:
           name: benchmark-results-${{ github.event.issue.number }}
-          path: benchmark_cold_storage_large.json
+          path: benchmark_cold_storage_large.json            
       - name: Check if artifact exists
         run: |
           if [ ! -f benchmark_cold_storage_large.json ]; then
