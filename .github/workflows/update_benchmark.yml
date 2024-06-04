@@ -39,7 +39,7 @@ jobs:
             script: |
               let fs = require('fs');
               let issue_number = fs.readFileSync('./pr_number');
-              console.log(Number(issue_number));
+              console.log(String(issue_number));
       - name: 'Download artifact'
         uses: actions/github-script@v6
         with:
