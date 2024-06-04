@@ -17,7 +17,8 @@ jobs:
         uses: actions/github-script@v6
         with:
             script: |
-              let comment_body =  ${{ github.event.comment.body }};
+              console.log("Running...");
+              let comment_body = "${{ github.event.comment.body }}";
               console.log(comment_body);
               let run_id = comment_body.replace(/commit-benchmark/g, '');
               console.log(run_id);
