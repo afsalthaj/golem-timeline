@@ -1,0 +1,39 @@
+name: Commit Benchmark Results
+on:
+  pull_request_review:
+    types: [created]
+
+jobs:
+  commit-results:
+    if: ${{ github.event.issue.pull_request && contains(github.event.comment.body, '/commit-benchmark') }}
+    permissions: write-all
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: Download artifact
+        id: download-artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: benchmark-results-${{ github.event.pull_request.number }}
+          path: .
+      - name: Check if artifact exists
+        run: |
+          if [ ! -f benchmark_cold_storage_large.json ]; then
+            echo "Artifact does not exist"
+            echo "Not updating Github_Pages with new benchmark results"
+            exit 1
+          fi
+      - name: Commit and push benchmark results
+        uses: EndBug/add-and-commit@v9
+        with:
+          branch: github_pages
+          message: Add benchmark results
+          add: |
+            benchmark_cold_storage_large.json
+          new_branch: github_pages
+          push: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
