@@ -34,6 +34,7 @@ jobs:
         env:
           PR_NUMBER: ${{ github.event.number }}
         run: |
+          mkdir -p ./benchmark-data
           cp temporary.json benchmark-data/benchmark_cold_storage_large.json
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
