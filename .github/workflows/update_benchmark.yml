@@ -1,11 +1,11 @@
 name: Commit Benchmark Results
 on:
   pull_request_review:
-    types: [submitted]
+    types: [created]
 
 jobs:
   commit-results:
-    if: github.event.review.state == 'APPROVED'
+    if: ${{ github.event.issue.pull_request && contains(github.event.comment.body, '/commit-benchmark') }}
     permissions: write-all
     runs-on: ubuntu-latest
     steps:
