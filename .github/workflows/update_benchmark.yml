@@ -21,6 +21,7 @@ jobs:
               let matchArtifact = allArtifacts.data.artifacts.filter((artifact) => {
                 return artifact.name == "benchmark_cold_storage_large.json"
               })[0];
+              print(matchArtifact);
 #              let download = await github.rest.actions.downloadArtifact({
 #                 owner: context.repo.owner,
 #                 repo: context.repo.repo,
