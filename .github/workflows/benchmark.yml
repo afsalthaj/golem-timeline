@@ -31,7 +31,7 @@ jobs:
           -H "Authorization: Bearer $GITHUB_TOKEN" \
           -H "X-GitHub-Api-Version: 2022-11-28" \
           https://api.github.com/repos/afsalthaj/golem-timeline/issues/$ISSUE_NUMBER/comments \
-          -d '{"body":"### Cold Storage Large: \n PR Avg Runtime: 94ms, \n Existing Avg Runtime: 100ms \n RunID: $WORKFLOW_ID"}'
+          -d '{"body":"### Cold Storage Large: \n PR Avg Runtime: 94ms, \n Existing Avg Runtime: 100ms \n RunID: ${WORKFLOW_ID}"}'
       - name: Copy benchmark result
         env:
           PR_NUMBER: ${{ github.event.issue.number }}
