@@ -16,7 +16,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
+          WORKFLOW_ID: ${{ github.event.workflow_run.id }}
         run: |
+          echo console.log(${{github.event.workflow_run.id }});
           REPORT="Dummy Benchmark Result"
           COMMENT="### Benchmark Comparison Results\n\n${REPORT}"
           curl -L \
