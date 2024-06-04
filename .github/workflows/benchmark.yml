@@ -34,14 +34,7 @@ jobs:
         run: |
           cp temporary.json benchmark_cold_storage_large.json
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: benchmark-results-${{ github.event.issue.number }}
-          path: |
-            benchmark_cold_storage_large.json
-      - name: Download artifacts tests 
-        id: download-artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: benchmark-results-${{ github.event.issue.number }}
-          path: benchmark_cold_storage_large.json         
+          path: benchmark_cold_storage_large.json     
