@@ -16,11 +16,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
-          WORKFLOW_ID: ${{ github.event.workflow_run.id }}
+          WORKFLOW_ID: ${{ github.run_id }}
         run: |
           echo "$WORKFLOW_ID";
-          REPORT="Dummy Benchmark Result"
-          COMMENT="### Benchmark Comparison Results\n\n${REPORT}"
           curl -L \
           -X POST \
           -H "Accept: application/vnd.github+json" \
