@@ -39,12 +39,7 @@ jobs:
             script: |
               let fs = require('fs');
               let issue_number = Number(fs.readFileSync('./pr_number'));
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: issue_number,
-                body: 'Thank you for the PR!'
-              });
+              console.log(issue_number);
       - name: 'Download artifact'
         uses: actions/github-script@v6
         with:
