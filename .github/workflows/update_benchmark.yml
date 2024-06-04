@@ -1,6 +1,6 @@
 name: Commit Benchmark Results
 on:
-  pull_request_review:
+  issue_comment:
     types: [created]
 
 jobs:
