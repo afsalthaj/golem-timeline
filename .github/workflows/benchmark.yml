@@ -31,10 +31,12 @@ jobs:
           https://api.github.com/repos/afsalthaj/golem-timeline/issues/$ISSUE_NUMBER/comments \
           -d '{"body":"### Cold Storage Large: \n PR Avg Runtime: 94ms, \n Existing Avg Runtime: 100ms"}'
       - name: Copy temporary.json
+        env:
+          PR_NUMBER: ${{ github.event.number }}
         run: |
-          cp temporary.json benchmark_cold_storage_large.json
+          cp temporary.json benchmark-data/benchmark_cold_storage_large.json
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: benchmark-results-${{ github.event.issue.number }}
-          path: benchmark_cold_storage_large.json     
+          path: benchmark-data/
