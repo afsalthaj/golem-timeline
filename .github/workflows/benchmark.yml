@@ -38,7 +38,7 @@ jobs:
           PR_NUMBER: ${{ github.event.issue.number }}
         run: |
           mkdir -p ./benchmark-data
-          cp temporary.json benchmark-data/benchmark_cold_storage_large.json
+          cp temporary.json benchmark-data/benchmark_cold_storage_large1.json
       - name: Save PR number
         env:
           PR_NUMBER: ${{ github.event.issue.number }}

@@ -21,14 +21,14 @@ jobs:
               let comment_body = "${{ github.event.comment.body }}";
               let run_id = comment_body.replace("/commit-benchmark ", '').trim();
               console.log("The benchmark run-id is " + run_id);
-              console.log("Download the benchmar results from the artifactory of " + run_id  + " ..");
+              console.log("Download the benchmark results from the artifactory of " + run_id  + " ..");
               let allArtifacts = await github.rest.actions.listWorkflowRunArtifacts({
                  owner: context.repo.owner,
                  repo: context.repo.repo,
                  run_id: run_id
               });
               let matchArtifact = allArtifacts.data.artifacts.filter((artifact) => {
-                return artifact.name == "benchmark_cold_storage_large.json"
+                return artifact.name == "benchmark_cold_storage_large1.json"
               })[0];
               let download = await github.rest.actions.downloadArtifact({
                  owner: context.repo.owner,
@@ -37,7 +37,7 @@ jobs:
                  archive_format: 'zip',
               });
               let fs = require('fs');
-              fs.writeFileSync(`${process.env.GITHUB_WORKSPACE}/benchmark_cold_storage_large.json.zip`, Buffer.from(download.data));
+              fs.writeFileSync(`${process.env.GITHUB_WORKSPACE}/benchmark_cold_storage_large1.json.zip`, Buffer.from(download.data));
       - name: 'Unzip artifact'
         run: unzip benchmark_cold_storage_large.json.zip
       - name: 'Comment on PR'
@@ -46,7 +46,7 @@ jobs:
             github-token: ${{ secrets.GITHUB_TOKEN }}
             script: |
               let fs = require('fs');
-              let issue_number = fs.readFileSync('./benchmark_cold_storage_large.json');
+              let issue_number = fs.readFileSync('./benchmark_cold_storage_large1.json');
               console.log(String(issue_number));
       - name: Commit and push benchmark results
         uses: EndBug/add-and-commit@v9
