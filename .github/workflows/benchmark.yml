@@ -34,13 +34,13 @@ jobs:
           -d '{"body":"### Cold Storage Large: \n PR Avg Runtime: 94ms, \n Existing Avg Runtime: 100ms"}'
       - name: Copy benchmark result
         env:
-          PR_NUMBER: ${{ github.event.number }}
+          PR_NUMBER: ${{ github.event.issue.number }}
         run: |
           mkdir -p ./benchmark-data
           cp temporary.json benchmark-data/benchmark_cold_storage_large.json
       - name: Save PR number
         env:
-          PR_NUMBER: ${{ github.event.number }}
+          PR_NUMBER: ${{ github.event.issue.number }}
         run: |
           mkdir -p ./pr
           echo $PR_NUMBER > ./pr/pr_number

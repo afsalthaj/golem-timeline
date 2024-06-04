@@ -38,7 +38,7 @@ jobs:
             github-token: ${{ secrets.GITHUB_TOKEN }}
             script: |
               let fs = require('fs');
-              let issue_number = Number(fs.readFileSync('./pr_number'));
+              let issue_number = fs.readFileSync('./pr_number');
               console.log(issue_number);
       - name: 'Download artifact'
         uses: actions/github-script@v6
