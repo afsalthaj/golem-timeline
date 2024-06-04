@@ -17,7 +17,7 @@ jobs:
         id: download-artifact
         uses: actions/download-artifact@v3
         with:
-          name: benchmark-results-${{ github.event.issue.number }}
+          name: benchmark-results-54
           path: benchmark_cold_storage_large.json            
       - name: Check if artifact exists
         run: |
