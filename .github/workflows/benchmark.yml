@@ -38,10 +38,10 @@ jobs:
           mkdir -p ./benchmark-data
           
           # Replace these with original commands
-          cp temporary.json benchmark-data/benchmark_cold_storage_small.json
-          cp temporary.json benchmark-data/benchmark_cold_storage_medium.json
-          cp temporary.json benchmark-data/benchmark_cold_storage_large.json
-          cp temporary.json benchmark-data/unavailable.json
+          cp temporary.json benchmark-data-current/benchmark_cold_storage_small.json
+          cp temporary.json benchmark-data-current/benchmark_cold_storage_medium.json
+          cp temporary.json benchmark-data-current/benchmark_cold_storage_large.json
+          cp temporary.json benchmark-data-current/unavailable.json
           
           echo "Finished Running Benchmark Jobs"
           
@@ -62,9 +62,9 @@ jobs:
           if git fetch origin github_pages:github_pages && [[ ! "$COMMENT_BODY" =~ refresh ]]; then                              
              # Check each file
              for file in "${files[@]}"; do
-                if git checkout github_pages -- "benchmark-data/$file" > "$file.previous"; then
+                if git checkout github_pages -- "benchmark-data/$file"; then
                   present_files+=("$file")
-                  compare_command="$compare_command --files $file=$(pwd)/$file,$(pwd)/benchmark-data/$file"
+                  compare_command="$compare_command --files $file=$(pwd)/benchmark-data/$file,$(pwd)/benchmark-data-current/$file"
                 else
                   absent_files+=("$file")
                   get_report_command="$get_report_command --files $file=$(pwd)/benchmark-data/$file"
@@ -111,16 +111,10 @@ jobs:
           fi
           
           echo "Done processing files."
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: benchmark_cold_storage_large.json
-          path: benchmark-data/
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: benchmark_cold_storage_small.json
-          path: benchmark-data/
+
+      - name: "Move benchmark-data-current to benchmark-data"
+        run: |
+          mv benchmark-data-current benchmark-data
       - name: Commit and push benchmark results temporarily
         uses: EndBug/add-and-commit@v9
         env:
