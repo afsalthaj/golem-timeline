@@ -57,18 +57,28 @@ jobs:
           get_report_command="./benchmark/target/debug/benchmark_report get-report"
           echo "Starting to pull the existing benchmark results if exists"
           
-          git fetch origin github_pages:github_pages
-                              
-           # Check each file
-          for file in "${files[@]}"; do
-            if git checkout github_pages -- "$file" > "$file.previous"; then
-              present_files+=("$file")
-              compare_command="$compare_command --files $file=$(pwd)/$file,$(pwd)/benchmark-data/$file"
-            else
-              absent_files+=("$file")
-              get_report_command="$get_report_command --files $file=$(pwd)/benchmark-data/$file"
-            fi
-          done
+          if git fetch origin github_pages:github_pages; then                              
+             # Check each file
+             for file in "${files[@]}"; do
+                if git checkout github_pages -- "$file" > "$file.previous"; then
+                  present_files+=("$file")
+                  compare_command="$compare_command --files $file=$(pwd)/$file,$(pwd)/benchmark-data/$file"
+                else
+                  absent_files+=("$file")
+                  get_report_command="$get_report_command --files $file=$(pwd)/benchmark-data/$file"
+                fi
+             done
+          else
+            for file in "${files[@]}"; do
+              if git checkout github_pages -- "$file" > "$file.previous"; then
+                present_files+=("$file")
+                compare_command="$compare_command --files $file=$(pwd)/$file,$(pwd)/benchmark-data/$file"
+              else
+                absent_files+=("$file")
+                get_report_command="$get_report_command --files $file=$(pwd)/benchmark-data/$file"
+              fi
+             done
+          fi
           
           echo $compare_command
           echo $get_report_command
