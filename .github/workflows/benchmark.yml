@@ -134,5 +134,9 @@ jobs:
           git pull 
           git add benchmark-data
           git commit -m "Adding benchmarking data"
-          git push
+          if git push; then
+            echo "Successfully pushed the benchmark data"
+          else
+            echo "Benchmark data hasn't been pushed probably due to zero changes"
+          fi
 
