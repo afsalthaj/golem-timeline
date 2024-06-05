@@ -52,9 +52,7 @@ jobs:
           get_report_command="./benchmark/target/debug/benchmark_report get-report"
           
           echo "Starting to pull the existing benchmark results if exists"
-          
-          git remote add origin https://github.com/afsalthaj/golem-timeline
-          
+                    
            # Check each file
           for file in "${files[@]}"; do
             command=git show origin/github_pages:"$file"
