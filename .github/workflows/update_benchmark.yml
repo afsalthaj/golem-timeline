@@ -20,7 +20,7 @@ jobs:
         run: |
           echo $PR_NUMBER
           # Pull the specific files from the branch benchmark_result_tmp_${PR_NUMBER}
-          git fetch origin refs/heads/benchmark_result_tmp_${PR_NUMBER}:refs/remotes/origin/benchmark_result_tmp_${PR_NUMBER}
+          git fetch origin benchmark_result_tmp_${PR_NUMBER}:benchmark_result_tmp_${PR_NUMBER}
           git checkout benchmark_result_tmp_${PR_NUMBER} -- benchmark_cold_storage_large.json benchmark_cold_storage_medium.json benchmark_cold_storage_small.json
       - name: Commit and push benchmark results
         uses: EndBug/add-and-commit@v9
