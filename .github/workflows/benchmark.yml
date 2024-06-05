@@ -122,6 +122,6 @@ jobs:
           branch: benchmark_result_tmp_$PR_NUMBER
           message: Add benchmark results
           add: benchmark_cold_storage_large.json benchmark_cold_storage_small.json benchmark_cold_storage_medium.json
-          new_branch: github_pages
+          new_branch: benchmark_result_tmp_$PR_NUMBER
           push: origin github_pages --force
 
