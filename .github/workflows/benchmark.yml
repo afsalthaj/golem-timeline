@@ -12,6 +12,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.issue.pull_request.head.ref }}
+          fetch-depth: 0
           submodules: true
       - name: Setup Rust
         uses: actions-rs/toolchain@v1
@@ -116,6 +118,8 @@ jobs:
         run: |
           # Removing the old benchmark data
           rm -rf benchmark-data
+          rm -rf benchmark_comparison.md
+          rm -rf report.md
           # Moving the current benchmark data to benchmark-data
           mv benchmark-data-current benchmark-data
       - name: Commit and push benchmark results temporarily
