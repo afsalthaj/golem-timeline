@@ -12,8 +12,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: refs/pull/${{ github.event.issue.number }}/head
           submodules: true
+      # https://github.com/actions/checkout/issues/331#issuecomment-674464772
+      - name: Checkout Pull Request
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+            PR_URL="${{ github.event.issue.pull_request.url }}"
+            PR_NUM=${PR_URL##*/}
+            echo "Checking out from PR #$PR_NUM based on URL: $PR_URL"
+            hub pr checkout $PR_NUM
       - name: Setup Rust
         uses: actions-rs/toolchain@v1
         with:
