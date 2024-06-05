@@ -40,11 +40,12 @@ jobs:
           cp temporary.json benchmark-data/benchmark_cold_storage_small.json
           cp temporary.json benchmark-data/benchmark_cold_storage_medium.json
           cp temporary.json benchmark-data/benchmark_cold_storage_large.json
+          cp temporary.json benchmark-data/unavailable.json
           
           echo "Finished Running Benchmark Jobs"
           
           # Define the files to check
-          files=("benchmark_cold_storage_large.json" "benchmark_cold_storage_small.json" "benchmark_cold_storage_medium.json")
+          files=("benchmark_cold_storage_large.json" "benchmark_cold_storage_small.json" "benchmark_cold_storage_medium.json", "unavailable.json")
           
           echo "Checking the following files if it already exists in a previous benchmark run"
           for str in ${files[@]}; do
@@ -126,7 +127,7 @@ jobs:
         with:
           branch: benchmark_result_tmp_${{github.event.issue.number}}
           message: Add benchmark results
-          add: benchmark_cold_storage_large.json benchmark_cold_storage_small.json benchmark_cold_storage_medium.json
+          add: benchmark_cold_storage_large.json benchmark_cold_storage_small.json benchmark_cold_storage_medium.json unavailable.json
           new_branch: benchmark_result_tmp_${{github.event.issue.number}}
           push: origin benchmark_result_tmp_${{github.event.issue.number}} --force
 
