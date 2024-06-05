@@ -18,15 +18,6 @@ jobs:
         with:
           toolchain: stable
           override: true
-      - uses: Swatinem/rust-cache@v2
-        with:
-          shared-key: debug
-          cache-all-crates: true
-          save-if: true
-      - name: Build all targets
-        env:
-          SCCACHE_GHA_ENABLED: "true"
-          RUSTC_WRAPPER: "sccache"
         run: |
           echo "Building benchmark report job"
           cargo build --manifest-path=benchmark/Cargo.toml
