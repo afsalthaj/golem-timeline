@@ -256,14 +256,14 @@ mod internal {
     }
 
     pub fn convert_to_markdown_table(benchmark_report: BenchmarkReport) -> String {
-        let mut table = String::new();
-        table.push_str("| Benchmark Type | Cluster Size | Size | Length | Avg Time |\n");
-        table.push_str("|---------------|--------------|------|--------|----------|\n");
+        let mut table = vec![];
+        table.push("| Benchmark Type | Cluster Size | Size | Length | Avg Time |".to_string());
+        table.push("|---------------|--------------|------|--------|----------|".to_string());
 
         for report in benchmark_report.results {
             for run_config_report in report.report.results {
-                table.push_str(&format!(
-                    "| {} | {} | {} | {} | {} |\n",
+                table.push(format!(
+                    "| {} | {} | {} | {} | {} |",
                     report.benchmark_type.0,
                     run_config_report.run_config.cluster_size,
                     run_config_report.run_config.size,
@@ -273,7 +273,7 @@ mod internal {
             }
         }
 
-        table
+        table.join("\\n")
     }
 
     pub fn convert_to_markdown_table_comparison(comparison_report: BenchmarkComparisonReport) -> String {
@@ -284,7 +284,7 @@ mod internal {
         for report in comparison_report.results {
             for run_config_report in report.comparison_results.results {
                 table.push_str(&format!(
-                    "| {} | {} | {} | {} | {} | {} |\n",
+                    r#"| {} | {} | {} | {} | {} | {} |\n"#,
                     report.benchmark_type.0,
                     run_config_report.run_config.cluster_size,
                     run_config_report.run_config.size,
@@ -300,10 +300,7 @@ mod internal {
 
     pub fn to_markdown(title: &str, table: &String) -> String {
         format!(
-            r#"
-## {}
-{}
-"#,
+            r#"\n## {}\n{}\n"#,
             title,
             table
         )
