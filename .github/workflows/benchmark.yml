@@ -57,6 +57,8 @@ jobs:
           
            # Check each file
           for file in "${files[@]}"; do
+            command=git show origin/github_pages:"$file"
+            echo "Running $command"
             if git show origin/github_pages:"$file" > "$file.previous"; then
               present_files+=("$file")
               compare_command="$compare_command --files $file=$(pwd)/$file.previous,$(pwd)/$file"
@@ -87,7 +89,7 @@ jobs:
           if [ ${#absent_files[@]} -ne 0 ]; then
                echo "Running report"
                $get_report_command > report.md
-               REPORT_MD=$(<benchmark_comparison.md)
+               REPORT_MD=$(<report.md)
                curl -L \
                -X POST \
                -H "Accept: application/vnd.github+json" \
