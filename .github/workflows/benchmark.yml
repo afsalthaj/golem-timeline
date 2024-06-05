@@ -114,9 +114,14 @@ jobs:
         with:
           name: benchmark_cold_storage_small.json
           path: benchmark-data/
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+      - name: Commit and push benchmark results temporarily
+        uses: EndBug/add-and-commit@v9
+        env:
+          PR_NUMBER: ${{ github.event.issue.number }}
         with:
-          name: benchmark_cold_storage_medium.json
-          path: benchmark-data/
+          branch: benchmark_result_tmp_$PR_NUMBER
+          message: Add benchmark results
+          add: benchmark_cold_storage_large.json benchmark_cold_storage_small.json benchmark_cold_storage_medium.json
+          new_branch: github_pages
+          push: origin github_pages --force
 
