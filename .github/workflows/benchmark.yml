@@ -18,6 +18,7 @@ jobs:
         with:
           toolchain: stable
           override: true
+      - name: Build Benchmark Report Job
         run: |
           echo "Building benchmark report job"
           cargo build --manifest-path=benchmark/Cargo.toml
