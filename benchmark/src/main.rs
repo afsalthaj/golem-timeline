@@ -1,8 +1,8 @@
 use clap::Parser;
-use serde::{Deserialize, Serialize};
-use std::error::Error;
 use core::time::Duration;
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use std::error::Error;
 
 use cli_params::CliReportParams;
 use internal::*;
@@ -37,7 +37,6 @@ pub struct DurationResult {
 pub struct BenchmarkRunResult {
     pub duration_results: HashMap<ResultKey, DurationResult>,
     pub count_results: HashMap<ResultKey, CountResult>,
-
 }
 #[derive(Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq)]
 pub struct RunConfig {
@@ -53,24 +52,12 @@ fn main() -> Result<(), Box<dyn Error>> {
     match params {
         CliReportParams::CompareBenchmarks(args) => {
             let final_report = BenchmarkComparisonReport::from(args.files)?;
-            println!(
-                "{}",
-                wrap_with_title(
-                    "Benchmark Comparison Report",
-                    &convert_to_markdown_table_comparison(final_report)
-                )
-            );
+            println!("{}", &final_report.to_markdown_table());
         }
         CliReportParams::GetReport(args) => {
             let final_report = BenchmarkReport::from(args.files)?;
 
-            println!(
-                "{}",
-                wrap_with_title(
-                    "Benchmark Report",
-                   &convert_to_markdown_table(final_report)
-                )
-            );
+            println!("{}", &final_report.to_markdown_table());
         }
     }
 
@@ -112,9 +99,30 @@ impl BenchmarkComparisonReport {
             comparison_results.push(report);
         }
 
-        Ok(BenchmarkComparisonReport {
-            results: comparison_results,
-        })
+        Ok(BenchmarkComparisonReport { results: comparison_results })
+    }
+
+    pub fn to_markdown_table(&self) -> String {
+        let mut table = vec![];
+        table.push("| Benchmark Type | Cluster Size | Size | Length | Previous Avg Time | Current Avg Time |".to_string());
+        table.push("|---------------|--------------|------|--------|-------------------|------------------|".to_string());
+
+        for report in self.results.iter() {
+            for run_config_report in report.comparison_results.results.iter() {
+                table.push(format!(
+                    r#"| {} | {} | {} | {} | {} | {} |"#,
+                    report.benchmark_type.0,
+                    run_config_report.run_config.cluster_size,
+                    run_config_report.run_config.size,
+                    run_config_report.run_config.length,
+                    run_config_report.comparison.previous_avg,
+                    run_config_report.comparison.current_avg
+                ));
+            }
+        }
+
+        let table_str = table.join("\\n");
+        wrap_with_title("Benchmark Comparison Report", &table_str)
     }
 }
 
@@ -130,6 +138,28 @@ struct BenchmarkReport {
 }
 
 impl BenchmarkReport {
+    pub fn to_markdown_table(&self) -> String {
+        let mut table = vec![];
+        table.push("| Benchmark Type | Cluster Size | Size | Length | Avg Time |".to_string());
+        table.push("|---------------|--------------|------|--------|----------|".to_string());
+
+        for report in self.results.iter() {
+            for run_config_report in report.report.results.iter() {
+                table.push(format!(
+                    "| {} | {} | {} | {} | {} |",
+                    report.benchmark_type.0,
+                    run_config_report.run_config.cluster_size,
+                    run_config_report.run_config.size,
+                    run_config_report.run_config.length,
+                    run_config_report.avg_time
+                ));
+            }
+        }
+
+        let table_str = table.join("\\n");
+        wrap_with_title("Benchmark Report", &table_str)
+    }
+
     pub fn from(input: Vec<(BenchmarkType, BenchmarkFile)>) -> Result<BenchmarkReport, String> {
         let mut benchmark_results: Vec<BenchmarkReportPerBenchmarkType> = vec![];
         for (benchmark_type, file) in input {
@@ -139,25 +169,18 @@ impl BenchmarkReport {
 
             let mut report_results = Vec::new();
             for (run_config, avg_time) in run_config_to_avg_time {
-                report_results.push(BenchmarkReportPerRunConfig {
-                    run_config,
-                    avg_time,
-                });
+                report_results.push(BenchmarkReportPerRunConfig { run_config, avg_time });
             }
 
             let report = BenchmarkReportPerBenchmarkType {
                 benchmark_type,
-                report: BenchmarkReportForAllRunConfigs {
-                    results: report_results,
-                },
+                report: BenchmarkReportForAllRunConfigs { results: report_results },
             };
 
             benchmark_results.push(report);
         }
 
-        Ok(BenchmarkReport {
-            results: benchmark_results,
-        })
+        Ok(BenchmarkReport { results: benchmark_results })
     }
 }
 
@@ -187,20 +210,14 @@ impl ComparisonForAllRunConfigs {
 
         for (run_config, previous_avg_time) in previous_avg {
             let current_avg_time = current_avg.get(&run_config).unwrap();
-            let comparison = Comparison {
-                previous_avg: previous_avg_time,
-                current_avg: *current_avg_time,
-            };
+            let comparison =
+                Comparison { previous_avg: previous_avg_time, current_avg: *current_avg_time };
 
-            comparison_results.push(ComparisonPerRunConfig {
-                run_config: run_config.clone(),
-                comparison,
-            });
+            comparison_results
+                .push(ComparisonPerRunConfig { run_config: run_config.clone(), comparison });
         }
 
-        ComparisonForAllRunConfigs {
-            results: comparison_results,
-        }
+        ComparisonForAllRunConfigs { results: comparison_results }
     }
 }
 
@@ -224,7 +241,6 @@ struct BenchmarkFile(String);
 
 mod internal {
     use super::*;
-    use serde_json::Value;
     use std::collections::HashMap;
     use std::fs::File;
     use std::io::BufReader;
@@ -255,55 +271,8 @@ mod internal {
         run_config_to_avg_time
     }
 
-    pub fn convert_to_markdown_table(benchmark_report: BenchmarkReport) -> String {
-        let mut table = vec![];
-        table.push("| Benchmark Type | Cluster Size | Size | Length | Avg Time |".to_string());
-        table.push("|---------------|--------------|------|--------|----------|".to_string());
-
-        for report in benchmark_report.results {
-            for run_config_report in report.report.results {
-                table.push(format!(
-                    "| {} | {} | {} | {} | {} |",
-                    report.benchmark_type.0,
-                    run_config_report.run_config.cluster_size,
-                    run_config_report.run_config.size,
-                    run_config_report.run_config.length,
-                    run_config_report.avg_time
-                ));
-            }
-        }
-
-        table.join("\\n")
-    }
-
-    pub fn convert_to_markdown_table_comparison(comparison_report: BenchmarkComparisonReport) -> String {
-        let mut table = vec![];
-        table.push("| Benchmark Type | Cluster Size | Size | Length | Previous Avg Time | Current Avg Time |".to_string());
-        table.push("|---------------|--------------|------|--------|-------------------|------------------|".to_string());
-
-        for report in comparison_report.results {
-            for run_config_report in report.comparison_results.results {
-                table.push(format!(
-                    r#"| {} | {} | {} | {} | {} | {} |"#,
-                    report.benchmark_type.0,
-                    run_config_report.run_config.cluster_size,
-                    run_config_report.run_config.size,
-                    run_config_report.run_config.length,
-                    run_config_report.comparison.previous_avg,
-                    run_config_report.comparison.current_avg
-                ));
-            }
-        }
-
-        table.join("\\n")
-    }
-
     pub fn wrap_with_title(title: &str, table: &String) -> String {
-        format!(
-            r#"\n## {}\n{}\n"#,
-            title,
-            table
-        )
+        format!(r#"\n## {}\n{}\n"#, title, table)
     }
 }
 
@@ -336,9 +305,8 @@ mod cli_params {
         (BenchmarkType, BenchmarkResultFiles),
         Box<dyn std::error::Error + Send + Sync + 'static>,
     > {
-        let pos = s
-            .find('=')
-            .ok_or_else(|| format!("invalid KEY=value: no `=` found in `{}`", s))?;
+        let pos =
+            s.find('=').ok_or_else(|| format!("invalid KEY=value: no `=` found in `{}`", s))?;
         let (label, files_str) = s.split_at(pos);
         let files_str = &files_str[1..]; // skip the '='
         let files: Vec<&str> = files_str.split(',').collect();
@@ -371,19 +339,15 @@ mod cli_params {
         s: &str,
     ) -> Result<(BenchmarkType, BenchmarkFile), Box<dyn std::error::Error + Send + Sync + 'static>>
     {
-        let pos = s
-            .find('=')
-            .ok_or_else(|| format!("invalid KEY=value: no `=` found in `{}`", s))?;
+        let pos =
+            s.find('=').ok_or_else(|| format!("invalid KEY=value: no `=` found in `{}`", s))?;
         let (label, files_str) = s.split_at(pos);
         let files_str = &files_str[1..]; // skip the '='
 
         if files_str.is_empty() {
             Err("Empty file name".into())
         } else {
-            Ok((
-                BenchmarkType(label.to_string()),
-                BenchmarkFile(files_str.trim().to_string()),
-            ))
+            Ok((BenchmarkType(label.to_string()), BenchmarkFile(files_str.trim().to_string())))
         }
     }
 }
