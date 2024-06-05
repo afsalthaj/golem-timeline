@@ -34,14 +34,19 @@ jobs:
           #! /bin/bash
         
           # Create a dummy benchmark result
-          cp temporary.json benchmark_cold_storage_small.json
-          cp temporary.json benchmark_cold_storage_medium.json
-          cp temporary.json benchmark_cold_storage_large.json
+          mkdir -p ./benchmark-data
+          
+          # Replace these with original commands
+          cp temporary.json benchmark-data/benchmark_cold_storage_small.json
+          cp temporary.json benchmark-data/benchmark_cold_storage_medium.json
+          cp temporary.json benchmark-data/benchmark_cold_storage_large.json
+          
+          echo "Finished Running Benchmark Jobs"
           
           # Define the files to check
           files=("benchmark_cold_storage_large.json" "benchmark_cold_storage_small.json" "benchmark_cold_storage_medium.json")
           
-          echo "Checking the following files if it already exists"
+          echo "Checking the following files if it already exists in a previous benchmark run"
           for str in ${files[@]}; do
             echo $str
           done
@@ -50,17 +55,18 @@ jobs:
           absent_files=()
           compare_command="./benchmark/target/debug/benchmark_report compare-benchmarks"
           get_report_command="./benchmark/target/debug/benchmark_report get-report"
-          
           echo "Starting to pull the existing benchmark results if exists"
-                    
+          
+          git fetch origin github_pages:github_pages
+                              
            # Check each file
           for file in "${files[@]}"; do
-            if git show origin/github_pages:"$file" > "$file.previous"; then
+            if git checkout github_pages -- "$file" > "$file.previous"; then
               present_files+=("$file")
-              compare_command="$compare_command --files $file=$(pwd)/$file.previous,$(pwd)/$file"
+              compare_command="$compare_command --files $file=$(pwd)/$file,$(pwd)/benchmark-data/$file"
             else
               absent_files+=("$file")
-              get_report_command="$get_report_command --files $file=$(pwd)/$file"
+              get_report_command="$get_report_command --files $file=$(pwd)/benchmark-data/$file"
             fi
           done
           
@@ -98,12 +104,6 @@ jobs:
           fi
           
           echo "Done processing files."
-      - name: Copy benchmark result
-        run: |
-          mkdir -p ./benchmark-data
-          cp benchmark_cold_storage_large.json benchmark-data/benchmark_cold_storage_large.json
-          cp benchmark_cold_storage_small.json benchmark-data/benchmark_cold_storage_small.json
-          cp benchmark_cold_storage_medium.json benchmark-data/benchmark_cold_storage_medium.json
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
