@@ -128,7 +128,7 @@ jobs:
         with:
           branch: benchmark_result_tmp_${{github.event.issue.number}}
           message: Add benchmark results
-          add: benchmark_cold_storage_large.json benchmark_cold_storage_small.json benchmark_cold_storage_medium.json unavailable.json
+          add: benchmark-data
           new_branch: benchmark_result_tmp_${{github.event.issue.number}}
           push: origin benchmark_result_tmp_${{github.event.issue.number}} --force
 
