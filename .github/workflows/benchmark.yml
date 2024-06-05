@@ -45,7 +45,7 @@ jobs:
           echo "Finished Running Benchmark Jobs"
           
           # Define the files to check
-          files=("benchmark_cold_storage_large.json" "benchmark_cold_storage_small.json" "benchmark_cold_storage_medium.json", "unavailable.json")
+          files=("benchmark_cold_storage_large.json" "benchmark_cold_storage_small.json" "benchmark_cold_storage_medium.json" "unavailable.json")
           
           echo "Checking the following files if it already exists in a previous benchmark run"
           for str in ${files[@]}; do
