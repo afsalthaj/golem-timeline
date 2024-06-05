@@ -124,11 +124,11 @@ jobs:
           mv benchmark-data-current benchmark-data
       - name: Commit and push benchmark results temporarily
         run: |
-          echo "Current branch is ${GITHUB_REF#refs/heads/}"
+          git branch -a
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git pull origin HEAD:${GITHUB_REF#refs/heads/}
+          git pull 
           git add benchmark-data
           git commit -m "Adding benchmarking data"
-          git push origin HEAD:${GITHUB_REF#refs/heads/}
+          git push
 
