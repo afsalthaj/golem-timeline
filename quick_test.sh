@@ -1,7 +1,4 @@
 #!/bin/bash
-
-echo "Welcome to that BAD shell script! Keep being sad until it disappears"
-
 current_epoch=$(date +%s)
 
 driver_with_core=$(golem-cli -F json component add --component-name driver_with_core${current_epoch} target/wasm32-wasi/debug/driver_with_core.wasm| jq .componentId)
