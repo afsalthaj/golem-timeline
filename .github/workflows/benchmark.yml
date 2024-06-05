@@ -12,7 +12,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: does_it_work
+          ref: refs/pull/${{ github.event.issue.number }}/head
           submodules: true
       - name: Setup Rust
         uses: actions-rs/toolchain@v1
