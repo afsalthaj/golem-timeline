@@ -34,12 +34,12 @@ jobs:
           #! /bin/bash
         
           # Create a dummy benchmark result
-          cp temporary.json benchmark_cold_storage_large1.json
+          cp temporary.json benchmark_cold_storage_small.json
+          cp temporary.json benchmark_cold_storage_medium.json
           cp temporary.json benchmark_cold_storage_large.json
-          cp temporary.json unavailable.json
           
           # Define the files to check
-          files=("benchmark_cold_storage_large1.json" "benchmark_cold_storage_small.json" "benchmark_cold_storage_medium.json")
+          files=("benchmark_cold_storage_large.json" "benchmark_cold_storage_small.json" "benchmark_cold_storage_medium.json")
           
           # Initialize arrays to store present and absent files
           present_files=()
