@@ -47,9 +47,11 @@ jobs:
           compare_command="./benchmark/target/debug/benchmark_report compare-benchmarks"
           get_report_command="./benchmark/target/debug/benchmark_report get-report"
           
+          echo "Starting to pull the existing benchmark results if exists"
+          
            # Check each file
           for file in "${files[@]}"; do
-            if git show origin/github_pages:"$file" > "$file.previous"; then
+            if git show github_pages:"$file" > "$file.previous"; then
               present_files+=("$file")
               compare_command="$compare_command --files $file=$(pwd)/$file.previous,$(pwd)/$file"
             else
