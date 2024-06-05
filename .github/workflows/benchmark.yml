@@ -55,8 +55,6 @@ jobs:
                     
            # Check each file
           for file in "${files[@]}"; do
-            command=git show origin/github_pages:"$file"
-            echo "Running $command"
             if git show origin/github_pages:"$file" > "$file.previous"; then
               present_files+=("$file")
               compare_command="$compare_command --files $file=$(pwd)/$file.previous,$(pwd)/$file"
