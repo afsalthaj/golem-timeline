@@ -55,7 +55,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             let final_report = BenchmarkComparisonReport::from(args.files)?;
             println!(
                 "{}",
-                to_markdown(
+                wrap_with_title(
                     "Benchmark Comparison Report",
                     &convert_to_markdown_table_comparison(final_report)
                 )
@@ -66,7 +66,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
             println!(
                 "{}",
-                to_markdown(
+                wrap_with_title(
                     "Benchmark Report",
                    &convert_to_markdown_table(final_report)
                 )
@@ -277,14 +277,14 @@ mod internal {
     }
 
     pub fn convert_to_markdown_table_comparison(comparison_report: BenchmarkComparisonReport) -> String {
-        let mut table = String::new();
-        table.push_str("| Benchmark Type | Cluster Size | Size | Length | Previous Avg Time | Current Avg Time |\n");
-        table.push_str("|---------------|--------------|------|--------|-------------------|------------------|\n");
+        let mut table = vec![];
+        table.push("| Benchmark Type | Cluster Size | Size | Length | Previous Avg Time | Current Avg Time |".to_string());
+        table.push("|---------------|--------------|------|--------|-------------------|------------------|".to_string());
 
         for report in comparison_report.results {
             for run_config_report in report.comparison_results.results {
-                table.push_str(&format!(
-                    r#"| {} | {} | {} | {} | {} | {} |\n"#,
+                table.push(format!(
+                    r#"| {} | {} | {} | {} | {} | {} |"#,
                     report.benchmark_type.0,
                     run_config_report.run_config.cluster_size,
                     run_config_report.run_config.size,
@@ -295,10 +295,10 @@ mod internal {
             }
         }
 
-        table
+        table.join("\\n")
     }
 
-    pub fn to_markdown(title: &str, table: &String) -> String {
+    pub fn wrap_with_title(title: &str, table: &String) -> String {
         format!(
             r#"\n## {}\n{}\n"#,
             title,
