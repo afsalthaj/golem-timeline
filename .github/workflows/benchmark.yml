@@ -30,6 +30,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
           WORKFLOW_ID: ${{ github.run_id }}
+          COMMENT_BODY: ${{ github.event.comment.body }}
         run: |
           #! /bin/bash
         
@@ -58,7 +59,7 @@ jobs:
           get_report_command="./benchmark/target/debug/benchmark_report get-report"
           echo "Starting to pull the existing benchmark results if exists"
           
-          if git fetch origin github_pages:github_pages; then                              
+          if git fetch origin github_pages:github_pages && [[ ! "$COMMENT_BODY" =~ refresh ]]; then                              
              # Check each file
              for file in "${files[@]}"; do
                 if git checkout github_pages -- "$file" > "$file.previous"; then
