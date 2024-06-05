@@ -57,7 +57,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 "{}",
                 to_markdown(
                     "Benchmark Comparison Report",
-                    &serde_json::to_value(final_report).unwrap()
+                    &convert_to_markdown_table_comparison(final_report)
                 )
             );
         }
@@ -68,7 +68,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 "{}",
                 to_markdown(
                     "Benchmark Report",
-                    &serde_json::to_value(final_report).unwrap()
+                   &convert_to_markdown_table(final_report)
                 )
             );
         }
@@ -255,18 +255,57 @@ mod internal {
         run_config_to_avg_time
     }
 
-    pub fn to_markdown(title: &str, value: &Value) -> String {
+    pub fn convert_to_markdown_table(benchmark_report: BenchmarkReport) -> String {
+        let mut table = String::new();
+        table.push_str("| Benchmark Type | Cluster Size | Size | Length | Avg Time |\n");
+        table.push_str("|---------------|--------------|------|--------|----------|\n");
+
+        for report in benchmark_report.results {
+            for run_config_report in report.report.results {
+                table.push_str(&format!(
+                    "| {} | {} | {} | {} | {} |\n",
+                    report.benchmark_type.0,
+                    run_config_report.run_config.cluster_size,
+                    run_config_report.run_config.size,
+                    run_config_report.run_config.length,
+                    run_config_report.avg_time
+                ));
+            }
+        }
+
+        table
+    }
+
+    pub fn convert_to_markdown_table_comparison(comparison_report: BenchmarkComparisonReport) -> String {
+        let mut table = String::new();
+        table.push_str("| Benchmark Type | Cluster Size | Size | Length | Previous Avg Time | Current Avg Time |\n");
+        table.push_str("|---------------|--------------|------|--------|-------------------|------------------|\n");
+
+        for report in comparison_report.results {
+            for run_config_report in report.comparison_results.results {
+                table.push_str(&format!(
+                    "| {} | {} | {} | {} | {} | {} |\n",
+                    report.benchmark_type.0,
+                    run_config_report.run_config.cluster_size,
+                    run_config_report.run_config.size,
+                    run_config_report.run_config.length,
+                    run_config_report.comparison.previous_avg,
+                    run_config_report.comparison.current_avg
+                ));
+            }
+        }
+
+        table
+    }
+
+    pub fn to_markdown(title: &str, table: &String) -> String {
         format!(
             r#"
 ## {}
-
-```
 {}
-
-```
 "#,
             title,
-            serde_json::to_string_pretty(value).unwrap()
+            table
         )
     }
 }
