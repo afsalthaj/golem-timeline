@@ -62,7 +62,7 @@ jobs:
           if git fetch origin github_pages:github_pages && [[ ! "$COMMENT_BODY" =~ refresh ]]; then                              
              # Check each file
              for file in "${files[@]}"; do
-                if git checkout github_pages -- "$file" > "$file.previous"; then
+                if git checkout github_pages -- "benchmark-data/$file" > "$file.previous"; then
                   present_files+=("$file")
                   compare_command="$compare_command --files $file=$(pwd)/$file,$(pwd)/benchmark-data/$file"
                 else
