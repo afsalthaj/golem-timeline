@@ -35,7 +35,7 @@ jobs:
           #! /bin/bash
         
           # Create a dummy benchmark result
-          mkdir -p ./benchmark-data
+          mkdir -p ./benchmark-data-current
           
           # Replace these with original commands
           cp temporary.json benchmark-data-current/benchmark_cold_storage_small.json
@@ -114,6 +114,9 @@ jobs:
 
       - name: "Move benchmark-data-current to benchmark-data"
         run: |
+          # Removing the old benchmark data
+          rm -rf benchmark-data
+          # Moving the current benchmark data to benchmark-data
           mv benchmark-data-current benchmark-data
       - name: Commit and push benchmark results temporarily
         uses: EndBug/add-and-commit@v9
