@@ -139,7 +139,7 @@ checksum = "06ea2b9bc92be3c2baa9334a323ebca2d6f074ff852cd1d7b11064035cd3868f"
 name = "core-stub"
 version = "0.0.1"
 dependencies = [
- "golem-wasm-rpc",
+ "golem-wasm-rpc 0.0.23",
  "wit-bindgen",
 ]
 
@@ -194,7 +194,7 @@ dependencies = [
 name = "event-processor-stub"
 version = "0.0.1"
 dependencies = [
- "golem-wasm-rpc",
+ "golem-wasm-rpc 0.0.23",
  "wit-bindgen",
 ]
 
@@ -321,6 +321,16 @@ name = "golem-wasm-rpc"
 version = "0.0.22"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "012c0e9d0ac13ddf01a3fba860d5f1450a120cbf5481ebbd42523ebbbcebfe50"
+dependencies = [
+ "prost-build",
+ "wit-bindgen",
+]
+
+[[package]]
+name = "golem-wasm-rpc"
+version = "0.0.23"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c04f0b0463ad8c4490c8f29e3bfb22b956bf168d22122e0d745a6aeac99fd048"
 dependencies = [
  "prost-build",
  "wit-bindgen",
@@ -741,7 +751,7 @@ dependencies = [
 name = "timeline-processor-stub"
 version = "0.0.1"
 dependencies = [
- "golem-wasm-rpc",
+ "golem-wasm-rpc 0.0.22",
  "wit-bindgen",
 ]
 

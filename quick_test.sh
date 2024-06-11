@@ -1,7 +1,11 @@
 #!/bin/bash
+
 current_epoch=$(date +%s)
 
+echo $current_epoch
+
 driver_with_core=$(golem-cli -F json component add --component-name driver_with_core${current_epoch} target/wasm32-wasi/debug/driver_with_core.wasm| jq .componentId)
+echo "Sucess"
 core_with_event_with_timeline=$(golem-cli -F json component add --component-name core_with_event_with_timeline${current_epoch} target/wasm32-wasi/debug/core_with_event_with_timeline.wasm | jq .componentId)
 event_processor=$(golem-cli -F json component add --component-name event_processor${current_epoch} target/wasm32-wasi/debug/event_processor.wasm | jq .componentId)
 timeline_with_event_with_timeline=$(golem-cli -F json component add --component-name timeline_with_event_with_timeline${current_epoch} target/wasm32-wasi/debug/timeline_with_event_with_timeline.wasm | jq .componentId)
@@ -63,8 +67,7 @@ echo "API definition registered!"
 
 echo "Deploying the API against localhost:9006..."
 deployment='{
-   "apiDefinitionId": "golem-timeline",
-   "version": REPLACE_VERSION,
+   "apiDefinitions": [{"id": "golem-timeline", "version": "REPLACE_VERSION"}],
    "site": {
       "host" : "localhost:9006"
   }
