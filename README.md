@@ -111,6 +111,17 @@ cargo install golem-cli
 cargo install cargo-make
 ```
 
+## Initalise golem profile using golem-cli
+
+```
+
+golem-cli init
+
+```
+
+Select `golem` profile instead of cloud if you are using OSS.
+We will be using docker-compose in docker-examples folder in golem repository.
+Please refer to .env variables to understand the port configurations of worker-service and component-service
 
 ## Golem Version Tested
 
