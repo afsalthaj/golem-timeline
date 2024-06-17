@@ -1,0 +1,20 @@
+[package]
+name = "partitioner"
+edition = "2021"
+version = "0.1.0"
+description = "The paritioner of data across workers of golem-timelines"
+
+[dependencies]
+bitflags = "2.4.2"
+chrono = "0.4.33"
+futures = "0.3.30"
+serde_json = "1.0.113"
+tokio = "1.36.0"
+serde = { version = "1.0.198", features = ["derive"] }
+
+
+[dependencies.timeline]
+path = "../timeline"
+
+[lib]
+path = "src/lib.rs"
