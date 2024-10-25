@@ -99,16 +99,14 @@ rustup install stable && rustup default stable
 rustup target add wasm32-wasi
 
 # Install wasm tools 
-cargo install --force --locked  wasm-tools@1.0.57
+cargo install --force --locked  wasm-tools@1.210.0
 
 # Install Cargo Component
-cargo install --force --locked cargo-component@0.7.0
+cargo install --force --locked cargo-component@0.13.2
 
 # Install golem-cli (OSS, for enterprise edition, golem-cloud-cli)
 cargo install golem-cli
 
-# Install cargo make
-cargo install cargo-make
 ```
 
 ## Initalise golem profile using golem-cli
@@ -132,8 +130,6 @@ golem-cli 0.0.96
 
 ## Quick Start to spin up Golem Timeline with Golem OSS
 
-
-
 #### Spin up golem and Pulsar streaming 
 
 ```sh
@@ -149,23 +145,22 @@ It's good to download the latest dockeer-compose from golem website or repositor
 
 #### Generate all required code and build timeline project
 
-```bash
-cargo make build-flow
-./build.sh
-```
+Currently, I acknowledge that the build of this project is slightly complicated.
 
-Please note that timeline-processor-stub project isn't listed in `Makefile.toml` due to: https://github.com/golemcloud/wasm-rpc/issues/40
-This implies, **only if you are making changes to timeline-processor related wit file**s, you will run into various issues. One hack you could do is, 
-after making changes the timeline=processor/wit file, generate the stub again using
+If you are making changes to this project (Example: Wit files, Rust code etc), then you will
+need to read through the script `full_rebuild.sh` in the root directory.
 
-```sh
+The script pretty much builds what you need to get golem-timeline working 
 
-golem-cli stubgen generate -s timeline-processor/wit -d timeline-processor-stub
+While golem OSS already exposes a few utilities to build such a project, there are still manual interventions 
+required to get golem-timeline project set up work. This is the sole reason why I have 
+taken a script project which we will improve soon. Previously this was a `cargo make build-flow`. 
+However that approach is removed for more flexibility and control.
+We will follow this while golem team is actively working on improving the UX.
 
-```
+Also, its important as contributors to know what exactly is going on, and these commands really expose it!
 
-And then explicitly delete the new wit directories that was created, followed by `cargo component build`, which will direct you further on what to do!
-But be aware that this can be slightly tricky.
+If you just want to build this project (rather than contributing), probably all you need to do is to run `quick_build.sh` file
 
 ## Run a quick test
 

@@ -1,7 +1,8 @@
 package timeline:timeline-processor-stub;
 
 interface stub-timeline-processor {
-  use golem:rpc/types@0.1.0.{uri};
+  use golem:rpc/types@0.1.0.{uri as golem-rpc-uri};
+  use wasi:io/poll@0.2.0.{pollable as wasi-io-pollable};
   use timeline:timeline-processor/api.{event-value};
   use timeline:timeline-processor/api.{timeline-result};
   use timeline:timeline-processor/api.{timeline-result-worker};
@@ -9,17 +10,62 @@ interface stub-timeline-processor {
   use timeline:timeline-processor/api.{derived-timeline-node};
   use timeline:timeline-processor/api.{typed-timeline-result-worker};
 
+  resource future-initialize-equal-result {
+    subscribe: func() -> wasi-io-pollable;
+    get: func() -> option<result<string, string>>;
+  }
+  resource future-initialize-greater-than-result {
+    subscribe: func() -> wasi-io-pollable;
+    get: func() -> option<result<string, string>>;
+  }
+  resource future-initialize-greater-than-or-equal-to-result {
+    subscribe: func() -> wasi-io-pollable;
+    get: func() -> option<result<string, string>>;
+  }
+  resource future-initialize-less-than-result {
+    subscribe: func() -> wasi-io-pollable;
+    get: func() -> option<result<string, string>>;
+  }
+  resource future-initialize-less-than-or-equal-to-result {
+    subscribe: func() -> wasi-io-pollable;
+    get: func() -> option<result<string, string>>;
+  }
+  resource future-initialize-and-result {
+    subscribe: func() -> wasi-io-pollable;
+    get: func() -> option<result<string, string>>;
+  }
+  resource future-initialize-or-result {
+    subscribe: func() -> wasi-io-pollable;
+    get: func() -> option<result<string, string>>;
+  }
+  resource future-initialize-not-result {
+    subscribe: func() -> wasi-io-pollable;
+    get: func() -> option<result<string, string>>;
+  }
+  resource future-get-timeline-result-result {
+    subscribe: func() -> wasi-io-pollable;
+    get: func() -> option<result<timeline-result, string>>;
+  }
   resource api {
-    constructor(location: uri);
-    initialize-equal: func(child-worker: typed-timeline-result-worker, event-value: event-value) -> result<string, string>;
-    initialize-greater-than: func(child-worker: typed-timeline-result-worker, event-value: event-value) -> result<string, string>;
-    initialize-greater-than-or-equal-to: func(child-worker: typed-timeline-result-worker, event-value: event-value) -> result<string, string>;
-    initialize-less-than: func(child-worker: typed-timeline-result-worker, event-value: event-value) -> result<string, string>;
-    initialize-less-than-or-equal-to: func(child-worker: typed-timeline-result-worker, event-value: event-value) -> result<string, string>;
-    initialize-and: func(child-worker1: typed-timeline-result-worker, child-worker2: typed-timeline-result-worker) -> result<string, string>;
-    initialize-or: func(child-worker1: typed-timeline-result-worker, child-worker2: typed-timeline-result-worker) -> result<string, string>;
-    initialize-not: func(child-worker: typed-timeline-result-worker) -> result<string, string>;
-    get-timeline-result: func(t1: u64) -> result<timeline-result, string>;
+    constructor(location: golem-rpc-uri);
+    blocking-initialize-equal: func(child-worker: typed-timeline-result-worker, event-value: event-value) -> result<string, string>;
+    initialize-equal: func(child-worker: typed-timeline-result-worker, event-value: event-value) -> future-initialize-equal-result;
+    blocking-initialize-greater-than: func(child-worker: typed-timeline-result-worker, event-value: event-value) -> result<string, string>;
+    initialize-greater-than: func(child-worker: typed-timeline-result-worker, event-value: event-value) -> future-initialize-greater-than-result;
+    blocking-initialize-greater-than-or-equal-to: func(child-worker: typed-timeline-result-worker, event-value: event-value) -> result<string, string>;
+    initialize-greater-than-or-equal-to: func(child-worker: typed-timeline-result-worker, event-value: event-value) -> future-initialize-greater-than-or-equal-to-result;
+    blocking-initialize-less-than: func(child-worker: typed-timeline-result-worker, event-value: event-value) -> result<string, string>;
+    initialize-less-than: func(child-worker: typed-timeline-result-worker, event-value: event-value) -> future-initialize-less-than-result;
+    blocking-initialize-less-than-or-equal-to: func(child-worker: typed-timeline-result-worker, event-value: event-value) -> result<string, string>;
+    initialize-less-than-or-equal-to: func(child-worker: typed-timeline-result-worker, event-value: event-value) -> future-initialize-less-than-or-equal-to-result;
+    blocking-initialize-and: func(child-worker1: typed-timeline-result-worker, child-worker2: typed-timeline-result-worker) -> result<string, string>;
+    initialize-and: func(child-worker1: typed-timeline-result-worker, child-worker2: typed-timeline-result-worker) -> future-initialize-and-result;
+    blocking-initialize-or: func(child-worker1: typed-timeline-result-worker, child-worker2: typed-timeline-result-worker) -> result<string, string>;
+    initialize-or: func(child-worker1: typed-timeline-result-worker, child-worker2: typed-timeline-result-worker) -> future-initialize-or-result;
+    blocking-initialize-not: func(child-worker: typed-timeline-result-worker) -> result<string, string>;
+    initialize-not: func(child-worker: typed-timeline-result-worker) -> future-initialize-not-result;
+    blocking-get-timeline-result: func(t1: u64) -> result<timeline-result, string>;
+    get-timeline-result: func(t1: u64) -> future-get-timeline-result-result;
   }
 
 }

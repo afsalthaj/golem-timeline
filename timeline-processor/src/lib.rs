@@ -418,3 +418,5 @@ enum ActiveState {
     Or,
     Not,
 }
+
+bindings::export!(Component with_types_in bindings);
