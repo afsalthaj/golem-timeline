@@ -29,10 +29,9 @@ path = "../core"
 [dependencies.timeline]
 path = "../timeline"
 
-[dependencies.wit-bindgen]
-version = "0.17.0"
-features = ["realloc"]
-default-features = false
+[dependencies.wit-bindgen-rt]
+version = "0.26.0"
+features = ["bitflags"]
 
 [lib]
 path = "src/lib.rs"
