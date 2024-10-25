@@ -349,3 +349,5 @@ impl Guest for Component {
         Ok(WorkerDetails { result_worker, event_processor_workers })
     }
 }
+
+bindings::export!(Component with_types_in bindings);
