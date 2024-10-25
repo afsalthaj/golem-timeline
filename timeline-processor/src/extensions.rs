@@ -67,7 +67,11 @@ impl WorkerResultExt for TypedTimelineResultWorker {
         match self {
             TypedTimelineResultWorker::DerivedTimeline(_) => {
                 let api = stub_timeline_processor::Api::new(&self.get_worker_info().get_uri());
-                api.blocking_get_timeline_result(t1)
+                api.blocking_get_timeline_result(t1).map(|time_line_result| {
+                    TimelineResult {
+                        results: time_line_result.results
+                    }
+                })
             }
             TypedTimelineResultWorker::LeafTimeline(leaf_node) => match leaf_node {
                 LeafTimelineNode::TlHasExisted(worker) => {
