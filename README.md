@@ -90,6 +90,13 @@ The summary of the above timeline is as follows:
 TL_HasExistedWithin(TL_DurationInCurState(TL_LatestEventToState(col("lat_long")), col(duration) < 10)
 ```
 
+## Golem Worker and Timeline Ops
+As mentioned above, please watch the talk at [LambdaConf:2024:Estes-Park:Colorado](https://www.youtube.com/watch?v=9WjUBOfgriY)
+
+Also, here is an over simplified version of initialisation phase. Every box below is a golem worker, which indicates about the dependencies too,
+
+<img width="754" alt="image" src="https://github.com/user-attachments/assets/4016368e-c5e2-4799-abcb-8d08f7439bc9">
+
 ## Setup
 
 ```sh
