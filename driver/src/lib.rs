@@ -53,7 +53,7 @@ impl Guest for Component {
                     timeline_processor_component_id,
                 );
 
-        match core.initialize_timeline(&simple_timeline.to_wit()) {
+        match core.blocking_initialize_timeline(&simple_timeline.to_wit()) {
             Ok(result) => {
                 dbg!("Driver Log: Timeline initialized");
                 Ok(result)

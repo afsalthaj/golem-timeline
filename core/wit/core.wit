@@ -105,8 +105,8 @@ interface api {
 }
 
 world core {
- import timeline:event-processor-stub/stub-event-processor;
- import timeline:timeline-processor-stub/stub-timeline-processor;
+  import timeline:event-processor-stub/stub-event-processor;
+  import timeline:timeline-processor-stub/stub-timeline-processor;
   export api;
 }
 
