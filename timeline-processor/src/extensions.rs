@@ -67,20 +67,20 @@ impl WorkerResultExt for TypedTimelineResultWorker {
         match self {
             TypedTimelineResultWorker::DerivedTimeline(_) => {
                 let api = stub_timeline_processor::Api::new(&self.get_worker_info().get_uri());
-                api.get_timeline_result(t1)
+                api.blocking_get_timeline_result(t1)
             }
             TypedTimelineResultWorker::LeafTimeline(leaf_node) => match leaf_node {
                 LeafTimelineNode::TlHasExisted(worker) => {
                     let api = stub_event_processor::Api::new(&worker.get_worker_info().get_uri());
-                    api.tl_has_existed_within(t1)
+                    api.blocking_tl_has_existed_within(t1)
                 }
                 LeafTimelineNode::TlHasExistedWithin(worker) => {
                     let api = stub_event_processor::Api::new(&worker.get_worker_info().get_uri());
-                    api.tl_has_existed_within(t1)
+                    api.blocking_tl_has_existed_within(t1)
                 }
                 LeafTimelineNode::TlLatestEventToState(worker) => {
                     let api = stub_event_processor::Api::new(&worker.get_worker_info().get_uri());
-                    api.latest_event_to_state(t1)
+                    api.blocking_latest_event_to_state(t1)
                 }
             },
         }
