@@ -8,7 +8,5 @@ interface api {
 }
 
 world driver {
-  import timeline:core-stub/stub-core;
-
   export api;
 }

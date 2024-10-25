@@ -1,7 +1,7 @@
 [package]
 name = "core"
-edition = "2021"
 version = "0.1.0"
+edition = "2021"
 
 [package.metadata.component.target]
 world = "core"
@@ -13,8 +13,17 @@ path = "wit/deps/wasm-rpc"
 [package.metadata.component.target.dependencies."timeline:event-processor"]
 path = "wit/deps/timeline_event-processor"
 
+[package.metadata.component.target.dependencies."timeline:event-processor-stub"]
+path = "wit/deps/timeline_event-processor-stub"
+
 [package.metadata.component.target.dependencies."timeline:timeline-processor"]
 path = "wit/deps/timeline_timeline-processor"
+
+[package.metadata.component.target.dependencies."timeline:timeline-processor-stub"]
+path = "wit/deps/timeline_timeline-processor-stub"
+
+[package.metadata.component.target.dependencies."wasi:io"]
+path = "wit/deps/io"
 
 [dependencies]
 bitflags = "2.4.2"
@@ -31,7 +40,7 @@ version = "1.8.0"
 features = ["v4"]
 
 [dependencies.wit-bindgen]
-version = "0.17.0"
+version = "0.26.0"
 features = ["realloc"]
 default-features = false
 

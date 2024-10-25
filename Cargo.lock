@@ -105,7 +105,7 @@ dependencies = [
  "timeline",
  "tokio",
  "uuid",
- "wit-bindgen",
+ "wit-bindgen 0.26.0",
 ]
 
 [[package]]
@@ -125,7 +125,7 @@ dependencies = [
  "serde",
  "serde_json",
  "timeline",
- "wit-bindgen",
+ "wit-bindgen 0.17.0",
 ]
 
 [[package]]
@@ -136,7 +136,7 @@ dependencies = [
  "once_cell",
  "rand",
  "timeline",
- "wit-bindgen",
+ "wit-bindgen 0.17.0",
 ]
 
 [[package]]
@@ -483,7 +483,7 @@ dependencies = [
  "once_cell",
  "rand",
  "timeline",
- "wit-bindgen",
+ "wit-bindgen 0.17.0",
 ]
 
 [[package]]
@@ -642,6 +642,24 @@ name = "wit-bindgen"
 version = "0.17.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6237168d93497b26dacdab157b08ad2787d74cdce10f89735f791b2a225eba4d"
+dependencies = [
+ "bitflags",
+]
+
+[[package]]
+name = "wit-bindgen"
+version = "0.26.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a84376ff4f74ed07674a1157c0bd19e6627ab01fc90952a27ccefb52a24530f0"
+dependencies = [
+ "wit-bindgen-rt",
+]
+
+[[package]]
+name = "wit-bindgen-rt"
+version = "0.26.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "29c7526379ace8709ee9ab9f2bb50f112d95581063a59ef3097d9c10153886c9"
 dependencies = [
  "bitflags",
 ]
