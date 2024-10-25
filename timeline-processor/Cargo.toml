@@ -13,12 +13,6 @@ path = "wit/deps/wasm-rpc"
 [package.metadata.component.target.dependencies."timeline:event-processor"]
 path = "wit/deps/timeline_event-processor"
 
-[package.metadata.component.target.dependencies."timeline:event-processor-stub"]
-path = "wit/deps/timeline_event-processor-stub"
-
-[package.metadata.component.target.dependencies."timeline:timeline-processor-stub"]
-path = "wit/deps/timeline_timeline-processor-stub"
-
 [dependencies]
 once_cell = "1.17.1"
 rand = "0.8.5"
