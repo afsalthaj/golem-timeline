@@ -5554,8 +5554,6 @@ pub mod timeline {
             use super::super::super::_rt;
             pub type GolemRpcUri = super::super::super::golem::rpc::types::Uri;
             pub type WasiIoPollable = super::super::super::wasi::io::poll::Pollable;
-            pub type TimelineResultPoint =
-                super::super::super::timeline::event_processor::api::TimelineResultPoint;
             #[derive(Clone)]
             pub enum EventValue {
                 StringValue(_rt::String),
@@ -5579,6 +5577,33 @@ pub mod timeline {
                             f.debug_tuple("EventValue::BoolValue").field(e).finish()
                         }
                     }
+                }
+            }
+            #[repr(C)]
+            #[derive(Clone, Copy)]
+            pub struct TimePeriod {
+                pub t1: u64,
+                pub t2: Option<u64>,
+            }
+            impl ::core::fmt::Debug for TimePeriod {
+                fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+                    f.debug_struct("TimePeriod")
+                        .field("t1", &self.t1)
+                        .field("t2", &self.t2)
+                        .finish()
+                }
+            }
+            #[derive(Clone)]
+            pub struct TimelineResultPoint {
+                pub time_period: TimePeriod,
+                pub value: EventValue,
+            }
+            impl ::core::fmt::Debug for TimelineResultPoint {
+                fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+                    f.debug_struct("TimelineResultPoint")
+                        .field("time-period", &self.time_period)
+                        .field("value", &self.value)
+                        .finish()
                 }
             }
             #[derive(Clone)]
@@ -6883,7 +6908,6 @@ pub mod timeline {
                                                             i32::from(*base.add(8).cast::<u8>());
                                                         let l8 =
                                                             i32::from(*base.add(24).cast::<u8>());
-                                                        use super::super::super::timeline::event_processor::api::EventValue as V15;
                                                         let v15 = match l8 {
                                                             0 => {
                                                                 let e15 = {
@@ -6903,7 +6927,7 @@ pub mod timeline {
 
                                                                     _rt::string_lift(bytes11)
                                                                 };
-                                                                V15::StringValue(e15)
+                                                                EventValue::StringValue(e15)
                                                             }
                                                             1 => {
                                                                 let e15 = {
@@ -6912,7 +6936,7 @@ pub mod timeline {
 
                                                                     l12
                                                                 };
-                                                                V15::IntValue(e15)
+                                                                EventValue::IntValue(e15)
                                                             }
                                                             2 => {
                                                                 let e15 = {
@@ -6921,7 +6945,7 @@ pub mod timeline {
 
                                                                     l13
                                                                 };
-                                                                V15::FloatValue(e15)
+                                                                EventValue::FloatValue(e15)
                                                             }
                                                             n => {
                                                                 debug_assert_eq!(
@@ -6935,12 +6959,12 @@ pub mod timeline {
 
                                                                     _rt::bool_lift(l14 as u8)
                                                                 };
-                                                                V15::BoolValue(e15)
+                                                                EventValue::BoolValue(e15)
                                                             }
                                                         };
 
-                                                        super::super::super::timeline::event_processor::api::TimelineResultPoint{
-                                                            time_period: super::super::super::timeline::event_processor::api::TimePeriod{
+                                                        TimelineResultPoint{
+                                                            time_period: TimePeriod{
                                                               t1: l5 as u64,
                                                               t2: match l6 {
                                                                 0 => None,
@@ -12199,7 +12223,6 @@ pub mod timeline {
                                             let l4 = *base.add(0).cast::<i64>();
                                             let l5 = i32::from(*base.add(8).cast::<u8>());
                                             let l7 = i32::from(*base.add(24).cast::<u8>());
-                                            use super::super::super::timeline::event_processor::api::EventValue as V14;
                                             let v14 = match l7 {
                                                 0 => {
                                                     let e14 = {
@@ -12214,7 +12237,7 @@ pub mod timeline {
 
                                                         _rt::string_lift(bytes10)
                                                     };
-                                                    V14::StringValue(e14)
+                                                    EventValue::StringValue(e14)
                                                 }
                                                 1 => {
                                                     let e14 = {
@@ -12222,7 +12245,7 @@ pub mod timeline {
 
                                                         l11
                                                     };
-                                                    V14::IntValue(e14)
+                                                    EventValue::IntValue(e14)
                                                 }
                                                 2 => {
                                                     let e14 = {
@@ -12230,7 +12253,7 @@ pub mod timeline {
 
                                                         l12
                                                     };
-                                                    V14::FloatValue(e14)
+                                                    EventValue::FloatValue(e14)
                                                 }
                                                 n => {
                                                     debug_assert_eq!(
@@ -12243,28 +12266,29 @@ pub mod timeline {
 
                                                         _rt::bool_lift(l13 as u8)
                                                     };
-                                                    V14::BoolValue(e14)
+                                                    EventValue::BoolValue(e14)
                                                 }
                                             };
 
-                                            super::super::super::timeline::event_processor::api::TimelineResultPoint{
-                                                      time_period: super::super::super::timeline::event_processor::api::TimePeriod{
-                                                        t1: l4 as u64,
-                                                        t2: match l5 {
-                                                          0 => None,
-                                                          1 => {
+                                            TimelineResultPoint {
+                                                time_period: TimePeriod {
+                                                    t1: l4 as u64,
+                                                    t2: match l5 {
+                                                        0 => None,
+                                                        1 => {
                                                             let e = {
-                                                              let l6 = *base.add(16).cast::<i64>();
+                                                                let l6 =
+                                                                    *base.add(16).cast::<i64>();
 
-                                                              l6 as u64
+                                                                l6 as u64
                                                             };
                                                             Some(e)
-                                                          }
-                                                          _ => _rt::invalid_enum_discriminant(),
-                                                        },
-                                                      },
-                                                      value: v14,
-                                                    }
+                                                        }
+                                                        _ => _rt::invalid_enum_discriminant(),
+                                                    },
+                                                },
+                                                value: v14,
+                                            }
                                         };
                                         result15.push(e15);
                                     }
@@ -15815,8 +15839,8 @@ pub(crate) use __export_timeline_processor_impl as export;
 #[cfg(target_arch = "wasm32")]
 #[link_section = "component-type:wit-bindgen:0.25.0:timeline-processor:encoded world"]
 #[doc(hidden)]
-pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 8919] = *b"\
-\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\xceD\x01A\x02\x01A\x15\
+pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 8982] = *b"\
+\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\x8dE\x01A\x02\x01A\x15\
 \x01B\x0a\x04\0\x08pollable\x03\x01\x01h\0\x01@\x01\x04self\x01\0\x7f\x04\0\x16[\
 method]pollable.ready\x01\x02\x01@\x01\x04self\x01\x01\0\x04\0\x16[method]pollab\
 le.block\x01\x03\x01p\x01\x01py\x01@\x01\x02in\x04\0\x05\x04\0\x04poll\x01\x06\x03\
@@ -15903,87 +15927,88 @@ self6\x02t1w\0+\x04\0*[method]api.blocking-latest-event-to-state\x01C\x01i\x16\x
 \0\x04\0\x1a[method]api.tl-has-existed\x01G\x04\0*[method]api.blocking-tl-has-ex\
 isted-within\x01C\x01i\x18\x01@\x02\x04self6\x02t1w\0\xc8\0\x04\0![method]api.tl\
 -has-existed-within\x01I\x03\x012timeline:event-processor-stub/stub-event-proces\
-sor\x05\x0c\x01B{\x02\x03\x02\x01\x04\x04\0\x0dgolem-rpc-uri\x03\0\0\x02\x03\x02\
-\x01\x01\x04\0\x10wasi-io-pollable\x03\0\x02\x02\x03\x02\x01\x08\x04\0\x15timeli\
-ne-result-point\x03\0\x04\x01q\x04\x0cstring-value\x01s\0\x09int-value\x01x\0\x0b\
-float-value\x01u\0\x0abool-value\x01\x7f\0\x04\0\x0bevent-value\x03\0\x06\x01p\x05\
-\x01r\x01\x07results\x08\x04\0\x0ftimeline-result\x03\0\x09\x01r\x02\x09worker-i\
-ds\x0btemplate-ids\x04\0\x16timeline-result-worker\x03\0\x0b\x01q\x03\x0etl-has-\
-existed\x01\x0c\0\x15tl-has-existed-within\x01\x0c\0\x18tl-latest-event-to-state\
-\x01\x0c\0\x04\0\x12leaf-timeline-node\x03\0\x0d\x01q\x08\x08equal-to\x01\x0c\0\x0c\
-greater-than\x01\x0c\0\x18greater-than-or-equal-to\x01\x0c\0\x09less-than\x01\x0c\
-\0\x15less-than-or-equal-to\x01\x0c\0\x03and\x01\x0c\0\x02or\x01\x0c\0\x03not\x01\
-\x0c\0\x04\0\x15derived-timeline-node\x03\0\x0f\x01q\x02\x0dleaf-timeline\x01\x0e\
-\0\x10derived-timeline\x01\x10\0\x04\0\x1ctyped-timeline-result-worker\x03\0\x11\
-\x04\0\x1efuture-initialize-equal-result\x03\x01\x04\0%future-initialize-greater\
--than-result\x03\x01\x04\01future-initialize-greater-than-or-equal-to-result\x03\
-\x01\x04\0\"future-initialize-less-than-result\x03\x01\x04\0.future-initialize-l\
-ess-than-or-equal-to-result\x03\x01\x04\0\x1cfuture-initialize-and-result\x03\x01\
-\x04\0\x1bfuture-initialize-or-result\x03\x01\x04\0\x1cfuture-initialize-not-res\
-ult\x03\x01\x04\0!future-get-timeline-result-result\x03\x01\x04\0\x03api\x03\x01\
-\x01h\x13\x01i\x03\x01@\x01\x04self\x1d\0\x1e\x04\00[method]future-initialize-eq\
-ual-result.subscribe\x01\x1f\x01j\x01s\x01s\x01k\x20\x01@\x01\x04self\x1d\0!\x04\
-\0*[method]future-initialize-equal-result.get\x01\"\x01h\x14\x01@\x01\x04self#\0\
-\x1e\x04\07[method]future-initialize-greater-than-result.subscribe\x01$\x01@\x01\
-\x04self#\0!\x04\01[method]future-initialize-greater-than-result.get\x01%\x01h\x15\
-\x01@\x01\x04self&\0\x1e\x04\0C[method]future-initialize-greater-than-or-equal-t\
-o-result.subscribe\x01'\x01@\x01\x04self&\0!\x04\0=[method]future-initialize-gre\
-ater-than-or-equal-to-result.get\x01(\x01h\x16\x01@\x01\x04self)\0\x1e\x04\04[me\
-thod]future-initialize-less-than-result.subscribe\x01*\x01@\x01\x04self)\0!\x04\0\
-.[method]future-initialize-less-than-result.get\x01+\x01h\x17\x01@\x01\x04self,\0\
-\x1e\x04\0@[method]future-initialize-less-than-or-equal-to-result.subscribe\x01-\
-\x01@\x01\x04self,\0!\x04\0:[method]future-initialize-less-than-or-equal-to-resu\
-lt.get\x01.\x01h\x18\x01@\x01\x04self/\0\x1e\x04\0.[method]future-initialize-and\
--result.subscribe\x010\x01@\x01\x04self/\0!\x04\0([method]future-initialize-and-\
-result.get\x011\x01h\x19\x01@\x01\x04self2\0\x1e\x04\0-[method]future-initialize\
--or-result.subscribe\x013\x01@\x01\x04self2\0!\x04\0'[method]future-initialize-o\
-r-result.get\x014\x01h\x1a\x01@\x01\x04self5\0\x1e\x04\0.[method]future-initiali\
-ze-not-result.subscribe\x016\x01@\x01\x04self5\0!\x04\0([method]future-initializ\
-e-not-result.get\x017\x01h\x1b\x01@\x01\x04self8\0\x1e\x04\03[method]future-get-\
-timeline-result-result.subscribe\x019\x01j\x01\x0a\x01s\x01k:\x01@\x01\x04self8\0\
-;\x04\0-[method]future-get-timeline-result-result.get\x01<\x01i\x1c\x01@\x01\x08\
-location\x01\0=\x04\0\x10[constructor]api\x01>\x01h\x1c\x01@\x03\x04self?\x0cchi\
-ld-worker\x12\x0bevent-value\x07\0\x20\x04\0%[method]api.blocking-initialize-equ\
-al\x01@\x01i\x13\x01@\x03\x04self?\x0cchild-worker\x12\x0bevent-value\x07\0\xc1\0\
-\x04\0\x1c[method]api.initialize-equal\x01B\x04\0,[method]api.blocking-initializ\
-e-greater-than\x01@\x01i\x14\x01@\x03\x04self?\x0cchild-worker\x12\x0bevent-valu\
-e\x07\0\xc3\0\x04\0#[method]api.initialize-greater-than\x01D\x04\08[method]api.b\
-locking-initialize-greater-than-or-equal-to\x01@\x01i\x15\x01@\x03\x04self?\x0cc\
-hild-worker\x12\x0bevent-value\x07\0\xc5\0\x04\0/[method]api.initialize-greater-\
-than-or-equal-to\x01F\x04\0)[method]api.blocking-initialize-less-than\x01@\x01i\x16\
-\x01@\x03\x04self?\x0cchild-worker\x12\x0bevent-value\x07\0\xc7\0\x04\0\x20[meth\
-od]api.initialize-less-than\x01H\x04\05[method]api.blocking-initialize-less-than\
--or-equal-to\x01@\x01i\x17\x01@\x03\x04self?\x0cchild-worker\x12\x0bevent-value\x07\
-\0\xc9\0\x04\0,[method]api.initialize-less-than-or-equal-to\x01J\x01@\x03\x04sel\
-f?\x0dchild-worker1\x12\x0dchild-worker2\x12\0\x20\x04\0#[method]api.blocking-in\
-itialize-and\x01K\x01i\x18\x01@\x03\x04self?\x0dchild-worker1\x12\x0dchild-worke\
-r2\x12\0\xcc\0\x04\0\x1a[method]api.initialize-and\x01M\x04\0\"[method]api.block\
-ing-initialize-or\x01K\x01i\x19\x01@\x03\x04self?\x0dchild-worker1\x12\x0dchild-\
-worker2\x12\0\xce\0\x04\0\x19[method]api.initialize-or\x01O\x01@\x02\x04self?\x0c\
-child-worker\x12\0\x20\x04\0#[method]api.blocking-initialize-not\x01P\x01i\x1a\x01\
-@\x02\x04self?\x0cchild-worker\x12\0\xd1\0\x04\0\x1a[method]api.initialize-not\x01\
-R\x01@\x02\x04self?\x02t1w\0:\x04\0([method]api.blocking-get-timeline-result\x01\
-S\x01i\x1b\x01@\x02\x04self?\x02t1w\0\xd4\0\x04\0\x1f[method]api.get-timeline-re\
-sult\x01U\x03\x018timeline:timeline-processor-stub/stub-timeline-processor\x05\x0d\
-\x01B\x1b\x02\x03\x02\x01\x05\x04\0\x0bevent-value\x03\0\0\x02\x03\x02\x01\x09\x04\
-\0\x0ftimeline-result\x03\0\x02\x01r\x02\x09worker-ids\x0btemplate-ids\x04\0\x16\
-timeline-result-worker\x03\0\x04\x01q\x03\x0etl-has-existed\x01\x05\0\x15tl-has-\
-existed-within\x01\x05\0\x18tl-latest-event-to-state\x01\x05\0\x04\0\x12leaf-tim\
-eline-node\x03\0\x06\x01q\x08\x08equal-to\x01\x05\0\x0cgreater-than\x01\x05\0\x18\
-greater-than-or-equal-to\x01\x05\0\x09less-than\x01\x05\0\x15less-than-or-equal-\
-to\x01\x05\0\x03and\x01\x05\0\x02or\x01\x05\0\x03not\x01\x05\0\x04\0\x15derived-\
-timeline-node\x03\0\x08\x01q\x02\x0dleaf-timeline\x01\x07\0\x10derived-timeline\x01\
-\x09\0\x04\0\x1ctyped-timeline-result-worker\x03\0\x0a\x01j\x01s\x01s\x01@\x02\x0c\
-child-worker\x0b\x0bevent-value\x01\0\x0c\x04\0\x10initialize-equal\x01\x0d\x04\0\
-\x17initialize-greater-than\x01\x0d\x04\0#initialize-greater-than-or-equal-to\x01\
-\x0d\x04\0\x14initialize-less-than\x01\x0d\x04\0\x20initialize-less-than-or-equa\
-l-to\x01\x0d\x01@\x02\x0dchild-worker1\x0b\x0dchild-worker2\x0b\0\x0c\x04\0\x0ei\
-nitialize-and\x01\x0e\x04\0\x0dinitialize-or\x01\x0e\x01@\x01\x0cchild-worker\x0b\
-\0\x0c\x04\0\x0einitialize-not\x01\x0f\x01j\x01\x03\x01s\x01@\x01\x02t1w\0\x10\x04\
-\0\x13get-timeline-result\x01\x11\x04\x01\x1ftimeline:timeline-processor/api\x05\
-\x0e\x04\x01.timeline:timeline-processor/timeline-processor\x04\0\x0b\x18\x01\0\x12\
-timeline-processor\x03\0\0\0G\x09producers\x01\x0cprocessed-by\x02\x0dwit-compon\
-ent\x070.208.1\x10wit-bindgen-rust\x060.25.0";
+sor\x05\x0c\x01B~\x02\x03\x02\x01\x04\x04\0\x0dgolem-rpc-uri\x03\0\0\x02\x03\x02\
+\x01\x01\x04\0\x10wasi-io-pollable\x03\0\x02\x01q\x04\x0cstring-value\x01s\0\x09\
+int-value\x01x\0\x0bfloat-value\x01u\0\x0abool-value\x01\x7f\0\x04\0\x0bevent-va\
+lue\x03\0\x04\x01kw\x01r\x02\x02t1w\x02t2\x06\x04\0\x0btime-period\x03\0\x07\x01\
+r\x02\x0btime-period\x08\x05value\x05\x04\0\x15timeline-result-point\x03\0\x09\x01\
+p\x0a\x01r\x01\x07results\x0b\x04\0\x0ftimeline-result\x03\0\x0c\x01r\x02\x09wor\
+ker-ids\x0btemplate-ids\x04\0\x16timeline-result-worker\x03\0\x0e\x01q\x03\x0etl\
+-has-existed\x01\x0f\0\x15tl-has-existed-within\x01\x0f\0\x18tl-latest-event-to-\
+state\x01\x0f\0\x04\0\x12leaf-timeline-node\x03\0\x10\x01q\x08\x08equal-to\x01\x0f\
+\0\x0cgreater-than\x01\x0f\0\x18greater-than-or-equal-to\x01\x0f\0\x09less-than\x01\
+\x0f\0\x15less-than-or-equal-to\x01\x0f\0\x03and\x01\x0f\0\x02or\x01\x0f\0\x03no\
+t\x01\x0f\0\x04\0\x15derived-timeline-node\x03\0\x12\x01q\x02\x0dleaf-timeline\x01\
+\x11\0\x10derived-timeline\x01\x13\0\x04\0\x1ctyped-timeline-result-worker\x03\0\
+\x14\x04\0\x1efuture-initialize-equal-result\x03\x01\x04\0%future-initialize-gre\
+ater-than-result\x03\x01\x04\01future-initialize-greater-than-or-equal-to-result\
+\x03\x01\x04\0\"future-initialize-less-than-result\x03\x01\x04\0.future-initiali\
+ze-less-than-or-equal-to-result\x03\x01\x04\0\x1cfuture-initialize-and-result\x03\
+\x01\x04\0\x1bfuture-initialize-or-result\x03\x01\x04\0\x1cfuture-initialize-not\
+-result\x03\x01\x04\0!future-get-timeline-result-result\x03\x01\x04\0\x03api\x03\
+\x01\x01h\x16\x01i\x03\x01@\x01\x04self\x20\0!\x04\00[method]future-initialize-e\
+qual-result.subscribe\x01\"\x01j\x01s\x01s\x01k#\x01@\x01\x04self\x20\0$\x04\0*[\
+method]future-initialize-equal-result.get\x01%\x01h\x17\x01@\x01\x04self&\0!\x04\
+\07[method]future-initialize-greater-than-result.subscribe\x01'\x01@\x01\x04self\
+&\0$\x04\01[method]future-initialize-greater-than-result.get\x01(\x01h\x18\x01@\x01\
+\x04self)\0!\x04\0C[method]future-initialize-greater-than-or-equal-to-result.sub\
+scribe\x01*\x01@\x01\x04self)\0$\x04\0=[method]future-initialize-greater-than-or\
+-equal-to-result.get\x01+\x01h\x19\x01@\x01\x04self,\0!\x04\04[method]future-ini\
+tialize-less-than-result.subscribe\x01-\x01@\x01\x04self,\0$\x04\0.[method]futur\
+e-initialize-less-than-result.get\x01.\x01h\x1a\x01@\x01\x04self/\0!\x04\0@[meth\
+od]future-initialize-less-than-or-equal-to-result.subscribe\x010\x01@\x01\x04sel\
+f/\0$\x04\0:[method]future-initialize-less-than-or-equal-to-result.get\x011\x01h\
+\x1b\x01@\x01\x04self2\0!\x04\0.[method]future-initialize-and-result.subscribe\x01\
+3\x01@\x01\x04self2\0$\x04\0([method]future-initialize-and-result.get\x014\x01h\x1c\
+\x01@\x01\x04self5\0!\x04\0-[method]future-initialize-or-result.subscribe\x016\x01\
+@\x01\x04self5\0$\x04\0'[method]future-initialize-or-result.get\x017\x01h\x1d\x01\
+@\x01\x04self8\0!\x04\0.[method]future-initialize-not-result.subscribe\x019\x01@\
+\x01\x04self8\0$\x04\0([method]future-initialize-not-result.get\x01:\x01h\x1e\x01\
+@\x01\x04self;\0!\x04\03[method]future-get-timeline-result-result.subscribe\x01<\
+\x01j\x01\x0d\x01s\x01k=\x01@\x01\x04self;\0>\x04\0-[method]future-get-timeline-\
+result-result.get\x01?\x01i\x1f\x01@\x01\x08location\x01\0\xc0\0\x04\0\x10[const\
+ructor]api\x01A\x01h\x1f\x01@\x03\x04self\xc2\0\x0cchild-worker\x15\x0bevent-val\
+ue\x05\0#\x04\0%[method]api.blocking-initialize-equal\x01C\x01i\x16\x01@\x03\x04\
+self\xc2\0\x0cchild-worker\x15\x0bevent-value\x05\0\xc4\0\x04\0\x1c[method]api.i\
+nitialize-equal\x01E\x04\0,[method]api.blocking-initialize-greater-than\x01C\x01\
+i\x17\x01@\x03\x04self\xc2\0\x0cchild-worker\x15\x0bevent-value\x05\0\xc6\0\x04\0\
+#[method]api.initialize-greater-than\x01G\x04\08[method]api.blocking-initialize-\
+greater-than-or-equal-to\x01C\x01i\x18\x01@\x03\x04self\xc2\0\x0cchild-worker\x15\
+\x0bevent-value\x05\0\xc8\0\x04\0/[method]api.initialize-greater-than-or-equal-t\
+o\x01I\x04\0)[method]api.blocking-initialize-less-than\x01C\x01i\x19\x01@\x03\x04\
+self\xc2\0\x0cchild-worker\x15\x0bevent-value\x05\0\xca\0\x04\0\x20[method]api.i\
+nitialize-less-than\x01K\x04\05[method]api.blocking-initialize-less-than-or-equa\
+l-to\x01C\x01i\x1a\x01@\x03\x04self\xc2\0\x0cchild-worker\x15\x0bevent-value\x05\
+\0\xcc\0\x04\0,[method]api.initialize-less-than-or-equal-to\x01M\x01@\x03\x04sel\
+f\xc2\0\x0dchild-worker1\x15\x0dchild-worker2\x15\0#\x04\0#[method]api.blocking-\
+initialize-and\x01N\x01i\x1b\x01@\x03\x04self\xc2\0\x0dchild-worker1\x15\x0dchil\
+d-worker2\x15\0\xcf\0\x04\0\x1a[method]api.initialize-and\x01P\x04\0\"[method]ap\
+i.blocking-initialize-or\x01N\x01i\x1c\x01@\x03\x04self\xc2\0\x0dchild-worker1\x15\
+\x0dchild-worker2\x15\0\xd1\0\x04\0\x19[method]api.initialize-or\x01R\x01@\x02\x04\
+self\xc2\0\x0cchild-worker\x15\0#\x04\0#[method]api.blocking-initialize-not\x01S\
+\x01i\x1d\x01@\x02\x04self\xc2\0\x0cchild-worker\x15\0\xd4\0\x04\0\x1a[method]ap\
+i.initialize-not\x01U\x01@\x02\x04self\xc2\0\x02t1w\0=\x04\0([method]api.blockin\
+g-get-timeline-result\x01V\x01i\x1e\x01@\x02\x04self\xc2\0\x02t1w\0\xd7\0\x04\0\x1f\
+[method]api.get-timeline-result\x01X\x03\x018timeline:timeline-processor-stub/st\
+ub-timeline-processor\x05\x0d\x01B\x1b\x02\x03\x02\x01\x05\x04\0\x0bevent-value\x03\
+\0\0\x02\x03\x02\x01\x09\x04\0\x0ftimeline-result\x03\0\x02\x01r\x02\x09worker-i\
+ds\x0btemplate-ids\x04\0\x16timeline-result-worker\x03\0\x04\x01q\x03\x0etl-has-\
+existed\x01\x05\0\x15tl-has-existed-within\x01\x05\0\x18tl-latest-event-to-state\
+\x01\x05\0\x04\0\x12leaf-timeline-node\x03\0\x06\x01q\x08\x08equal-to\x01\x05\0\x0c\
+greater-than\x01\x05\0\x18greater-than-or-equal-to\x01\x05\0\x09less-than\x01\x05\
+\0\x15less-than-or-equal-to\x01\x05\0\x03and\x01\x05\0\x02or\x01\x05\0\x03not\x01\
+\x05\0\x04\0\x15derived-timeline-node\x03\0\x08\x01q\x02\x0dleaf-timeline\x01\x07\
+\0\x10derived-timeline\x01\x09\0\x04\0\x1ctyped-timeline-result-worker\x03\0\x0a\
+\x01j\x01s\x01s\x01@\x02\x0cchild-worker\x0b\x0bevent-value\x01\0\x0c\x04\0\x10i\
+nitialize-equal\x01\x0d\x04\0\x17initialize-greater-than\x01\x0d\x04\0#initializ\
+e-greater-than-or-equal-to\x01\x0d\x04\0\x14initialize-less-than\x01\x0d\x04\0\x20\
+initialize-less-than-or-equal-to\x01\x0d\x01@\x02\x0dchild-worker1\x0b\x0dchild-\
+worker2\x0b\0\x0c\x04\0\x0einitialize-and\x01\x0e\x04\0\x0dinitialize-or\x01\x0e\
+\x01@\x01\x0cchild-worker\x0b\0\x0c\x04\0\x0einitialize-not\x01\x0f\x01j\x01\x03\
+\x01s\x01@\x01\x02t1w\0\x10\x04\0\x13get-timeline-result\x01\x11\x04\x01\x1ftime\
+line:timeline-processor/api\x05\x0e\x04\x01.timeline:timeline-processor/timeline\
+-processor\x04\0\x0b\x18\x01\0\x12timeline-processor\x03\0\0\0G\x09producers\x01\
+\x0cprocessed-by\x02\x0dwit-component\x070.208.1\x10wit-bindgen-rust\x060.25.0";
 
 #[inline(never)]
 #[doc(hidden)]

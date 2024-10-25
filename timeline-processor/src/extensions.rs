@@ -2,9 +2,10 @@ use crate::bindings::exports::timeline::timeline_processor::api::{
     DerivedTimelineNode, LeafTimelineNode, TimelineResultWorker, TypedTimelineResultWorker,
 };
 use crate::bindings::golem::rpc::types::Uri;
-use crate::bindings::timeline::event_processor::api::TimelineResult;
+use crate::bindings::timeline::event_processor::api::{EventValue, TimePeriod, TimelineResult, TimelineResultPoint};
 use crate::bindings::timeline::event_processor_stub::stub_event_processor;
 use crate::bindings::timeline::timeline_processor_stub::stub_timeline_processor;
+use crate::bindings::timeline::timeline_processor_stub::stub_timeline_processor::EventValue as InlinedEventValue;
 
 pub(crate) trait WorkerExt {
     fn get_worker_info(&self) -> WorkerInfo;
@@ -69,7 +70,19 @@ impl WorkerResultExt for TypedTimelineResultWorker {
                 let api = stub_timeline_processor::Api::new(&self.get_worker_info().get_uri());
                 api.blocking_get_timeline_result(t1).map(|time_line_result| {
                     TimelineResult {
-                        results: time_line_result.results
+                        // It shouldn't have happened
+                        results: time_line_result.results.iter().map(|x| TimelineResultPoint {
+                            time_period: TimePeriod {
+                                t1: x.clone().time_period.t1,
+                                t2: x.clone().time_period.t2,
+                            },
+                            value: match x.clone().value {
+                                InlinedEventValue::StringValue(str) => EventValue::StringValue(str),
+                                InlinedEventValue::BoolValue(bool) => EventValue::BoolValue(bool),
+                                InlinedEventValue::FloatValue(s) => EventValue::FloatValue(s),
+                                InlinedEventValue::IntValue(i64) => EventValue::IntValue(i64),
+                            }
+                        }).collect()
                     }
                 })
             }

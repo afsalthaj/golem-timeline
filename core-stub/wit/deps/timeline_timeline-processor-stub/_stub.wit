@@ -3,47 +3,13 @@ package timeline:timeline-processor-stub;
 interface stub-timeline-processor {
   use golem:rpc/types@0.1.0.{uri as golem-rpc-uri};
   use wasi:io/poll@0.2.0.{pollable as wasi-io-pollable};
+  use timeline:timeline-processor/api.{event-value};
+  use timeline:timeline-processor/api.{timeline-result};
+  use timeline:timeline-processor/api.{timeline-result-worker};
+  use timeline:timeline-processor/api.{leaf-timeline-node};
+  use timeline:timeline-processor/api.{derived-timeline-node};
+  use timeline:timeline-processor/api.{typed-timeline-result-worker};
 
-  variant event-value {
-    string-value(string), 
-    int-value(s64), 
-    float-value(f64), 
-    bool-value(bool)  }
-
-  record time-period {
-    t1: u64,
-    t2: option<u64>
-  }
-
-  record timeline-result-point {
-    time-period: time-period,
-    value: event-value
-  }
-
-  record timeline-result {
-    results: list<timeline-result-point>
-  }
-
-  record timeline-result-worker {
-    worker-id: string,
-    template-id: string
-  }
-  variant leaf-timeline-node {
-    tl-has-existed(timeline-result-worker), 
-    tl-has-existed-within(timeline-result-worker), 
-    tl-latest-event-to-state(timeline-result-worker)  }
-  variant derived-timeline-node {
-    equal-to(timeline-result-worker), 
-    greater-than(timeline-result-worker), 
-    greater-than-or-equal-to(timeline-result-worker), 
-    less-than(timeline-result-worker), 
-    less-than-or-equal-to(timeline-result-worker), 
-    and(timeline-result-worker), 
-    or(timeline-result-worker), 
-    not(timeline-result-worker)  }
-  variant typed-timeline-result-worker {
-    leaf-timeline(leaf-timeline-node), 
-    derived-timeline(derived-timeline-node)  }
   resource future-initialize-equal-result {
     subscribe: func() -> wasi-io-pollable;
     get: func() -> option<result<string, string>>;
