@@ -53,7 +53,7 @@ impl Guest for Component {
                     let child_worker = go(left, event_processors)?;
 
                     timeline_processor_api
-                        .initialize_equal(&child_worker.to_wit(), &right.to_wit())?;
+                        .blocking_initialize_equal(&child_worker.to_wit(), &right.to_wit())?;
 
                     // The worker in which the comparison with a constant actually executes
                     let typed_timeline_result_worker = TypedTimeLineResultWorker::equal_to({
@@ -81,7 +81,7 @@ impl Guest for Component {
 
                     // We initialise this node into some worker along with the information about child worker that it needs to fetch the result from
                     timeline_processor_api
-                        .initialize_greater_than(&child_worker.to_wit(), &value.to_wit())?;
+                        .blocking_initialize_greater_than(&child_worker.to_wit(), &value.to_wit())?;
 
                     // The worker in which the comparison with a constant actually executes
                     let typed_timeline_result_worker = TypedTimeLineResultWorker::greater_than({
@@ -109,7 +109,7 @@ impl Guest for Component {
                     let child_worker = go(timeline, event_processors)?;
 
                     // We initialise this node into some worker along with the information about child worker that it needs to fetch the result from
-                    timeline_processor_api.initialize_greater_than_or_equal_to(
+                    timeline_processor_api.blocking_initialize_greater_than_or_equal_to(
                         &child_worker.to_wit(),
                         &value.to_wit(),
                     )?;
@@ -141,7 +141,7 @@ impl Guest for Component {
 
                     // We initialise this node into some worker along with the information about child worker that it needs to fetch the result from
                     timeline_processor_api
-                        .initialize_less_than(&child_worker.to_wit(), &event_value.to_wit())?;
+                        .blocking_initialize_less_than(&child_worker.to_wit(), &event_value.to_wit())?;
 
                     // The worker in which the comparison with a constant actually executes
                     let typed_timeline_result_worker = TypedTimeLineResultWorker::greater_than({
@@ -168,7 +168,7 @@ impl Guest for Component {
                     // Specifying the worker the timeline-equal worker should fetch the results from to compare with a constant
                     let child_worker = go(timeline, event_processors)?;
 
-                    timeline_processor_api.initialize_less_than_or_equal_to(
+                    timeline_processor_api.blocking_initialize_less_than_or_equal_to(
                         &child_worker.to_wit(),
                         &event_value.to_wit(),
                     )?;
@@ -199,7 +199,7 @@ impl Guest for Component {
                     let right_worker = go(right, event_processors)?;
 
                     // We initialise this node into some worker along with the information about children workers that it needs to fetch the result from and apply and logic
-                    core.initialize_and(&left_worker.to_wit(), &right_worker.to_wit())?;
+                    core.blocking_initialize_and(&left_worker.to_wit(), &right_worker.to_wit())?;
 
                     // The result of this node will be available in this worker
                     let typed_timeline_result_worker = TypedTimeLineResultWorker::and({
@@ -226,7 +226,7 @@ impl Guest for Component {
                     let right_worker = go(right, event_processors)?;
 
                     // We initialise this node into some worker along with the information about children workers that it needs to fetch the result from and apply or logic
-                    core.initialize_or(&left_worker.to_wit(), &right_worker.to_wit())?;
+                    core.blocking_initialize_or(&left_worker.to_wit(), &right_worker.to_wit())?;
 
                     // The result of this node will be available in this worker
                     let typed_timeline_result_worker = TypedTimeLineResultWorker::or({
@@ -252,7 +252,7 @@ impl Guest for Component {
                     let child_worker = go(timeline, event_processors)?;
 
                     // We initialise this node into some worker along with the information about child worker that it needs to fetch the result from and apply not logic
-                    core.initialize_not(&child_worker.to_wit())?;
+                    core.blocking_initialize_not(&child_worker.to_wit())?;
 
                     // The result of this node will be available in this worker
                     let typed_timeline_result_worker = TypedTimeLineResultWorker::not({
@@ -274,7 +274,7 @@ impl Guest for Component {
 
                     let core = stub_event_processor::Api::new(&uri);
 
-                    core.initialize_tl_has_existed(&predicate.to_wit())?;
+                    core.blocking_initialize_tl_has_existed(&predicate.to_wit())?;
 
                     // The result of this node will be available in this worker
                     let typed_timeline_result_worker = TypedTimeLineResultWorker::tl_has_existed({
@@ -300,7 +300,7 @@ impl Guest for Component {
                     let core = stub_event_processor::Api::new(&uri);
 
                     // The result of this node will be available in this worker
-                    core.initialize_tl_has_existed_within(&predicate.to_wit(), *within)?;
+                    core.blocking_initialize_tl_has_existed_within(&predicate.to_wit(), *within)?;
 
                     // The result of this node will be available in this worker
                     let typed_timeline_result_worker =
@@ -326,7 +326,7 @@ impl Guest for Component {
 
                     let core = stub_event_processor::Api::new(&uri);
 
-                    core.initialize_latest_event_state(event_column_name.0.as_str())?;
+                    core.blocking_initialize_latest_event_state(event_column_name.0.as_str())?;
 
                     // The result of this node will be available in this worker
                     let typed_timeline_result_worker =
