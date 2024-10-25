@@ -6,7 +6,7 @@ Watch the talk from Afsal at [LambdaConf:2024:Estes-Park:Colorado](https://www.y
 
 The project begins with building the library to get the basic TimeLine DSL working
 
-Also, here is an over simplified version of initialisation phase. Every box below is a golem worker, which indicates about the dependencies too,
+Also, here is an over simplified version of initialisation phase. Every box below is a golem worker. There is a separate phase of querying but that requires more indepth explanations.
 
 <img width="754" alt="image" src="https://github.com/user-attachments/assets/4016368e-c5e2-4799-abcb-8d08f7439bc9">
 
