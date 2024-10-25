@@ -99,16 +99,14 @@ rustup install stable && rustup default stable
 rustup target add wasm32-wasi
 
 # Install wasm tools 
-cargo install --force --locked  wasm-tools@1.0.57
+cargo install --force --locked  wasm-tools@1.210.0
 
 # Install Cargo Component
-cargo install --force --locked cargo-component@0.7.0
+cargo install --force --locked cargo-component@0.13.2
 
 # Install golem-cli (OSS, for enterprise edition, golem-cloud-cli)
 cargo install golem-cli
 
-# Install cargo make
-cargo install cargo-make
 ```
 
 ## Initalise golem profile using golem-cli
@@ -132,8 +130,6 @@ golem-cli 0.0.96
 
 ## Quick Start to spin up Golem Timeline with Golem OSS
 
-
-
 #### Spin up golem and Pulsar streaming 
 
 ```sh
@@ -151,64 +147,20 @@ It's good to download the latest dockeer-compose from golem website or repositor
 
 Currently, I acknowledge that the build of this project is slightly complicated.
 
-If you are making changes to this project (Example: Wit files, Rust code etc), then almost all of the below commands is important.
-These commands pretty much builds what you need to get golem-timeline working 
+If you are making changes to this project (Example: Wit files, Rust code etc), then you will
+need to read through the script `full_rebuild.sh` in the root directory.
 
-golem OSS already exposes a few utilities to build such a project. However, there are still manual interventions 
+The script pretty much builds what you need to get golem-timeline working 
+
+While golem OSS already exposes a few utilities to build such a project, there are still manual interventions 
 required to get golem-timeline project set up work. This is the sole reason why I have 
-taken this approach of manually setting up the project. We will follow this while golem team is actively working on 
-improving the UX.
+taken a script project which we will improve soon. Previously this was a `cargo make build-flow`. 
+However that approach is removed for more flexibility and control.
+We will follow this while golem team is actively working on improving the UX.
 
 Also, its important as contributors to know what exactly is going on, and these commands really expose it!
 
-```bash
-
-cargo-component clean
-# Generate core stub, because core is going to be used from driver module
-golem-cli stubgen generate -s core/wit -d core-stub
-# Generate event processor stub, because core and timeline processor is going to need to communicate with event-processor.
-golem-cli stubgen generate -s event-processor/wit -d event-processor-stub
-# Generate timeline processor stub, because core, timeline processor  (self loop), and event-processor (cyclic dependency) is going to need to communicate with timeline-processor.
-golem-cli stubgen generate -s timeline-processor/wit -d timeline-processor-stub
-# Add core stub as dependency to driver
-golem-cli stubgen add-stub-dependency --stub-wit-root core-stub/wit --dest-wit-root driver/wit --overwrite --update-cargo-toml
-# Add even processor stub as dependency to core
-golem-cli stubgen add-stub-dependency --stub-wit-root event-processor-stub/wit --dest-wit-root core/wit --overwrite --update-cargo-toml
-# Add timeline processor as dependency to core
-golem-cli stubgen add-stub-dependency --stub-wit-root timeline-processor-stub/wit --dest-wit-root core/wit --overwrite --update-cargo-toml
-# Add event processor stub as dependency to timeline 
-golem-cli stubgen add-stub-dependency --stub-wit-root event-processor-stub/wit --dest-wit-root timeline-processor/wit --overwrite --update-cargo-toml
-# Add timeline processor stub processor stub as dependency to timeline
-golem-cli stubgen add-stub-dependency --stub-wit-root timeline-processor-stub/wit --dest-wit-root timeline-processor/wit --overwrite --update-cargo-toml
-
-# This will build individual wasm files in the target
-cargo-component build
-
-# Compose these wasms
-golem-cli stubgen compose --source-wasm target/wasm32-wasi/debug/driver.wasm --stub-wasm target/wasm32-wasi/debug/core_stub.wasm --dest-wasm target/wasm32-wasi/debug/driver_with_core.wasm
-golem-cli stubgen compose --source-wasm target/wasm32-wasi/debug/core.wasm --stub-wasm target/wasm32-wasi/debug/event_processor_stub.wasm --dest-wasm target/wasm32-wasi/debug/core_with_event.wasm
-golem-cli stubgen compose --source-wasm target/wasm32-wasi/debug/core_with_event.wasm --stub-wasm target/wasm32-wasi/debug/timeline_processor_stub.wasm --dest-wasm target/wasm32-wasi/debug/core_with_event_with_timeline.wasm
-golem-cli stubgen compose --source-wasm target/wasm32-wasi/debug/timeline_with_event.wasm --stub-wasm target/wasm32-wasi/debug/timeline_processor_stub.wasm --dest-wasm target/wasm32-wasi/debug/timeline_with_event_with_timeline.wasm
-
-
-
-```
-
-
-If you just want to build this project (rather than contributing), probably all you need then is the following
-
-```bash
-
-# This will build individual wasm files in the target
-cargo-component build
-# This is basically composing the generated wasms which is the real components in action for golem-timeline
-golem-cli stubgen compose --source-wasm target/wasm32-wasi/debug/driver.wasm --stub-wasm target/wasm32-wasi/debug/core_stub.wasm --dest-wasm target/wasm32-wasi/debug/driver_with_core.wasm
-golem-cli stubgen compose --source-wasm target/wasm32-wasi/debug/core.wasm --stub-wasm target/wasm32-wasi/debug/event_processor_stub.wasm --dest-wasm target/wasm32-wasi/debug/core_with_event.wasm
-golem-cli stubgen compose --source-wasm target/wasm32-wasi/debug/core_with_event.wasm --stub-wasm target/wasm32-wasi/debug/timeline_processor_stub.wasm --dest-wasm target/wasm32-wasi/debug/core_with_event_with_timeline.wasm
-golem-cli stubgen compose --source-wasm target/wasm32-wasi/debug/timeline_with_event.wasm --stub-wasm target/wasm32-wasi/debug/timeline_processor_stub.wasm --dest-wasm target/wasm32-wasi/debug/timeline_with_event_with_timeline.wasm
-
-
-```
+If you just want to build this project (rather than contributing), probably all you need to do is to run `quick_build.sh` file
 
 ## Run a quick test
 
