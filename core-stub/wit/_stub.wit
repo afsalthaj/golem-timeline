@@ -27,10 +27,16 @@ interface stub-core {
     subscribe: func() -> wasi-io-pollable;
     get: func() -> option<result<worker-details, string>>;
   }
+  resource future-hello-world-result {
+    subscribe: func() -> wasi-io-pollable;
+    get: func() -> option<string>;
+  }
   resource api {
     constructor(location: golem-rpc-uri);
     blocking-initialize-timeline: func(timeline: timeline-op) -> result<worker-details, string>;
     initialize-timeline: func(timeline: timeline-op) -> future-initialize-timeline-result;
+    blocking-hello-world: func() -> string;
+    hello-world: func() -> future-hello-world-result;
   }
 
 }

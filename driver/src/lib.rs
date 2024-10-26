@@ -46,12 +46,14 @@ impl Guest for Component {
         // );
 
         let simple_timeline =
-            tl_equal_to(tl_latest_event_to_state(col("playerStateChange")), string_value("play"))
+            tl_latest_event_to_state(col("playerStateChange"))
                 .with_worker_details(
                     "cirr".to_string(),
                     event_processor_component_id,
                     timeline_processor_component_id,
                 );
+
+        let result = core.blocking_hello_world();
 
         match core.blocking_initialize_timeline(&simple_timeline.to_wit()) {
             Ok(result) => {
