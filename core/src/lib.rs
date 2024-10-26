@@ -38,7 +38,7 @@ impl Guest for Component {
                     let (component_id, worker_id_prefix) = worker.clone().map_or(
                         ("default".to_string(), TimeLineWorkerIdPrefix("default".to_string())),
                         |w| (w.component_id, w.worker_id_prefix),
-                    ); // FIXME need to derive component and worker id here when user does not provide any
+                    );
 
                     let uuid = Uuid::new_v4();
 
@@ -52,8 +52,9 @@ impl Guest for Component {
                     // Specifying the worker the timeline-equal worker should fetch the results from to compare with a constant
                     let child_worker = go(left, event_processors)?;
 
-                    timeline_processor_api
-                        .blocking_initialize_equal(&child_worker.to_wit(), &right.to_wit())?;
+                    // Culprit
+                    // timeline_processor_api
+                    //     .blocking_initialize_equal(&child_worker.to_wit(), &right.to_wit())?;
 
                     // The worker in which the comparison with a constant actually executes
                     let typed_timeline_result_worker = TypedTimeLineResultWorker::equal_to({
