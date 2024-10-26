@@ -348,6 +348,10 @@ impl Guest for Component {
 
         Ok(WorkerDetails { result_worker, event_processor_workers })
     }
+
+    fn hello_world() -> String {
+        "afsal".to_string()
+    }
 }
 
 bindings::export!(Component with_types_in bindings);

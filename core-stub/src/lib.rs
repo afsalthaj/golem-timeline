@@ -9,10 +9,14 @@ impl Api {}
 pub struct FutureInitializeTimelineResult {
     pub future_invoke_result: FutureInvokeResult,
 }
+pub struct FutureHelloWorldResult {
+    pub future_invoke_result: FutureInvokeResult,
+}
 struct Component;
 impl crate::bindings::exports::timeline::core_stub::stub_core::Guest for Component {
     type Api = crate::Api;
     type FutureInitializeTimelineResult = crate::FutureInitializeTimelineResult;
+    type FutureHelloWorldResult = crate::FutureHelloWorldResult;
 }
 impl crate::bindings::exports::timeline::core_stub::stub_core::GuestFutureInitializeTimelineResult
 for FutureInitializeTimelineResult {
@@ -545,6 +549,35 @@ for FutureInitializeTimelineResult {
                         }
                     }
                 })
+            })
+    }
+}
+impl crate::bindings::exports::timeline::core_stub::stub_core::GuestFutureHelloWorldResult
+for FutureHelloWorldResult {
+    fn subscribe(&self) -> bindings::wasi::io::poll::Pollable {
+        let pollable = self.future_invoke_result.subscribe();
+        let pollable = unsafe {
+            bindings::wasi::io::poll::Pollable::from_handle(pollable.take_handle())
+        };
+        pollable
+    }
+    fn get(&self) -> Option<String> {
+        self.future_invoke_result
+            .get()
+            .map(|result| {
+                let result = result
+                    .expect(
+                        &format!(
+                            "Failed to invoke remote {}",
+                            "timeline:core/api.{hello-world}"
+                        ),
+                    );
+                (result
+                    .tuple_element(0)
+                    .expect("tuple not found")
+                    .string()
+                    .expect("string not found")
+                    .to_string())
             })
     }
 }
@@ -2040,6 +2073,33 @@ impl crate::bindings::exports::timeline::core_stub::stub_core::GuestApi for Api 
                 ],
             );
         crate::bindings::exports::timeline::core_stub::stub_core::FutureInitializeTimelineResult::new(FutureInitializeTimelineResult {
+            future_invoke_result: result,
+        })
+    }
+    fn blocking_hello_world(&self) -> String {
+        let result = self
+            .rpc
+            .invoke_and_await("timeline:core/api.{hello-world}", &[])
+            .expect(
+                &format!(
+                    "Failed to invoke-and-await remote {}",
+                    "timeline:core/api.{hello-world}"
+                ),
+            );
+        (result
+            .tuple_element(0)
+            .expect("tuple not found")
+            .string()
+            .expect("string not found")
+            .to_string())
+    }
+    fn hello_world(
+        &self,
+    ) -> crate::bindings::exports::timeline::core_stub::stub_core::FutureHelloWorldResult {
+        let result = self
+            .rpc
+            .async_invoke_and_await("timeline:core/api.{hello-world}", &[]);
+        crate::bindings::exports::timeline::core_stub::stub_core::FutureHelloWorldResult::new(FutureHelloWorldResult {
             future_invoke_result: result,
         })
     }
