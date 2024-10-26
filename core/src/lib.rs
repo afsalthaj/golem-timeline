@@ -45,7 +45,7 @@ impl Guest for Component {
                     // Connecting to the worker that should compute equal
                     let worker_id = TimeLineWorkerId(format!("{}-tleq-{}", worker_id_prefix, uuid));
 
-                    let uri = Uri { value: format!("worker://{component_id}/{}", &worker_id) };
+                    let uri = Uri { value: format!("urn:worker:{component_id}/{}", &worker_id) };
 
                     let timeline_processor_api = stub_timeline_processor::Api::new(&uri);
 
@@ -72,7 +72,7 @@ impl Guest for Component {
                     // Connecting to the worker that should compute equal
                     let worker_id = TimeLineWorkerId(format!("{}-tlgt-{}", worker_id_prefix, uuid));
 
-                    let uri = Uri { value: format!("worker://{component_id}/{}", &worker_id) };
+                    let uri = Uri { value: format!("urn:worker:{component_id}/{}", &worker_id) };
 
                     let timeline_processor_api = stub_timeline_processor::Api::new(&uri);
 
@@ -101,7 +101,7 @@ impl Guest for Component {
                     let worker_id =
                         TimeLineWorkerId(format!("{}-tlgteq-{}", worker_id_prefix, uuid));
 
-                    let uri = Uri { value: format!("worker://{component_id}/{}", &worker_id) };
+                    let uri = Uri { value: format!("urn:worker:{component_id}/{}", &worker_id) };
 
                     let timeline_processor_api = stub_timeline_processor::Api::new(&uri);
 
@@ -132,7 +132,7 @@ impl Guest for Component {
                     // Connecting to the worker that should compute equal
                     let worker_id = TimeLineWorkerId(format!("{}-tllt-{}", worker_id_prefix, uuid));
 
-                    let uri = Uri { value: format!("worker://{component_id}/{}", &worker_id) };
+                    let uri = Uri { value: format!("urn:worker:{component_id}/{}", &worker_id) };
 
                     let timeline_processor_api = stub_timeline_processor::Api::new(&uri);
 
@@ -161,7 +161,7 @@ impl Guest for Component {
                     let worker_id =
                         TimeLineWorkerId(format!("{}-tllteq-{}", worker_id_prefix, uuid));
 
-                    let uri = Uri { value: format!("worker://{component_id}/{}", &worker_id) };
+                    let uri = Uri { value: format!("urn:worker:{component_id}/{}", &worker_id) };
 
                     let timeline_processor_api = stub_timeline_processor::Api::new(&uri);
 
@@ -191,7 +191,7 @@ impl Guest for Component {
                     let worker_id =
                         TimeLineWorkerId(format!("{}-tl-and-{}", worker_id_prefix, uuid));
 
-                    let uri = Uri { value: format!("worker://{component_id}/{}", &worker_id) };
+                    let uri = Uri { value: format!("urn:worker:{component_id}/{}", &worker_id) };
 
                     let core = stub_timeline_processor::Api::new(&uri);
 
@@ -218,7 +218,7 @@ impl Guest for Component {
                     let worker_id =
                         TimeLineWorkerId(format!("{}-tl-and-{}", worker_id_prefix, uuid));
 
-                    let uri = Uri { value: format!("worker://{component_id}/{}", &worker_id) };
+                    let uri = Uri { value: format!("urn:worker:{component_id}/{}", &worker_id) };
 
                     let core = stub_timeline_processor::Api::new(&uri);
 
@@ -245,7 +245,7 @@ impl Guest for Component {
                     let worker_id =
                         TimeLineWorkerId(format!("{}-tl-not-{}", worker_id_prefix, uuid));
 
-                    let uri = Uri { value: format!("worker://{component_id}/{}", &worker_id) };
+                    let uri = Uri { value: format!("urn:worker:{component_id}/{}", &worker_id) };
 
                     let core = stub_timeline_processor::Api::new(&uri);
 
@@ -270,7 +270,7 @@ impl Guest for Component {
 
                     let worker_id = TimeLineWorkerId(format!("{}-tlhe-{}", worker_id_prefix, uuid));
 
-                    let uri = Uri { value: format!("worker://{component_id}/{}", &worker_id) };
+                    let uri = Uri { value: format!("urn:worker:{component_id}/{}", &worker_id) };
 
                     let core = stub_event_processor::Api::new(&uri);
 
@@ -295,7 +295,7 @@ impl Guest for Component {
                     let worker_id =
                         TimeLineWorkerId(format!("{}-tlhew-{}", worker_id_prefix, uuid));
 
-                    let uri = Uri { value: format!("worker://{component_id}/{}", worker_id) };
+                    let uri = Uri { value: format!("urn:worker:{component_id}/{}", worker_id) };
 
                     let core = stub_event_processor::Api::new(&uri);
 
@@ -322,7 +322,7 @@ impl Guest for Component {
                         worker_id_prefix, event_column_name
                     ));
 
-                    let uri = Uri { value: format!("worker://{component_id}/{}", worker_id) };
+                    let uri = Uri { value: format!("urn:worker:{component_id}/{}", worker_id) };
 
                     let core = stub_event_processor::Api::new(&uri);
 
