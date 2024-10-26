@@ -22,7 +22,7 @@ impl Guest for Component {
         event_processor_component_id: String,
         timeline_processor_component_id: String,
     ) -> Result<WorkerDetails, String> {
-        let uri = Uri { value: format!("worker://{core_component_id}/{}", "initialize-timeline") };
+        let uri = Uri { value: format!("urn:worker:{core_component_id}/{}", "initialize-timeline") };
 
         let core = stub_core::Api::new(&uri);
 
