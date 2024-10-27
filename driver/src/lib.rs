@@ -53,6 +53,8 @@ impl Guest for Component {
                     timeline_processor_component_id,
                 );
 
+        let result = core.blocking_hello_world();
+
         match core.blocking_initialize_timeline(&simple_timeline.to_wit()) {
             Ok(result) => {
                 dbg!("Driver Log: Timeline initialized");

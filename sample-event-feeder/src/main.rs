@@ -75,8 +75,8 @@ async fn main() -> Result<(), pulsar::Error> {
 
     let client = Client::new();
 
-    let component_id = env::var("COMPONENT_ID").expect("Provide COMPONENT_ID. You can understand from the output logs of quick_test.sh which was used to register timeline with Golem");
-    let worker_name = env::var("WORKER_NAME").expect("Provide WORKER_NAME. This should correspond to the worker that directly process events. You can understand from the output logs of quick_test.sh which was used to register timeline with Golem");
+    let component_id = env::var("COMPONENT_ID").expect("Provide COMPONENT_ID. You can understand from the output logs of quick_test_with_api_definitions.sh which was used to register timeline with Golem");
+    let worker_name = env::var("WORKER_NAME").expect("Provide WORKER_NAME. This should correspond to the worker that directly process events. You can understand from the output logs of quick_test_with_api_definitions.sh which was used to register timeline with Golem");
 
     let mut counter = 0usize;
     while let Some(msg) = consumer.try_next().await? {

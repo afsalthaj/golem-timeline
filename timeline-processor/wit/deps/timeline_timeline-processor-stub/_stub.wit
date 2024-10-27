@@ -23,10 +23,8 @@ interface stub-timeline-processor {
   record timeline-result {
     results: list<timeline-result-point>
   }
-
   record timeline-result-worker {
-    worker-id: string,
-    template-id: string
+    worker-id: string,     template-id: string
   }
   variant leaf-timeline-node {
     tl-has-existed(timeline-result-worker), 

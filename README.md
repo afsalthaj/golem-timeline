@@ -141,7 +141,7 @@ It's good to download the latest dockeer-compose from golem website or repositor
 Currently, I acknowledge that the build of this project is complicated.
 
 If you are making changes to this project (Example: Wit files, Rust code etc), then you will
-need to read through the script `full_rebuild.sh` in the root directory.
+need to read through the script `quick_full_build.sh` in the root directory.
 
 While golem OSS already exposes a few utilities to build similar projects, there are still manual interventions 
 required to get this project up and working. This is why we have some scripts to maintain which is going to be temporary. 

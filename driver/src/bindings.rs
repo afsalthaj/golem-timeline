@@ -3616,6 +3616,32 @@ pub mod timeline {
                     }
                 }
             }
+            #[allow(unused_unsafe, clippy::all)]
+            pub fn hello_world() -> _rt::String {
+                unsafe {
+                    #[repr(align(4))]
+                    struct RetArea([::core::mem::MaybeUninit<u8>; 8]);
+                    let mut ret_area = RetArea([::core::mem::MaybeUninit::uninit(); 8]);
+                    let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
+                    #[cfg(target_arch = "wasm32")]
+                    #[link(wasm_import_module = "timeline:core/api")]
+                    extern "C" {
+                        #[link_name = "hello-world"]
+                        fn wit_import(_: *mut u8);
+                    }
+
+                    #[cfg(not(target_arch = "wasm32"))]
+                    fn wit_import(_: *mut u8) {
+                        unreachable!()
+                    }
+                    wit_import(ptr0);
+                    let l1 = *ptr0.add(0).cast::<*mut u8>();
+                    let l2 = *ptr0.add(4).cast::<usize>();
+                    let len3 = l2;
+                    let bytes3 = _rt::Vec::from_raw_parts(l1.cast(), len3, len3);
+                    _rt::string_lift(bytes3)
+                }
+            }
         }
     }
     #[allow(dead_code)]
@@ -3667,6 +3693,48 @@ pub mod timeline {
                         #[link(wasm_import_module = "timeline:core-stub/stub-core")]
                         extern "C" {
                             #[link_name = "[resource-drop]future-initialize-timeline-result"]
+                            fn drop(_: u32);
+                        }
+
+                        drop(_handle);
+                    }
+                }
+            }
+
+            #[derive(Debug)]
+            #[repr(transparent)]
+            pub struct FutureHelloWorldResult {
+                handle: _rt::Resource<FutureHelloWorldResult>,
+            }
+
+            impl FutureHelloWorldResult {
+                #[doc(hidden)]
+                pub unsafe fn from_handle(handle: u32) -> Self {
+                    Self { handle: _rt::Resource::from_handle(handle) }
+                }
+
+                #[doc(hidden)]
+                pub fn take_handle(&self) -> u32 {
+                    _rt::Resource::take_handle(&self.handle)
+                }
+
+                #[doc(hidden)]
+                pub fn handle(&self) -> u32 {
+                    _rt::Resource::handle(&self.handle)
+                }
+            }
+
+            unsafe impl _rt::WasmResource for FutureHelloWorldResult {
+                #[inline]
+                unsafe fn drop(_handle: u32) {
+                    #[cfg(not(target_arch = "wasm32"))]
+                    unreachable!();
+
+                    #[cfg(target_arch = "wasm32")]
+                    {
+                        #[link(wasm_import_module = "timeline:core-stub/stub-core")]
+                        extern "C" {
+                            #[link_name = "[resource-drop]future-hello-world-result"]
                             fn drop(_: u32);
                         }
 
@@ -4477,6 +4545,65 @@ pub mod timeline {
                                         }
                                         _ => _rt::invalid_enum_discriminant(),
                                     }
+                                };
+                                Some(e)
+                            }
+                            _ => _rt::invalid_enum_discriminant(),
+                        }
+                    }
+                }
+            }
+            impl FutureHelloWorldResult {
+                #[allow(unused_unsafe, clippy::all)]
+                pub fn subscribe(&self) -> WasiIoPollable {
+                    unsafe {
+                        #[cfg(target_arch = "wasm32")]
+                        #[link(wasm_import_module = "timeline:core-stub/stub-core")]
+                        extern "C" {
+                            #[link_name = "[method]future-hello-world-result.subscribe"]
+                            fn wit_import(_: i32) -> i32;
+                        }
+
+                        #[cfg(not(target_arch = "wasm32"))]
+                        fn wit_import(_: i32) -> i32 {
+                            unreachable!()
+                        }
+                        let ret = wit_import((self).handle() as i32);
+                        super::super::super::wasi::io::poll::Pollable::from_handle(ret as u32)
+                    }
+                }
+            }
+            impl FutureHelloWorldResult {
+                #[allow(unused_unsafe, clippy::all)]
+                pub fn get(&self) -> Option<_rt::String> {
+                    unsafe {
+                        #[repr(align(4))]
+                        struct RetArea([::core::mem::MaybeUninit<u8>; 12]);
+                        let mut ret_area = RetArea([::core::mem::MaybeUninit::uninit(); 12]);
+                        let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
+                        #[cfg(target_arch = "wasm32")]
+                        #[link(wasm_import_module = "timeline:core-stub/stub-core")]
+                        extern "C" {
+                            #[link_name = "[method]future-hello-world-result.get"]
+                            fn wit_import(_: i32, _: *mut u8);
+                        }
+
+                        #[cfg(not(target_arch = "wasm32"))]
+                        fn wit_import(_: i32, _: *mut u8) {
+                            unreachable!()
+                        }
+                        wit_import((self).handle() as i32, ptr0);
+                        let l1 = i32::from(*ptr0.add(0).cast::<u8>());
+                        match l1 {
+                            0 => None,
+                            1 => {
+                                let e = {
+                                    let l2 = *ptr0.add(4).cast::<*mut u8>();
+                                    let l3 = *ptr0.add(8).cast::<usize>();
+                                    let len4 = l3;
+                                    let bytes4 = _rt::Vec::from_raw_parts(l2.cast(), len4, len4);
+
+                                    _rt::string_lift(bytes4)
                                 };
                                 Some(e)
                             }
@@ -6091,6 +6218,54 @@ pub mod timeline {
                             _rt::alloc::dealloc(result50.cast(), layout50);
                         }
                         FutureInitializeTimelineResult::from_handle(ret as u32)
+                    }
+                }
+            }
+            impl Api {
+                #[allow(unused_unsafe, clippy::all)]
+                pub fn blocking_hello_world(&self) -> _rt::String {
+                    unsafe {
+                        #[repr(align(4))]
+                        struct RetArea([::core::mem::MaybeUninit<u8>; 8]);
+                        let mut ret_area = RetArea([::core::mem::MaybeUninit::uninit(); 8]);
+                        let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
+                        #[cfg(target_arch = "wasm32")]
+                        #[link(wasm_import_module = "timeline:core-stub/stub-core")]
+                        extern "C" {
+                            #[link_name = "[method]api.blocking-hello-world"]
+                            fn wit_import(_: i32, _: *mut u8);
+                        }
+
+                        #[cfg(not(target_arch = "wasm32"))]
+                        fn wit_import(_: i32, _: *mut u8) {
+                            unreachable!()
+                        }
+                        wit_import((self).handle() as i32, ptr0);
+                        let l1 = *ptr0.add(0).cast::<*mut u8>();
+                        let l2 = *ptr0.add(4).cast::<usize>();
+                        let len3 = l2;
+                        let bytes3 = _rt::Vec::from_raw_parts(l1.cast(), len3, len3);
+                        _rt::string_lift(bytes3)
+                    }
+                }
+            }
+            impl Api {
+                #[allow(unused_unsafe, clippy::all)]
+                pub fn hello_world(&self) -> FutureHelloWorldResult {
+                    unsafe {
+                        #[cfg(target_arch = "wasm32")]
+                        #[link(wasm_import_module = "timeline:core-stub/stub-core")]
+                        extern "C" {
+                            #[link_name = "[method]api.hello-world"]
+                            fn wit_import(_: i32) -> i32;
+                        }
+
+                        #[cfg(not(target_arch = "wasm32"))]
+                        fn wit_import(_: i32) -> i32 {
+                            unreachable!()
+                        }
+                        let ret = wit_import((self).handle() as i32);
+                        FutureHelloWorldResult::from_handle(ret as u32)
                     }
                 }
             }
@@ -10967,8 +11142,8 @@ pub(crate) use __export_driver_impl as export;
 #[cfg(target_arch = "wasm32")]
 #[link_section = "component-type:wit-bindgen:0.25.0:driver:encoded world"]
 #[doc(hidden)]
-pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 5543] = *b"\
-\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\xaa*\x01A\x02\x01A(\x01\
+pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 5802] = *b"\
+\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\xad,\x01A\x02\x01A(\x01\
 B\x0a\x04\0\x08pollable\x03\x01\x01h\0\x01@\x01\x04self\x01\0\x7f\x04\0\x16[meth\
 od]pollable.ready\x01\x02\x01@\x01\x04self\x01\x01\0\x04\0\x16[method]pollable.b\
 lock\x01\x03\x01p\x01\x01py\x01@\x01\x02in\x04\0\x05\x04\0\x04poll\x01\x06\x03\x01\
@@ -11025,7 +11200,7 @@ han-or-equal-to\x01\x0d\x01@\x02\x0dchild-worker1\x0b\x0dchild-worker2\x0b\0\x0c
 d-worker\x0b\0\x0c\x04\0\x0einitialize-not\x01\x0f\x01j\x01\x03\x01s\x01@\x01\x02\
 t1w\0\x10\x04\0\x13get-timeline-result\x01\x11\x03\x01\x1ftimeline:timeline-proc\
 essor/api\x05\x06\x02\x03\0\x02\x05event\x02\x03\0\x02\x0fevent-predicate\x02\x03\
-\0\x03\x1ctyped-timeline-result-worker\x01B,\x02\x03\x02\x01\x04\x04\0\x0bevent-\
+\0\x03\x1ctyped-timeline-result-worker\x01B.\x02\x03\x02\x01\x04\x04\0\x0bevent-\
 value\x03\0\0\x02\x03\x02\x01\x07\x04\0\x05event\x03\0\x02\x02\x03\x02\x01\x08\x04\
 \0\x0fevent-predicate\x03\0\x04\x02\x03\x02\x01\x09\x04\0\x1ctyped-timeline-resu\
 lt-worker\x03\0\x06\x01z\x04\0\x0anode-index\x03\0\x08\x01r\x02\x10worker-id-pre\
@@ -11047,43 +11222,47 @@ tl-or\x01\x10\0\x04\0\x0dtimeline-node\x03\0\x1f\x01p\x20\x01r\x01\x05nodes!\x04
 \0\x0btimeline-op\x03\0\"\x01p\x07\x01r\x01\x05nodes$\x04\0\x17event-processor-w\
 orkers\x03\0%\x01r\x02\x17event-processor-workers$\x0dresult-worker\x07\x04\0\x0e\
 worker-details\x03\0'\x01j\x01(\x01s\x01@\x01\x08timeline#\0)\x04\0\x13initializ\
-e-timeline\x01*\x03\x01\x11timeline:core/api\x05\x0a\x02\x03\0\x01\x03uri\x02\x03\
-\0\x04\x0bevent-value\x02\x03\0\x04\x05event\x02\x03\0\x04\x0fevent-predicate\x02\
-\x03\0\x04\x1ctyped-timeline-result-worker\x02\x03\0\x04\x0anode-index\x02\x03\0\
-\x04\x06server\x02\x03\0\x04\x1dserver-with-event-column-name\x02\x03\0\x04\x17b\
-i-timeline-with-server\x02\x03\0\x04\x14timeline-with-server\x02\x03\0\x04\x09wo\
-rker-id\x02\x03\0\x04\x1ctimeline-constant-comparator\x02\x03\0\x04\x1atimeline-\
-constant-compared\x02\x03\0\x04\x10timeline-negated\x02\x03\0\x04\x1bserver-with\
--event-predicate\x02\x03\0\x04\"server-with-event-predicate-within\x02\x03\0\x04\
-\x0dtimeline-node\x02\x03\0\x04\x0btimeline-op\x02\x03\0\x04\x17event-processor-\
-workers\x02\x03\0\x04\x0eworker-details\x01B=\x02\x03\x02\x01\x0b\x04\0\x0dgolem\
--rpc-uri\x03\0\0\x02\x03\x02\x01\x01\x04\0\x10wasi-io-pollable\x03\0\x02\x02\x03\
-\x02\x01\x0c\x04\0\x0bevent-value\x03\0\x04\x02\x03\x02\x01\x0d\x04\0\x05event\x03\
-\0\x06\x02\x03\x02\x01\x0e\x04\0\x0fevent-predicate\x03\0\x08\x02\x03\x02\x01\x0f\
-\x04\0\x1ctyped-timeline-result-worker\x03\0\x0a\x02\x03\x02\x01\x10\x04\0\x0ano\
-de-index\x03\0\x0c\x02\x03\x02\x01\x11\x04\0\x06server\x03\0\x0e\x02\x03\x02\x01\
-\x12\x04\0\x1dserver-with-event-column-name\x03\0\x10\x02\x03\x02\x01\x13\x04\0\x17\
-bi-timeline-with-server\x03\0\x12\x02\x03\x02\x01\x14\x04\0\x14timeline-with-ser\
-ver\x03\0\x14\x02\x03\x02\x01\x15\x04\0\x09worker-id\x03\0\x16\x02\x03\x02\x01\x16\
-\x04\0\x1ctimeline-constant-comparator\x03\0\x18\x02\x03\x02\x01\x17\x04\0\x1ati\
-meline-constant-compared\x03\0\x1a\x02\x03\x02\x01\x18\x04\0\x10timeline-negated\
-\x03\0\x1c\x02\x03\x02\x01\x19\x04\0\x1bserver-with-event-predicate\x03\0\x1e\x02\
-\x03\x02\x01\x1a\x04\0\"server-with-event-predicate-within\x03\0\x20\x02\x03\x02\
-\x01\x1b\x04\0\x0dtimeline-node\x03\0\"\x02\x03\x02\x01\x1c\x04\0\x0btimeline-op\
-\x03\0$\x02\x03\x02\x01\x1d\x04\0\x17event-processor-workers\x03\0&\x02\x03\x02\x01\
-\x1e\x04\0\x0eworker-details\x03\0(\x04\0!future-initialize-timeline-result\x03\x01\
-\x04\0\x03api\x03\x01\x01h*\x01i\x03\x01@\x01\x04self,\0-\x04\03[method]future-i\
-nitialize-timeline-result.subscribe\x01.\x01j\x01)\x01s\x01k/\x01@\x01\x04self,\0\
-0\x04\0-[method]future-initialize-timeline-result.get\x011\x01i+\x01@\x01\x08loc\
-ation\x01\02\x04\0\x10[constructor]api\x013\x01h+\x01@\x02\x04self4\x08timeline%\
-\0/\x04\0([method]api.blocking-initialize-timeline\x015\x01i*\x01@\x02\x04self4\x08\
-timeline%\06\x04\0\x1f[method]api.initialize-timeline\x017\x03\x01\x1ctimeline:c\
-ore-stub/stub-core\x05\x1f\x01B\x05\x02\x03\x02\x01\x1e\x04\0\x0eworker-details\x03\
-\0\0\x01j\x01\x01\x01s\x01@\x03\x10core-template-ids\x10leaf-template-ids\x1aeve\
-nt-to-state-tempalte-ids\0\x02\x04\0\x03run\x01\x03\x04\x01\x13timeline:driver/a\
-pi\x05\x20\x04\x01\x16timeline:driver/driver\x04\0\x0b\x0c\x01\0\x06driver\x03\0\
-\0\0G\x09producers\x01\x0cprocessed-by\x02\x0dwit-component\x070.208.1\x10wit-bi\
-ndgen-rust\x060.25.0";
+e-timeline\x01*\x01@\0\0s\x04\0\x0bhello-world\x01+\x03\x01\x11timeline:core/api\
+\x05\x0a\x02\x03\0\x01\x03uri\x02\x03\0\x04\x0bevent-value\x02\x03\0\x04\x05even\
+t\x02\x03\0\x04\x0fevent-predicate\x02\x03\0\x04\x1ctyped-timeline-result-worker\
+\x02\x03\0\x04\x0anode-index\x02\x03\0\x04\x06server\x02\x03\0\x04\x1dserver-wit\
+h-event-column-name\x02\x03\0\x04\x17bi-timeline-with-server\x02\x03\0\x04\x14ti\
+meline-with-server\x02\x03\0\x04\x09worker-id\x02\x03\0\x04\x1ctimeline-constant\
+-comparator\x02\x03\0\x04\x1atimeline-constant-compared\x02\x03\0\x04\x10timelin\
+e-negated\x02\x03\0\x04\x1bserver-with-event-predicate\x02\x03\0\x04\"server-wit\
+h-event-predicate-within\x02\x03\0\x04\x0dtimeline-node\x02\x03\0\x04\x0btimelin\
+e-op\x02\x03\0\x04\x17event-processor-workers\x02\x03\0\x04\x0eworker-details\x01\
+BI\x02\x03\x02\x01\x0b\x04\0\x0dgolem-rpc-uri\x03\0\0\x02\x03\x02\x01\x01\x04\0\x10\
+wasi-io-pollable\x03\0\x02\x02\x03\x02\x01\x0c\x04\0\x0bevent-value\x03\0\x04\x02\
+\x03\x02\x01\x0d\x04\0\x05event\x03\0\x06\x02\x03\x02\x01\x0e\x04\0\x0fevent-pre\
+dicate\x03\0\x08\x02\x03\x02\x01\x0f\x04\0\x1ctyped-timeline-result-worker\x03\0\
+\x0a\x02\x03\x02\x01\x10\x04\0\x0anode-index\x03\0\x0c\x02\x03\x02\x01\x11\x04\0\
+\x06server\x03\0\x0e\x02\x03\x02\x01\x12\x04\0\x1dserver-with-event-column-name\x03\
+\0\x10\x02\x03\x02\x01\x13\x04\0\x17bi-timeline-with-server\x03\0\x12\x02\x03\x02\
+\x01\x14\x04\0\x14timeline-with-server\x03\0\x14\x02\x03\x02\x01\x15\x04\0\x09wo\
+rker-id\x03\0\x16\x02\x03\x02\x01\x16\x04\0\x1ctimeline-constant-comparator\x03\0\
+\x18\x02\x03\x02\x01\x17\x04\0\x1atimeline-constant-compared\x03\0\x1a\x02\x03\x02\
+\x01\x18\x04\0\x10timeline-negated\x03\0\x1c\x02\x03\x02\x01\x19\x04\0\x1bserver\
+-with-event-predicate\x03\0\x1e\x02\x03\x02\x01\x1a\x04\0\"server-with-event-pre\
+dicate-within\x03\0\x20\x02\x03\x02\x01\x1b\x04\0\x0dtimeline-node\x03\0\"\x02\x03\
+\x02\x01\x1c\x04\0\x0btimeline-op\x03\0$\x02\x03\x02\x01\x1d\x04\0\x17event-proc\
+essor-workers\x03\0&\x02\x03\x02\x01\x1e\x04\0\x0eworker-details\x03\0(\x04\0!fu\
+ture-initialize-timeline-result\x03\x01\x04\0\x19future-hello-world-result\x03\x01\
+\x04\0\x03api\x03\x01\x01h*\x01i\x03\x01@\x01\x04self-\0.\x04\03[method]future-i\
+nitialize-timeline-result.subscribe\x01/\x01j\x01)\x01s\x01k0\x01@\x01\x04self-\0\
+1\x04\0-[method]future-initialize-timeline-result.get\x012\x01h+\x01@\x01\x04sel\
+f3\0.\x04\0+[method]future-hello-world-result.subscribe\x014\x01ks\x01@\x01\x04s\
+elf3\05\x04\0%[method]future-hello-world-result.get\x016\x01i,\x01@\x01\x08locat\
+ion\x01\07\x04\0\x10[constructor]api\x018\x01h,\x01@\x02\x04self9\x08timeline%\0\
+0\x04\0([method]api.blocking-initialize-timeline\x01:\x01i*\x01@\x02\x04self9\x08\
+timeline%\0;\x04\0\x1f[method]api.initialize-timeline\x01<\x01@\x01\x04self9\0s\x04\
+\0\x20[method]api.blocking-hello-world\x01=\x01i+\x01@\x01\x04self9\0>\x04\0\x17\
+[method]api.hello-world\x01?\x03\x01\x1ctimeline:core-stub/stub-core\x05\x1f\x01\
+B\x05\x02\x03\x02\x01\x1e\x04\0\x0eworker-details\x03\0\0\x01j\x01\x01\x01s\x01@\
+\x03\x10core-template-ids\x10leaf-template-ids\x1aevent-to-state-tempalte-ids\0\x02\
+\x04\0\x03run\x01\x03\x04\x01\x13timeline:driver/api\x05\x20\x04\x01\x16timeline\
+:driver/driver\x04\0\x0b\x0c\x01\0\x06driver\x03\0\0\0G\x09producers\x01\x0cproc\
+essed-by\x02\x0dwit-component\x070.208.1\x10wit-bindgen-rust\x060.25.0";
 
 #[inline(never)]
 #[doc(hidden)]

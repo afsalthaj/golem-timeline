@@ -35,29 +35,30 @@ impl Guest for Component {
         ) -> Result<TypedTimeLineResultWorker, String> {
             match core_time_line_op {
                 CoreTimeLineOp::EqualTo(worker, left, right) => {
-                    let (component_id, worker_id_prefix) = worker.clone().map_or(
-                        ("default".to_string(), TimeLineWorkerIdPrefix("default".to_string())),
+                    dbg!("here?????", worker.clone());
+                    let (component_id, worker_id_prefix) = worker.clone().map(
                         |w| (w.component_id, w.worker_id_prefix),
-                    ); // FIXME need to derive component and worker id here when user does not provide any
+                    ).ok_or("No worker id for timeline found")?;
 
                     let uuid = Uuid::new_v4();
 
                     // Connecting to the worker that should compute equal
-                    let worker_id = TimeLineWorkerId(format!("{}-tleq-{}", worker_id_prefix, uuid));
+                    let worker_name = TimeLineWorkerId(format!("{}-tleq-{}", worker_id_prefix, uuid));
 
-                    let uri = Uri { value: format!("urn:worker:{component_id}/{}", &worker_id) };
+                    let uri = Uri { value: format!("urn:worker:{component_id}/{}", &worker_name) };
 
                     let timeline_processor_api = stub_timeline_processor::Api::new(&uri);
 
                     // Specifying the worker the timeline-equal worker should fetch the results from to compare with a constant
                     let child_worker = go(left, event_processors)?;
 
+                    // Culprit
                     timeline_processor_api
                         .blocking_initialize_equal(&child_worker.to_wit(), &right.to_wit())?;
 
                     // The worker in which the comparison with a constant actually executes
                     let typed_timeline_result_worker = TypedTimeLineResultWorker::equal_to({
-                        TimeLineResultWorker { component_id: component_id.clone(), worker_id }
+                        TimeLineResultWorker { component_id: component_id.clone(), worker_id: worker_name }
                     });
 
                     Ok(typed_timeline_result_worker)
@@ -347,6 +348,10 @@ impl Guest for Component {
             .map(|typed_worker_info| typed_worker_info.to_wit())?;
 
         Ok(WorkerDetails { result_worker, event_processor_workers })
+    }
+
+    fn hello_world() -> String {
+        "afsal".to_string()
     }
 }
 
