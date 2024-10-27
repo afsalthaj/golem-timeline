@@ -46,7 +46,7 @@ impl Guest for Component {
         // );
 
         let simple_timeline =
-            tl_latest_event_to_state(col("playerStateChange"))
+            tl_equal_to(tl_latest_event_to_state(col("playerStateChange")), string_value("play"))
                 .with_worker_details(
                     "cirr".to_string(),
                     event_processor_component_id,

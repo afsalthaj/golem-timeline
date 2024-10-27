@@ -153,17 +153,17 @@ impl TimeLineOp {
     pub fn with_worker_details(
         &self,
         worker_prefix: String,
-        event_processor_id: String,
-        timeline_processor_id: String,
+        event_processor_component_id: String,
+        timeline_processor_component_id: String,
     ) -> TimeLineOp {
         let event_processor_worker_details = TimeLineNodeWorkerInput {
             worker_id_prefix: TimeLineWorkerIdPrefix(worker_prefix.clone()),
-            component_id: event_processor_id,
+            component_id: event_processor_component_id,
         };
 
         let timeline_processor_worker_details = TimeLineNodeWorkerInput {
             worker_id_prefix: TimeLineWorkerIdPrefix(worker_prefix.clone()),
-            component_id: timeline_processor_id,
+            component_id: timeline_processor_component_id,
         };
 
         fn go(

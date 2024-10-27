@@ -9,14 +9,14 @@ golem-cli stubgen generate -s event-processor/wit -d event-processor-stub
 golem-cli stubgen generate -s timeline-processor/wit -d timeline-processor-stub
 # Add core stub as dependency to driver
 golem-cli stubgen add-stub-dependency --stub-wit-root core-stub/wit --dest-wit-root driver/wit --overwrite --update-cargo-toml
+# Add timeline processor stub processor stub as dependency to timeline
+golem-cli stubgen add-stub-dependency --stub-wit-root timeline-processor-stub/wit --dest-wit-root timeline-processor/wit --overwrite --update-cargo-toml
 # Add even processor stub as dependency to core
 golem-cli stubgen add-stub-dependency --stub-wit-root event-processor-stub/wit --dest-wit-root core/wit --overwrite --update-cargo-toml
 # Add timeline processor as dependency to core
 golem-cli stubgen add-stub-dependency --stub-wit-root timeline-processor-stub/wit --dest-wit-root core/wit --overwrite --update-cargo-toml
 # Add event processor stub as dependency to timeline
 golem-cli stubgen add-stub-dependency --stub-wit-root event-processor-stub/wit --dest-wit-root timeline-processor/wit --overwrite --update-cargo-toml
-# Add timeline processor stub processor stub as dependency to timeline
-golem-cli stubgen add-stub-dependency --stub-wit-root timeline-processor-stub/wit --dest-wit-root timeline-processor/wit --overwrite --update-cargo-toml
 
 # This will build individual wasm files in the target
 cargo-component build
