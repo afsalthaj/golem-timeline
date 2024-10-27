@@ -23,7 +23,6 @@ interface stub-timeline-processor {
   record timeline-result {
     results: list<timeline-result-point>
   }
-
   record timeline-result-worker {
     worker-id: string,     template-id: string
   }

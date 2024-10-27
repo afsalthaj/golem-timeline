@@ -53,8 +53,8 @@ impl Guest for Component {
                     let child_worker = go(left, event_processors)?;
 
                     // Culprit
-                    // timeline_processor_api
-                    //     .blocking_initialize_equal(&child_worker.to_wit(), &right.to_wit())?;
+                    timeline_processor_api
+                        .blocking_initialize_equal(&child_worker.to_wit(), &right.to_wit())?;
 
                     // The worker in which the comparison with a constant actually executes
                     let typed_timeline_result_worker = TypedTimeLineResultWorker::equal_to({
