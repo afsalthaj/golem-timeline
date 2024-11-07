@@ -16034,26 +16034,57 @@ pub mod exports {
                         }
                     }
                 }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_hello_world_cabi<T: Guest>() -> *mut u8 {
+                    #[cfg(target_arch = "wasm32")]
+                    _rt::run_ctors_once();
+                    let result0 = T::hello_world();
+                    let ptr1 = _RET_AREA.0.as_mut_ptr().cast::<u8>();
+                    let vec2 = (result0.into_bytes()).into_boxed_slice();
+                    let ptr2 = vec2.as_ptr().cast::<u8>();
+                    let len2 = vec2.len();
+                    ::core::mem::forget(vec2);
+                    *ptr1.add(4).cast::<usize>() = len2;
+                    *ptr1.add(0).cast::<*mut u8>() = ptr2.cast_mut();
+                    ptr1
+                }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn __post_return_hello_world<T: Guest>(arg0: *mut u8) {
+                    let l0 = *arg0.add(0).cast::<*mut u8>();
+                    let l1 = *arg0.add(4).cast::<usize>();
+                    _rt::cabi_dealloc(l0, l1, 1);
+                }
                 pub trait Guest {
                     fn initialize_timeline(
                         timeline: TimelineOp,
                     ) -> Result<WorkerDetails, _rt::String>;
+                    fn hello_world() -> _rt::String;
                 }
                 #[doc(hidden)]
 
                 macro_rules! __export_timeline_core_api_cabi{
-                                      ($ty:ident with_types_in $($path_to_types:tt)*) => (const _: () = {
+                                    ($ty:ident with_types_in $($path_to_types:tt)*) => (const _: () = {
 
-                                        #[export_name = "timeline:core/api#initialize-timeline"]
-                                        unsafe extern "C" fn export_initialize_timeline(arg0: *mut u8,arg1: usize,) -> *mut u8 {
-                                          $($path_to_types)*::_export_initialize_timeline_cabi::<$ty>(arg0, arg1)
-                                        }
-                                        #[export_name = "cabi_post_timeline:core/api#initialize-timeline"]
-                                        unsafe extern "C" fn _post_return_initialize_timeline(arg0: *mut u8,) {
-                                          $($path_to_types)*::__post_return_initialize_timeline::<$ty>(arg0)
-                                        }
-                                      };);
-                                    }
+                                      #[export_name = "timeline:core/api#initialize-timeline"]
+                                      unsafe extern "C" fn export_initialize_timeline(arg0: *mut u8,arg1: usize,) -> *mut u8 {
+                                        $($path_to_types)*::_export_initialize_timeline_cabi::<$ty>(arg0, arg1)
+                                      }
+                                      #[export_name = "cabi_post_timeline:core/api#initialize-timeline"]
+                                      unsafe extern "C" fn _post_return_initialize_timeline(arg0: *mut u8,) {
+                                        $($path_to_types)*::__post_return_initialize_timeline::<$ty>(arg0)
+                                      }
+                                      #[export_name = "timeline:core/api#hello-world"]
+                                      unsafe extern "C" fn export_hello_world() -> *mut u8 {
+                                        $($path_to_types)*::_export_hello_world_cabi::<$ty>()
+                                      }
+                                      #[export_name = "cabi_post_timeline:core/api#hello-world"]
+                                      unsafe extern "C" fn _post_return_hello_world(arg0: *mut u8,) {
+                                        $($path_to_types)*::__post_return_hello_world::<$ty>(arg0)
+                                      }
+                                    };);
+                                  }
                 #[doc(hidden)]
                 pub(crate) use __export_timeline_core_api_cabi;
                 #[repr(align(4))]
@@ -16364,19 +16395,19 @@ mod _rt {
 #[doc(hidden)]
 
 macro_rules! __export_core_impl {
-                              ($ty:ident) => (self::export!($ty with_types_in self););
-                              ($ty:ident with_types_in $($path_to_types_root:tt)*) => (
-                              $($path_to_types_root)*::exports::timeline::core::api::__export_timeline_core_api_cabi!($ty with_types_in $($path_to_types_root)*::exports::timeline::core::api);
-                              )
-                            }
+                            ($ty:ident) => (self::export!($ty with_types_in self););
+                            ($ty:ident with_types_in $($path_to_types_root:tt)*) => (
+                            $($path_to_types_root)*::exports::timeline::core::api::__export_timeline_core_api_cabi!($ty with_types_in $($path_to_types_root)*::exports::timeline::core::api);
+                            )
+                          }
 #[doc(inline)]
 pub(crate) use __export_core_impl as export;
 
 #[cfg(target_arch = "wasm32")]
 #[link_section = "component-type:wit-bindgen:0.25.0:core:encoded world"]
 #[doc(hidden)]
-pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 9785] = *b"\
-\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\xbeK\x01A\x02\x01A\x1d\
+pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 9806] = *b"\
+\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\xd3K\x01A\x02\x01A\x1d\
 \x01B\x0a\x04\0\x08pollable\x03\x01\x01h\0\x01@\x01\x04self\x01\0\x7f\x04\0\x16[\
 method]pollable.ready\x01\x02\x01@\x01\x04self\x01\x01\0\x04\0\x16[method]pollab\
 le.block\x01\x03\x01p\x01\x01py\x01@\x01\x02in\x04\0\x05\x04\0\x04poll\x01\x06\x03\
@@ -16538,7 +16569,7 @@ hild-worker\x0f\0\x1d\x04\0#[method]api.blocking-initialize-not\x01M\x01i\x17\x0
 O\x01@\x02\x04self<\x02t1w\07\x04\0([method]api.blocking-get-timeline-result\x01\
 P\x01i\x18\x01@\x02\x04self<\x02t1w\0\xd1\0\x04\0\x1f[method]api.get-timeline-re\
 sult\x01R\x03\x018timeline:timeline-processor-stub/stub-timeline-processor\x05\x14\
-\x01B,\x02\x03\x02\x01\x05\x04\0\x0bevent-value\x03\0\0\x02\x03\x02\x01\x06\x04\0\
+\x01B.\x02\x03\x02\x01\x05\x04\0\x0bevent-value\x03\0\0\x02\x03\x02\x01\x06\x04\0\
 \x05event\x03\0\x02\x02\x03\x02\x01\x0b\x04\0\x0fevent-predicate\x03\0\x04\x02\x03\
 \x02\x01\x13\x04\0\x1ctyped-timeline-result-worker\x03\0\x06\x01z\x04\0\x0anode-\
 index\x03\0\x08\x01r\x02\x10worker-id-prefixs\x0btemplate-ids\x04\0\x06server\x03\
@@ -16559,10 +16590,10 @@ tate\x01\x12\0\x06tl-and\x01\x10\0\x05tl-or\x01\x10\0\x04\0\x0dtimeline-node\x03
 \0\x1f\x01p\x20\x01r\x01\x05nodes!\x04\0\x0btimeline-op\x03\0\"\x01p\x07\x01r\x01\
 \x05nodes$\x04\0\x17event-processor-workers\x03\0%\x01r\x02\x17event-processor-w\
 orkers$\x0dresult-worker\x07\x04\0\x0eworker-details\x03\0'\x01j\x01(\x01s\x01@\x01\
-\x08timeline#\0)\x04\0\x13initialize-timeline\x01*\x04\x01\x11timeline:core/api\x05\
-\x15\x04\x01\x12timeline:core/core\x04\0\x0b\x0a\x01\0\x04core\x03\0\0\0G\x09pro\
-ducers\x01\x0cprocessed-by\x02\x0dwit-component\x070.208.1\x10wit-bindgen-rust\x06\
-0.25.0";
+\x08timeline#\0)\x04\0\x13initialize-timeline\x01*\x01@\0\0s\x04\0\x0bhello-worl\
+d\x01+\x04\x01\x11timeline:core/api\x05\x15\x04\x01\x12timeline:core/core\x04\0\x0b\
+\x0a\x01\0\x04core\x03\0\0\0G\x09producers\x01\x0cprocessed-by\x02\x0dwit-compon\
+ent\x070.208.1\x10wit-bindgen-rust\x060.25.0";
 
 #[inline(never)]
 #[doc(hidden)]

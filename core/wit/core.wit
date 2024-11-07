@@ -102,6 +102,7 @@ interface api {
   }
 
   initialize-timeline: func(timeline: timeline-op) -> result<worker-details, string>;
+  hello-world: func() -> string;
 }
 
 world core {
