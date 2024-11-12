@@ -1,0 +1,27 @@
+apiVersion: core.oam.dev/v1beta1
+kind: Application
+metadata:
+  name: App
+spec:
+  components:
+  - name: core
+    type: wasm
+    properties:
+      build:
+      - command: cargo-component build
+        inputs:
+        - src
+        - wit
+        outputs:
+        - ../target/wasm32-wasi/debug/core.wasm
+      inputWit: wit
+      outputWit: wit-generated
+      inputWasm: ../target/wasm32-wasi/debug/core.wasm
+      outputWasm: ../target/golem-components/core.wasm
+    traits:
+    - type: wasm-rpc
+      properties:
+        componentName: event-processor
+    - type: wasm-rpc
+      properties:
+        componentName: timeline-processor

@@ -1,8 +1,8 @@
 package timeline:core;
 
 interface api {
-  use timeline:event-processor/api.{event-value, event, event-predicate};
-  use timeline:timeline-processor/api.{typed-timeline-result-worker};
+  use timeline:event-processor-interface/api.{event-value, event, event-predicate};
+  use timeline:timeline-processor-interface/api.{typed-timeline-result-worker};
 
   type node-index = s32;
 
@@ -106,8 +106,6 @@ interface api {
 }
 
 world core {
-  import timeline:event-processor-stub/stub-event-processor;
-  import timeline:timeline-processor-stub/stub-timeline-processor;
   export api;
 }
 

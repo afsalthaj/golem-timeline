@@ -4,32 +4,28 @@ version = "0.0.1"
 edition = "2021"
 
 [package.metadata.component.target]
-world = "driver"
-path = "wit"
+path = "wit-generated"
 
 [package.metadata.component.target.dependencies."golem:rpc"]
-path = "wit/deps/wasm-rpc"
+path = "wit-generated/deps/wasm-rpc"
 
-[package.metadata.component.target.dependencies."timeline:core"]
-path = "wit/deps/timeline_core"
+[package.metadata.component.target.dependencies."timeline:core-interface"]
+path = "wit-generated/deps/timeline_core-interface"
 
 [package.metadata.component.target.dependencies."timeline:core-stub"]
-path = "wit/deps/timeline_core-stub"
+path = "wit-generated/deps/timeline_core-stub"
 
-[package.metadata.component.target.dependencies."timeline:event-processor"]
-path = "wit/deps/timeline_event-processor"
+[package.metadata.component.target.dependencies."timeline:driver-interface"]
+path = "wit-generated/deps/timeline_driver-interface"
 
-[package.metadata.component.target.dependencies."timeline:event-processor-stub"]
-path = "wit/deps/timeline_event-processor-stub"
+[package.metadata.component.target.dependencies."timeline:event-processor-interface"]
+path = "wit-generated/deps/timeline_event-processor-interface"
 
-[package.metadata.component.target.dependencies."timeline:timeline-processor"]
-path = "wit/deps/timeline_timeline-processor"
-
-[package.metadata.component.target.dependencies."timeline:timeline-processor-stub"]
-path = "wit/deps/timeline_timeline-processor-stub"
+[package.metadata.component.target.dependencies."timeline:timeline-processor-interface"]
+path = "wit-generated/deps/timeline_timeline-processor-interface"
 
 [package.metadata.component.target.dependencies."wasi:io"]
-path = "wit/deps/io"
+path = "wit-generated/deps/io"
 
 [dependencies]
 once_cell = "1.17.1"

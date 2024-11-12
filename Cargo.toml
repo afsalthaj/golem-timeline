@@ -1,5 +1,5 @@
 [workspace]
-members = ["timeline", "event-processor", "timeline-processor", "core", "driver", "core-stub", "event-processor-stub", "timeline-processor-stub"]
+members = ["timeline", "event-processor", "timeline-processor", "core", "driver"]
 exclude = ["sample-event-producer", "sample-event-feeder", "benchmark"]
 resolver = "2"
 

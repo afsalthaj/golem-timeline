@@ -1,8 +1,8 @@
 package timeline:timeline-processor;
 
 interface api {
-  use timeline:event-processor/api.{event-value};
-  use timeline:event-processor/api.{timeline-result};
+  use timeline:event-processor-interface/api.{event-value};
+  use timeline:event-processor-interface/api.{timeline-result};
 
   record timeline-result-worker {
     worker-id: string,
@@ -45,7 +45,5 @@ interface api {
 }
 
 world timeline-processor {
-  import timeline:event-processor-stub/stub-event-processor;
-  import timeline:timeline-processor-stub/stub-timeline-processor;
   export api;
 }

@@ -2185,7 +2185,7 @@ pub mod golem {
 #[allow(dead_code)]
 pub mod timeline {
     #[allow(dead_code)]
-    pub mod event_processor {
+    pub mod event_processor_interface {
         #[allow(dead_code, clippy::all)]
         pub mod api {
             #[used]
@@ -2336,7 +2336,7 @@ pub mod timeline {
                     let len0 = vec0.len();
                     let ptr1 = ret_area.0.as_mut_ptr().cast::<u8>();
                     #[cfg(target_arch = "wasm32")]
-                    #[link(wasm_import_module = "timeline:event-processor/api")]
+                    #[link(wasm_import_module = "timeline:event-processor-interface/api")]
                     extern "C" {
                         #[link_name = "initialize-latest-event-state"]
                         fn wit_import(_: *mut u8, _: usize, _: *mut u8);
@@ -2423,7 +2423,7 @@ pub mod timeline {
                     };
                     let ptr4 = ret_area.0.as_mut_ptr().cast::<u8>();
                     #[cfg(target_arch = "wasm32")]
-                    #[link(wasm_import_module = "timeline:event-processor/api")]
+                    #[link(wasm_import_module = "timeline:event-processor-interface/api")]
                     extern "C" {
                         #[link_name = "initialize-tl-has-existed"]
                         fn wit_import(
@@ -2535,7 +2535,7 @@ pub mod timeline {
                     };
                     let ptr4 = ret_area.0.as_mut_ptr().cast::<u8>();
                     #[cfg(target_arch = "wasm32")]
-                    #[link(wasm_import_module = "timeline:event-processor/api")]
+                    #[link(wasm_import_module = "timeline:event-processor-interface/api")]
                     extern "C" {
                         #[link_name = "initialize-tl-has-existed-within"]
                         fn wit_import(
@@ -2661,7 +2661,7 @@ pub mod timeline {
                     }
                     let ptr5 = ret_area.0.as_mut_ptr().cast::<u8>();
                     #[cfg(target_arch = "wasm32")]
-                    #[link(wasm_import_module = "timeline:event-processor/api")]
+                    #[link(wasm_import_module = "timeline:event-processor-interface/api")]
                     extern "C" {
                         #[link_name = "add-event"]
                         fn wit_import(_: i64, _: *mut u8, _: usize, _: *mut u8);
@@ -2711,7 +2711,7 @@ pub mod timeline {
                     let mut ret_area = RetArea([::core::mem::MaybeUninit::uninit(); 12]);
                     let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
                     #[cfg(target_arch = "wasm32")]
-                    #[link(wasm_import_module = "timeline:event-processor/api")]
+                    #[link(wasm_import_module = "timeline:event-processor-interface/api")]
                     extern "C" {
                         #[link_name = "latest-event-to-state"]
                         fn wit_import(_: i64, _: *mut u8);
@@ -2830,7 +2830,7 @@ pub mod timeline {
                     let mut ret_area = RetArea([::core::mem::MaybeUninit::uninit(); 12]);
                     let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
                     #[cfg(target_arch = "wasm32")]
-                    #[link(wasm_import_module = "timeline:event-processor/api")]
+                    #[link(wasm_import_module = "timeline:event-processor-interface/api")]
                     extern "C" {
                         #[link_name = "tl-has-existed"]
                         fn wit_import(_: i64, _: *mut u8);
@@ -2949,7 +2949,7 @@ pub mod timeline {
                     let mut ret_area = RetArea([::core::mem::MaybeUninit::uninit(); 12]);
                     let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
                     #[cfg(target_arch = "wasm32")]
-                    #[link(wasm_import_module = "timeline:event-processor/api")]
+                    #[link(wasm_import_module = "timeline:event-processor-interface/api")]
                     extern "C" {
                         #[link_name = "tl-has-existed-within"]
                         fn wit_import(_: i64, _: *mut u8);
@@ -3074,11 +3074,11 @@ pub mod timeline {
             use super::super::super::_rt;
             pub type GolemRpcUri = super::super::super::golem::rpc::types::Uri;
             pub type WasiIoPollable = super::super::super::wasi::io::poll::Pollable;
-            pub type Event = super::super::super::timeline::event_processor::api::Event;
-            pub type TimelineResult =
-                super::super::super::timeline::event_processor::api::TimelineResult;
+            pub type Event = super::super::super::timeline::event_processor_interface::api::Event;
             pub type EventPredicate =
-                super::super::super::timeline::event_processor::api::EventPredicate;
+                super::super::super::timeline::event_processor_interface::api::EventPredicate;
+            pub type TimelineResult =
+                super::super::super::timeline::event_processor_interface::api::TimelineResult;
 
             #[derive(Debug)]
             #[repr(transparent)]
@@ -3843,7 +3843,7 @@ pub mod timeline {
                                                             i32::from(*base.add(8).cast::<u8>());
                                                         let l8 =
                                                             i32::from(*base.add(24).cast::<u8>());
-                                                        use super::super::super::timeline::event_processor::api::EventValue as V15;
+                                                        use super::super::super::timeline::event_processor_interface::api::EventValue as V15;
                                                         let v15 = match l8 {
                                                             0 => {
                                                                 let e15 = {
@@ -3899,8 +3899,8 @@ pub mod timeline {
                                                             }
                                                         };
 
-                                                        super::super::super::timeline::event_processor::api::TimelineResultPoint{
-                                                            time_period: super::super::super::timeline::event_processor::api::TimePeriod{
+                                                        super::super::super::timeline::event_processor_interface::api::TimelineResultPoint{
+                                                            time_period: super::super::super::timeline::event_processor_interface::api::TimePeriod{
                                                               t1: l5 as u64,
                                                               t2: match l6 {
                                                                 0 => None,
@@ -3922,7 +3922,7 @@ pub mod timeline {
                                                 }
                                                 _rt::cabi_dealloc(base16, len16 * 40, 8);
 
-                                                super::super::super::timeline::event_processor::api::TimelineResult{
+                                                super::super::super::timeline::event_processor_interface::api::TimelineResult{
                                                         results: result16,
                                                       }
                                             };
@@ -4020,7 +4020,7 @@ pub mod timeline {
                                                             i32::from(*base.add(8).cast::<u8>());
                                                         let l8 =
                                                             i32::from(*base.add(24).cast::<u8>());
-                                                        use super::super::super::timeline::event_processor::api::EventValue as V15;
+                                                        use super::super::super::timeline::event_processor_interface::api::EventValue as V15;
                                                         let v15 = match l8 {
                                                             0 => {
                                                                 let e15 = {
@@ -4076,8 +4076,8 @@ pub mod timeline {
                                                             }
                                                         };
 
-                                                        super::super::super::timeline::event_processor::api::TimelineResultPoint{
-                                                            time_period: super::super::super::timeline::event_processor::api::TimePeriod{
+                                                        super::super::super::timeline::event_processor_interface::api::TimelineResultPoint{
+                                                            time_period: super::super::super::timeline::event_processor_interface::api::TimePeriod{
                                                               t1: l5 as u64,
                                                               t2: match l6 {
                                                                 0 => None,
@@ -4099,7 +4099,7 @@ pub mod timeline {
                                                 }
                                                 _rt::cabi_dealloc(base16, len16 * 40, 8);
 
-                                                super::super::super::timeline::event_processor::api::TimelineResult{
+                                                super::super::super::timeline::event_processor_interface::api::TimelineResult{
                                                         results: result16,
                                                       }
                                             };
@@ -4197,7 +4197,7 @@ pub mod timeline {
                                                             i32::from(*base.add(8).cast::<u8>());
                                                         let l8 =
                                                             i32::from(*base.add(24).cast::<u8>());
-                                                        use super::super::super::timeline::event_processor::api::EventValue as V15;
+                                                        use super::super::super::timeline::event_processor_interface::api::EventValue as V15;
                                                         let v15 = match l8 {
                                                             0 => {
                                                                 let e15 = {
@@ -4253,8 +4253,8 @@ pub mod timeline {
                                                             }
                                                         };
 
-                                                        super::super::super::timeline::event_processor::api::TimelineResultPoint{
-                                                            time_period: super::super::super::timeline::event_processor::api::TimePeriod{
+                                                        super::super::super::timeline::event_processor_interface::api::TimelineResultPoint{
+                                                            time_period: super::super::super::timeline::event_processor_interface::api::TimePeriod{
                                                               t1: l5 as u64,
                                                               t2: match l6 {
                                                                 0 => None,
@@ -4276,7 +4276,7 @@ pub mod timeline {
                                                 }
                                                 _rt::cabi_dealloc(base16, len16 * 40, 8);
 
-                                                super::super::super::timeline::event_processor::api::TimelineResult{
+                                                super::super::super::timeline::event_processor_interface::api::TimelineResult{
                                                         results: result16,
                                                       }
                                             };
@@ -4431,15 +4431,11 @@ pub mod timeline {
                         #[repr(align(4))]
                         struct RetArea([::core::mem::MaybeUninit<u8>; 12]);
                         let mut ret_area = RetArea([::core::mem::MaybeUninit::uninit(); 12]);
-                        let super::super::super::timeline::event_processor::api::EventPredicate {
-                            col_name: col_name0,
-                            value: value0,
-                            op: op0,
-                        } = event_predicate;
+                        let super::super::super::timeline::event_processor_interface::api::EventPredicate{ col_name:col_name0, value:value0, op:op0, } = event_predicate;
                         let vec1 = col_name0;
                         let ptr1 = vec1.as_ptr().cast::<u8>();
                         let len1 = vec1.len();
-                        use super::super::super::timeline::event_processor::api::EventValue as V3;
+                        use super::super::super::timeline::event_processor_interface::api::EventValue as V3;
                         let (result4_0, result4_1, result4_2) = match value0 {
                             V3::StringValue(e) => {
                                 let vec2 = e;
@@ -4555,15 +4551,11 @@ pub mod timeline {
                     event_predicate: &EventPredicate,
                 ) -> FutureInitializeTlHasExistedResult {
                     unsafe {
-                        let super::super::super::timeline::event_processor::api::EventPredicate {
-                            col_name: col_name0,
-                            value: value0,
-                            op: op0,
-                        } = event_predicate;
+                        let super::super::super::timeline::event_processor_interface::api::EventPredicate{ col_name:col_name0, value:value0, op:op0, } = event_predicate;
                         let vec1 = col_name0;
                         let ptr1 = vec1.as_ptr().cast::<u8>();
                         let len1 = vec1.len();
-                        use super::super::super::timeline::event_processor::api::EventValue as V3;
+                        use super::super::super::timeline::event_processor_interface::api::EventValue as V3;
                         let (result4_0, result4_1, result4_2) = match value0 {
                             V3::StringValue(e) => {
                                 let vec2 = e;
@@ -4654,15 +4646,11 @@ pub mod timeline {
                         #[repr(align(4))]
                         struct RetArea([::core::mem::MaybeUninit<u8>; 12]);
                         let mut ret_area = RetArea([::core::mem::MaybeUninit::uninit(); 12]);
-                        let super::super::super::timeline::event_processor::api::EventPredicate {
-                            col_name: col_name0,
-                            value: value0,
-                            op: op0,
-                        } = event_predicate;
+                        let super::super::super::timeline::event_processor_interface::api::EventPredicate{ col_name:col_name0, value:value0, op:op0, } = event_predicate;
                         let vec1 = col_name0;
                         let ptr1 = vec1.as_ptr().cast::<u8>();
                         let len1 = vec1.len();
-                        use super::super::super::timeline::event_processor::api::EventValue as V3;
+                        use super::super::super::timeline::event_processor_interface::api::EventValue as V3;
                         let (result4_0, result4_1, result4_2) = match value0 {
                             V3::StringValue(e) => {
                                 let vec2 = e;
@@ -4782,15 +4770,11 @@ pub mod timeline {
                     time: u64,
                 ) -> FutureInitializeTlHasExistedWithinResult {
                     unsafe {
-                        let super::super::super::timeline::event_processor::api::EventPredicate {
-                            col_name: col_name0,
-                            value: value0,
-                            op: op0,
-                        } = event_predicate;
+                        let super::super::super::timeline::event_processor_interface::api::EventPredicate{ col_name:col_name0, value:value0, op:op0, } = event_predicate;
                         let vec1 = col_name0;
                         let ptr1 = vec1.as_ptr().cast::<u8>();
                         let len1 = vec1.len();
-                        use super::super::super::timeline::event_processor::api::EventValue as V3;
+                        use super::super::super::timeline::event_processor_interface::api::EventValue as V3;
                         let (result4_0, result4_1, result4_2) = match value0 {
                             V3::StringValue(e) => {
                                 let vec2 = e;
@@ -4883,7 +4867,7 @@ pub mod timeline {
                         #[repr(align(4))]
                         struct RetArea([::core::mem::MaybeUninit<u8>; 12]);
                         let mut ret_area = RetArea([::core::mem::MaybeUninit::uninit(); 12]);
-                        let super::super::super::timeline::event_processor::api::Event {
+                        let super::super::super::timeline::event_processor_interface::api::Event {
                             time: time0,
                             event: event0,
                         } = event;
@@ -4911,7 +4895,7 @@ pub mod timeline {
                                 let len2 = vec2.len();
                                 *base.add(4).cast::<usize>() = len2;
                                 *base.add(0).cast::<*mut u8>() = ptr2.cast_mut();
-                                use super::super::super::timeline::event_processor::api::EventValue as V4;
+                                use super::super::super::timeline::event_processor_interface::api::EventValue as V4;
                                 match t1_1 {
                                     V4::StringValue(e) => {
                                         *base.add(8).cast::<u8>() = (0i32) as u8;
@@ -4992,7 +4976,7 @@ pub mod timeline {
                 #[allow(unused_unsafe, clippy::all)]
                 pub fn add_event(&self, event: &Event) -> FutureAddEventResult {
                     unsafe {
-                        let super::super::super::timeline::event_processor::api::Event {
+                        let super::super::super::timeline::event_processor_interface::api::Event {
                             time: time0,
                             event: event0,
                         } = event;
@@ -5020,7 +5004,7 @@ pub mod timeline {
                                 let len2 = vec2.len();
                                 *base.add(4).cast::<usize>() = len2;
                                 *base.add(0).cast::<*mut u8>() = ptr2.cast_mut();
-                                use super::super::super::timeline::event_processor::api::EventValue as V4;
+                                use super::super::super::timeline::event_processor_interface::api::EventValue as V4;
                                 match t1_1 {
                                     V4::StringValue(e) => {
                                         *base.add(8).cast::<u8>() = (0i32) as u8;
@@ -5112,7 +5096,7 @@ pub mod timeline {
                                             let l4 = *base.add(0).cast::<i64>();
                                             let l5 = i32::from(*base.add(8).cast::<u8>());
                                             let l7 = i32::from(*base.add(24).cast::<u8>());
-                                            use super::super::super::timeline::event_processor::api::EventValue as V14;
+                                            use super::super::super::timeline::event_processor_interface::api::EventValue as V14;
                                             let v14 = match l7 {
                                                 0 => {
                                                     let e14 = {
@@ -5160,8 +5144,8 @@ pub mod timeline {
                                                 }
                                             };
 
-                                            super::super::super::timeline::event_processor::api::TimelineResultPoint{
-                                                      time_period: super::super::super::timeline::event_processor::api::TimePeriod{
+                                            super::super::super::timeline::event_processor_interface::api::TimelineResultPoint{
+                                                      time_period: super::super::super::timeline::event_processor_interface::api::TimePeriod{
                                                         t1: l4 as u64,
                                                         t2: match l5 {
                                                           0 => None,
@@ -5183,7 +5167,7 @@ pub mod timeline {
                                     }
                                     _rt::cabi_dealloc(base15, len15 * 40, 8);
 
-                                    super::super::super::timeline::event_processor::api::TimelineResult{
+                                    super::super::super::timeline::event_processor_interface::api::TimelineResult{
                                                   results: result15,
                                                 }
                                 };
@@ -5268,7 +5252,7 @@ pub mod timeline {
                                             let l4 = *base.add(0).cast::<i64>();
                                             let l5 = i32::from(*base.add(8).cast::<u8>());
                                             let l7 = i32::from(*base.add(24).cast::<u8>());
-                                            use super::super::super::timeline::event_processor::api::EventValue as V14;
+                                            use super::super::super::timeline::event_processor_interface::api::EventValue as V14;
                                             let v14 = match l7 {
                                                 0 => {
                                                     let e14 = {
@@ -5316,8 +5300,8 @@ pub mod timeline {
                                                 }
                                             };
 
-                                            super::super::super::timeline::event_processor::api::TimelineResultPoint{
-                                                      time_period: super::super::super::timeline::event_processor::api::TimePeriod{
+                                            super::super::super::timeline::event_processor_interface::api::TimelineResultPoint{
+                                                      time_period: super::super::super::timeline::event_processor_interface::api::TimePeriod{
                                                         t1: l4 as u64,
                                                         t2: match l5 {
                                                           0 => None,
@@ -5339,7 +5323,7 @@ pub mod timeline {
                                     }
                                     _rt::cabi_dealloc(base15, len15 * 40, 8);
 
-                                    super::super::super::timeline::event_processor::api::TimelineResult{
+                                    super::super::super::timeline::event_processor_interface::api::TimelineResult{
                                                   results: result15,
                                                 }
                                 };
@@ -5424,7 +5408,7 @@ pub mod timeline {
                                             let l4 = *base.add(0).cast::<i64>();
                                             let l5 = i32::from(*base.add(8).cast::<u8>());
                                             let l7 = i32::from(*base.add(24).cast::<u8>());
-                                            use super::super::super::timeline::event_processor::api::EventValue as V14;
+                                            use super::super::super::timeline::event_processor_interface::api::EventValue as V14;
                                             let v14 = match l7 {
                                                 0 => {
                                                     let e14 = {
@@ -5472,8 +5456,8 @@ pub mod timeline {
                                                 }
                                             };
 
-                                            super::super::super::timeline::event_processor::api::TimelineResultPoint{
-                                                      time_period: super::super::super::timeline::event_processor::api::TimePeriod{
+                                            super::super::super::timeline::event_processor_interface::api::TimelineResultPoint{
+                                                      time_period: super::super::super::timeline::event_processor_interface::api::TimePeriod{
                                                         t1: l4 as u64,
                                                         t2: match l5 {
                                                           0 => None,
@@ -5495,7 +5479,7 @@ pub mod timeline {
                                     }
                                     _rt::cabi_dealloc(base15, len15 * 40, 8);
 
-                                    super::super::super::timeline::event_processor::api::TimelineResult{
+                                    super::super::super::timeline::event_processor_interface::api::TimelineResult{
                                                   results: result15,
                                                 }
                                 };
@@ -5543,78 +5527,19 @@ pub mod timeline {
         }
     }
     #[allow(dead_code)]
-    pub mod timeline_processor_stub {
+    pub mod timeline_processor_interface {
         #[allow(dead_code, clippy::all)]
-        pub mod stub_timeline_processor {
+        pub mod api {
             #[used]
             #[doc(hidden)]
             #[cfg(target_arch = "wasm32")]
             static __FORCE_SECTION_REF: fn() =
                 super::super::super::__link_custom_section_describing_imports;
             use super::super::super::_rt;
-            pub type GolemRpcUri = super::super::super::golem::rpc::types::Uri;
-            pub type WasiIoPollable = super::super::super::wasi::io::poll::Pollable;
-            #[derive(Clone)]
-            pub enum EventValue {
-                StringValue(_rt::String),
-                IntValue(i64),
-                FloatValue(f64),
-                BoolValue(bool),
-            }
-            impl ::core::fmt::Debug for EventValue {
-                fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-                    match self {
-                        EventValue::StringValue(e) => {
-                            f.debug_tuple("EventValue::StringValue").field(e).finish()
-                        }
-                        EventValue::IntValue(e) => {
-                            f.debug_tuple("EventValue::IntValue").field(e).finish()
-                        }
-                        EventValue::FloatValue(e) => {
-                            f.debug_tuple("EventValue::FloatValue").field(e).finish()
-                        }
-                        EventValue::BoolValue(e) => {
-                            f.debug_tuple("EventValue::BoolValue").field(e).finish()
-                        }
-                    }
-                }
-            }
-            #[repr(C)]
-            #[derive(Clone, Copy)]
-            pub struct TimePeriod {
-                pub t1: u64,
-                pub t2: Option<u64>,
-            }
-            impl ::core::fmt::Debug for TimePeriod {
-                fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-                    f.debug_struct("TimePeriod")
-                        .field("t1", &self.t1)
-                        .field("t2", &self.t2)
-                        .finish()
-                }
-            }
-            #[derive(Clone)]
-            pub struct TimelineResultPoint {
-                pub time_period: TimePeriod,
-                pub value: EventValue,
-            }
-            impl ::core::fmt::Debug for TimelineResultPoint {
-                fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-                    f.debug_struct("TimelineResultPoint")
-                        .field("time-period", &self.time_period)
-                        .field("value", &self.value)
-                        .finish()
-                }
-            }
-            #[derive(Clone)]
-            pub struct TimelineResult {
-                pub results: _rt::Vec<TimelineResultPoint>,
-            }
-            impl ::core::fmt::Debug for TimelineResult {
-                fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-                    f.debug_struct("TimelineResult").field("results", &self.results).finish()
-                }
-            }
+            pub type EventValue =
+                super::super::super::timeline::event_processor_interface::api::EventValue;
+            pub type TimelineResult =
+                super::super::super::timeline::event_processor_interface::api::TimelineResult;
             #[derive(Clone)]
             pub struct TimelineResultWorker {
                 pub worker_id: _rt::String,
@@ -5712,6 +5637,2634 @@ pub mod timeline {
                     }
                 }
             }
+            #[allow(unused_unsafe, clippy::all)]
+            pub fn initialize_equal(
+                child_worker: &TypedTimelineResultWorker,
+                event_value: &EventValue,
+            ) -> Result<_rt::String, _rt::String> {
+                unsafe {
+                    #[repr(align(4))]
+                    struct RetArea([::core::mem::MaybeUninit<u8>; 12]);
+                    let mut ret_area = RetArea([::core::mem::MaybeUninit::uninit(); 12]);
+                    let (result35_0, result35_1, result35_2, result35_3, result35_4, result35_5) =
+                        match child_worker {
+                            TypedTimelineResultWorker::LeafTimeline(e) => {
+                                let (result9_0, result9_1, result9_2, result9_3, result9_4) =
+                                    match e {
+                                        LeafTimelineNode::TlHasExisted(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id0,
+                                                template_id: template_id0,
+                                            } = e;
+                                            let vec1 = worker_id0;
+                                            let ptr1 = vec1.as_ptr().cast::<u8>();
+                                            let len1 = vec1.len();
+                                            let vec2 = template_id0;
+                                            let ptr2 = vec2.as_ptr().cast::<u8>();
+                                            let len2 = vec2.len();
+
+                                            (0i32, ptr1.cast_mut(), len1, ptr2.cast_mut(), len2)
+                                        }
+                                        LeafTimelineNode::TlHasExistedWithin(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id3,
+                                                template_id: template_id3,
+                                            } = e;
+                                            let vec4 = worker_id3;
+                                            let ptr4 = vec4.as_ptr().cast::<u8>();
+                                            let len4 = vec4.len();
+                                            let vec5 = template_id3;
+                                            let ptr5 = vec5.as_ptr().cast::<u8>();
+                                            let len5 = vec5.len();
+
+                                            (1i32, ptr4.cast_mut(), len4, ptr5.cast_mut(), len5)
+                                        }
+                                        LeafTimelineNode::TlLatestEventToState(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id6,
+                                                template_id: template_id6,
+                                            } = e;
+                                            let vec7 = worker_id6;
+                                            let ptr7 = vec7.as_ptr().cast::<u8>();
+                                            let len7 = vec7.len();
+                                            let vec8 = template_id6;
+                                            let ptr8 = vec8.as_ptr().cast::<u8>();
+                                            let len8 = vec8.len();
+
+                                            (2i32, ptr7.cast_mut(), len7, ptr8.cast_mut(), len8)
+                                        }
+                                    };
+
+                                (0i32, result9_0, result9_1, result9_2, result9_3, result9_4)
+                            }
+                            TypedTimelineResultWorker::DerivedTimeline(e) => {
+                                let (result34_0, result34_1, result34_2, result34_3, result34_4) =
+                                    match e {
+                                        DerivedTimelineNode::EqualTo(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id10,
+                                                template_id: template_id10,
+                                            } = e;
+                                            let vec11 = worker_id10;
+                                            let ptr11 = vec11.as_ptr().cast::<u8>();
+                                            let len11 = vec11.len();
+                                            let vec12 = template_id10;
+                                            let ptr12 = vec12.as_ptr().cast::<u8>();
+                                            let len12 = vec12.len();
+
+                                            (0i32, ptr11.cast_mut(), len11, ptr12.cast_mut(), len12)
+                                        }
+                                        DerivedTimelineNode::GreaterThan(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id13,
+                                                template_id: template_id13,
+                                            } = e;
+                                            let vec14 = worker_id13;
+                                            let ptr14 = vec14.as_ptr().cast::<u8>();
+                                            let len14 = vec14.len();
+                                            let vec15 = template_id13;
+                                            let ptr15 = vec15.as_ptr().cast::<u8>();
+                                            let len15 = vec15.len();
+
+                                            (1i32, ptr14.cast_mut(), len14, ptr15.cast_mut(), len15)
+                                        }
+                                        DerivedTimelineNode::GreaterThanOrEqualTo(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id16,
+                                                template_id: template_id16,
+                                            } = e;
+                                            let vec17 = worker_id16;
+                                            let ptr17 = vec17.as_ptr().cast::<u8>();
+                                            let len17 = vec17.len();
+                                            let vec18 = template_id16;
+                                            let ptr18 = vec18.as_ptr().cast::<u8>();
+                                            let len18 = vec18.len();
+
+                                            (2i32, ptr17.cast_mut(), len17, ptr18.cast_mut(), len18)
+                                        }
+                                        DerivedTimelineNode::LessThan(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id19,
+                                                template_id: template_id19,
+                                            } = e;
+                                            let vec20 = worker_id19;
+                                            let ptr20 = vec20.as_ptr().cast::<u8>();
+                                            let len20 = vec20.len();
+                                            let vec21 = template_id19;
+                                            let ptr21 = vec21.as_ptr().cast::<u8>();
+                                            let len21 = vec21.len();
+
+                                            (3i32, ptr20.cast_mut(), len20, ptr21.cast_mut(), len21)
+                                        }
+                                        DerivedTimelineNode::LessThanOrEqualTo(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id22,
+                                                template_id: template_id22,
+                                            } = e;
+                                            let vec23 = worker_id22;
+                                            let ptr23 = vec23.as_ptr().cast::<u8>();
+                                            let len23 = vec23.len();
+                                            let vec24 = template_id22;
+                                            let ptr24 = vec24.as_ptr().cast::<u8>();
+                                            let len24 = vec24.len();
+
+                                            (4i32, ptr23.cast_mut(), len23, ptr24.cast_mut(), len24)
+                                        }
+                                        DerivedTimelineNode::And(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id25,
+                                                template_id: template_id25,
+                                            } = e;
+                                            let vec26 = worker_id25;
+                                            let ptr26 = vec26.as_ptr().cast::<u8>();
+                                            let len26 = vec26.len();
+                                            let vec27 = template_id25;
+                                            let ptr27 = vec27.as_ptr().cast::<u8>();
+                                            let len27 = vec27.len();
+
+                                            (5i32, ptr26.cast_mut(), len26, ptr27.cast_mut(), len27)
+                                        }
+                                        DerivedTimelineNode::Or(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id28,
+                                                template_id: template_id28,
+                                            } = e;
+                                            let vec29 = worker_id28;
+                                            let ptr29 = vec29.as_ptr().cast::<u8>();
+                                            let len29 = vec29.len();
+                                            let vec30 = template_id28;
+                                            let ptr30 = vec30.as_ptr().cast::<u8>();
+                                            let len30 = vec30.len();
+
+                                            (6i32, ptr29.cast_mut(), len29, ptr30.cast_mut(), len30)
+                                        }
+                                        DerivedTimelineNode::Not(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id31,
+                                                template_id: template_id31,
+                                            } = e;
+                                            let vec32 = worker_id31;
+                                            let ptr32 = vec32.as_ptr().cast::<u8>();
+                                            let len32 = vec32.len();
+                                            let vec33 = template_id31;
+                                            let ptr33 = vec33.as_ptr().cast::<u8>();
+                                            let len33 = vec33.len();
+
+                                            (7i32, ptr32.cast_mut(), len32, ptr33.cast_mut(), len33)
+                                        }
+                                    };
+
+                                (1i32, result34_0, result34_1, result34_2, result34_3, result34_4)
+                            }
+                        };
+                    use super::super::super::timeline::event_processor_interface::api::EventValue as V37;
+                    let (result38_0, result38_1, result38_2) = match event_value {
+                        V37::StringValue(e) => {
+                            let vec36 = e;
+                            let ptr36 = vec36.as_ptr().cast::<u8>();
+                            let len36 = vec36.len();
+
+                            (
+                                0i32,
+                                {
+                                    let mut t = ::core::mem::MaybeUninit::<u64>::uninit();
+                                    t.as_mut_ptr().cast::<*mut u8>().write(ptr36.cast_mut());
+                                    t
+                                },
+                                len36,
+                            )
+                        }
+                        V37::IntValue(e) => {
+                            (1i32, ::core::mem::MaybeUninit::new(_rt::as_i64(e) as u64), 0usize)
+                        }
+                        V37::FloatValue(e) => (
+                            2i32,
+                            ::core::mem::MaybeUninit::new((_rt::as_f64(e)).to_bits() as i64 as u64),
+                            0usize,
+                        ),
+                        V37::BoolValue(e) => (
+                            3i32,
+                            ::core::mem::MaybeUninit::new(i64::from(match e {
+                                true => 1,
+                                false => 0,
+                            }) as u64),
+                            0usize,
+                        ),
+                    };
+                    let ptr39 = ret_area.0.as_mut_ptr().cast::<u8>();
+                    #[cfg(target_arch = "wasm32")]
+                    #[link(wasm_import_module = "timeline:timeline-processor-interface/api")]
+                    extern "C" {
+                        #[link_name = "initialize-equal"]
+                        fn wit_import(
+                            _: i32,
+                            _: i32,
+                            _: *mut u8,
+                            _: usize,
+                            _: *mut u8,
+                            _: usize,
+                            _: i32,
+                            _: ::core::mem::MaybeUninit<u64>,
+                            _: usize,
+                            _: *mut u8,
+                        );
+                    }
+
+                    #[cfg(not(target_arch = "wasm32"))]
+                    fn wit_import(
+                        _: i32,
+                        _: i32,
+                        _: *mut u8,
+                        _: usize,
+                        _: *mut u8,
+                        _: usize,
+                        _: i32,
+                        _: ::core::mem::MaybeUninit<u64>,
+                        _: usize,
+                        _: *mut u8,
+                    ) {
+                        unreachable!()
+                    }
+                    wit_import(
+                        result35_0, result35_1, result35_2, result35_3, result35_4, result35_5,
+                        result38_0, result38_1, result38_2, ptr39,
+                    );
+                    let l40 = i32::from(*ptr39.add(0).cast::<u8>());
+                    match l40 {
+                        0 => {
+                            let e = {
+                                let l41 = *ptr39.add(4).cast::<*mut u8>();
+                                let l42 = *ptr39.add(8).cast::<usize>();
+                                let len43 = l42;
+                                let bytes43 = _rt::Vec::from_raw_parts(l41.cast(), len43, len43);
+
+                                _rt::string_lift(bytes43)
+                            };
+                            Ok(e)
+                        }
+                        1 => {
+                            let e = {
+                                let l44 = *ptr39.add(4).cast::<*mut u8>();
+                                let l45 = *ptr39.add(8).cast::<usize>();
+                                let len46 = l45;
+                                let bytes46 = _rt::Vec::from_raw_parts(l44.cast(), len46, len46);
+
+                                _rt::string_lift(bytes46)
+                            };
+                            Err(e)
+                        }
+                        _ => _rt::invalid_enum_discriminant(),
+                    }
+                }
+            }
+            #[allow(unused_unsafe, clippy::all)]
+            pub fn initialize_greater_than(
+                child_worker: &TypedTimelineResultWorker,
+                event_value: &EventValue,
+            ) -> Result<_rt::String, _rt::String> {
+                unsafe {
+                    #[repr(align(4))]
+                    struct RetArea([::core::mem::MaybeUninit<u8>; 12]);
+                    let mut ret_area = RetArea([::core::mem::MaybeUninit::uninit(); 12]);
+                    let (result35_0, result35_1, result35_2, result35_3, result35_4, result35_5) =
+                        match child_worker {
+                            TypedTimelineResultWorker::LeafTimeline(e) => {
+                                let (result9_0, result9_1, result9_2, result9_3, result9_4) =
+                                    match e {
+                                        LeafTimelineNode::TlHasExisted(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id0,
+                                                template_id: template_id0,
+                                            } = e;
+                                            let vec1 = worker_id0;
+                                            let ptr1 = vec1.as_ptr().cast::<u8>();
+                                            let len1 = vec1.len();
+                                            let vec2 = template_id0;
+                                            let ptr2 = vec2.as_ptr().cast::<u8>();
+                                            let len2 = vec2.len();
+
+                                            (0i32, ptr1.cast_mut(), len1, ptr2.cast_mut(), len2)
+                                        }
+                                        LeafTimelineNode::TlHasExistedWithin(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id3,
+                                                template_id: template_id3,
+                                            } = e;
+                                            let vec4 = worker_id3;
+                                            let ptr4 = vec4.as_ptr().cast::<u8>();
+                                            let len4 = vec4.len();
+                                            let vec5 = template_id3;
+                                            let ptr5 = vec5.as_ptr().cast::<u8>();
+                                            let len5 = vec5.len();
+
+                                            (1i32, ptr4.cast_mut(), len4, ptr5.cast_mut(), len5)
+                                        }
+                                        LeafTimelineNode::TlLatestEventToState(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id6,
+                                                template_id: template_id6,
+                                            } = e;
+                                            let vec7 = worker_id6;
+                                            let ptr7 = vec7.as_ptr().cast::<u8>();
+                                            let len7 = vec7.len();
+                                            let vec8 = template_id6;
+                                            let ptr8 = vec8.as_ptr().cast::<u8>();
+                                            let len8 = vec8.len();
+
+                                            (2i32, ptr7.cast_mut(), len7, ptr8.cast_mut(), len8)
+                                        }
+                                    };
+
+                                (0i32, result9_0, result9_1, result9_2, result9_3, result9_4)
+                            }
+                            TypedTimelineResultWorker::DerivedTimeline(e) => {
+                                let (result34_0, result34_1, result34_2, result34_3, result34_4) =
+                                    match e {
+                                        DerivedTimelineNode::EqualTo(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id10,
+                                                template_id: template_id10,
+                                            } = e;
+                                            let vec11 = worker_id10;
+                                            let ptr11 = vec11.as_ptr().cast::<u8>();
+                                            let len11 = vec11.len();
+                                            let vec12 = template_id10;
+                                            let ptr12 = vec12.as_ptr().cast::<u8>();
+                                            let len12 = vec12.len();
+
+                                            (0i32, ptr11.cast_mut(), len11, ptr12.cast_mut(), len12)
+                                        }
+                                        DerivedTimelineNode::GreaterThan(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id13,
+                                                template_id: template_id13,
+                                            } = e;
+                                            let vec14 = worker_id13;
+                                            let ptr14 = vec14.as_ptr().cast::<u8>();
+                                            let len14 = vec14.len();
+                                            let vec15 = template_id13;
+                                            let ptr15 = vec15.as_ptr().cast::<u8>();
+                                            let len15 = vec15.len();
+
+                                            (1i32, ptr14.cast_mut(), len14, ptr15.cast_mut(), len15)
+                                        }
+                                        DerivedTimelineNode::GreaterThanOrEqualTo(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id16,
+                                                template_id: template_id16,
+                                            } = e;
+                                            let vec17 = worker_id16;
+                                            let ptr17 = vec17.as_ptr().cast::<u8>();
+                                            let len17 = vec17.len();
+                                            let vec18 = template_id16;
+                                            let ptr18 = vec18.as_ptr().cast::<u8>();
+                                            let len18 = vec18.len();
+
+                                            (2i32, ptr17.cast_mut(), len17, ptr18.cast_mut(), len18)
+                                        }
+                                        DerivedTimelineNode::LessThan(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id19,
+                                                template_id: template_id19,
+                                            } = e;
+                                            let vec20 = worker_id19;
+                                            let ptr20 = vec20.as_ptr().cast::<u8>();
+                                            let len20 = vec20.len();
+                                            let vec21 = template_id19;
+                                            let ptr21 = vec21.as_ptr().cast::<u8>();
+                                            let len21 = vec21.len();
+
+                                            (3i32, ptr20.cast_mut(), len20, ptr21.cast_mut(), len21)
+                                        }
+                                        DerivedTimelineNode::LessThanOrEqualTo(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id22,
+                                                template_id: template_id22,
+                                            } = e;
+                                            let vec23 = worker_id22;
+                                            let ptr23 = vec23.as_ptr().cast::<u8>();
+                                            let len23 = vec23.len();
+                                            let vec24 = template_id22;
+                                            let ptr24 = vec24.as_ptr().cast::<u8>();
+                                            let len24 = vec24.len();
+
+                                            (4i32, ptr23.cast_mut(), len23, ptr24.cast_mut(), len24)
+                                        }
+                                        DerivedTimelineNode::And(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id25,
+                                                template_id: template_id25,
+                                            } = e;
+                                            let vec26 = worker_id25;
+                                            let ptr26 = vec26.as_ptr().cast::<u8>();
+                                            let len26 = vec26.len();
+                                            let vec27 = template_id25;
+                                            let ptr27 = vec27.as_ptr().cast::<u8>();
+                                            let len27 = vec27.len();
+
+                                            (5i32, ptr26.cast_mut(), len26, ptr27.cast_mut(), len27)
+                                        }
+                                        DerivedTimelineNode::Or(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id28,
+                                                template_id: template_id28,
+                                            } = e;
+                                            let vec29 = worker_id28;
+                                            let ptr29 = vec29.as_ptr().cast::<u8>();
+                                            let len29 = vec29.len();
+                                            let vec30 = template_id28;
+                                            let ptr30 = vec30.as_ptr().cast::<u8>();
+                                            let len30 = vec30.len();
+
+                                            (6i32, ptr29.cast_mut(), len29, ptr30.cast_mut(), len30)
+                                        }
+                                        DerivedTimelineNode::Not(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id31,
+                                                template_id: template_id31,
+                                            } = e;
+                                            let vec32 = worker_id31;
+                                            let ptr32 = vec32.as_ptr().cast::<u8>();
+                                            let len32 = vec32.len();
+                                            let vec33 = template_id31;
+                                            let ptr33 = vec33.as_ptr().cast::<u8>();
+                                            let len33 = vec33.len();
+
+                                            (7i32, ptr32.cast_mut(), len32, ptr33.cast_mut(), len33)
+                                        }
+                                    };
+
+                                (1i32, result34_0, result34_1, result34_2, result34_3, result34_4)
+                            }
+                        };
+                    use super::super::super::timeline::event_processor_interface::api::EventValue as V37;
+                    let (result38_0, result38_1, result38_2) = match event_value {
+                        V37::StringValue(e) => {
+                            let vec36 = e;
+                            let ptr36 = vec36.as_ptr().cast::<u8>();
+                            let len36 = vec36.len();
+
+                            (
+                                0i32,
+                                {
+                                    let mut t = ::core::mem::MaybeUninit::<u64>::uninit();
+                                    t.as_mut_ptr().cast::<*mut u8>().write(ptr36.cast_mut());
+                                    t
+                                },
+                                len36,
+                            )
+                        }
+                        V37::IntValue(e) => {
+                            (1i32, ::core::mem::MaybeUninit::new(_rt::as_i64(e) as u64), 0usize)
+                        }
+                        V37::FloatValue(e) => (
+                            2i32,
+                            ::core::mem::MaybeUninit::new((_rt::as_f64(e)).to_bits() as i64 as u64),
+                            0usize,
+                        ),
+                        V37::BoolValue(e) => (
+                            3i32,
+                            ::core::mem::MaybeUninit::new(i64::from(match e {
+                                true => 1,
+                                false => 0,
+                            }) as u64),
+                            0usize,
+                        ),
+                    };
+                    let ptr39 = ret_area.0.as_mut_ptr().cast::<u8>();
+                    #[cfg(target_arch = "wasm32")]
+                    #[link(wasm_import_module = "timeline:timeline-processor-interface/api")]
+                    extern "C" {
+                        #[link_name = "initialize-greater-than"]
+                        fn wit_import(
+                            _: i32,
+                            _: i32,
+                            _: *mut u8,
+                            _: usize,
+                            _: *mut u8,
+                            _: usize,
+                            _: i32,
+                            _: ::core::mem::MaybeUninit<u64>,
+                            _: usize,
+                            _: *mut u8,
+                        );
+                    }
+
+                    #[cfg(not(target_arch = "wasm32"))]
+                    fn wit_import(
+                        _: i32,
+                        _: i32,
+                        _: *mut u8,
+                        _: usize,
+                        _: *mut u8,
+                        _: usize,
+                        _: i32,
+                        _: ::core::mem::MaybeUninit<u64>,
+                        _: usize,
+                        _: *mut u8,
+                    ) {
+                        unreachable!()
+                    }
+                    wit_import(
+                        result35_0, result35_1, result35_2, result35_3, result35_4, result35_5,
+                        result38_0, result38_1, result38_2, ptr39,
+                    );
+                    let l40 = i32::from(*ptr39.add(0).cast::<u8>());
+                    match l40 {
+                        0 => {
+                            let e = {
+                                let l41 = *ptr39.add(4).cast::<*mut u8>();
+                                let l42 = *ptr39.add(8).cast::<usize>();
+                                let len43 = l42;
+                                let bytes43 = _rt::Vec::from_raw_parts(l41.cast(), len43, len43);
+
+                                _rt::string_lift(bytes43)
+                            };
+                            Ok(e)
+                        }
+                        1 => {
+                            let e = {
+                                let l44 = *ptr39.add(4).cast::<*mut u8>();
+                                let l45 = *ptr39.add(8).cast::<usize>();
+                                let len46 = l45;
+                                let bytes46 = _rt::Vec::from_raw_parts(l44.cast(), len46, len46);
+
+                                _rt::string_lift(bytes46)
+                            };
+                            Err(e)
+                        }
+                        _ => _rt::invalid_enum_discriminant(),
+                    }
+                }
+            }
+            #[allow(unused_unsafe, clippy::all)]
+            pub fn initialize_greater_than_or_equal_to(
+                child_worker: &TypedTimelineResultWorker,
+                event_value: &EventValue,
+            ) -> Result<_rt::String, _rt::String> {
+                unsafe {
+                    #[repr(align(4))]
+                    struct RetArea([::core::mem::MaybeUninit<u8>; 12]);
+                    let mut ret_area = RetArea([::core::mem::MaybeUninit::uninit(); 12]);
+                    let (result35_0, result35_1, result35_2, result35_3, result35_4, result35_5) =
+                        match child_worker {
+                            TypedTimelineResultWorker::LeafTimeline(e) => {
+                                let (result9_0, result9_1, result9_2, result9_3, result9_4) =
+                                    match e {
+                                        LeafTimelineNode::TlHasExisted(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id0,
+                                                template_id: template_id0,
+                                            } = e;
+                                            let vec1 = worker_id0;
+                                            let ptr1 = vec1.as_ptr().cast::<u8>();
+                                            let len1 = vec1.len();
+                                            let vec2 = template_id0;
+                                            let ptr2 = vec2.as_ptr().cast::<u8>();
+                                            let len2 = vec2.len();
+
+                                            (0i32, ptr1.cast_mut(), len1, ptr2.cast_mut(), len2)
+                                        }
+                                        LeafTimelineNode::TlHasExistedWithin(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id3,
+                                                template_id: template_id3,
+                                            } = e;
+                                            let vec4 = worker_id3;
+                                            let ptr4 = vec4.as_ptr().cast::<u8>();
+                                            let len4 = vec4.len();
+                                            let vec5 = template_id3;
+                                            let ptr5 = vec5.as_ptr().cast::<u8>();
+                                            let len5 = vec5.len();
+
+                                            (1i32, ptr4.cast_mut(), len4, ptr5.cast_mut(), len5)
+                                        }
+                                        LeafTimelineNode::TlLatestEventToState(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id6,
+                                                template_id: template_id6,
+                                            } = e;
+                                            let vec7 = worker_id6;
+                                            let ptr7 = vec7.as_ptr().cast::<u8>();
+                                            let len7 = vec7.len();
+                                            let vec8 = template_id6;
+                                            let ptr8 = vec8.as_ptr().cast::<u8>();
+                                            let len8 = vec8.len();
+
+                                            (2i32, ptr7.cast_mut(), len7, ptr8.cast_mut(), len8)
+                                        }
+                                    };
+
+                                (0i32, result9_0, result9_1, result9_2, result9_3, result9_4)
+                            }
+                            TypedTimelineResultWorker::DerivedTimeline(e) => {
+                                let (result34_0, result34_1, result34_2, result34_3, result34_4) =
+                                    match e {
+                                        DerivedTimelineNode::EqualTo(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id10,
+                                                template_id: template_id10,
+                                            } = e;
+                                            let vec11 = worker_id10;
+                                            let ptr11 = vec11.as_ptr().cast::<u8>();
+                                            let len11 = vec11.len();
+                                            let vec12 = template_id10;
+                                            let ptr12 = vec12.as_ptr().cast::<u8>();
+                                            let len12 = vec12.len();
+
+                                            (0i32, ptr11.cast_mut(), len11, ptr12.cast_mut(), len12)
+                                        }
+                                        DerivedTimelineNode::GreaterThan(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id13,
+                                                template_id: template_id13,
+                                            } = e;
+                                            let vec14 = worker_id13;
+                                            let ptr14 = vec14.as_ptr().cast::<u8>();
+                                            let len14 = vec14.len();
+                                            let vec15 = template_id13;
+                                            let ptr15 = vec15.as_ptr().cast::<u8>();
+                                            let len15 = vec15.len();
+
+                                            (1i32, ptr14.cast_mut(), len14, ptr15.cast_mut(), len15)
+                                        }
+                                        DerivedTimelineNode::GreaterThanOrEqualTo(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id16,
+                                                template_id: template_id16,
+                                            } = e;
+                                            let vec17 = worker_id16;
+                                            let ptr17 = vec17.as_ptr().cast::<u8>();
+                                            let len17 = vec17.len();
+                                            let vec18 = template_id16;
+                                            let ptr18 = vec18.as_ptr().cast::<u8>();
+                                            let len18 = vec18.len();
+
+                                            (2i32, ptr17.cast_mut(), len17, ptr18.cast_mut(), len18)
+                                        }
+                                        DerivedTimelineNode::LessThan(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id19,
+                                                template_id: template_id19,
+                                            } = e;
+                                            let vec20 = worker_id19;
+                                            let ptr20 = vec20.as_ptr().cast::<u8>();
+                                            let len20 = vec20.len();
+                                            let vec21 = template_id19;
+                                            let ptr21 = vec21.as_ptr().cast::<u8>();
+                                            let len21 = vec21.len();
+
+                                            (3i32, ptr20.cast_mut(), len20, ptr21.cast_mut(), len21)
+                                        }
+                                        DerivedTimelineNode::LessThanOrEqualTo(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id22,
+                                                template_id: template_id22,
+                                            } = e;
+                                            let vec23 = worker_id22;
+                                            let ptr23 = vec23.as_ptr().cast::<u8>();
+                                            let len23 = vec23.len();
+                                            let vec24 = template_id22;
+                                            let ptr24 = vec24.as_ptr().cast::<u8>();
+                                            let len24 = vec24.len();
+
+                                            (4i32, ptr23.cast_mut(), len23, ptr24.cast_mut(), len24)
+                                        }
+                                        DerivedTimelineNode::And(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id25,
+                                                template_id: template_id25,
+                                            } = e;
+                                            let vec26 = worker_id25;
+                                            let ptr26 = vec26.as_ptr().cast::<u8>();
+                                            let len26 = vec26.len();
+                                            let vec27 = template_id25;
+                                            let ptr27 = vec27.as_ptr().cast::<u8>();
+                                            let len27 = vec27.len();
+
+                                            (5i32, ptr26.cast_mut(), len26, ptr27.cast_mut(), len27)
+                                        }
+                                        DerivedTimelineNode::Or(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id28,
+                                                template_id: template_id28,
+                                            } = e;
+                                            let vec29 = worker_id28;
+                                            let ptr29 = vec29.as_ptr().cast::<u8>();
+                                            let len29 = vec29.len();
+                                            let vec30 = template_id28;
+                                            let ptr30 = vec30.as_ptr().cast::<u8>();
+                                            let len30 = vec30.len();
+
+                                            (6i32, ptr29.cast_mut(), len29, ptr30.cast_mut(), len30)
+                                        }
+                                        DerivedTimelineNode::Not(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id31,
+                                                template_id: template_id31,
+                                            } = e;
+                                            let vec32 = worker_id31;
+                                            let ptr32 = vec32.as_ptr().cast::<u8>();
+                                            let len32 = vec32.len();
+                                            let vec33 = template_id31;
+                                            let ptr33 = vec33.as_ptr().cast::<u8>();
+                                            let len33 = vec33.len();
+
+                                            (7i32, ptr32.cast_mut(), len32, ptr33.cast_mut(), len33)
+                                        }
+                                    };
+
+                                (1i32, result34_0, result34_1, result34_2, result34_3, result34_4)
+                            }
+                        };
+                    use super::super::super::timeline::event_processor_interface::api::EventValue as V37;
+                    let (result38_0, result38_1, result38_2) = match event_value {
+                        V37::StringValue(e) => {
+                            let vec36 = e;
+                            let ptr36 = vec36.as_ptr().cast::<u8>();
+                            let len36 = vec36.len();
+
+                            (
+                                0i32,
+                                {
+                                    let mut t = ::core::mem::MaybeUninit::<u64>::uninit();
+                                    t.as_mut_ptr().cast::<*mut u8>().write(ptr36.cast_mut());
+                                    t
+                                },
+                                len36,
+                            )
+                        }
+                        V37::IntValue(e) => {
+                            (1i32, ::core::mem::MaybeUninit::new(_rt::as_i64(e) as u64), 0usize)
+                        }
+                        V37::FloatValue(e) => (
+                            2i32,
+                            ::core::mem::MaybeUninit::new((_rt::as_f64(e)).to_bits() as i64 as u64),
+                            0usize,
+                        ),
+                        V37::BoolValue(e) => (
+                            3i32,
+                            ::core::mem::MaybeUninit::new(i64::from(match e {
+                                true => 1,
+                                false => 0,
+                            }) as u64),
+                            0usize,
+                        ),
+                    };
+                    let ptr39 = ret_area.0.as_mut_ptr().cast::<u8>();
+                    #[cfg(target_arch = "wasm32")]
+                    #[link(wasm_import_module = "timeline:timeline-processor-interface/api")]
+                    extern "C" {
+                        #[link_name = "initialize-greater-than-or-equal-to"]
+                        fn wit_import(
+                            _: i32,
+                            _: i32,
+                            _: *mut u8,
+                            _: usize,
+                            _: *mut u8,
+                            _: usize,
+                            _: i32,
+                            _: ::core::mem::MaybeUninit<u64>,
+                            _: usize,
+                            _: *mut u8,
+                        );
+                    }
+
+                    #[cfg(not(target_arch = "wasm32"))]
+                    fn wit_import(
+                        _: i32,
+                        _: i32,
+                        _: *mut u8,
+                        _: usize,
+                        _: *mut u8,
+                        _: usize,
+                        _: i32,
+                        _: ::core::mem::MaybeUninit<u64>,
+                        _: usize,
+                        _: *mut u8,
+                    ) {
+                        unreachable!()
+                    }
+                    wit_import(
+                        result35_0, result35_1, result35_2, result35_3, result35_4, result35_5,
+                        result38_0, result38_1, result38_2, ptr39,
+                    );
+                    let l40 = i32::from(*ptr39.add(0).cast::<u8>());
+                    match l40 {
+                        0 => {
+                            let e = {
+                                let l41 = *ptr39.add(4).cast::<*mut u8>();
+                                let l42 = *ptr39.add(8).cast::<usize>();
+                                let len43 = l42;
+                                let bytes43 = _rt::Vec::from_raw_parts(l41.cast(), len43, len43);
+
+                                _rt::string_lift(bytes43)
+                            };
+                            Ok(e)
+                        }
+                        1 => {
+                            let e = {
+                                let l44 = *ptr39.add(4).cast::<*mut u8>();
+                                let l45 = *ptr39.add(8).cast::<usize>();
+                                let len46 = l45;
+                                let bytes46 = _rt::Vec::from_raw_parts(l44.cast(), len46, len46);
+
+                                _rt::string_lift(bytes46)
+                            };
+                            Err(e)
+                        }
+                        _ => _rt::invalid_enum_discriminant(),
+                    }
+                }
+            }
+            #[allow(unused_unsafe, clippy::all)]
+            pub fn initialize_less_than(
+                child_worker: &TypedTimelineResultWorker,
+                event_value: &EventValue,
+            ) -> Result<_rt::String, _rt::String> {
+                unsafe {
+                    #[repr(align(4))]
+                    struct RetArea([::core::mem::MaybeUninit<u8>; 12]);
+                    let mut ret_area = RetArea([::core::mem::MaybeUninit::uninit(); 12]);
+                    let (result35_0, result35_1, result35_2, result35_3, result35_4, result35_5) =
+                        match child_worker {
+                            TypedTimelineResultWorker::LeafTimeline(e) => {
+                                let (result9_0, result9_1, result9_2, result9_3, result9_4) =
+                                    match e {
+                                        LeafTimelineNode::TlHasExisted(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id0,
+                                                template_id: template_id0,
+                                            } = e;
+                                            let vec1 = worker_id0;
+                                            let ptr1 = vec1.as_ptr().cast::<u8>();
+                                            let len1 = vec1.len();
+                                            let vec2 = template_id0;
+                                            let ptr2 = vec2.as_ptr().cast::<u8>();
+                                            let len2 = vec2.len();
+
+                                            (0i32, ptr1.cast_mut(), len1, ptr2.cast_mut(), len2)
+                                        }
+                                        LeafTimelineNode::TlHasExistedWithin(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id3,
+                                                template_id: template_id3,
+                                            } = e;
+                                            let vec4 = worker_id3;
+                                            let ptr4 = vec4.as_ptr().cast::<u8>();
+                                            let len4 = vec4.len();
+                                            let vec5 = template_id3;
+                                            let ptr5 = vec5.as_ptr().cast::<u8>();
+                                            let len5 = vec5.len();
+
+                                            (1i32, ptr4.cast_mut(), len4, ptr5.cast_mut(), len5)
+                                        }
+                                        LeafTimelineNode::TlLatestEventToState(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id6,
+                                                template_id: template_id6,
+                                            } = e;
+                                            let vec7 = worker_id6;
+                                            let ptr7 = vec7.as_ptr().cast::<u8>();
+                                            let len7 = vec7.len();
+                                            let vec8 = template_id6;
+                                            let ptr8 = vec8.as_ptr().cast::<u8>();
+                                            let len8 = vec8.len();
+
+                                            (2i32, ptr7.cast_mut(), len7, ptr8.cast_mut(), len8)
+                                        }
+                                    };
+
+                                (0i32, result9_0, result9_1, result9_2, result9_3, result9_4)
+                            }
+                            TypedTimelineResultWorker::DerivedTimeline(e) => {
+                                let (result34_0, result34_1, result34_2, result34_3, result34_4) =
+                                    match e {
+                                        DerivedTimelineNode::EqualTo(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id10,
+                                                template_id: template_id10,
+                                            } = e;
+                                            let vec11 = worker_id10;
+                                            let ptr11 = vec11.as_ptr().cast::<u8>();
+                                            let len11 = vec11.len();
+                                            let vec12 = template_id10;
+                                            let ptr12 = vec12.as_ptr().cast::<u8>();
+                                            let len12 = vec12.len();
+
+                                            (0i32, ptr11.cast_mut(), len11, ptr12.cast_mut(), len12)
+                                        }
+                                        DerivedTimelineNode::GreaterThan(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id13,
+                                                template_id: template_id13,
+                                            } = e;
+                                            let vec14 = worker_id13;
+                                            let ptr14 = vec14.as_ptr().cast::<u8>();
+                                            let len14 = vec14.len();
+                                            let vec15 = template_id13;
+                                            let ptr15 = vec15.as_ptr().cast::<u8>();
+                                            let len15 = vec15.len();
+
+                                            (1i32, ptr14.cast_mut(), len14, ptr15.cast_mut(), len15)
+                                        }
+                                        DerivedTimelineNode::GreaterThanOrEqualTo(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id16,
+                                                template_id: template_id16,
+                                            } = e;
+                                            let vec17 = worker_id16;
+                                            let ptr17 = vec17.as_ptr().cast::<u8>();
+                                            let len17 = vec17.len();
+                                            let vec18 = template_id16;
+                                            let ptr18 = vec18.as_ptr().cast::<u8>();
+                                            let len18 = vec18.len();
+
+                                            (2i32, ptr17.cast_mut(), len17, ptr18.cast_mut(), len18)
+                                        }
+                                        DerivedTimelineNode::LessThan(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id19,
+                                                template_id: template_id19,
+                                            } = e;
+                                            let vec20 = worker_id19;
+                                            let ptr20 = vec20.as_ptr().cast::<u8>();
+                                            let len20 = vec20.len();
+                                            let vec21 = template_id19;
+                                            let ptr21 = vec21.as_ptr().cast::<u8>();
+                                            let len21 = vec21.len();
+
+                                            (3i32, ptr20.cast_mut(), len20, ptr21.cast_mut(), len21)
+                                        }
+                                        DerivedTimelineNode::LessThanOrEqualTo(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id22,
+                                                template_id: template_id22,
+                                            } = e;
+                                            let vec23 = worker_id22;
+                                            let ptr23 = vec23.as_ptr().cast::<u8>();
+                                            let len23 = vec23.len();
+                                            let vec24 = template_id22;
+                                            let ptr24 = vec24.as_ptr().cast::<u8>();
+                                            let len24 = vec24.len();
+
+                                            (4i32, ptr23.cast_mut(), len23, ptr24.cast_mut(), len24)
+                                        }
+                                        DerivedTimelineNode::And(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id25,
+                                                template_id: template_id25,
+                                            } = e;
+                                            let vec26 = worker_id25;
+                                            let ptr26 = vec26.as_ptr().cast::<u8>();
+                                            let len26 = vec26.len();
+                                            let vec27 = template_id25;
+                                            let ptr27 = vec27.as_ptr().cast::<u8>();
+                                            let len27 = vec27.len();
+
+                                            (5i32, ptr26.cast_mut(), len26, ptr27.cast_mut(), len27)
+                                        }
+                                        DerivedTimelineNode::Or(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id28,
+                                                template_id: template_id28,
+                                            } = e;
+                                            let vec29 = worker_id28;
+                                            let ptr29 = vec29.as_ptr().cast::<u8>();
+                                            let len29 = vec29.len();
+                                            let vec30 = template_id28;
+                                            let ptr30 = vec30.as_ptr().cast::<u8>();
+                                            let len30 = vec30.len();
+
+                                            (6i32, ptr29.cast_mut(), len29, ptr30.cast_mut(), len30)
+                                        }
+                                        DerivedTimelineNode::Not(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id31,
+                                                template_id: template_id31,
+                                            } = e;
+                                            let vec32 = worker_id31;
+                                            let ptr32 = vec32.as_ptr().cast::<u8>();
+                                            let len32 = vec32.len();
+                                            let vec33 = template_id31;
+                                            let ptr33 = vec33.as_ptr().cast::<u8>();
+                                            let len33 = vec33.len();
+
+                                            (7i32, ptr32.cast_mut(), len32, ptr33.cast_mut(), len33)
+                                        }
+                                    };
+
+                                (1i32, result34_0, result34_1, result34_2, result34_3, result34_4)
+                            }
+                        };
+                    use super::super::super::timeline::event_processor_interface::api::EventValue as V37;
+                    let (result38_0, result38_1, result38_2) = match event_value {
+                        V37::StringValue(e) => {
+                            let vec36 = e;
+                            let ptr36 = vec36.as_ptr().cast::<u8>();
+                            let len36 = vec36.len();
+
+                            (
+                                0i32,
+                                {
+                                    let mut t = ::core::mem::MaybeUninit::<u64>::uninit();
+                                    t.as_mut_ptr().cast::<*mut u8>().write(ptr36.cast_mut());
+                                    t
+                                },
+                                len36,
+                            )
+                        }
+                        V37::IntValue(e) => {
+                            (1i32, ::core::mem::MaybeUninit::new(_rt::as_i64(e) as u64), 0usize)
+                        }
+                        V37::FloatValue(e) => (
+                            2i32,
+                            ::core::mem::MaybeUninit::new((_rt::as_f64(e)).to_bits() as i64 as u64),
+                            0usize,
+                        ),
+                        V37::BoolValue(e) => (
+                            3i32,
+                            ::core::mem::MaybeUninit::new(i64::from(match e {
+                                true => 1,
+                                false => 0,
+                            }) as u64),
+                            0usize,
+                        ),
+                    };
+                    let ptr39 = ret_area.0.as_mut_ptr().cast::<u8>();
+                    #[cfg(target_arch = "wasm32")]
+                    #[link(wasm_import_module = "timeline:timeline-processor-interface/api")]
+                    extern "C" {
+                        #[link_name = "initialize-less-than"]
+                        fn wit_import(
+                            _: i32,
+                            _: i32,
+                            _: *mut u8,
+                            _: usize,
+                            _: *mut u8,
+                            _: usize,
+                            _: i32,
+                            _: ::core::mem::MaybeUninit<u64>,
+                            _: usize,
+                            _: *mut u8,
+                        );
+                    }
+
+                    #[cfg(not(target_arch = "wasm32"))]
+                    fn wit_import(
+                        _: i32,
+                        _: i32,
+                        _: *mut u8,
+                        _: usize,
+                        _: *mut u8,
+                        _: usize,
+                        _: i32,
+                        _: ::core::mem::MaybeUninit<u64>,
+                        _: usize,
+                        _: *mut u8,
+                    ) {
+                        unreachable!()
+                    }
+                    wit_import(
+                        result35_0, result35_1, result35_2, result35_3, result35_4, result35_5,
+                        result38_0, result38_1, result38_2, ptr39,
+                    );
+                    let l40 = i32::from(*ptr39.add(0).cast::<u8>());
+                    match l40 {
+                        0 => {
+                            let e = {
+                                let l41 = *ptr39.add(4).cast::<*mut u8>();
+                                let l42 = *ptr39.add(8).cast::<usize>();
+                                let len43 = l42;
+                                let bytes43 = _rt::Vec::from_raw_parts(l41.cast(), len43, len43);
+
+                                _rt::string_lift(bytes43)
+                            };
+                            Ok(e)
+                        }
+                        1 => {
+                            let e = {
+                                let l44 = *ptr39.add(4).cast::<*mut u8>();
+                                let l45 = *ptr39.add(8).cast::<usize>();
+                                let len46 = l45;
+                                let bytes46 = _rt::Vec::from_raw_parts(l44.cast(), len46, len46);
+
+                                _rt::string_lift(bytes46)
+                            };
+                            Err(e)
+                        }
+                        _ => _rt::invalid_enum_discriminant(),
+                    }
+                }
+            }
+            #[allow(unused_unsafe, clippy::all)]
+            pub fn initialize_less_than_or_equal_to(
+                child_worker: &TypedTimelineResultWorker,
+                event_value: &EventValue,
+            ) -> Result<_rt::String, _rt::String> {
+                unsafe {
+                    #[repr(align(4))]
+                    struct RetArea([::core::mem::MaybeUninit<u8>; 12]);
+                    let mut ret_area = RetArea([::core::mem::MaybeUninit::uninit(); 12]);
+                    let (result35_0, result35_1, result35_2, result35_3, result35_4, result35_5) =
+                        match child_worker {
+                            TypedTimelineResultWorker::LeafTimeline(e) => {
+                                let (result9_0, result9_1, result9_2, result9_3, result9_4) =
+                                    match e {
+                                        LeafTimelineNode::TlHasExisted(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id0,
+                                                template_id: template_id0,
+                                            } = e;
+                                            let vec1 = worker_id0;
+                                            let ptr1 = vec1.as_ptr().cast::<u8>();
+                                            let len1 = vec1.len();
+                                            let vec2 = template_id0;
+                                            let ptr2 = vec2.as_ptr().cast::<u8>();
+                                            let len2 = vec2.len();
+
+                                            (0i32, ptr1.cast_mut(), len1, ptr2.cast_mut(), len2)
+                                        }
+                                        LeafTimelineNode::TlHasExistedWithin(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id3,
+                                                template_id: template_id3,
+                                            } = e;
+                                            let vec4 = worker_id3;
+                                            let ptr4 = vec4.as_ptr().cast::<u8>();
+                                            let len4 = vec4.len();
+                                            let vec5 = template_id3;
+                                            let ptr5 = vec5.as_ptr().cast::<u8>();
+                                            let len5 = vec5.len();
+
+                                            (1i32, ptr4.cast_mut(), len4, ptr5.cast_mut(), len5)
+                                        }
+                                        LeafTimelineNode::TlLatestEventToState(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id6,
+                                                template_id: template_id6,
+                                            } = e;
+                                            let vec7 = worker_id6;
+                                            let ptr7 = vec7.as_ptr().cast::<u8>();
+                                            let len7 = vec7.len();
+                                            let vec8 = template_id6;
+                                            let ptr8 = vec8.as_ptr().cast::<u8>();
+                                            let len8 = vec8.len();
+
+                                            (2i32, ptr7.cast_mut(), len7, ptr8.cast_mut(), len8)
+                                        }
+                                    };
+
+                                (0i32, result9_0, result9_1, result9_2, result9_3, result9_4)
+                            }
+                            TypedTimelineResultWorker::DerivedTimeline(e) => {
+                                let (result34_0, result34_1, result34_2, result34_3, result34_4) =
+                                    match e {
+                                        DerivedTimelineNode::EqualTo(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id10,
+                                                template_id: template_id10,
+                                            } = e;
+                                            let vec11 = worker_id10;
+                                            let ptr11 = vec11.as_ptr().cast::<u8>();
+                                            let len11 = vec11.len();
+                                            let vec12 = template_id10;
+                                            let ptr12 = vec12.as_ptr().cast::<u8>();
+                                            let len12 = vec12.len();
+
+                                            (0i32, ptr11.cast_mut(), len11, ptr12.cast_mut(), len12)
+                                        }
+                                        DerivedTimelineNode::GreaterThan(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id13,
+                                                template_id: template_id13,
+                                            } = e;
+                                            let vec14 = worker_id13;
+                                            let ptr14 = vec14.as_ptr().cast::<u8>();
+                                            let len14 = vec14.len();
+                                            let vec15 = template_id13;
+                                            let ptr15 = vec15.as_ptr().cast::<u8>();
+                                            let len15 = vec15.len();
+
+                                            (1i32, ptr14.cast_mut(), len14, ptr15.cast_mut(), len15)
+                                        }
+                                        DerivedTimelineNode::GreaterThanOrEqualTo(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id16,
+                                                template_id: template_id16,
+                                            } = e;
+                                            let vec17 = worker_id16;
+                                            let ptr17 = vec17.as_ptr().cast::<u8>();
+                                            let len17 = vec17.len();
+                                            let vec18 = template_id16;
+                                            let ptr18 = vec18.as_ptr().cast::<u8>();
+                                            let len18 = vec18.len();
+
+                                            (2i32, ptr17.cast_mut(), len17, ptr18.cast_mut(), len18)
+                                        }
+                                        DerivedTimelineNode::LessThan(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id19,
+                                                template_id: template_id19,
+                                            } = e;
+                                            let vec20 = worker_id19;
+                                            let ptr20 = vec20.as_ptr().cast::<u8>();
+                                            let len20 = vec20.len();
+                                            let vec21 = template_id19;
+                                            let ptr21 = vec21.as_ptr().cast::<u8>();
+                                            let len21 = vec21.len();
+
+                                            (3i32, ptr20.cast_mut(), len20, ptr21.cast_mut(), len21)
+                                        }
+                                        DerivedTimelineNode::LessThanOrEqualTo(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id22,
+                                                template_id: template_id22,
+                                            } = e;
+                                            let vec23 = worker_id22;
+                                            let ptr23 = vec23.as_ptr().cast::<u8>();
+                                            let len23 = vec23.len();
+                                            let vec24 = template_id22;
+                                            let ptr24 = vec24.as_ptr().cast::<u8>();
+                                            let len24 = vec24.len();
+
+                                            (4i32, ptr23.cast_mut(), len23, ptr24.cast_mut(), len24)
+                                        }
+                                        DerivedTimelineNode::And(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id25,
+                                                template_id: template_id25,
+                                            } = e;
+                                            let vec26 = worker_id25;
+                                            let ptr26 = vec26.as_ptr().cast::<u8>();
+                                            let len26 = vec26.len();
+                                            let vec27 = template_id25;
+                                            let ptr27 = vec27.as_ptr().cast::<u8>();
+                                            let len27 = vec27.len();
+
+                                            (5i32, ptr26.cast_mut(), len26, ptr27.cast_mut(), len27)
+                                        }
+                                        DerivedTimelineNode::Or(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id28,
+                                                template_id: template_id28,
+                                            } = e;
+                                            let vec29 = worker_id28;
+                                            let ptr29 = vec29.as_ptr().cast::<u8>();
+                                            let len29 = vec29.len();
+                                            let vec30 = template_id28;
+                                            let ptr30 = vec30.as_ptr().cast::<u8>();
+                                            let len30 = vec30.len();
+
+                                            (6i32, ptr29.cast_mut(), len29, ptr30.cast_mut(), len30)
+                                        }
+                                        DerivedTimelineNode::Not(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id31,
+                                                template_id: template_id31,
+                                            } = e;
+                                            let vec32 = worker_id31;
+                                            let ptr32 = vec32.as_ptr().cast::<u8>();
+                                            let len32 = vec32.len();
+                                            let vec33 = template_id31;
+                                            let ptr33 = vec33.as_ptr().cast::<u8>();
+                                            let len33 = vec33.len();
+
+                                            (7i32, ptr32.cast_mut(), len32, ptr33.cast_mut(), len33)
+                                        }
+                                    };
+
+                                (1i32, result34_0, result34_1, result34_2, result34_3, result34_4)
+                            }
+                        };
+                    use super::super::super::timeline::event_processor_interface::api::EventValue as V37;
+                    let (result38_0, result38_1, result38_2) = match event_value {
+                        V37::StringValue(e) => {
+                            let vec36 = e;
+                            let ptr36 = vec36.as_ptr().cast::<u8>();
+                            let len36 = vec36.len();
+
+                            (
+                                0i32,
+                                {
+                                    let mut t = ::core::mem::MaybeUninit::<u64>::uninit();
+                                    t.as_mut_ptr().cast::<*mut u8>().write(ptr36.cast_mut());
+                                    t
+                                },
+                                len36,
+                            )
+                        }
+                        V37::IntValue(e) => {
+                            (1i32, ::core::mem::MaybeUninit::new(_rt::as_i64(e) as u64), 0usize)
+                        }
+                        V37::FloatValue(e) => (
+                            2i32,
+                            ::core::mem::MaybeUninit::new((_rt::as_f64(e)).to_bits() as i64 as u64),
+                            0usize,
+                        ),
+                        V37::BoolValue(e) => (
+                            3i32,
+                            ::core::mem::MaybeUninit::new(i64::from(match e {
+                                true => 1,
+                                false => 0,
+                            }) as u64),
+                            0usize,
+                        ),
+                    };
+                    let ptr39 = ret_area.0.as_mut_ptr().cast::<u8>();
+                    #[cfg(target_arch = "wasm32")]
+                    #[link(wasm_import_module = "timeline:timeline-processor-interface/api")]
+                    extern "C" {
+                        #[link_name = "initialize-less-than-or-equal-to"]
+                        fn wit_import(
+                            _: i32,
+                            _: i32,
+                            _: *mut u8,
+                            _: usize,
+                            _: *mut u8,
+                            _: usize,
+                            _: i32,
+                            _: ::core::mem::MaybeUninit<u64>,
+                            _: usize,
+                            _: *mut u8,
+                        );
+                    }
+
+                    #[cfg(not(target_arch = "wasm32"))]
+                    fn wit_import(
+                        _: i32,
+                        _: i32,
+                        _: *mut u8,
+                        _: usize,
+                        _: *mut u8,
+                        _: usize,
+                        _: i32,
+                        _: ::core::mem::MaybeUninit<u64>,
+                        _: usize,
+                        _: *mut u8,
+                    ) {
+                        unreachable!()
+                    }
+                    wit_import(
+                        result35_0, result35_1, result35_2, result35_3, result35_4, result35_5,
+                        result38_0, result38_1, result38_2, ptr39,
+                    );
+                    let l40 = i32::from(*ptr39.add(0).cast::<u8>());
+                    match l40 {
+                        0 => {
+                            let e = {
+                                let l41 = *ptr39.add(4).cast::<*mut u8>();
+                                let l42 = *ptr39.add(8).cast::<usize>();
+                                let len43 = l42;
+                                let bytes43 = _rt::Vec::from_raw_parts(l41.cast(), len43, len43);
+
+                                _rt::string_lift(bytes43)
+                            };
+                            Ok(e)
+                        }
+                        1 => {
+                            let e = {
+                                let l44 = *ptr39.add(4).cast::<*mut u8>();
+                                let l45 = *ptr39.add(8).cast::<usize>();
+                                let len46 = l45;
+                                let bytes46 = _rt::Vec::from_raw_parts(l44.cast(), len46, len46);
+
+                                _rt::string_lift(bytes46)
+                            };
+                            Err(e)
+                        }
+                        _ => _rt::invalid_enum_discriminant(),
+                    }
+                }
+            }
+            #[allow(unused_unsafe, clippy::all)]
+            pub fn initialize_and(
+                child_worker1: &TypedTimelineResultWorker,
+                child_worker2: &TypedTimelineResultWorker,
+            ) -> Result<_rt::String, _rt::String> {
+                unsafe {
+                    #[repr(align(4))]
+                    struct RetArea([::core::mem::MaybeUninit<u8>; 12]);
+                    let mut ret_area = RetArea([::core::mem::MaybeUninit::uninit(); 12]);
+                    let (result35_0, result35_1, result35_2, result35_3, result35_4, result35_5) =
+                        match child_worker1 {
+                            TypedTimelineResultWorker::LeafTimeline(e) => {
+                                let (result9_0, result9_1, result9_2, result9_3, result9_4) =
+                                    match e {
+                                        LeafTimelineNode::TlHasExisted(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id0,
+                                                template_id: template_id0,
+                                            } = e;
+                                            let vec1 = worker_id0;
+                                            let ptr1 = vec1.as_ptr().cast::<u8>();
+                                            let len1 = vec1.len();
+                                            let vec2 = template_id0;
+                                            let ptr2 = vec2.as_ptr().cast::<u8>();
+                                            let len2 = vec2.len();
+
+                                            (0i32, ptr1.cast_mut(), len1, ptr2.cast_mut(), len2)
+                                        }
+                                        LeafTimelineNode::TlHasExistedWithin(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id3,
+                                                template_id: template_id3,
+                                            } = e;
+                                            let vec4 = worker_id3;
+                                            let ptr4 = vec4.as_ptr().cast::<u8>();
+                                            let len4 = vec4.len();
+                                            let vec5 = template_id3;
+                                            let ptr5 = vec5.as_ptr().cast::<u8>();
+                                            let len5 = vec5.len();
+
+                                            (1i32, ptr4.cast_mut(), len4, ptr5.cast_mut(), len5)
+                                        }
+                                        LeafTimelineNode::TlLatestEventToState(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id6,
+                                                template_id: template_id6,
+                                            } = e;
+                                            let vec7 = worker_id6;
+                                            let ptr7 = vec7.as_ptr().cast::<u8>();
+                                            let len7 = vec7.len();
+                                            let vec8 = template_id6;
+                                            let ptr8 = vec8.as_ptr().cast::<u8>();
+                                            let len8 = vec8.len();
+
+                                            (2i32, ptr7.cast_mut(), len7, ptr8.cast_mut(), len8)
+                                        }
+                                    };
+
+                                (0i32, result9_0, result9_1, result9_2, result9_3, result9_4)
+                            }
+                            TypedTimelineResultWorker::DerivedTimeline(e) => {
+                                let (result34_0, result34_1, result34_2, result34_3, result34_4) =
+                                    match e {
+                                        DerivedTimelineNode::EqualTo(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id10,
+                                                template_id: template_id10,
+                                            } = e;
+                                            let vec11 = worker_id10;
+                                            let ptr11 = vec11.as_ptr().cast::<u8>();
+                                            let len11 = vec11.len();
+                                            let vec12 = template_id10;
+                                            let ptr12 = vec12.as_ptr().cast::<u8>();
+                                            let len12 = vec12.len();
+
+                                            (0i32, ptr11.cast_mut(), len11, ptr12.cast_mut(), len12)
+                                        }
+                                        DerivedTimelineNode::GreaterThan(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id13,
+                                                template_id: template_id13,
+                                            } = e;
+                                            let vec14 = worker_id13;
+                                            let ptr14 = vec14.as_ptr().cast::<u8>();
+                                            let len14 = vec14.len();
+                                            let vec15 = template_id13;
+                                            let ptr15 = vec15.as_ptr().cast::<u8>();
+                                            let len15 = vec15.len();
+
+                                            (1i32, ptr14.cast_mut(), len14, ptr15.cast_mut(), len15)
+                                        }
+                                        DerivedTimelineNode::GreaterThanOrEqualTo(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id16,
+                                                template_id: template_id16,
+                                            } = e;
+                                            let vec17 = worker_id16;
+                                            let ptr17 = vec17.as_ptr().cast::<u8>();
+                                            let len17 = vec17.len();
+                                            let vec18 = template_id16;
+                                            let ptr18 = vec18.as_ptr().cast::<u8>();
+                                            let len18 = vec18.len();
+
+                                            (2i32, ptr17.cast_mut(), len17, ptr18.cast_mut(), len18)
+                                        }
+                                        DerivedTimelineNode::LessThan(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id19,
+                                                template_id: template_id19,
+                                            } = e;
+                                            let vec20 = worker_id19;
+                                            let ptr20 = vec20.as_ptr().cast::<u8>();
+                                            let len20 = vec20.len();
+                                            let vec21 = template_id19;
+                                            let ptr21 = vec21.as_ptr().cast::<u8>();
+                                            let len21 = vec21.len();
+
+                                            (3i32, ptr20.cast_mut(), len20, ptr21.cast_mut(), len21)
+                                        }
+                                        DerivedTimelineNode::LessThanOrEqualTo(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id22,
+                                                template_id: template_id22,
+                                            } = e;
+                                            let vec23 = worker_id22;
+                                            let ptr23 = vec23.as_ptr().cast::<u8>();
+                                            let len23 = vec23.len();
+                                            let vec24 = template_id22;
+                                            let ptr24 = vec24.as_ptr().cast::<u8>();
+                                            let len24 = vec24.len();
+
+                                            (4i32, ptr23.cast_mut(), len23, ptr24.cast_mut(), len24)
+                                        }
+                                        DerivedTimelineNode::And(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id25,
+                                                template_id: template_id25,
+                                            } = e;
+                                            let vec26 = worker_id25;
+                                            let ptr26 = vec26.as_ptr().cast::<u8>();
+                                            let len26 = vec26.len();
+                                            let vec27 = template_id25;
+                                            let ptr27 = vec27.as_ptr().cast::<u8>();
+                                            let len27 = vec27.len();
+
+                                            (5i32, ptr26.cast_mut(), len26, ptr27.cast_mut(), len27)
+                                        }
+                                        DerivedTimelineNode::Or(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id28,
+                                                template_id: template_id28,
+                                            } = e;
+                                            let vec29 = worker_id28;
+                                            let ptr29 = vec29.as_ptr().cast::<u8>();
+                                            let len29 = vec29.len();
+                                            let vec30 = template_id28;
+                                            let ptr30 = vec30.as_ptr().cast::<u8>();
+                                            let len30 = vec30.len();
+
+                                            (6i32, ptr29.cast_mut(), len29, ptr30.cast_mut(), len30)
+                                        }
+                                        DerivedTimelineNode::Not(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id31,
+                                                template_id: template_id31,
+                                            } = e;
+                                            let vec32 = worker_id31;
+                                            let ptr32 = vec32.as_ptr().cast::<u8>();
+                                            let len32 = vec32.len();
+                                            let vec33 = template_id31;
+                                            let ptr33 = vec33.as_ptr().cast::<u8>();
+                                            let len33 = vec33.len();
+
+                                            (7i32, ptr32.cast_mut(), len32, ptr33.cast_mut(), len33)
+                                        }
+                                    };
+
+                                (1i32, result34_0, result34_1, result34_2, result34_3, result34_4)
+                            }
+                        };
+                    let (result71_0, result71_1, result71_2, result71_3, result71_4, result71_5) =
+                        match child_worker2 {
+                            TypedTimelineResultWorker::LeafTimeline(e) => {
+                                let (result45_0, result45_1, result45_2, result45_3, result45_4) =
+                                    match e {
+                                        LeafTimelineNode::TlHasExisted(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id36,
+                                                template_id: template_id36,
+                                            } = e;
+                                            let vec37 = worker_id36;
+                                            let ptr37 = vec37.as_ptr().cast::<u8>();
+                                            let len37 = vec37.len();
+                                            let vec38 = template_id36;
+                                            let ptr38 = vec38.as_ptr().cast::<u8>();
+                                            let len38 = vec38.len();
+
+                                            (0i32, ptr37.cast_mut(), len37, ptr38.cast_mut(), len38)
+                                        }
+                                        LeafTimelineNode::TlHasExistedWithin(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id39,
+                                                template_id: template_id39,
+                                            } = e;
+                                            let vec40 = worker_id39;
+                                            let ptr40 = vec40.as_ptr().cast::<u8>();
+                                            let len40 = vec40.len();
+                                            let vec41 = template_id39;
+                                            let ptr41 = vec41.as_ptr().cast::<u8>();
+                                            let len41 = vec41.len();
+
+                                            (1i32, ptr40.cast_mut(), len40, ptr41.cast_mut(), len41)
+                                        }
+                                        LeafTimelineNode::TlLatestEventToState(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id42,
+                                                template_id: template_id42,
+                                            } = e;
+                                            let vec43 = worker_id42;
+                                            let ptr43 = vec43.as_ptr().cast::<u8>();
+                                            let len43 = vec43.len();
+                                            let vec44 = template_id42;
+                                            let ptr44 = vec44.as_ptr().cast::<u8>();
+                                            let len44 = vec44.len();
+
+                                            (2i32, ptr43.cast_mut(), len43, ptr44.cast_mut(), len44)
+                                        }
+                                    };
+
+                                (0i32, result45_0, result45_1, result45_2, result45_3, result45_4)
+                            }
+                            TypedTimelineResultWorker::DerivedTimeline(e) => {
+                                let (result70_0, result70_1, result70_2, result70_3, result70_4) =
+                                    match e {
+                                        DerivedTimelineNode::EqualTo(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id46,
+                                                template_id: template_id46,
+                                            } = e;
+                                            let vec47 = worker_id46;
+                                            let ptr47 = vec47.as_ptr().cast::<u8>();
+                                            let len47 = vec47.len();
+                                            let vec48 = template_id46;
+                                            let ptr48 = vec48.as_ptr().cast::<u8>();
+                                            let len48 = vec48.len();
+
+                                            (0i32, ptr47.cast_mut(), len47, ptr48.cast_mut(), len48)
+                                        }
+                                        DerivedTimelineNode::GreaterThan(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id49,
+                                                template_id: template_id49,
+                                            } = e;
+                                            let vec50 = worker_id49;
+                                            let ptr50 = vec50.as_ptr().cast::<u8>();
+                                            let len50 = vec50.len();
+                                            let vec51 = template_id49;
+                                            let ptr51 = vec51.as_ptr().cast::<u8>();
+                                            let len51 = vec51.len();
+
+                                            (1i32, ptr50.cast_mut(), len50, ptr51.cast_mut(), len51)
+                                        }
+                                        DerivedTimelineNode::GreaterThanOrEqualTo(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id52,
+                                                template_id: template_id52,
+                                            } = e;
+                                            let vec53 = worker_id52;
+                                            let ptr53 = vec53.as_ptr().cast::<u8>();
+                                            let len53 = vec53.len();
+                                            let vec54 = template_id52;
+                                            let ptr54 = vec54.as_ptr().cast::<u8>();
+                                            let len54 = vec54.len();
+
+                                            (2i32, ptr53.cast_mut(), len53, ptr54.cast_mut(), len54)
+                                        }
+                                        DerivedTimelineNode::LessThan(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id55,
+                                                template_id: template_id55,
+                                            } = e;
+                                            let vec56 = worker_id55;
+                                            let ptr56 = vec56.as_ptr().cast::<u8>();
+                                            let len56 = vec56.len();
+                                            let vec57 = template_id55;
+                                            let ptr57 = vec57.as_ptr().cast::<u8>();
+                                            let len57 = vec57.len();
+
+                                            (3i32, ptr56.cast_mut(), len56, ptr57.cast_mut(), len57)
+                                        }
+                                        DerivedTimelineNode::LessThanOrEqualTo(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id58,
+                                                template_id: template_id58,
+                                            } = e;
+                                            let vec59 = worker_id58;
+                                            let ptr59 = vec59.as_ptr().cast::<u8>();
+                                            let len59 = vec59.len();
+                                            let vec60 = template_id58;
+                                            let ptr60 = vec60.as_ptr().cast::<u8>();
+                                            let len60 = vec60.len();
+
+                                            (4i32, ptr59.cast_mut(), len59, ptr60.cast_mut(), len60)
+                                        }
+                                        DerivedTimelineNode::And(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id61,
+                                                template_id: template_id61,
+                                            } = e;
+                                            let vec62 = worker_id61;
+                                            let ptr62 = vec62.as_ptr().cast::<u8>();
+                                            let len62 = vec62.len();
+                                            let vec63 = template_id61;
+                                            let ptr63 = vec63.as_ptr().cast::<u8>();
+                                            let len63 = vec63.len();
+
+                                            (5i32, ptr62.cast_mut(), len62, ptr63.cast_mut(), len63)
+                                        }
+                                        DerivedTimelineNode::Or(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id64,
+                                                template_id: template_id64,
+                                            } = e;
+                                            let vec65 = worker_id64;
+                                            let ptr65 = vec65.as_ptr().cast::<u8>();
+                                            let len65 = vec65.len();
+                                            let vec66 = template_id64;
+                                            let ptr66 = vec66.as_ptr().cast::<u8>();
+                                            let len66 = vec66.len();
+
+                                            (6i32, ptr65.cast_mut(), len65, ptr66.cast_mut(), len66)
+                                        }
+                                        DerivedTimelineNode::Not(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id67,
+                                                template_id: template_id67,
+                                            } = e;
+                                            let vec68 = worker_id67;
+                                            let ptr68 = vec68.as_ptr().cast::<u8>();
+                                            let len68 = vec68.len();
+                                            let vec69 = template_id67;
+                                            let ptr69 = vec69.as_ptr().cast::<u8>();
+                                            let len69 = vec69.len();
+
+                                            (7i32, ptr68.cast_mut(), len68, ptr69.cast_mut(), len69)
+                                        }
+                                    };
+
+                                (1i32, result70_0, result70_1, result70_2, result70_3, result70_4)
+                            }
+                        };
+                    let ptr72 = ret_area.0.as_mut_ptr().cast::<u8>();
+                    #[cfg(target_arch = "wasm32")]
+                    #[link(wasm_import_module = "timeline:timeline-processor-interface/api")]
+                    extern "C" {
+                        #[link_name = "initialize-and"]
+                        fn wit_import(
+                            _: i32,
+                            _: i32,
+                            _: *mut u8,
+                            _: usize,
+                            _: *mut u8,
+                            _: usize,
+                            _: i32,
+                            _: i32,
+                            _: *mut u8,
+                            _: usize,
+                            _: *mut u8,
+                            _: usize,
+                            _: *mut u8,
+                        );
+                    }
+
+                    #[cfg(not(target_arch = "wasm32"))]
+                    fn wit_import(
+                        _: i32,
+                        _: i32,
+                        _: *mut u8,
+                        _: usize,
+                        _: *mut u8,
+                        _: usize,
+                        _: i32,
+                        _: i32,
+                        _: *mut u8,
+                        _: usize,
+                        _: *mut u8,
+                        _: usize,
+                        _: *mut u8,
+                    ) {
+                        unreachable!()
+                    }
+                    wit_import(
+                        result35_0, result35_1, result35_2, result35_3, result35_4, result35_5,
+                        result71_0, result71_1, result71_2, result71_3, result71_4, result71_5,
+                        ptr72,
+                    );
+                    let l73 = i32::from(*ptr72.add(0).cast::<u8>());
+                    match l73 {
+                        0 => {
+                            let e = {
+                                let l74 = *ptr72.add(4).cast::<*mut u8>();
+                                let l75 = *ptr72.add(8).cast::<usize>();
+                                let len76 = l75;
+                                let bytes76 = _rt::Vec::from_raw_parts(l74.cast(), len76, len76);
+
+                                _rt::string_lift(bytes76)
+                            };
+                            Ok(e)
+                        }
+                        1 => {
+                            let e = {
+                                let l77 = *ptr72.add(4).cast::<*mut u8>();
+                                let l78 = *ptr72.add(8).cast::<usize>();
+                                let len79 = l78;
+                                let bytes79 = _rt::Vec::from_raw_parts(l77.cast(), len79, len79);
+
+                                _rt::string_lift(bytes79)
+                            };
+                            Err(e)
+                        }
+                        _ => _rt::invalid_enum_discriminant(),
+                    }
+                }
+            }
+            #[allow(unused_unsafe, clippy::all)]
+            pub fn initialize_or(
+                child_worker1: &TypedTimelineResultWorker,
+                child_worker2: &TypedTimelineResultWorker,
+            ) -> Result<_rt::String, _rt::String> {
+                unsafe {
+                    #[repr(align(4))]
+                    struct RetArea([::core::mem::MaybeUninit<u8>; 12]);
+                    let mut ret_area = RetArea([::core::mem::MaybeUninit::uninit(); 12]);
+                    let (result35_0, result35_1, result35_2, result35_3, result35_4, result35_5) =
+                        match child_worker1 {
+                            TypedTimelineResultWorker::LeafTimeline(e) => {
+                                let (result9_0, result9_1, result9_2, result9_3, result9_4) =
+                                    match e {
+                                        LeafTimelineNode::TlHasExisted(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id0,
+                                                template_id: template_id0,
+                                            } = e;
+                                            let vec1 = worker_id0;
+                                            let ptr1 = vec1.as_ptr().cast::<u8>();
+                                            let len1 = vec1.len();
+                                            let vec2 = template_id0;
+                                            let ptr2 = vec2.as_ptr().cast::<u8>();
+                                            let len2 = vec2.len();
+
+                                            (0i32, ptr1.cast_mut(), len1, ptr2.cast_mut(), len2)
+                                        }
+                                        LeafTimelineNode::TlHasExistedWithin(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id3,
+                                                template_id: template_id3,
+                                            } = e;
+                                            let vec4 = worker_id3;
+                                            let ptr4 = vec4.as_ptr().cast::<u8>();
+                                            let len4 = vec4.len();
+                                            let vec5 = template_id3;
+                                            let ptr5 = vec5.as_ptr().cast::<u8>();
+                                            let len5 = vec5.len();
+
+                                            (1i32, ptr4.cast_mut(), len4, ptr5.cast_mut(), len5)
+                                        }
+                                        LeafTimelineNode::TlLatestEventToState(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id6,
+                                                template_id: template_id6,
+                                            } = e;
+                                            let vec7 = worker_id6;
+                                            let ptr7 = vec7.as_ptr().cast::<u8>();
+                                            let len7 = vec7.len();
+                                            let vec8 = template_id6;
+                                            let ptr8 = vec8.as_ptr().cast::<u8>();
+                                            let len8 = vec8.len();
+
+                                            (2i32, ptr7.cast_mut(), len7, ptr8.cast_mut(), len8)
+                                        }
+                                    };
+
+                                (0i32, result9_0, result9_1, result9_2, result9_3, result9_4)
+                            }
+                            TypedTimelineResultWorker::DerivedTimeline(e) => {
+                                let (result34_0, result34_1, result34_2, result34_3, result34_4) =
+                                    match e {
+                                        DerivedTimelineNode::EqualTo(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id10,
+                                                template_id: template_id10,
+                                            } = e;
+                                            let vec11 = worker_id10;
+                                            let ptr11 = vec11.as_ptr().cast::<u8>();
+                                            let len11 = vec11.len();
+                                            let vec12 = template_id10;
+                                            let ptr12 = vec12.as_ptr().cast::<u8>();
+                                            let len12 = vec12.len();
+
+                                            (0i32, ptr11.cast_mut(), len11, ptr12.cast_mut(), len12)
+                                        }
+                                        DerivedTimelineNode::GreaterThan(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id13,
+                                                template_id: template_id13,
+                                            } = e;
+                                            let vec14 = worker_id13;
+                                            let ptr14 = vec14.as_ptr().cast::<u8>();
+                                            let len14 = vec14.len();
+                                            let vec15 = template_id13;
+                                            let ptr15 = vec15.as_ptr().cast::<u8>();
+                                            let len15 = vec15.len();
+
+                                            (1i32, ptr14.cast_mut(), len14, ptr15.cast_mut(), len15)
+                                        }
+                                        DerivedTimelineNode::GreaterThanOrEqualTo(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id16,
+                                                template_id: template_id16,
+                                            } = e;
+                                            let vec17 = worker_id16;
+                                            let ptr17 = vec17.as_ptr().cast::<u8>();
+                                            let len17 = vec17.len();
+                                            let vec18 = template_id16;
+                                            let ptr18 = vec18.as_ptr().cast::<u8>();
+                                            let len18 = vec18.len();
+
+                                            (2i32, ptr17.cast_mut(), len17, ptr18.cast_mut(), len18)
+                                        }
+                                        DerivedTimelineNode::LessThan(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id19,
+                                                template_id: template_id19,
+                                            } = e;
+                                            let vec20 = worker_id19;
+                                            let ptr20 = vec20.as_ptr().cast::<u8>();
+                                            let len20 = vec20.len();
+                                            let vec21 = template_id19;
+                                            let ptr21 = vec21.as_ptr().cast::<u8>();
+                                            let len21 = vec21.len();
+
+                                            (3i32, ptr20.cast_mut(), len20, ptr21.cast_mut(), len21)
+                                        }
+                                        DerivedTimelineNode::LessThanOrEqualTo(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id22,
+                                                template_id: template_id22,
+                                            } = e;
+                                            let vec23 = worker_id22;
+                                            let ptr23 = vec23.as_ptr().cast::<u8>();
+                                            let len23 = vec23.len();
+                                            let vec24 = template_id22;
+                                            let ptr24 = vec24.as_ptr().cast::<u8>();
+                                            let len24 = vec24.len();
+
+                                            (4i32, ptr23.cast_mut(), len23, ptr24.cast_mut(), len24)
+                                        }
+                                        DerivedTimelineNode::And(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id25,
+                                                template_id: template_id25,
+                                            } = e;
+                                            let vec26 = worker_id25;
+                                            let ptr26 = vec26.as_ptr().cast::<u8>();
+                                            let len26 = vec26.len();
+                                            let vec27 = template_id25;
+                                            let ptr27 = vec27.as_ptr().cast::<u8>();
+                                            let len27 = vec27.len();
+
+                                            (5i32, ptr26.cast_mut(), len26, ptr27.cast_mut(), len27)
+                                        }
+                                        DerivedTimelineNode::Or(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id28,
+                                                template_id: template_id28,
+                                            } = e;
+                                            let vec29 = worker_id28;
+                                            let ptr29 = vec29.as_ptr().cast::<u8>();
+                                            let len29 = vec29.len();
+                                            let vec30 = template_id28;
+                                            let ptr30 = vec30.as_ptr().cast::<u8>();
+                                            let len30 = vec30.len();
+
+                                            (6i32, ptr29.cast_mut(), len29, ptr30.cast_mut(), len30)
+                                        }
+                                        DerivedTimelineNode::Not(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id31,
+                                                template_id: template_id31,
+                                            } = e;
+                                            let vec32 = worker_id31;
+                                            let ptr32 = vec32.as_ptr().cast::<u8>();
+                                            let len32 = vec32.len();
+                                            let vec33 = template_id31;
+                                            let ptr33 = vec33.as_ptr().cast::<u8>();
+                                            let len33 = vec33.len();
+
+                                            (7i32, ptr32.cast_mut(), len32, ptr33.cast_mut(), len33)
+                                        }
+                                    };
+
+                                (1i32, result34_0, result34_1, result34_2, result34_3, result34_4)
+                            }
+                        };
+                    let (result71_0, result71_1, result71_2, result71_3, result71_4, result71_5) =
+                        match child_worker2 {
+                            TypedTimelineResultWorker::LeafTimeline(e) => {
+                                let (result45_0, result45_1, result45_2, result45_3, result45_4) =
+                                    match e {
+                                        LeafTimelineNode::TlHasExisted(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id36,
+                                                template_id: template_id36,
+                                            } = e;
+                                            let vec37 = worker_id36;
+                                            let ptr37 = vec37.as_ptr().cast::<u8>();
+                                            let len37 = vec37.len();
+                                            let vec38 = template_id36;
+                                            let ptr38 = vec38.as_ptr().cast::<u8>();
+                                            let len38 = vec38.len();
+
+                                            (0i32, ptr37.cast_mut(), len37, ptr38.cast_mut(), len38)
+                                        }
+                                        LeafTimelineNode::TlHasExistedWithin(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id39,
+                                                template_id: template_id39,
+                                            } = e;
+                                            let vec40 = worker_id39;
+                                            let ptr40 = vec40.as_ptr().cast::<u8>();
+                                            let len40 = vec40.len();
+                                            let vec41 = template_id39;
+                                            let ptr41 = vec41.as_ptr().cast::<u8>();
+                                            let len41 = vec41.len();
+
+                                            (1i32, ptr40.cast_mut(), len40, ptr41.cast_mut(), len41)
+                                        }
+                                        LeafTimelineNode::TlLatestEventToState(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id42,
+                                                template_id: template_id42,
+                                            } = e;
+                                            let vec43 = worker_id42;
+                                            let ptr43 = vec43.as_ptr().cast::<u8>();
+                                            let len43 = vec43.len();
+                                            let vec44 = template_id42;
+                                            let ptr44 = vec44.as_ptr().cast::<u8>();
+                                            let len44 = vec44.len();
+
+                                            (2i32, ptr43.cast_mut(), len43, ptr44.cast_mut(), len44)
+                                        }
+                                    };
+
+                                (0i32, result45_0, result45_1, result45_2, result45_3, result45_4)
+                            }
+                            TypedTimelineResultWorker::DerivedTimeline(e) => {
+                                let (result70_0, result70_1, result70_2, result70_3, result70_4) =
+                                    match e {
+                                        DerivedTimelineNode::EqualTo(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id46,
+                                                template_id: template_id46,
+                                            } = e;
+                                            let vec47 = worker_id46;
+                                            let ptr47 = vec47.as_ptr().cast::<u8>();
+                                            let len47 = vec47.len();
+                                            let vec48 = template_id46;
+                                            let ptr48 = vec48.as_ptr().cast::<u8>();
+                                            let len48 = vec48.len();
+
+                                            (0i32, ptr47.cast_mut(), len47, ptr48.cast_mut(), len48)
+                                        }
+                                        DerivedTimelineNode::GreaterThan(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id49,
+                                                template_id: template_id49,
+                                            } = e;
+                                            let vec50 = worker_id49;
+                                            let ptr50 = vec50.as_ptr().cast::<u8>();
+                                            let len50 = vec50.len();
+                                            let vec51 = template_id49;
+                                            let ptr51 = vec51.as_ptr().cast::<u8>();
+                                            let len51 = vec51.len();
+
+                                            (1i32, ptr50.cast_mut(), len50, ptr51.cast_mut(), len51)
+                                        }
+                                        DerivedTimelineNode::GreaterThanOrEqualTo(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id52,
+                                                template_id: template_id52,
+                                            } = e;
+                                            let vec53 = worker_id52;
+                                            let ptr53 = vec53.as_ptr().cast::<u8>();
+                                            let len53 = vec53.len();
+                                            let vec54 = template_id52;
+                                            let ptr54 = vec54.as_ptr().cast::<u8>();
+                                            let len54 = vec54.len();
+
+                                            (2i32, ptr53.cast_mut(), len53, ptr54.cast_mut(), len54)
+                                        }
+                                        DerivedTimelineNode::LessThan(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id55,
+                                                template_id: template_id55,
+                                            } = e;
+                                            let vec56 = worker_id55;
+                                            let ptr56 = vec56.as_ptr().cast::<u8>();
+                                            let len56 = vec56.len();
+                                            let vec57 = template_id55;
+                                            let ptr57 = vec57.as_ptr().cast::<u8>();
+                                            let len57 = vec57.len();
+
+                                            (3i32, ptr56.cast_mut(), len56, ptr57.cast_mut(), len57)
+                                        }
+                                        DerivedTimelineNode::LessThanOrEqualTo(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id58,
+                                                template_id: template_id58,
+                                            } = e;
+                                            let vec59 = worker_id58;
+                                            let ptr59 = vec59.as_ptr().cast::<u8>();
+                                            let len59 = vec59.len();
+                                            let vec60 = template_id58;
+                                            let ptr60 = vec60.as_ptr().cast::<u8>();
+                                            let len60 = vec60.len();
+
+                                            (4i32, ptr59.cast_mut(), len59, ptr60.cast_mut(), len60)
+                                        }
+                                        DerivedTimelineNode::And(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id61,
+                                                template_id: template_id61,
+                                            } = e;
+                                            let vec62 = worker_id61;
+                                            let ptr62 = vec62.as_ptr().cast::<u8>();
+                                            let len62 = vec62.len();
+                                            let vec63 = template_id61;
+                                            let ptr63 = vec63.as_ptr().cast::<u8>();
+                                            let len63 = vec63.len();
+
+                                            (5i32, ptr62.cast_mut(), len62, ptr63.cast_mut(), len63)
+                                        }
+                                        DerivedTimelineNode::Or(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id64,
+                                                template_id: template_id64,
+                                            } = e;
+                                            let vec65 = worker_id64;
+                                            let ptr65 = vec65.as_ptr().cast::<u8>();
+                                            let len65 = vec65.len();
+                                            let vec66 = template_id64;
+                                            let ptr66 = vec66.as_ptr().cast::<u8>();
+                                            let len66 = vec66.len();
+
+                                            (6i32, ptr65.cast_mut(), len65, ptr66.cast_mut(), len66)
+                                        }
+                                        DerivedTimelineNode::Not(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id67,
+                                                template_id: template_id67,
+                                            } = e;
+                                            let vec68 = worker_id67;
+                                            let ptr68 = vec68.as_ptr().cast::<u8>();
+                                            let len68 = vec68.len();
+                                            let vec69 = template_id67;
+                                            let ptr69 = vec69.as_ptr().cast::<u8>();
+                                            let len69 = vec69.len();
+
+                                            (7i32, ptr68.cast_mut(), len68, ptr69.cast_mut(), len69)
+                                        }
+                                    };
+
+                                (1i32, result70_0, result70_1, result70_2, result70_3, result70_4)
+                            }
+                        };
+                    let ptr72 = ret_area.0.as_mut_ptr().cast::<u8>();
+                    #[cfg(target_arch = "wasm32")]
+                    #[link(wasm_import_module = "timeline:timeline-processor-interface/api")]
+                    extern "C" {
+                        #[link_name = "initialize-or"]
+                        fn wit_import(
+                            _: i32,
+                            _: i32,
+                            _: *mut u8,
+                            _: usize,
+                            _: *mut u8,
+                            _: usize,
+                            _: i32,
+                            _: i32,
+                            _: *mut u8,
+                            _: usize,
+                            _: *mut u8,
+                            _: usize,
+                            _: *mut u8,
+                        );
+                    }
+
+                    #[cfg(not(target_arch = "wasm32"))]
+                    fn wit_import(
+                        _: i32,
+                        _: i32,
+                        _: *mut u8,
+                        _: usize,
+                        _: *mut u8,
+                        _: usize,
+                        _: i32,
+                        _: i32,
+                        _: *mut u8,
+                        _: usize,
+                        _: *mut u8,
+                        _: usize,
+                        _: *mut u8,
+                    ) {
+                        unreachable!()
+                    }
+                    wit_import(
+                        result35_0, result35_1, result35_2, result35_3, result35_4, result35_5,
+                        result71_0, result71_1, result71_2, result71_3, result71_4, result71_5,
+                        ptr72,
+                    );
+                    let l73 = i32::from(*ptr72.add(0).cast::<u8>());
+                    match l73 {
+                        0 => {
+                            let e = {
+                                let l74 = *ptr72.add(4).cast::<*mut u8>();
+                                let l75 = *ptr72.add(8).cast::<usize>();
+                                let len76 = l75;
+                                let bytes76 = _rt::Vec::from_raw_parts(l74.cast(), len76, len76);
+
+                                _rt::string_lift(bytes76)
+                            };
+                            Ok(e)
+                        }
+                        1 => {
+                            let e = {
+                                let l77 = *ptr72.add(4).cast::<*mut u8>();
+                                let l78 = *ptr72.add(8).cast::<usize>();
+                                let len79 = l78;
+                                let bytes79 = _rt::Vec::from_raw_parts(l77.cast(), len79, len79);
+
+                                _rt::string_lift(bytes79)
+                            };
+                            Err(e)
+                        }
+                        _ => _rt::invalid_enum_discriminant(),
+                    }
+                }
+            }
+            #[allow(unused_unsafe, clippy::all)]
+            pub fn initialize_not(
+                child_worker: &TypedTimelineResultWorker,
+            ) -> Result<_rt::String, _rt::String> {
+                unsafe {
+                    #[repr(align(4))]
+                    struct RetArea([::core::mem::MaybeUninit<u8>; 12]);
+                    let mut ret_area = RetArea([::core::mem::MaybeUninit::uninit(); 12]);
+                    let (result35_0, result35_1, result35_2, result35_3, result35_4, result35_5) =
+                        match child_worker {
+                            TypedTimelineResultWorker::LeafTimeline(e) => {
+                                let (result9_0, result9_1, result9_2, result9_3, result9_4) =
+                                    match e {
+                                        LeafTimelineNode::TlHasExisted(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id0,
+                                                template_id: template_id0,
+                                            } = e;
+                                            let vec1 = worker_id0;
+                                            let ptr1 = vec1.as_ptr().cast::<u8>();
+                                            let len1 = vec1.len();
+                                            let vec2 = template_id0;
+                                            let ptr2 = vec2.as_ptr().cast::<u8>();
+                                            let len2 = vec2.len();
+
+                                            (0i32, ptr1.cast_mut(), len1, ptr2.cast_mut(), len2)
+                                        }
+                                        LeafTimelineNode::TlHasExistedWithin(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id3,
+                                                template_id: template_id3,
+                                            } = e;
+                                            let vec4 = worker_id3;
+                                            let ptr4 = vec4.as_ptr().cast::<u8>();
+                                            let len4 = vec4.len();
+                                            let vec5 = template_id3;
+                                            let ptr5 = vec5.as_ptr().cast::<u8>();
+                                            let len5 = vec5.len();
+
+                                            (1i32, ptr4.cast_mut(), len4, ptr5.cast_mut(), len5)
+                                        }
+                                        LeafTimelineNode::TlLatestEventToState(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id6,
+                                                template_id: template_id6,
+                                            } = e;
+                                            let vec7 = worker_id6;
+                                            let ptr7 = vec7.as_ptr().cast::<u8>();
+                                            let len7 = vec7.len();
+                                            let vec8 = template_id6;
+                                            let ptr8 = vec8.as_ptr().cast::<u8>();
+                                            let len8 = vec8.len();
+
+                                            (2i32, ptr7.cast_mut(), len7, ptr8.cast_mut(), len8)
+                                        }
+                                    };
+
+                                (0i32, result9_0, result9_1, result9_2, result9_3, result9_4)
+                            }
+                            TypedTimelineResultWorker::DerivedTimeline(e) => {
+                                let (result34_0, result34_1, result34_2, result34_3, result34_4) =
+                                    match e {
+                                        DerivedTimelineNode::EqualTo(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id10,
+                                                template_id: template_id10,
+                                            } = e;
+                                            let vec11 = worker_id10;
+                                            let ptr11 = vec11.as_ptr().cast::<u8>();
+                                            let len11 = vec11.len();
+                                            let vec12 = template_id10;
+                                            let ptr12 = vec12.as_ptr().cast::<u8>();
+                                            let len12 = vec12.len();
+
+                                            (0i32, ptr11.cast_mut(), len11, ptr12.cast_mut(), len12)
+                                        }
+                                        DerivedTimelineNode::GreaterThan(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id13,
+                                                template_id: template_id13,
+                                            } = e;
+                                            let vec14 = worker_id13;
+                                            let ptr14 = vec14.as_ptr().cast::<u8>();
+                                            let len14 = vec14.len();
+                                            let vec15 = template_id13;
+                                            let ptr15 = vec15.as_ptr().cast::<u8>();
+                                            let len15 = vec15.len();
+
+                                            (1i32, ptr14.cast_mut(), len14, ptr15.cast_mut(), len15)
+                                        }
+                                        DerivedTimelineNode::GreaterThanOrEqualTo(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id16,
+                                                template_id: template_id16,
+                                            } = e;
+                                            let vec17 = worker_id16;
+                                            let ptr17 = vec17.as_ptr().cast::<u8>();
+                                            let len17 = vec17.len();
+                                            let vec18 = template_id16;
+                                            let ptr18 = vec18.as_ptr().cast::<u8>();
+                                            let len18 = vec18.len();
+
+                                            (2i32, ptr17.cast_mut(), len17, ptr18.cast_mut(), len18)
+                                        }
+                                        DerivedTimelineNode::LessThan(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id19,
+                                                template_id: template_id19,
+                                            } = e;
+                                            let vec20 = worker_id19;
+                                            let ptr20 = vec20.as_ptr().cast::<u8>();
+                                            let len20 = vec20.len();
+                                            let vec21 = template_id19;
+                                            let ptr21 = vec21.as_ptr().cast::<u8>();
+                                            let len21 = vec21.len();
+
+                                            (3i32, ptr20.cast_mut(), len20, ptr21.cast_mut(), len21)
+                                        }
+                                        DerivedTimelineNode::LessThanOrEqualTo(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id22,
+                                                template_id: template_id22,
+                                            } = e;
+                                            let vec23 = worker_id22;
+                                            let ptr23 = vec23.as_ptr().cast::<u8>();
+                                            let len23 = vec23.len();
+                                            let vec24 = template_id22;
+                                            let ptr24 = vec24.as_ptr().cast::<u8>();
+                                            let len24 = vec24.len();
+
+                                            (4i32, ptr23.cast_mut(), len23, ptr24.cast_mut(), len24)
+                                        }
+                                        DerivedTimelineNode::And(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id25,
+                                                template_id: template_id25,
+                                            } = e;
+                                            let vec26 = worker_id25;
+                                            let ptr26 = vec26.as_ptr().cast::<u8>();
+                                            let len26 = vec26.len();
+                                            let vec27 = template_id25;
+                                            let ptr27 = vec27.as_ptr().cast::<u8>();
+                                            let len27 = vec27.len();
+
+                                            (5i32, ptr26.cast_mut(), len26, ptr27.cast_mut(), len27)
+                                        }
+                                        DerivedTimelineNode::Or(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id28,
+                                                template_id: template_id28,
+                                            } = e;
+                                            let vec29 = worker_id28;
+                                            let ptr29 = vec29.as_ptr().cast::<u8>();
+                                            let len29 = vec29.len();
+                                            let vec30 = template_id28;
+                                            let ptr30 = vec30.as_ptr().cast::<u8>();
+                                            let len30 = vec30.len();
+
+                                            (6i32, ptr29.cast_mut(), len29, ptr30.cast_mut(), len30)
+                                        }
+                                        DerivedTimelineNode::Not(e) => {
+                                            let TimelineResultWorker {
+                                                worker_id: worker_id31,
+                                                template_id: template_id31,
+                                            } = e;
+                                            let vec32 = worker_id31;
+                                            let ptr32 = vec32.as_ptr().cast::<u8>();
+                                            let len32 = vec32.len();
+                                            let vec33 = template_id31;
+                                            let ptr33 = vec33.as_ptr().cast::<u8>();
+                                            let len33 = vec33.len();
+
+                                            (7i32, ptr32.cast_mut(), len32, ptr33.cast_mut(), len33)
+                                        }
+                                    };
+
+                                (1i32, result34_0, result34_1, result34_2, result34_3, result34_4)
+                            }
+                        };
+                    let ptr36 = ret_area.0.as_mut_ptr().cast::<u8>();
+                    #[cfg(target_arch = "wasm32")]
+                    #[link(wasm_import_module = "timeline:timeline-processor-interface/api")]
+                    extern "C" {
+                        #[link_name = "initialize-not"]
+                        fn wit_import(
+                            _: i32,
+                            _: i32,
+                            _: *mut u8,
+                            _: usize,
+                            _: *mut u8,
+                            _: usize,
+                            _: *mut u8,
+                        );
+                    }
+
+                    #[cfg(not(target_arch = "wasm32"))]
+                    fn wit_import(
+                        _: i32,
+                        _: i32,
+                        _: *mut u8,
+                        _: usize,
+                        _: *mut u8,
+                        _: usize,
+                        _: *mut u8,
+                    ) {
+                        unreachable!()
+                    }
+                    wit_import(
+                        result35_0, result35_1, result35_2, result35_3, result35_4, result35_5,
+                        ptr36,
+                    );
+                    let l37 = i32::from(*ptr36.add(0).cast::<u8>());
+                    match l37 {
+                        0 => {
+                            let e = {
+                                let l38 = *ptr36.add(4).cast::<*mut u8>();
+                                let l39 = *ptr36.add(8).cast::<usize>();
+                                let len40 = l39;
+                                let bytes40 = _rt::Vec::from_raw_parts(l38.cast(), len40, len40);
+
+                                _rt::string_lift(bytes40)
+                            };
+                            Ok(e)
+                        }
+                        1 => {
+                            let e = {
+                                let l41 = *ptr36.add(4).cast::<*mut u8>();
+                                let l42 = *ptr36.add(8).cast::<usize>();
+                                let len43 = l42;
+                                let bytes43 = _rt::Vec::from_raw_parts(l41.cast(), len43, len43);
+
+                                _rt::string_lift(bytes43)
+                            };
+                            Err(e)
+                        }
+                        _ => _rt::invalid_enum_discriminant(),
+                    }
+                }
+            }
+            #[allow(unused_unsafe, clippy::all)]
+            pub fn get_timeline_result(t1: u64) -> Result<TimelineResult, _rt::String> {
+                unsafe {
+                    #[repr(align(4))]
+                    struct RetArea([::core::mem::MaybeUninit<u8>; 12]);
+                    let mut ret_area = RetArea([::core::mem::MaybeUninit::uninit(); 12]);
+                    let ptr0 = ret_area.0.as_mut_ptr().cast::<u8>();
+                    #[cfg(target_arch = "wasm32")]
+                    #[link(wasm_import_module = "timeline:timeline-processor-interface/api")]
+                    extern "C" {
+                        #[link_name = "get-timeline-result"]
+                        fn wit_import(_: i64, _: *mut u8);
+                    }
+
+                    #[cfg(not(target_arch = "wasm32"))]
+                    fn wit_import(_: i64, _: *mut u8) {
+                        unreachable!()
+                    }
+                    wit_import(_rt::as_i64(&t1), ptr0);
+                    let l1 = i32::from(*ptr0.add(0).cast::<u8>());
+                    match l1 {
+                        0 => {
+                            let e = {
+                                let l2 = *ptr0.add(4).cast::<*mut u8>();
+                                let l3 = *ptr0.add(8).cast::<usize>();
+                                let base15 = l2;
+                                let len15 = l3;
+                                let mut result15 = _rt::Vec::with_capacity(len15);
+                                for i in 0..len15 {
+                                    let base = base15.add(i * 40);
+                                    let e15 = {
+                                        let l4 = *base.add(0).cast::<i64>();
+                                        let l5 = i32::from(*base.add(8).cast::<u8>());
+                                        let l7 = i32::from(*base.add(24).cast::<u8>());
+                                        use super::super::super::timeline::event_processor_interface::api::EventValue as V14;
+                                        let v14 = match l7 {
+                                            0 => {
+                                                let e14 = {
+                                                    let l8 = *base.add(32).cast::<*mut u8>();
+                                                    let l9 = *base.add(36).cast::<usize>();
+                                                    let len10 = l9;
+                                                    let bytes10 = _rt::Vec::from_raw_parts(
+                                                        l8.cast(),
+                                                        len10,
+                                                        len10,
+                                                    );
+
+                                                    _rt::string_lift(bytes10)
+                                                };
+                                                V14::StringValue(e14)
+                                            }
+                                            1 => {
+                                                let e14 = {
+                                                    let l11 = *base.add(32).cast::<i64>();
+
+                                                    l11
+                                                };
+                                                V14::IntValue(e14)
+                                            }
+                                            2 => {
+                                                let e14 = {
+                                                    let l12 = *base.add(32).cast::<f64>();
+
+                                                    l12
+                                                };
+                                                V14::FloatValue(e14)
+                                            }
+                                            n => {
+                                                debug_assert_eq!(n, 3, "invalid enum discriminant");
+                                                let e14 = {
+                                                    let l13 = i32::from(*base.add(32).cast::<u8>());
+
+                                                    _rt::bool_lift(l13 as u8)
+                                                };
+                                                V14::BoolValue(e14)
+                                            }
+                                        };
+
+                                        super::super::super::timeline::event_processor_interface::api::TimelineResultPoint{
+                                                    time_period: super::super::super::timeline::event_processor_interface::api::TimePeriod{
+                                                      t1: l4 as u64,
+                                                      t2: match l5 {
+                                                        0 => None,
+                                                        1 => {
+                                                          let e = {
+                                                            let l6 = *base.add(16).cast::<i64>();
+
+                                                            l6 as u64
+                                                          };
+                                                          Some(e)
+                                                        }
+                                                        _ => _rt::invalid_enum_discriminant(),
+                                                      },
+                                                    },
+                                                    value: v14,
+                                                  }
+                                    };
+                                    result15.push(e15);
+                                }
+                                _rt::cabi_dealloc(base15, len15 * 40, 8);
+
+                                super::super::super::timeline::event_processor_interface::api::TimelineResult{
+                                                results: result15,
+                                              }
+                            };
+                            Ok(e)
+                        }
+                        1 => {
+                            let e = {
+                                let l16 = *ptr0.add(4).cast::<*mut u8>();
+                                let l17 = *ptr0.add(8).cast::<usize>();
+                                let len18 = l17;
+                                let bytes18 = _rt::Vec::from_raw_parts(l16.cast(), len18, len18);
+
+                                _rt::string_lift(bytes18)
+                            };
+                            Err(e)
+                        }
+                        _ => _rt::invalid_enum_discriminant(),
+                    }
+                }
+            }
+        }
+    }
+    #[allow(dead_code)]
+    pub mod timeline_processor_stub {
+        #[allow(dead_code, clippy::all)]
+        pub mod stub_timeline_processor {
+            #[used]
+            #[doc(hidden)]
+            #[cfg(target_arch = "wasm32")]
+            static __FORCE_SECTION_REF: fn() =
+                super::super::super::__link_custom_section_describing_imports;
+            use super::super::super::_rt;
+            pub type GolemRpcUri = super::super::super::golem::rpc::types::Uri;
+            pub type WasiIoPollable = super::super::super::wasi::io::poll::Pollable;
+            pub type EventValue =
+                super::super::super::timeline::timeline_processor_interface::api::EventValue;
+            pub type TimelineResult =
+                super::super::super::timeline::timeline_processor_interface::api::TimelineResult;
+            pub type TypedTimelineResultWorker = super::super::super::timeline::timeline_processor_interface::api::TypedTimelineResultWorker;
 
             #[derive(Debug)]
             #[repr(transparent)]
@@ -6908,6 +9461,7 @@ pub mod timeline {
                                                             i32::from(*base.add(8).cast::<u8>());
                                                         let l8 =
                                                             i32::from(*base.add(24).cast::<u8>());
+                                                        use super::super::super::timeline::event_processor_interface::api::EventValue as V15;
                                                         let v15 = match l8 {
                                                             0 => {
                                                                 let e15 = {
@@ -6927,7 +9481,7 @@ pub mod timeline {
 
                                                                     _rt::string_lift(bytes11)
                                                                 };
-                                                                EventValue::StringValue(e15)
+                                                                V15::StringValue(e15)
                                                             }
                                                             1 => {
                                                                 let e15 = {
@@ -6936,7 +9490,7 @@ pub mod timeline {
 
                                                                     l12
                                                                 };
-                                                                EventValue::IntValue(e15)
+                                                                V15::IntValue(e15)
                                                             }
                                                             2 => {
                                                                 let e15 = {
@@ -6945,7 +9499,7 @@ pub mod timeline {
 
                                                                     l13
                                                                 };
-                                                                EventValue::FloatValue(e15)
+                                                                V15::FloatValue(e15)
                                                             }
                                                             n => {
                                                                 debug_assert_eq!(
@@ -6959,12 +9513,12 @@ pub mod timeline {
 
                                                                     _rt::bool_lift(l14 as u8)
                                                                 };
-                                                                EventValue::BoolValue(e15)
+                                                                V15::BoolValue(e15)
                                                             }
                                                         };
 
-                                                        TimelineResultPoint{
-                                                            time_period: TimePeriod{
+                                                        super::super::super::timeline::event_processor_interface::api::TimelineResultPoint{
+                                                            time_period: super::super::super::timeline::event_processor_interface::api::TimePeriod{
                                                               t1: l5 as u64,
                                                               t2: match l6 {
                                                                 0 => None,
@@ -6986,7 +9540,9 @@ pub mod timeline {
                                                 }
                                                 _rt::cabi_dealloc(base16, len16 * 40, 8);
 
-                                                TimelineResult { results: result16 }
+                                                super::super::super::timeline::event_processor_interface::api::TimelineResult{
+                                                        results: result16,
+                                                      }
                                             };
                                             Ok(e)
                                         }
@@ -7054,22 +9610,21 @@ pub mod timeline {
                         #[repr(align(4))]
                         struct RetArea([::core::mem::MaybeUninit<u8>; 12]);
                         let mut ret_area = RetArea([::core::mem::MaybeUninit::uninit(); 12]);
+                        use super::super::super::timeline::timeline_processor_interface::api::TypedTimelineResultWorker as V37;
                         let (
-                            result35_0,
-                            result35_1,
-                            result35_2,
-                            result35_3,
-                            result35_4,
-                            result35_5,
+                            result38_0,
+                            result38_1,
+                            result38_2,
+                            result38_3,
+                            result38_4,
+                            result38_5,
                         ) = match child_worker {
-                            TypedTimelineResultWorker::LeafTimeline(e) => {
-                                let (result9_0, result9_1, result9_2, result9_3, result9_4) =
+                            V37::LeafTimeline(e) => {
+                                use super::super::super::timeline::timeline_processor_interface::api::LeafTimelineNode as V9;
+                                let (result10_0, result10_1, result10_2, result10_3, result10_4) =
                                     match e {
-                                        LeafTimelineNode::TlHasExisted(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id0,
-                                                template_id: template_id0,
-                                            } = e;
+                                        V9::TlHasExisted(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id0, template_id:template_id0, } = e;
                                             let vec1 = worker_id0;
                                             let ptr1 = vec1.as_ptr().cast::<u8>();
                                             let len1 = vec1.len();
@@ -7079,11 +9634,8 @@ pub mod timeline {
 
                                             (0i32, ptr1.cast_mut(), len1, ptr2.cast_mut(), len2)
                                         }
-                                        LeafTimelineNode::TlHasExistedWithin(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id3,
-                                                template_id: template_id3,
-                                            } = e;
+                                        V9::TlHasExistedWithin(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id3, template_id:template_id3, } = e;
                                             let vec4 = worker_id3;
                                             let ptr4 = vec4.as_ptr().cast::<u8>();
                                             let len4 = vec4.len();
@@ -7093,11 +9645,8 @@ pub mod timeline {
 
                                             (1i32, ptr4.cast_mut(), len4, ptr5.cast_mut(), len5)
                                         }
-                                        LeafTimelineNode::TlLatestEventToState(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id6,
-                                                template_id: template_id6,
-                                            } = e;
+                                        V9::TlLatestEventToState(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id6, template_id:template_id6, } = e;
                                             let vec7 = worker_id6;
                                             let ptr7 = vec7.as_ptr().cast::<u8>();
                                             let len7 = vec7.len();
@@ -7109,155 +9658,133 @@ pub mod timeline {
                                         }
                                     };
 
-                                (0i32, result9_0, result9_1, result9_2, result9_3, result9_4)
+                                (0i32, result10_0, result10_1, result10_2, result10_3, result10_4)
                             }
-                            TypedTimelineResultWorker::DerivedTimeline(e) => {
-                                let (result34_0, result34_1, result34_2, result34_3, result34_4) =
+                            V37::DerivedTimeline(e) => {
+                                use super::super::super::timeline::timeline_processor_interface::api::DerivedTimelineNode as V35;
+                                let (result36_0, result36_1, result36_2, result36_3, result36_4) =
                                     match e {
-                                        DerivedTimelineNode::EqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id10,
-                                                template_id: template_id10,
-                                            } = e;
-                                            let vec11 = worker_id10;
-                                            let ptr11 = vec11.as_ptr().cast::<u8>();
-                                            let len11 = vec11.len();
-                                            let vec12 = template_id10;
+                                        V35::EqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id11, template_id:template_id11, } = e;
+                                            let vec12 = worker_id11;
                                             let ptr12 = vec12.as_ptr().cast::<u8>();
                                             let len12 = vec12.len();
+                                            let vec13 = template_id11;
+                                            let ptr13 = vec13.as_ptr().cast::<u8>();
+                                            let len13 = vec13.len();
 
-                                            (0i32, ptr11.cast_mut(), len11, ptr12.cast_mut(), len12)
+                                            (0i32, ptr12.cast_mut(), len12, ptr13.cast_mut(), len13)
                                         }
-                                        DerivedTimelineNode::GreaterThan(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id13,
-                                                template_id: template_id13,
-                                            } = e;
-                                            let vec14 = worker_id13;
-                                            let ptr14 = vec14.as_ptr().cast::<u8>();
-                                            let len14 = vec14.len();
-                                            let vec15 = template_id13;
+                                        V35::GreaterThan(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id14, template_id:template_id14, } = e;
+                                            let vec15 = worker_id14;
                                             let ptr15 = vec15.as_ptr().cast::<u8>();
                                             let len15 = vec15.len();
+                                            let vec16 = template_id14;
+                                            let ptr16 = vec16.as_ptr().cast::<u8>();
+                                            let len16 = vec16.len();
 
-                                            (1i32, ptr14.cast_mut(), len14, ptr15.cast_mut(), len15)
+                                            (1i32, ptr15.cast_mut(), len15, ptr16.cast_mut(), len16)
                                         }
-                                        DerivedTimelineNode::GreaterThanOrEqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id16,
-                                                template_id: template_id16,
-                                            } = e;
-                                            let vec17 = worker_id16;
-                                            let ptr17 = vec17.as_ptr().cast::<u8>();
-                                            let len17 = vec17.len();
-                                            let vec18 = template_id16;
+                                        V35::GreaterThanOrEqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id17, template_id:template_id17, } = e;
+                                            let vec18 = worker_id17;
                                             let ptr18 = vec18.as_ptr().cast::<u8>();
                                             let len18 = vec18.len();
+                                            let vec19 = template_id17;
+                                            let ptr19 = vec19.as_ptr().cast::<u8>();
+                                            let len19 = vec19.len();
 
-                                            (2i32, ptr17.cast_mut(), len17, ptr18.cast_mut(), len18)
+                                            (2i32, ptr18.cast_mut(), len18, ptr19.cast_mut(), len19)
                                         }
-                                        DerivedTimelineNode::LessThan(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id19,
-                                                template_id: template_id19,
-                                            } = e;
-                                            let vec20 = worker_id19;
-                                            let ptr20 = vec20.as_ptr().cast::<u8>();
-                                            let len20 = vec20.len();
-                                            let vec21 = template_id19;
+                                        V35::LessThan(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id20, template_id:template_id20, } = e;
+                                            let vec21 = worker_id20;
                                             let ptr21 = vec21.as_ptr().cast::<u8>();
                                             let len21 = vec21.len();
+                                            let vec22 = template_id20;
+                                            let ptr22 = vec22.as_ptr().cast::<u8>();
+                                            let len22 = vec22.len();
 
-                                            (3i32, ptr20.cast_mut(), len20, ptr21.cast_mut(), len21)
+                                            (3i32, ptr21.cast_mut(), len21, ptr22.cast_mut(), len22)
                                         }
-                                        DerivedTimelineNode::LessThanOrEqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id22,
-                                                template_id: template_id22,
-                                            } = e;
-                                            let vec23 = worker_id22;
-                                            let ptr23 = vec23.as_ptr().cast::<u8>();
-                                            let len23 = vec23.len();
-                                            let vec24 = template_id22;
+                                        V35::LessThanOrEqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id23, template_id:template_id23, } = e;
+                                            let vec24 = worker_id23;
                                             let ptr24 = vec24.as_ptr().cast::<u8>();
                                             let len24 = vec24.len();
+                                            let vec25 = template_id23;
+                                            let ptr25 = vec25.as_ptr().cast::<u8>();
+                                            let len25 = vec25.len();
 
-                                            (4i32, ptr23.cast_mut(), len23, ptr24.cast_mut(), len24)
+                                            (4i32, ptr24.cast_mut(), len24, ptr25.cast_mut(), len25)
                                         }
-                                        DerivedTimelineNode::And(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id25,
-                                                template_id: template_id25,
-                                            } = e;
-                                            let vec26 = worker_id25;
-                                            let ptr26 = vec26.as_ptr().cast::<u8>();
-                                            let len26 = vec26.len();
-                                            let vec27 = template_id25;
+                                        V35::And(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id26, template_id:template_id26, } = e;
+                                            let vec27 = worker_id26;
                                             let ptr27 = vec27.as_ptr().cast::<u8>();
                                             let len27 = vec27.len();
+                                            let vec28 = template_id26;
+                                            let ptr28 = vec28.as_ptr().cast::<u8>();
+                                            let len28 = vec28.len();
 
-                                            (5i32, ptr26.cast_mut(), len26, ptr27.cast_mut(), len27)
+                                            (5i32, ptr27.cast_mut(), len27, ptr28.cast_mut(), len28)
                                         }
-                                        DerivedTimelineNode::Or(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id28,
-                                                template_id: template_id28,
-                                            } = e;
-                                            let vec29 = worker_id28;
-                                            let ptr29 = vec29.as_ptr().cast::<u8>();
-                                            let len29 = vec29.len();
-                                            let vec30 = template_id28;
+                                        V35::Or(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id29, template_id:template_id29, } = e;
+                                            let vec30 = worker_id29;
                                             let ptr30 = vec30.as_ptr().cast::<u8>();
                                             let len30 = vec30.len();
+                                            let vec31 = template_id29;
+                                            let ptr31 = vec31.as_ptr().cast::<u8>();
+                                            let len31 = vec31.len();
 
-                                            (6i32, ptr29.cast_mut(), len29, ptr30.cast_mut(), len30)
+                                            (6i32, ptr30.cast_mut(), len30, ptr31.cast_mut(), len31)
                                         }
-                                        DerivedTimelineNode::Not(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id31,
-                                                template_id: template_id31,
-                                            } = e;
-                                            let vec32 = worker_id31;
-                                            let ptr32 = vec32.as_ptr().cast::<u8>();
-                                            let len32 = vec32.len();
-                                            let vec33 = template_id31;
+                                        V35::Not(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id32, template_id:template_id32, } = e;
+                                            let vec33 = worker_id32;
                                             let ptr33 = vec33.as_ptr().cast::<u8>();
                                             let len33 = vec33.len();
+                                            let vec34 = template_id32;
+                                            let ptr34 = vec34.as_ptr().cast::<u8>();
+                                            let len34 = vec34.len();
 
-                                            (7i32, ptr32.cast_mut(), len32, ptr33.cast_mut(), len33)
+                                            (7i32, ptr33.cast_mut(), len33, ptr34.cast_mut(), len34)
                                         }
                                     };
 
-                                (1i32, result34_0, result34_1, result34_2, result34_3, result34_4)
+                                (1i32, result36_0, result36_1, result36_2, result36_3, result36_4)
                             }
                         };
-                        let (result37_0, result37_1, result37_2) = match event_value {
-                            EventValue::StringValue(e) => {
-                                let vec36 = e;
-                                let ptr36 = vec36.as_ptr().cast::<u8>();
-                                let len36 = vec36.len();
+                        use super::super::super::timeline::event_processor_interface::api::EventValue as V40;
+                        let (result41_0, result41_1, result41_2) = match event_value {
+                            V40::StringValue(e) => {
+                                let vec39 = e;
+                                let ptr39 = vec39.as_ptr().cast::<u8>();
+                                let len39 = vec39.len();
 
                                 (
                                     0i32,
                                     {
                                         let mut t = ::core::mem::MaybeUninit::<u64>::uninit();
-                                        t.as_mut_ptr().cast::<*mut u8>().write(ptr36.cast_mut());
+                                        t.as_mut_ptr().cast::<*mut u8>().write(ptr39.cast_mut());
                                         t
                                     },
-                                    len36,
+                                    len39,
                                 )
                             }
-                            EventValue::IntValue(e) => {
+                            V40::IntValue(e) => {
                                 (1i32, ::core::mem::MaybeUninit::new(_rt::as_i64(e) as u64), 0usize)
                             }
-                            EventValue::FloatValue(e) => (
+                            V40::FloatValue(e) => (
                                 2i32,
                                 ::core::mem::MaybeUninit::new(
                                     (_rt::as_f64(e)).to_bits() as i64 as u64
                                 ),
                                 0usize,
                             ),
-                            EventValue::BoolValue(e) => (
+                            V40::BoolValue(e) => (
                                 3i32,
                                 ::core::mem::MaybeUninit::new(i64::from(match e {
                                     true => 1,
@@ -7267,7 +9794,7 @@ pub mod timeline {
                                 0usize,
                             ),
                         };
-                        let ptr38 = ret_area.0.as_mut_ptr().cast::<u8>();
+                        let ptr42 = ret_area.0.as_mut_ptr().cast::<u8>();
                         #[cfg(target_arch = "wasm32")]
                         #[link(
                             wasm_import_module = "timeline:timeline-processor-stub/stub-timeline-processor"
@@ -7307,40 +9834,40 @@ pub mod timeline {
                         }
                         wit_import(
                             (self).handle() as i32,
-                            result35_0,
-                            result35_1,
-                            result35_2,
-                            result35_3,
-                            result35_4,
-                            result35_5,
-                            result37_0,
-                            result37_1,
-                            result37_2,
-                            ptr38,
+                            result38_0,
+                            result38_1,
+                            result38_2,
+                            result38_3,
+                            result38_4,
+                            result38_5,
+                            result41_0,
+                            result41_1,
+                            result41_2,
+                            ptr42,
                         );
-                        let l39 = i32::from(*ptr38.add(0).cast::<u8>());
-                        match l39 {
+                        let l43 = i32::from(*ptr42.add(0).cast::<u8>());
+                        match l43 {
                             0 => {
                                 let e = {
-                                    let l40 = *ptr38.add(4).cast::<*mut u8>();
-                                    let l41 = *ptr38.add(8).cast::<usize>();
-                                    let len42 = l41;
-                                    let bytes42 =
-                                        _rt::Vec::from_raw_parts(l40.cast(), len42, len42);
+                                    let l44 = *ptr42.add(4).cast::<*mut u8>();
+                                    let l45 = *ptr42.add(8).cast::<usize>();
+                                    let len46 = l45;
+                                    let bytes46 =
+                                        _rt::Vec::from_raw_parts(l44.cast(), len46, len46);
 
-                                    _rt::string_lift(bytes42)
+                                    _rt::string_lift(bytes46)
                                 };
                                 Ok(e)
                             }
                             1 => {
                                 let e = {
-                                    let l43 = *ptr38.add(4).cast::<*mut u8>();
-                                    let l44 = *ptr38.add(8).cast::<usize>();
-                                    let len45 = l44;
-                                    let bytes45 =
-                                        _rt::Vec::from_raw_parts(l43.cast(), len45, len45);
+                                    let l47 = *ptr42.add(4).cast::<*mut u8>();
+                                    let l48 = *ptr42.add(8).cast::<usize>();
+                                    let len49 = l48;
+                                    let bytes49 =
+                                        _rt::Vec::from_raw_parts(l47.cast(), len49, len49);
 
-                                    _rt::string_lift(bytes45)
+                                    _rt::string_lift(bytes49)
                                 };
                                 Err(e)
                             }
@@ -7357,22 +9884,21 @@ pub mod timeline {
                     event_value: &EventValue,
                 ) -> FutureInitializeEqualResult {
                     unsafe {
+                        use super::super::super::timeline::timeline_processor_interface::api::TypedTimelineResultWorker as V37;
                         let (
-                            result35_0,
-                            result35_1,
-                            result35_2,
-                            result35_3,
-                            result35_4,
-                            result35_5,
+                            result38_0,
+                            result38_1,
+                            result38_2,
+                            result38_3,
+                            result38_4,
+                            result38_5,
                         ) = match child_worker {
-                            TypedTimelineResultWorker::LeafTimeline(e) => {
-                                let (result9_0, result9_1, result9_2, result9_3, result9_4) =
+                            V37::LeafTimeline(e) => {
+                                use super::super::super::timeline::timeline_processor_interface::api::LeafTimelineNode as V9;
+                                let (result10_0, result10_1, result10_2, result10_3, result10_4) =
                                     match e {
-                                        LeafTimelineNode::TlHasExisted(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id0,
-                                                template_id: template_id0,
-                                            } = e;
+                                        V9::TlHasExisted(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id0, template_id:template_id0, } = e;
                                             let vec1 = worker_id0;
                                             let ptr1 = vec1.as_ptr().cast::<u8>();
                                             let len1 = vec1.len();
@@ -7382,11 +9908,8 @@ pub mod timeline {
 
                                             (0i32, ptr1.cast_mut(), len1, ptr2.cast_mut(), len2)
                                         }
-                                        LeafTimelineNode::TlHasExistedWithin(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id3,
-                                                template_id: template_id3,
-                                            } = e;
+                                        V9::TlHasExistedWithin(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id3, template_id:template_id3, } = e;
                                             let vec4 = worker_id3;
                                             let ptr4 = vec4.as_ptr().cast::<u8>();
                                             let len4 = vec4.len();
@@ -7396,11 +9919,8 @@ pub mod timeline {
 
                                             (1i32, ptr4.cast_mut(), len4, ptr5.cast_mut(), len5)
                                         }
-                                        LeafTimelineNode::TlLatestEventToState(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id6,
-                                                template_id: template_id6,
-                                            } = e;
+                                        V9::TlLatestEventToState(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id6, template_id:template_id6, } = e;
                                             let vec7 = worker_id6;
                                             let ptr7 = vec7.as_ptr().cast::<u8>();
                                             let len7 = vec7.len();
@@ -7412,155 +9932,133 @@ pub mod timeline {
                                         }
                                     };
 
-                                (0i32, result9_0, result9_1, result9_2, result9_3, result9_4)
+                                (0i32, result10_0, result10_1, result10_2, result10_3, result10_4)
                             }
-                            TypedTimelineResultWorker::DerivedTimeline(e) => {
-                                let (result34_0, result34_1, result34_2, result34_3, result34_4) =
+                            V37::DerivedTimeline(e) => {
+                                use super::super::super::timeline::timeline_processor_interface::api::DerivedTimelineNode as V35;
+                                let (result36_0, result36_1, result36_2, result36_3, result36_4) =
                                     match e {
-                                        DerivedTimelineNode::EqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id10,
-                                                template_id: template_id10,
-                                            } = e;
-                                            let vec11 = worker_id10;
-                                            let ptr11 = vec11.as_ptr().cast::<u8>();
-                                            let len11 = vec11.len();
-                                            let vec12 = template_id10;
+                                        V35::EqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id11, template_id:template_id11, } = e;
+                                            let vec12 = worker_id11;
                                             let ptr12 = vec12.as_ptr().cast::<u8>();
                                             let len12 = vec12.len();
+                                            let vec13 = template_id11;
+                                            let ptr13 = vec13.as_ptr().cast::<u8>();
+                                            let len13 = vec13.len();
 
-                                            (0i32, ptr11.cast_mut(), len11, ptr12.cast_mut(), len12)
+                                            (0i32, ptr12.cast_mut(), len12, ptr13.cast_mut(), len13)
                                         }
-                                        DerivedTimelineNode::GreaterThan(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id13,
-                                                template_id: template_id13,
-                                            } = e;
-                                            let vec14 = worker_id13;
-                                            let ptr14 = vec14.as_ptr().cast::<u8>();
-                                            let len14 = vec14.len();
-                                            let vec15 = template_id13;
+                                        V35::GreaterThan(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id14, template_id:template_id14, } = e;
+                                            let vec15 = worker_id14;
                                             let ptr15 = vec15.as_ptr().cast::<u8>();
                                             let len15 = vec15.len();
+                                            let vec16 = template_id14;
+                                            let ptr16 = vec16.as_ptr().cast::<u8>();
+                                            let len16 = vec16.len();
 
-                                            (1i32, ptr14.cast_mut(), len14, ptr15.cast_mut(), len15)
+                                            (1i32, ptr15.cast_mut(), len15, ptr16.cast_mut(), len16)
                                         }
-                                        DerivedTimelineNode::GreaterThanOrEqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id16,
-                                                template_id: template_id16,
-                                            } = e;
-                                            let vec17 = worker_id16;
-                                            let ptr17 = vec17.as_ptr().cast::<u8>();
-                                            let len17 = vec17.len();
-                                            let vec18 = template_id16;
+                                        V35::GreaterThanOrEqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id17, template_id:template_id17, } = e;
+                                            let vec18 = worker_id17;
                                             let ptr18 = vec18.as_ptr().cast::<u8>();
                                             let len18 = vec18.len();
+                                            let vec19 = template_id17;
+                                            let ptr19 = vec19.as_ptr().cast::<u8>();
+                                            let len19 = vec19.len();
 
-                                            (2i32, ptr17.cast_mut(), len17, ptr18.cast_mut(), len18)
+                                            (2i32, ptr18.cast_mut(), len18, ptr19.cast_mut(), len19)
                                         }
-                                        DerivedTimelineNode::LessThan(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id19,
-                                                template_id: template_id19,
-                                            } = e;
-                                            let vec20 = worker_id19;
-                                            let ptr20 = vec20.as_ptr().cast::<u8>();
-                                            let len20 = vec20.len();
-                                            let vec21 = template_id19;
+                                        V35::LessThan(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id20, template_id:template_id20, } = e;
+                                            let vec21 = worker_id20;
                                             let ptr21 = vec21.as_ptr().cast::<u8>();
                                             let len21 = vec21.len();
+                                            let vec22 = template_id20;
+                                            let ptr22 = vec22.as_ptr().cast::<u8>();
+                                            let len22 = vec22.len();
 
-                                            (3i32, ptr20.cast_mut(), len20, ptr21.cast_mut(), len21)
+                                            (3i32, ptr21.cast_mut(), len21, ptr22.cast_mut(), len22)
                                         }
-                                        DerivedTimelineNode::LessThanOrEqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id22,
-                                                template_id: template_id22,
-                                            } = e;
-                                            let vec23 = worker_id22;
-                                            let ptr23 = vec23.as_ptr().cast::<u8>();
-                                            let len23 = vec23.len();
-                                            let vec24 = template_id22;
+                                        V35::LessThanOrEqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id23, template_id:template_id23, } = e;
+                                            let vec24 = worker_id23;
                                             let ptr24 = vec24.as_ptr().cast::<u8>();
                                             let len24 = vec24.len();
+                                            let vec25 = template_id23;
+                                            let ptr25 = vec25.as_ptr().cast::<u8>();
+                                            let len25 = vec25.len();
 
-                                            (4i32, ptr23.cast_mut(), len23, ptr24.cast_mut(), len24)
+                                            (4i32, ptr24.cast_mut(), len24, ptr25.cast_mut(), len25)
                                         }
-                                        DerivedTimelineNode::And(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id25,
-                                                template_id: template_id25,
-                                            } = e;
-                                            let vec26 = worker_id25;
-                                            let ptr26 = vec26.as_ptr().cast::<u8>();
-                                            let len26 = vec26.len();
-                                            let vec27 = template_id25;
+                                        V35::And(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id26, template_id:template_id26, } = e;
+                                            let vec27 = worker_id26;
                                             let ptr27 = vec27.as_ptr().cast::<u8>();
                                             let len27 = vec27.len();
+                                            let vec28 = template_id26;
+                                            let ptr28 = vec28.as_ptr().cast::<u8>();
+                                            let len28 = vec28.len();
 
-                                            (5i32, ptr26.cast_mut(), len26, ptr27.cast_mut(), len27)
+                                            (5i32, ptr27.cast_mut(), len27, ptr28.cast_mut(), len28)
                                         }
-                                        DerivedTimelineNode::Or(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id28,
-                                                template_id: template_id28,
-                                            } = e;
-                                            let vec29 = worker_id28;
-                                            let ptr29 = vec29.as_ptr().cast::<u8>();
-                                            let len29 = vec29.len();
-                                            let vec30 = template_id28;
+                                        V35::Or(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id29, template_id:template_id29, } = e;
+                                            let vec30 = worker_id29;
                                             let ptr30 = vec30.as_ptr().cast::<u8>();
                                             let len30 = vec30.len();
+                                            let vec31 = template_id29;
+                                            let ptr31 = vec31.as_ptr().cast::<u8>();
+                                            let len31 = vec31.len();
 
-                                            (6i32, ptr29.cast_mut(), len29, ptr30.cast_mut(), len30)
+                                            (6i32, ptr30.cast_mut(), len30, ptr31.cast_mut(), len31)
                                         }
-                                        DerivedTimelineNode::Not(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id31,
-                                                template_id: template_id31,
-                                            } = e;
-                                            let vec32 = worker_id31;
-                                            let ptr32 = vec32.as_ptr().cast::<u8>();
-                                            let len32 = vec32.len();
-                                            let vec33 = template_id31;
+                                        V35::Not(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id32, template_id:template_id32, } = e;
+                                            let vec33 = worker_id32;
                                             let ptr33 = vec33.as_ptr().cast::<u8>();
                                             let len33 = vec33.len();
+                                            let vec34 = template_id32;
+                                            let ptr34 = vec34.as_ptr().cast::<u8>();
+                                            let len34 = vec34.len();
 
-                                            (7i32, ptr32.cast_mut(), len32, ptr33.cast_mut(), len33)
+                                            (7i32, ptr33.cast_mut(), len33, ptr34.cast_mut(), len34)
                                         }
                                     };
 
-                                (1i32, result34_0, result34_1, result34_2, result34_3, result34_4)
+                                (1i32, result36_0, result36_1, result36_2, result36_3, result36_4)
                             }
                         };
-                        let (result37_0, result37_1, result37_2) = match event_value {
-                            EventValue::StringValue(e) => {
-                                let vec36 = e;
-                                let ptr36 = vec36.as_ptr().cast::<u8>();
-                                let len36 = vec36.len();
+                        use super::super::super::timeline::event_processor_interface::api::EventValue as V40;
+                        let (result41_0, result41_1, result41_2) = match event_value {
+                            V40::StringValue(e) => {
+                                let vec39 = e;
+                                let ptr39 = vec39.as_ptr().cast::<u8>();
+                                let len39 = vec39.len();
 
                                 (
                                     0i32,
                                     {
                                         let mut t = ::core::mem::MaybeUninit::<u64>::uninit();
-                                        t.as_mut_ptr().cast::<*mut u8>().write(ptr36.cast_mut());
+                                        t.as_mut_ptr().cast::<*mut u8>().write(ptr39.cast_mut());
                                         t
                                     },
-                                    len36,
+                                    len39,
                                 )
                             }
-                            EventValue::IntValue(e) => {
+                            V40::IntValue(e) => {
                                 (1i32, ::core::mem::MaybeUninit::new(_rt::as_i64(e) as u64), 0usize)
                             }
-                            EventValue::FloatValue(e) => (
+                            V40::FloatValue(e) => (
                                 2i32,
                                 ::core::mem::MaybeUninit::new(
                                     (_rt::as_f64(e)).to_bits() as i64 as u64
                                 ),
                                 0usize,
                             ),
-                            EventValue::BoolValue(e) => (
+                            V40::BoolValue(e) => (
                                 3i32,
                                 ::core::mem::MaybeUninit::new(i64::from(match e {
                                     true => 1,
@@ -7608,15 +10106,15 @@ pub mod timeline {
                         }
                         let ret = wit_import(
                             (self).handle() as i32,
-                            result35_0,
-                            result35_1,
-                            result35_2,
-                            result35_3,
-                            result35_4,
-                            result35_5,
-                            result37_0,
-                            result37_1,
-                            result37_2,
+                            result38_0,
+                            result38_1,
+                            result38_2,
+                            result38_3,
+                            result38_4,
+                            result38_5,
+                            result41_0,
+                            result41_1,
+                            result41_2,
                         );
                         FutureInitializeEqualResult::from_handle(ret as u32)
                     }
@@ -7633,22 +10131,21 @@ pub mod timeline {
                         #[repr(align(4))]
                         struct RetArea([::core::mem::MaybeUninit<u8>; 12]);
                         let mut ret_area = RetArea([::core::mem::MaybeUninit::uninit(); 12]);
+                        use super::super::super::timeline::timeline_processor_interface::api::TypedTimelineResultWorker as V37;
                         let (
-                            result35_0,
-                            result35_1,
-                            result35_2,
-                            result35_3,
-                            result35_4,
-                            result35_5,
+                            result38_0,
+                            result38_1,
+                            result38_2,
+                            result38_3,
+                            result38_4,
+                            result38_5,
                         ) = match child_worker {
-                            TypedTimelineResultWorker::LeafTimeline(e) => {
-                                let (result9_0, result9_1, result9_2, result9_3, result9_4) =
+                            V37::LeafTimeline(e) => {
+                                use super::super::super::timeline::timeline_processor_interface::api::LeafTimelineNode as V9;
+                                let (result10_0, result10_1, result10_2, result10_3, result10_4) =
                                     match e {
-                                        LeafTimelineNode::TlHasExisted(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id0,
-                                                template_id: template_id0,
-                                            } = e;
+                                        V9::TlHasExisted(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id0, template_id:template_id0, } = e;
                                             let vec1 = worker_id0;
                                             let ptr1 = vec1.as_ptr().cast::<u8>();
                                             let len1 = vec1.len();
@@ -7658,11 +10155,8 @@ pub mod timeline {
 
                                             (0i32, ptr1.cast_mut(), len1, ptr2.cast_mut(), len2)
                                         }
-                                        LeafTimelineNode::TlHasExistedWithin(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id3,
-                                                template_id: template_id3,
-                                            } = e;
+                                        V9::TlHasExistedWithin(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id3, template_id:template_id3, } = e;
                                             let vec4 = worker_id3;
                                             let ptr4 = vec4.as_ptr().cast::<u8>();
                                             let len4 = vec4.len();
@@ -7672,11 +10166,8 @@ pub mod timeline {
 
                                             (1i32, ptr4.cast_mut(), len4, ptr5.cast_mut(), len5)
                                         }
-                                        LeafTimelineNode::TlLatestEventToState(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id6,
-                                                template_id: template_id6,
-                                            } = e;
+                                        V9::TlLatestEventToState(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id6, template_id:template_id6, } = e;
                                             let vec7 = worker_id6;
                                             let ptr7 = vec7.as_ptr().cast::<u8>();
                                             let len7 = vec7.len();
@@ -7688,155 +10179,133 @@ pub mod timeline {
                                         }
                                     };
 
-                                (0i32, result9_0, result9_1, result9_2, result9_3, result9_4)
+                                (0i32, result10_0, result10_1, result10_2, result10_3, result10_4)
                             }
-                            TypedTimelineResultWorker::DerivedTimeline(e) => {
-                                let (result34_0, result34_1, result34_2, result34_3, result34_4) =
+                            V37::DerivedTimeline(e) => {
+                                use super::super::super::timeline::timeline_processor_interface::api::DerivedTimelineNode as V35;
+                                let (result36_0, result36_1, result36_2, result36_3, result36_4) =
                                     match e {
-                                        DerivedTimelineNode::EqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id10,
-                                                template_id: template_id10,
-                                            } = e;
-                                            let vec11 = worker_id10;
-                                            let ptr11 = vec11.as_ptr().cast::<u8>();
-                                            let len11 = vec11.len();
-                                            let vec12 = template_id10;
+                                        V35::EqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id11, template_id:template_id11, } = e;
+                                            let vec12 = worker_id11;
                                             let ptr12 = vec12.as_ptr().cast::<u8>();
                                             let len12 = vec12.len();
+                                            let vec13 = template_id11;
+                                            let ptr13 = vec13.as_ptr().cast::<u8>();
+                                            let len13 = vec13.len();
 
-                                            (0i32, ptr11.cast_mut(), len11, ptr12.cast_mut(), len12)
+                                            (0i32, ptr12.cast_mut(), len12, ptr13.cast_mut(), len13)
                                         }
-                                        DerivedTimelineNode::GreaterThan(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id13,
-                                                template_id: template_id13,
-                                            } = e;
-                                            let vec14 = worker_id13;
-                                            let ptr14 = vec14.as_ptr().cast::<u8>();
-                                            let len14 = vec14.len();
-                                            let vec15 = template_id13;
+                                        V35::GreaterThan(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id14, template_id:template_id14, } = e;
+                                            let vec15 = worker_id14;
                                             let ptr15 = vec15.as_ptr().cast::<u8>();
                                             let len15 = vec15.len();
+                                            let vec16 = template_id14;
+                                            let ptr16 = vec16.as_ptr().cast::<u8>();
+                                            let len16 = vec16.len();
 
-                                            (1i32, ptr14.cast_mut(), len14, ptr15.cast_mut(), len15)
+                                            (1i32, ptr15.cast_mut(), len15, ptr16.cast_mut(), len16)
                                         }
-                                        DerivedTimelineNode::GreaterThanOrEqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id16,
-                                                template_id: template_id16,
-                                            } = e;
-                                            let vec17 = worker_id16;
-                                            let ptr17 = vec17.as_ptr().cast::<u8>();
-                                            let len17 = vec17.len();
-                                            let vec18 = template_id16;
+                                        V35::GreaterThanOrEqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id17, template_id:template_id17, } = e;
+                                            let vec18 = worker_id17;
                                             let ptr18 = vec18.as_ptr().cast::<u8>();
                                             let len18 = vec18.len();
+                                            let vec19 = template_id17;
+                                            let ptr19 = vec19.as_ptr().cast::<u8>();
+                                            let len19 = vec19.len();
 
-                                            (2i32, ptr17.cast_mut(), len17, ptr18.cast_mut(), len18)
+                                            (2i32, ptr18.cast_mut(), len18, ptr19.cast_mut(), len19)
                                         }
-                                        DerivedTimelineNode::LessThan(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id19,
-                                                template_id: template_id19,
-                                            } = e;
-                                            let vec20 = worker_id19;
-                                            let ptr20 = vec20.as_ptr().cast::<u8>();
-                                            let len20 = vec20.len();
-                                            let vec21 = template_id19;
+                                        V35::LessThan(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id20, template_id:template_id20, } = e;
+                                            let vec21 = worker_id20;
                                             let ptr21 = vec21.as_ptr().cast::<u8>();
                                             let len21 = vec21.len();
+                                            let vec22 = template_id20;
+                                            let ptr22 = vec22.as_ptr().cast::<u8>();
+                                            let len22 = vec22.len();
 
-                                            (3i32, ptr20.cast_mut(), len20, ptr21.cast_mut(), len21)
+                                            (3i32, ptr21.cast_mut(), len21, ptr22.cast_mut(), len22)
                                         }
-                                        DerivedTimelineNode::LessThanOrEqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id22,
-                                                template_id: template_id22,
-                                            } = e;
-                                            let vec23 = worker_id22;
-                                            let ptr23 = vec23.as_ptr().cast::<u8>();
-                                            let len23 = vec23.len();
-                                            let vec24 = template_id22;
+                                        V35::LessThanOrEqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id23, template_id:template_id23, } = e;
+                                            let vec24 = worker_id23;
                                             let ptr24 = vec24.as_ptr().cast::<u8>();
                                             let len24 = vec24.len();
+                                            let vec25 = template_id23;
+                                            let ptr25 = vec25.as_ptr().cast::<u8>();
+                                            let len25 = vec25.len();
 
-                                            (4i32, ptr23.cast_mut(), len23, ptr24.cast_mut(), len24)
+                                            (4i32, ptr24.cast_mut(), len24, ptr25.cast_mut(), len25)
                                         }
-                                        DerivedTimelineNode::And(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id25,
-                                                template_id: template_id25,
-                                            } = e;
-                                            let vec26 = worker_id25;
-                                            let ptr26 = vec26.as_ptr().cast::<u8>();
-                                            let len26 = vec26.len();
-                                            let vec27 = template_id25;
+                                        V35::And(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id26, template_id:template_id26, } = e;
+                                            let vec27 = worker_id26;
                                             let ptr27 = vec27.as_ptr().cast::<u8>();
                                             let len27 = vec27.len();
+                                            let vec28 = template_id26;
+                                            let ptr28 = vec28.as_ptr().cast::<u8>();
+                                            let len28 = vec28.len();
 
-                                            (5i32, ptr26.cast_mut(), len26, ptr27.cast_mut(), len27)
+                                            (5i32, ptr27.cast_mut(), len27, ptr28.cast_mut(), len28)
                                         }
-                                        DerivedTimelineNode::Or(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id28,
-                                                template_id: template_id28,
-                                            } = e;
-                                            let vec29 = worker_id28;
-                                            let ptr29 = vec29.as_ptr().cast::<u8>();
-                                            let len29 = vec29.len();
-                                            let vec30 = template_id28;
+                                        V35::Or(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id29, template_id:template_id29, } = e;
+                                            let vec30 = worker_id29;
                                             let ptr30 = vec30.as_ptr().cast::<u8>();
                                             let len30 = vec30.len();
+                                            let vec31 = template_id29;
+                                            let ptr31 = vec31.as_ptr().cast::<u8>();
+                                            let len31 = vec31.len();
 
-                                            (6i32, ptr29.cast_mut(), len29, ptr30.cast_mut(), len30)
+                                            (6i32, ptr30.cast_mut(), len30, ptr31.cast_mut(), len31)
                                         }
-                                        DerivedTimelineNode::Not(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id31,
-                                                template_id: template_id31,
-                                            } = e;
-                                            let vec32 = worker_id31;
-                                            let ptr32 = vec32.as_ptr().cast::<u8>();
-                                            let len32 = vec32.len();
-                                            let vec33 = template_id31;
+                                        V35::Not(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id32, template_id:template_id32, } = e;
+                                            let vec33 = worker_id32;
                                             let ptr33 = vec33.as_ptr().cast::<u8>();
                                             let len33 = vec33.len();
+                                            let vec34 = template_id32;
+                                            let ptr34 = vec34.as_ptr().cast::<u8>();
+                                            let len34 = vec34.len();
 
-                                            (7i32, ptr32.cast_mut(), len32, ptr33.cast_mut(), len33)
+                                            (7i32, ptr33.cast_mut(), len33, ptr34.cast_mut(), len34)
                                         }
                                     };
 
-                                (1i32, result34_0, result34_1, result34_2, result34_3, result34_4)
+                                (1i32, result36_0, result36_1, result36_2, result36_3, result36_4)
                             }
                         };
-                        let (result37_0, result37_1, result37_2) = match event_value {
-                            EventValue::StringValue(e) => {
-                                let vec36 = e;
-                                let ptr36 = vec36.as_ptr().cast::<u8>();
-                                let len36 = vec36.len();
+                        use super::super::super::timeline::event_processor_interface::api::EventValue as V40;
+                        let (result41_0, result41_1, result41_2) = match event_value {
+                            V40::StringValue(e) => {
+                                let vec39 = e;
+                                let ptr39 = vec39.as_ptr().cast::<u8>();
+                                let len39 = vec39.len();
 
                                 (
                                     0i32,
                                     {
                                         let mut t = ::core::mem::MaybeUninit::<u64>::uninit();
-                                        t.as_mut_ptr().cast::<*mut u8>().write(ptr36.cast_mut());
+                                        t.as_mut_ptr().cast::<*mut u8>().write(ptr39.cast_mut());
                                         t
                                     },
-                                    len36,
+                                    len39,
                                 )
                             }
-                            EventValue::IntValue(e) => {
+                            V40::IntValue(e) => {
                                 (1i32, ::core::mem::MaybeUninit::new(_rt::as_i64(e) as u64), 0usize)
                             }
-                            EventValue::FloatValue(e) => (
+                            V40::FloatValue(e) => (
                                 2i32,
                                 ::core::mem::MaybeUninit::new(
                                     (_rt::as_f64(e)).to_bits() as i64 as u64
                                 ),
                                 0usize,
                             ),
-                            EventValue::BoolValue(e) => (
+                            V40::BoolValue(e) => (
                                 3i32,
                                 ::core::mem::MaybeUninit::new(i64::from(match e {
                                     true => 1,
@@ -7846,7 +10315,7 @@ pub mod timeline {
                                 0usize,
                             ),
                         };
-                        let ptr38 = ret_area.0.as_mut_ptr().cast::<u8>();
+                        let ptr42 = ret_area.0.as_mut_ptr().cast::<u8>();
                         #[cfg(target_arch = "wasm32")]
                         #[link(
                             wasm_import_module = "timeline:timeline-processor-stub/stub-timeline-processor"
@@ -7886,40 +10355,40 @@ pub mod timeline {
                         }
                         wit_import(
                             (self).handle() as i32,
-                            result35_0,
-                            result35_1,
-                            result35_2,
-                            result35_3,
-                            result35_4,
-                            result35_5,
-                            result37_0,
-                            result37_1,
-                            result37_2,
-                            ptr38,
+                            result38_0,
+                            result38_1,
+                            result38_2,
+                            result38_3,
+                            result38_4,
+                            result38_5,
+                            result41_0,
+                            result41_1,
+                            result41_2,
+                            ptr42,
                         );
-                        let l39 = i32::from(*ptr38.add(0).cast::<u8>());
-                        match l39 {
+                        let l43 = i32::from(*ptr42.add(0).cast::<u8>());
+                        match l43 {
                             0 => {
                                 let e = {
-                                    let l40 = *ptr38.add(4).cast::<*mut u8>();
-                                    let l41 = *ptr38.add(8).cast::<usize>();
-                                    let len42 = l41;
-                                    let bytes42 =
-                                        _rt::Vec::from_raw_parts(l40.cast(), len42, len42);
+                                    let l44 = *ptr42.add(4).cast::<*mut u8>();
+                                    let l45 = *ptr42.add(8).cast::<usize>();
+                                    let len46 = l45;
+                                    let bytes46 =
+                                        _rt::Vec::from_raw_parts(l44.cast(), len46, len46);
 
-                                    _rt::string_lift(bytes42)
+                                    _rt::string_lift(bytes46)
                                 };
                                 Ok(e)
                             }
                             1 => {
                                 let e = {
-                                    let l43 = *ptr38.add(4).cast::<*mut u8>();
-                                    let l44 = *ptr38.add(8).cast::<usize>();
-                                    let len45 = l44;
-                                    let bytes45 =
-                                        _rt::Vec::from_raw_parts(l43.cast(), len45, len45);
+                                    let l47 = *ptr42.add(4).cast::<*mut u8>();
+                                    let l48 = *ptr42.add(8).cast::<usize>();
+                                    let len49 = l48;
+                                    let bytes49 =
+                                        _rt::Vec::from_raw_parts(l47.cast(), len49, len49);
 
-                                    _rt::string_lift(bytes45)
+                                    _rt::string_lift(bytes49)
                                 };
                                 Err(e)
                             }
@@ -7936,22 +10405,21 @@ pub mod timeline {
                     event_value: &EventValue,
                 ) -> FutureInitializeGreaterThanResult {
                     unsafe {
+                        use super::super::super::timeline::timeline_processor_interface::api::TypedTimelineResultWorker as V37;
                         let (
-                            result35_0,
-                            result35_1,
-                            result35_2,
-                            result35_3,
-                            result35_4,
-                            result35_5,
+                            result38_0,
+                            result38_1,
+                            result38_2,
+                            result38_3,
+                            result38_4,
+                            result38_5,
                         ) = match child_worker {
-                            TypedTimelineResultWorker::LeafTimeline(e) => {
-                                let (result9_0, result9_1, result9_2, result9_3, result9_4) =
+                            V37::LeafTimeline(e) => {
+                                use super::super::super::timeline::timeline_processor_interface::api::LeafTimelineNode as V9;
+                                let (result10_0, result10_1, result10_2, result10_3, result10_4) =
                                     match e {
-                                        LeafTimelineNode::TlHasExisted(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id0,
-                                                template_id: template_id0,
-                                            } = e;
+                                        V9::TlHasExisted(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id0, template_id:template_id0, } = e;
                                             let vec1 = worker_id0;
                                             let ptr1 = vec1.as_ptr().cast::<u8>();
                                             let len1 = vec1.len();
@@ -7961,11 +10429,8 @@ pub mod timeline {
 
                                             (0i32, ptr1.cast_mut(), len1, ptr2.cast_mut(), len2)
                                         }
-                                        LeafTimelineNode::TlHasExistedWithin(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id3,
-                                                template_id: template_id3,
-                                            } = e;
+                                        V9::TlHasExistedWithin(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id3, template_id:template_id3, } = e;
                                             let vec4 = worker_id3;
                                             let ptr4 = vec4.as_ptr().cast::<u8>();
                                             let len4 = vec4.len();
@@ -7975,11 +10440,8 @@ pub mod timeline {
 
                                             (1i32, ptr4.cast_mut(), len4, ptr5.cast_mut(), len5)
                                         }
-                                        LeafTimelineNode::TlLatestEventToState(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id6,
-                                                template_id: template_id6,
-                                            } = e;
+                                        V9::TlLatestEventToState(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id6, template_id:template_id6, } = e;
                                             let vec7 = worker_id6;
                                             let ptr7 = vec7.as_ptr().cast::<u8>();
                                             let len7 = vec7.len();
@@ -7991,155 +10453,133 @@ pub mod timeline {
                                         }
                                     };
 
-                                (0i32, result9_0, result9_1, result9_2, result9_3, result9_4)
+                                (0i32, result10_0, result10_1, result10_2, result10_3, result10_4)
                             }
-                            TypedTimelineResultWorker::DerivedTimeline(e) => {
-                                let (result34_0, result34_1, result34_2, result34_3, result34_4) =
+                            V37::DerivedTimeline(e) => {
+                                use super::super::super::timeline::timeline_processor_interface::api::DerivedTimelineNode as V35;
+                                let (result36_0, result36_1, result36_2, result36_3, result36_4) =
                                     match e {
-                                        DerivedTimelineNode::EqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id10,
-                                                template_id: template_id10,
-                                            } = e;
-                                            let vec11 = worker_id10;
-                                            let ptr11 = vec11.as_ptr().cast::<u8>();
-                                            let len11 = vec11.len();
-                                            let vec12 = template_id10;
+                                        V35::EqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id11, template_id:template_id11, } = e;
+                                            let vec12 = worker_id11;
                                             let ptr12 = vec12.as_ptr().cast::<u8>();
                                             let len12 = vec12.len();
+                                            let vec13 = template_id11;
+                                            let ptr13 = vec13.as_ptr().cast::<u8>();
+                                            let len13 = vec13.len();
 
-                                            (0i32, ptr11.cast_mut(), len11, ptr12.cast_mut(), len12)
+                                            (0i32, ptr12.cast_mut(), len12, ptr13.cast_mut(), len13)
                                         }
-                                        DerivedTimelineNode::GreaterThan(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id13,
-                                                template_id: template_id13,
-                                            } = e;
-                                            let vec14 = worker_id13;
-                                            let ptr14 = vec14.as_ptr().cast::<u8>();
-                                            let len14 = vec14.len();
-                                            let vec15 = template_id13;
+                                        V35::GreaterThan(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id14, template_id:template_id14, } = e;
+                                            let vec15 = worker_id14;
                                             let ptr15 = vec15.as_ptr().cast::<u8>();
                                             let len15 = vec15.len();
+                                            let vec16 = template_id14;
+                                            let ptr16 = vec16.as_ptr().cast::<u8>();
+                                            let len16 = vec16.len();
 
-                                            (1i32, ptr14.cast_mut(), len14, ptr15.cast_mut(), len15)
+                                            (1i32, ptr15.cast_mut(), len15, ptr16.cast_mut(), len16)
                                         }
-                                        DerivedTimelineNode::GreaterThanOrEqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id16,
-                                                template_id: template_id16,
-                                            } = e;
-                                            let vec17 = worker_id16;
-                                            let ptr17 = vec17.as_ptr().cast::<u8>();
-                                            let len17 = vec17.len();
-                                            let vec18 = template_id16;
+                                        V35::GreaterThanOrEqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id17, template_id:template_id17, } = e;
+                                            let vec18 = worker_id17;
                                             let ptr18 = vec18.as_ptr().cast::<u8>();
                                             let len18 = vec18.len();
+                                            let vec19 = template_id17;
+                                            let ptr19 = vec19.as_ptr().cast::<u8>();
+                                            let len19 = vec19.len();
 
-                                            (2i32, ptr17.cast_mut(), len17, ptr18.cast_mut(), len18)
+                                            (2i32, ptr18.cast_mut(), len18, ptr19.cast_mut(), len19)
                                         }
-                                        DerivedTimelineNode::LessThan(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id19,
-                                                template_id: template_id19,
-                                            } = e;
-                                            let vec20 = worker_id19;
-                                            let ptr20 = vec20.as_ptr().cast::<u8>();
-                                            let len20 = vec20.len();
-                                            let vec21 = template_id19;
+                                        V35::LessThan(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id20, template_id:template_id20, } = e;
+                                            let vec21 = worker_id20;
                                             let ptr21 = vec21.as_ptr().cast::<u8>();
                                             let len21 = vec21.len();
+                                            let vec22 = template_id20;
+                                            let ptr22 = vec22.as_ptr().cast::<u8>();
+                                            let len22 = vec22.len();
 
-                                            (3i32, ptr20.cast_mut(), len20, ptr21.cast_mut(), len21)
+                                            (3i32, ptr21.cast_mut(), len21, ptr22.cast_mut(), len22)
                                         }
-                                        DerivedTimelineNode::LessThanOrEqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id22,
-                                                template_id: template_id22,
-                                            } = e;
-                                            let vec23 = worker_id22;
-                                            let ptr23 = vec23.as_ptr().cast::<u8>();
-                                            let len23 = vec23.len();
-                                            let vec24 = template_id22;
+                                        V35::LessThanOrEqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id23, template_id:template_id23, } = e;
+                                            let vec24 = worker_id23;
                                             let ptr24 = vec24.as_ptr().cast::<u8>();
                                             let len24 = vec24.len();
+                                            let vec25 = template_id23;
+                                            let ptr25 = vec25.as_ptr().cast::<u8>();
+                                            let len25 = vec25.len();
 
-                                            (4i32, ptr23.cast_mut(), len23, ptr24.cast_mut(), len24)
+                                            (4i32, ptr24.cast_mut(), len24, ptr25.cast_mut(), len25)
                                         }
-                                        DerivedTimelineNode::And(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id25,
-                                                template_id: template_id25,
-                                            } = e;
-                                            let vec26 = worker_id25;
-                                            let ptr26 = vec26.as_ptr().cast::<u8>();
-                                            let len26 = vec26.len();
-                                            let vec27 = template_id25;
+                                        V35::And(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id26, template_id:template_id26, } = e;
+                                            let vec27 = worker_id26;
                                             let ptr27 = vec27.as_ptr().cast::<u8>();
                                             let len27 = vec27.len();
+                                            let vec28 = template_id26;
+                                            let ptr28 = vec28.as_ptr().cast::<u8>();
+                                            let len28 = vec28.len();
 
-                                            (5i32, ptr26.cast_mut(), len26, ptr27.cast_mut(), len27)
+                                            (5i32, ptr27.cast_mut(), len27, ptr28.cast_mut(), len28)
                                         }
-                                        DerivedTimelineNode::Or(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id28,
-                                                template_id: template_id28,
-                                            } = e;
-                                            let vec29 = worker_id28;
-                                            let ptr29 = vec29.as_ptr().cast::<u8>();
-                                            let len29 = vec29.len();
-                                            let vec30 = template_id28;
+                                        V35::Or(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id29, template_id:template_id29, } = e;
+                                            let vec30 = worker_id29;
                                             let ptr30 = vec30.as_ptr().cast::<u8>();
                                             let len30 = vec30.len();
+                                            let vec31 = template_id29;
+                                            let ptr31 = vec31.as_ptr().cast::<u8>();
+                                            let len31 = vec31.len();
 
-                                            (6i32, ptr29.cast_mut(), len29, ptr30.cast_mut(), len30)
+                                            (6i32, ptr30.cast_mut(), len30, ptr31.cast_mut(), len31)
                                         }
-                                        DerivedTimelineNode::Not(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id31,
-                                                template_id: template_id31,
-                                            } = e;
-                                            let vec32 = worker_id31;
-                                            let ptr32 = vec32.as_ptr().cast::<u8>();
-                                            let len32 = vec32.len();
-                                            let vec33 = template_id31;
+                                        V35::Not(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id32, template_id:template_id32, } = e;
+                                            let vec33 = worker_id32;
                                             let ptr33 = vec33.as_ptr().cast::<u8>();
                                             let len33 = vec33.len();
+                                            let vec34 = template_id32;
+                                            let ptr34 = vec34.as_ptr().cast::<u8>();
+                                            let len34 = vec34.len();
 
-                                            (7i32, ptr32.cast_mut(), len32, ptr33.cast_mut(), len33)
+                                            (7i32, ptr33.cast_mut(), len33, ptr34.cast_mut(), len34)
                                         }
                                     };
 
-                                (1i32, result34_0, result34_1, result34_2, result34_3, result34_4)
+                                (1i32, result36_0, result36_1, result36_2, result36_3, result36_4)
                             }
                         };
-                        let (result37_0, result37_1, result37_2) = match event_value {
-                            EventValue::StringValue(e) => {
-                                let vec36 = e;
-                                let ptr36 = vec36.as_ptr().cast::<u8>();
-                                let len36 = vec36.len();
+                        use super::super::super::timeline::event_processor_interface::api::EventValue as V40;
+                        let (result41_0, result41_1, result41_2) = match event_value {
+                            V40::StringValue(e) => {
+                                let vec39 = e;
+                                let ptr39 = vec39.as_ptr().cast::<u8>();
+                                let len39 = vec39.len();
 
                                 (
                                     0i32,
                                     {
                                         let mut t = ::core::mem::MaybeUninit::<u64>::uninit();
-                                        t.as_mut_ptr().cast::<*mut u8>().write(ptr36.cast_mut());
+                                        t.as_mut_ptr().cast::<*mut u8>().write(ptr39.cast_mut());
                                         t
                                     },
-                                    len36,
+                                    len39,
                                 )
                             }
-                            EventValue::IntValue(e) => {
+                            V40::IntValue(e) => {
                                 (1i32, ::core::mem::MaybeUninit::new(_rt::as_i64(e) as u64), 0usize)
                             }
-                            EventValue::FloatValue(e) => (
+                            V40::FloatValue(e) => (
                                 2i32,
                                 ::core::mem::MaybeUninit::new(
                                     (_rt::as_f64(e)).to_bits() as i64 as u64
                                 ),
                                 0usize,
                             ),
-                            EventValue::BoolValue(e) => (
+                            V40::BoolValue(e) => (
                                 3i32,
                                 ::core::mem::MaybeUninit::new(i64::from(match e {
                                     true => 1,
@@ -8187,15 +10627,15 @@ pub mod timeline {
                         }
                         let ret = wit_import(
                             (self).handle() as i32,
-                            result35_0,
-                            result35_1,
-                            result35_2,
-                            result35_3,
-                            result35_4,
-                            result35_5,
-                            result37_0,
-                            result37_1,
-                            result37_2,
+                            result38_0,
+                            result38_1,
+                            result38_2,
+                            result38_3,
+                            result38_4,
+                            result38_5,
+                            result41_0,
+                            result41_1,
+                            result41_2,
                         );
                         FutureInitializeGreaterThanResult::from_handle(ret as u32)
                     }
@@ -8212,22 +10652,21 @@ pub mod timeline {
                         #[repr(align(4))]
                         struct RetArea([::core::mem::MaybeUninit<u8>; 12]);
                         let mut ret_area = RetArea([::core::mem::MaybeUninit::uninit(); 12]);
+                        use super::super::super::timeline::timeline_processor_interface::api::TypedTimelineResultWorker as V37;
                         let (
-                            result35_0,
-                            result35_1,
-                            result35_2,
-                            result35_3,
-                            result35_4,
-                            result35_5,
+                            result38_0,
+                            result38_1,
+                            result38_2,
+                            result38_3,
+                            result38_4,
+                            result38_5,
                         ) = match child_worker {
-                            TypedTimelineResultWorker::LeafTimeline(e) => {
-                                let (result9_0, result9_1, result9_2, result9_3, result9_4) =
+                            V37::LeafTimeline(e) => {
+                                use super::super::super::timeline::timeline_processor_interface::api::LeafTimelineNode as V9;
+                                let (result10_0, result10_1, result10_2, result10_3, result10_4) =
                                     match e {
-                                        LeafTimelineNode::TlHasExisted(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id0,
-                                                template_id: template_id0,
-                                            } = e;
+                                        V9::TlHasExisted(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id0, template_id:template_id0, } = e;
                                             let vec1 = worker_id0;
                                             let ptr1 = vec1.as_ptr().cast::<u8>();
                                             let len1 = vec1.len();
@@ -8237,11 +10676,8 @@ pub mod timeline {
 
                                             (0i32, ptr1.cast_mut(), len1, ptr2.cast_mut(), len2)
                                         }
-                                        LeafTimelineNode::TlHasExistedWithin(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id3,
-                                                template_id: template_id3,
-                                            } = e;
+                                        V9::TlHasExistedWithin(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id3, template_id:template_id3, } = e;
                                             let vec4 = worker_id3;
                                             let ptr4 = vec4.as_ptr().cast::<u8>();
                                             let len4 = vec4.len();
@@ -8251,11 +10687,8 @@ pub mod timeline {
 
                                             (1i32, ptr4.cast_mut(), len4, ptr5.cast_mut(), len5)
                                         }
-                                        LeafTimelineNode::TlLatestEventToState(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id6,
-                                                template_id: template_id6,
-                                            } = e;
+                                        V9::TlLatestEventToState(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id6, template_id:template_id6, } = e;
                                             let vec7 = worker_id6;
                                             let ptr7 = vec7.as_ptr().cast::<u8>();
                                             let len7 = vec7.len();
@@ -8267,155 +10700,133 @@ pub mod timeline {
                                         }
                                     };
 
-                                (0i32, result9_0, result9_1, result9_2, result9_3, result9_4)
+                                (0i32, result10_0, result10_1, result10_2, result10_3, result10_4)
                             }
-                            TypedTimelineResultWorker::DerivedTimeline(e) => {
-                                let (result34_0, result34_1, result34_2, result34_3, result34_4) =
+                            V37::DerivedTimeline(e) => {
+                                use super::super::super::timeline::timeline_processor_interface::api::DerivedTimelineNode as V35;
+                                let (result36_0, result36_1, result36_2, result36_3, result36_4) =
                                     match e {
-                                        DerivedTimelineNode::EqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id10,
-                                                template_id: template_id10,
-                                            } = e;
-                                            let vec11 = worker_id10;
-                                            let ptr11 = vec11.as_ptr().cast::<u8>();
-                                            let len11 = vec11.len();
-                                            let vec12 = template_id10;
+                                        V35::EqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id11, template_id:template_id11, } = e;
+                                            let vec12 = worker_id11;
                                             let ptr12 = vec12.as_ptr().cast::<u8>();
                                             let len12 = vec12.len();
+                                            let vec13 = template_id11;
+                                            let ptr13 = vec13.as_ptr().cast::<u8>();
+                                            let len13 = vec13.len();
 
-                                            (0i32, ptr11.cast_mut(), len11, ptr12.cast_mut(), len12)
+                                            (0i32, ptr12.cast_mut(), len12, ptr13.cast_mut(), len13)
                                         }
-                                        DerivedTimelineNode::GreaterThan(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id13,
-                                                template_id: template_id13,
-                                            } = e;
-                                            let vec14 = worker_id13;
-                                            let ptr14 = vec14.as_ptr().cast::<u8>();
-                                            let len14 = vec14.len();
-                                            let vec15 = template_id13;
+                                        V35::GreaterThan(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id14, template_id:template_id14, } = e;
+                                            let vec15 = worker_id14;
                                             let ptr15 = vec15.as_ptr().cast::<u8>();
                                             let len15 = vec15.len();
+                                            let vec16 = template_id14;
+                                            let ptr16 = vec16.as_ptr().cast::<u8>();
+                                            let len16 = vec16.len();
 
-                                            (1i32, ptr14.cast_mut(), len14, ptr15.cast_mut(), len15)
+                                            (1i32, ptr15.cast_mut(), len15, ptr16.cast_mut(), len16)
                                         }
-                                        DerivedTimelineNode::GreaterThanOrEqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id16,
-                                                template_id: template_id16,
-                                            } = e;
-                                            let vec17 = worker_id16;
-                                            let ptr17 = vec17.as_ptr().cast::<u8>();
-                                            let len17 = vec17.len();
-                                            let vec18 = template_id16;
+                                        V35::GreaterThanOrEqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id17, template_id:template_id17, } = e;
+                                            let vec18 = worker_id17;
                                             let ptr18 = vec18.as_ptr().cast::<u8>();
                                             let len18 = vec18.len();
+                                            let vec19 = template_id17;
+                                            let ptr19 = vec19.as_ptr().cast::<u8>();
+                                            let len19 = vec19.len();
 
-                                            (2i32, ptr17.cast_mut(), len17, ptr18.cast_mut(), len18)
+                                            (2i32, ptr18.cast_mut(), len18, ptr19.cast_mut(), len19)
                                         }
-                                        DerivedTimelineNode::LessThan(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id19,
-                                                template_id: template_id19,
-                                            } = e;
-                                            let vec20 = worker_id19;
-                                            let ptr20 = vec20.as_ptr().cast::<u8>();
-                                            let len20 = vec20.len();
-                                            let vec21 = template_id19;
+                                        V35::LessThan(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id20, template_id:template_id20, } = e;
+                                            let vec21 = worker_id20;
                                             let ptr21 = vec21.as_ptr().cast::<u8>();
                                             let len21 = vec21.len();
+                                            let vec22 = template_id20;
+                                            let ptr22 = vec22.as_ptr().cast::<u8>();
+                                            let len22 = vec22.len();
 
-                                            (3i32, ptr20.cast_mut(), len20, ptr21.cast_mut(), len21)
+                                            (3i32, ptr21.cast_mut(), len21, ptr22.cast_mut(), len22)
                                         }
-                                        DerivedTimelineNode::LessThanOrEqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id22,
-                                                template_id: template_id22,
-                                            } = e;
-                                            let vec23 = worker_id22;
-                                            let ptr23 = vec23.as_ptr().cast::<u8>();
-                                            let len23 = vec23.len();
-                                            let vec24 = template_id22;
+                                        V35::LessThanOrEqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id23, template_id:template_id23, } = e;
+                                            let vec24 = worker_id23;
                                             let ptr24 = vec24.as_ptr().cast::<u8>();
                                             let len24 = vec24.len();
+                                            let vec25 = template_id23;
+                                            let ptr25 = vec25.as_ptr().cast::<u8>();
+                                            let len25 = vec25.len();
 
-                                            (4i32, ptr23.cast_mut(), len23, ptr24.cast_mut(), len24)
+                                            (4i32, ptr24.cast_mut(), len24, ptr25.cast_mut(), len25)
                                         }
-                                        DerivedTimelineNode::And(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id25,
-                                                template_id: template_id25,
-                                            } = e;
-                                            let vec26 = worker_id25;
-                                            let ptr26 = vec26.as_ptr().cast::<u8>();
-                                            let len26 = vec26.len();
-                                            let vec27 = template_id25;
+                                        V35::And(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id26, template_id:template_id26, } = e;
+                                            let vec27 = worker_id26;
                                             let ptr27 = vec27.as_ptr().cast::<u8>();
                                             let len27 = vec27.len();
+                                            let vec28 = template_id26;
+                                            let ptr28 = vec28.as_ptr().cast::<u8>();
+                                            let len28 = vec28.len();
 
-                                            (5i32, ptr26.cast_mut(), len26, ptr27.cast_mut(), len27)
+                                            (5i32, ptr27.cast_mut(), len27, ptr28.cast_mut(), len28)
                                         }
-                                        DerivedTimelineNode::Or(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id28,
-                                                template_id: template_id28,
-                                            } = e;
-                                            let vec29 = worker_id28;
-                                            let ptr29 = vec29.as_ptr().cast::<u8>();
-                                            let len29 = vec29.len();
-                                            let vec30 = template_id28;
+                                        V35::Or(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id29, template_id:template_id29, } = e;
+                                            let vec30 = worker_id29;
                                             let ptr30 = vec30.as_ptr().cast::<u8>();
                                             let len30 = vec30.len();
+                                            let vec31 = template_id29;
+                                            let ptr31 = vec31.as_ptr().cast::<u8>();
+                                            let len31 = vec31.len();
 
-                                            (6i32, ptr29.cast_mut(), len29, ptr30.cast_mut(), len30)
+                                            (6i32, ptr30.cast_mut(), len30, ptr31.cast_mut(), len31)
                                         }
-                                        DerivedTimelineNode::Not(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id31,
-                                                template_id: template_id31,
-                                            } = e;
-                                            let vec32 = worker_id31;
-                                            let ptr32 = vec32.as_ptr().cast::<u8>();
-                                            let len32 = vec32.len();
-                                            let vec33 = template_id31;
+                                        V35::Not(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id32, template_id:template_id32, } = e;
+                                            let vec33 = worker_id32;
                                             let ptr33 = vec33.as_ptr().cast::<u8>();
                                             let len33 = vec33.len();
+                                            let vec34 = template_id32;
+                                            let ptr34 = vec34.as_ptr().cast::<u8>();
+                                            let len34 = vec34.len();
 
-                                            (7i32, ptr32.cast_mut(), len32, ptr33.cast_mut(), len33)
+                                            (7i32, ptr33.cast_mut(), len33, ptr34.cast_mut(), len34)
                                         }
                                     };
 
-                                (1i32, result34_0, result34_1, result34_2, result34_3, result34_4)
+                                (1i32, result36_0, result36_1, result36_2, result36_3, result36_4)
                             }
                         };
-                        let (result37_0, result37_1, result37_2) = match event_value {
-                            EventValue::StringValue(e) => {
-                                let vec36 = e;
-                                let ptr36 = vec36.as_ptr().cast::<u8>();
-                                let len36 = vec36.len();
+                        use super::super::super::timeline::event_processor_interface::api::EventValue as V40;
+                        let (result41_0, result41_1, result41_2) = match event_value {
+                            V40::StringValue(e) => {
+                                let vec39 = e;
+                                let ptr39 = vec39.as_ptr().cast::<u8>();
+                                let len39 = vec39.len();
 
                                 (
                                     0i32,
                                     {
                                         let mut t = ::core::mem::MaybeUninit::<u64>::uninit();
-                                        t.as_mut_ptr().cast::<*mut u8>().write(ptr36.cast_mut());
+                                        t.as_mut_ptr().cast::<*mut u8>().write(ptr39.cast_mut());
                                         t
                                     },
-                                    len36,
+                                    len39,
                                 )
                             }
-                            EventValue::IntValue(e) => {
+                            V40::IntValue(e) => {
                                 (1i32, ::core::mem::MaybeUninit::new(_rt::as_i64(e) as u64), 0usize)
                             }
-                            EventValue::FloatValue(e) => (
+                            V40::FloatValue(e) => (
                                 2i32,
                                 ::core::mem::MaybeUninit::new(
                                     (_rt::as_f64(e)).to_bits() as i64 as u64
                                 ),
                                 0usize,
                             ),
-                            EventValue::BoolValue(e) => (
+                            V40::BoolValue(e) => (
                                 3i32,
                                 ::core::mem::MaybeUninit::new(i64::from(match e {
                                     true => 1,
@@ -8425,7 +10836,7 @@ pub mod timeline {
                                 0usize,
                             ),
                         };
-                        let ptr38 = ret_area.0.as_mut_ptr().cast::<u8>();
+                        let ptr42 = ret_area.0.as_mut_ptr().cast::<u8>();
                         #[cfg(target_arch = "wasm32")]
                         #[link(
                             wasm_import_module = "timeline:timeline-processor-stub/stub-timeline-processor"
@@ -8465,40 +10876,40 @@ pub mod timeline {
                         }
                         wit_import(
                             (self).handle() as i32,
-                            result35_0,
-                            result35_1,
-                            result35_2,
-                            result35_3,
-                            result35_4,
-                            result35_5,
-                            result37_0,
-                            result37_1,
-                            result37_2,
-                            ptr38,
+                            result38_0,
+                            result38_1,
+                            result38_2,
+                            result38_3,
+                            result38_4,
+                            result38_5,
+                            result41_0,
+                            result41_1,
+                            result41_2,
+                            ptr42,
                         );
-                        let l39 = i32::from(*ptr38.add(0).cast::<u8>());
-                        match l39 {
+                        let l43 = i32::from(*ptr42.add(0).cast::<u8>());
+                        match l43 {
                             0 => {
                                 let e = {
-                                    let l40 = *ptr38.add(4).cast::<*mut u8>();
-                                    let l41 = *ptr38.add(8).cast::<usize>();
-                                    let len42 = l41;
-                                    let bytes42 =
-                                        _rt::Vec::from_raw_parts(l40.cast(), len42, len42);
+                                    let l44 = *ptr42.add(4).cast::<*mut u8>();
+                                    let l45 = *ptr42.add(8).cast::<usize>();
+                                    let len46 = l45;
+                                    let bytes46 =
+                                        _rt::Vec::from_raw_parts(l44.cast(), len46, len46);
 
-                                    _rt::string_lift(bytes42)
+                                    _rt::string_lift(bytes46)
                                 };
                                 Ok(e)
                             }
                             1 => {
                                 let e = {
-                                    let l43 = *ptr38.add(4).cast::<*mut u8>();
-                                    let l44 = *ptr38.add(8).cast::<usize>();
-                                    let len45 = l44;
-                                    let bytes45 =
-                                        _rt::Vec::from_raw_parts(l43.cast(), len45, len45);
+                                    let l47 = *ptr42.add(4).cast::<*mut u8>();
+                                    let l48 = *ptr42.add(8).cast::<usize>();
+                                    let len49 = l48;
+                                    let bytes49 =
+                                        _rt::Vec::from_raw_parts(l47.cast(), len49, len49);
 
-                                    _rt::string_lift(bytes45)
+                                    _rt::string_lift(bytes49)
                                 };
                                 Err(e)
                             }
@@ -8515,22 +10926,21 @@ pub mod timeline {
                     event_value: &EventValue,
                 ) -> FutureInitializeGreaterThanOrEqualToResult {
                     unsafe {
+                        use super::super::super::timeline::timeline_processor_interface::api::TypedTimelineResultWorker as V37;
                         let (
-                            result35_0,
-                            result35_1,
-                            result35_2,
-                            result35_3,
-                            result35_4,
-                            result35_5,
+                            result38_0,
+                            result38_1,
+                            result38_2,
+                            result38_3,
+                            result38_4,
+                            result38_5,
                         ) = match child_worker {
-                            TypedTimelineResultWorker::LeafTimeline(e) => {
-                                let (result9_0, result9_1, result9_2, result9_3, result9_4) =
+                            V37::LeafTimeline(e) => {
+                                use super::super::super::timeline::timeline_processor_interface::api::LeafTimelineNode as V9;
+                                let (result10_0, result10_1, result10_2, result10_3, result10_4) =
                                     match e {
-                                        LeafTimelineNode::TlHasExisted(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id0,
-                                                template_id: template_id0,
-                                            } = e;
+                                        V9::TlHasExisted(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id0, template_id:template_id0, } = e;
                                             let vec1 = worker_id0;
                                             let ptr1 = vec1.as_ptr().cast::<u8>();
                                             let len1 = vec1.len();
@@ -8540,11 +10950,8 @@ pub mod timeline {
 
                                             (0i32, ptr1.cast_mut(), len1, ptr2.cast_mut(), len2)
                                         }
-                                        LeafTimelineNode::TlHasExistedWithin(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id3,
-                                                template_id: template_id3,
-                                            } = e;
+                                        V9::TlHasExistedWithin(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id3, template_id:template_id3, } = e;
                                             let vec4 = worker_id3;
                                             let ptr4 = vec4.as_ptr().cast::<u8>();
                                             let len4 = vec4.len();
@@ -8554,11 +10961,8 @@ pub mod timeline {
 
                                             (1i32, ptr4.cast_mut(), len4, ptr5.cast_mut(), len5)
                                         }
-                                        LeafTimelineNode::TlLatestEventToState(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id6,
-                                                template_id: template_id6,
-                                            } = e;
+                                        V9::TlLatestEventToState(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id6, template_id:template_id6, } = e;
                                             let vec7 = worker_id6;
                                             let ptr7 = vec7.as_ptr().cast::<u8>();
                                             let len7 = vec7.len();
@@ -8570,155 +10974,133 @@ pub mod timeline {
                                         }
                                     };
 
-                                (0i32, result9_0, result9_1, result9_2, result9_3, result9_4)
+                                (0i32, result10_0, result10_1, result10_2, result10_3, result10_4)
                             }
-                            TypedTimelineResultWorker::DerivedTimeline(e) => {
-                                let (result34_0, result34_1, result34_2, result34_3, result34_4) =
+                            V37::DerivedTimeline(e) => {
+                                use super::super::super::timeline::timeline_processor_interface::api::DerivedTimelineNode as V35;
+                                let (result36_0, result36_1, result36_2, result36_3, result36_4) =
                                     match e {
-                                        DerivedTimelineNode::EqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id10,
-                                                template_id: template_id10,
-                                            } = e;
-                                            let vec11 = worker_id10;
-                                            let ptr11 = vec11.as_ptr().cast::<u8>();
-                                            let len11 = vec11.len();
-                                            let vec12 = template_id10;
+                                        V35::EqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id11, template_id:template_id11, } = e;
+                                            let vec12 = worker_id11;
                                             let ptr12 = vec12.as_ptr().cast::<u8>();
                                             let len12 = vec12.len();
+                                            let vec13 = template_id11;
+                                            let ptr13 = vec13.as_ptr().cast::<u8>();
+                                            let len13 = vec13.len();
 
-                                            (0i32, ptr11.cast_mut(), len11, ptr12.cast_mut(), len12)
+                                            (0i32, ptr12.cast_mut(), len12, ptr13.cast_mut(), len13)
                                         }
-                                        DerivedTimelineNode::GreaterThan(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id13,
-                                                template_id: template_id13,
-                                            } = e;
-                                            let vec14 = worker_id13;
-                                            let ptr14 = vec14.as_ptr().cast::<u8>();
-                                            let len14 = vec14.len();
-                                            let vec15 = template_id13;
+                                        V35::GreaterThan(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id14, template_id:template_id14, } = e;
+                                            let vec15 = worker_id14;
                                             let ptr15 = vec15.as_ptr().cast::<u8>();
                                             let len15 = vec15.len();
+                                            let vec16 = template_id14;
+                                            let ptr16 = vec16.as_ptr().cast::<u8>();
+                                            let len16 = vec16.len();
 
-                                            (1i32, ptr14.cast_mut(), len14, ptr15.cast_mut(), len15)
+                                            (1i32, ptr15.cast_mut(), len15, ptr16.cast_mut(), len16)
                                         }
-                                        DerivedTimelineNode::GreaterThanOrEqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id16,
-                                                template_id: template_id16,
-                                            } = e;
-                                            let vec17 = worker_id16;
-                                            let ptr17 = vec17.as_ptr().cast::<u8>();
-                                            let len17 = vec17.len();
-                                            let vec18 = template_id16;
+                                        V35::GreaterThanOrEqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id17, template_id:template_id17, } = e;
+                                            let vec18 = worker_id17;
                                             let ptr18 = vec18.as_ptr().cast::<u8>();
                                             let len18 = vec18.len();
+                                            let vec19 = template_id17;
+                                            let ptr19 = vec19.as_ptr().cast::<u8>();
+                                            let len19 = vec19.len();
 
-                                            (2i32, ptr17.cast_mut(), len17, ptr18.cast_mut(), len18)
+                                            (2i32, ptr18.cast_mut(), len18, ptr19.cast_mut(), len19)
                                         }
-                                        DerivedTimelineNode::LessThan(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id19,
-                                                template_id: template_id19,
-                                            } = e;
-                                            let vec20 = worker_id19;
-                                            let ptr20 = vec20.as_ptr().cast::<u8>();
-                                            let len20 = vec20.len();
-                                            let vec21 = template_id19;
+                                        V35::LessThan(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id20, template_id:template_id20, } = e;
+                                            let vec21 = worker_id20;
                                             let ptr21 = vec21.as_ptr().cast::<u8>();
                                             let len21 = vec21.len();
+                                            let vec22 = template_id20;
+                                            let ptr22 = vec22.as_ptr().cast::<u8>();
+                                            let len22 = vec22.len();
 
-                                            (3i32, ptr20.cast_mut(), len20, ptr21.cast_mut(), len21)
+                                            (3i32, ptr21.cast_mut(), len21, ptr22.cast_mut(), len22)
                                         }
-                                        DerivedTimelineNode::LessThanOrEqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id22,
-                                                template_id: template_id22,
-                                            } = e;
-                                            let vec23 = worker_id22;
-                                            let ptr23 = vec23.as_ptr().cast::<u8>();
-                                            let len23 = vec23.len();
-                                            let vec24 = template_id22;
+                                        V35::LessThanOrEqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id23, template_id:template_id23, } = e;
+                                            let vec24 = worker_id23;
                                             let ptr24 = vec24.as_ptr().cast::<u8>();
                                             let len24 = vec24.len();
+                                            let vec25 = template_id23;
+                                            let ptr25 = vec25.as_ptr().cast::<u8>();
+                                            let len25 = vec25.len();
 
-                                            (4i32, ptr23.cast_mut(), len23, ptr24.cast_mut(), len24)
+                                            (4i32, ptr24.cast_mut(), len24, ptr25.cast_mut(), len25)
                                         }
-                                        DerivedTimelineNode::And(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id25,
-                                                template_id: template_id25,
-                                            } = e;
-                                            let vec26 = worker_id25;
-                                            let ptr26 = vec26.as_ptr().cast::<u8>();
-                                            let len26 = vec26.len();
-                                            let vec27 = template_id25;
+                                        V35::And(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id26, template_id:template_id26, } = e;
+                                            let vec27 = worker_id26;
                                             let ptr27 = vec27.as_ptr().cast::<u8>();
                                             let len27 = vec27.len();
+                                            let vec28 = template_id26;
+                                            let ptr28 = vec28.as_ptr().cast::<u8>();
+                                            let len28 = vec28.len();
 
-                                            (5i32, ptr26.cast_mut(), len26, ptr27.cast_mut(), len27)
+                                            (5i32, ptr27.cast_mut(), len27, ptr28.cast_mut(), len28)
                                         }
-                                        DerivedTimelineNode::Or(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id28,
-                                                template_id: template_id28,
-                                            } = e;
-                                            let vec29 = worker_id28;
-                                            let ptr29 = vec29.as_ptr().cast::<u8>();
-                                            let len29 = vec29.len();
-                                            let vec30 = template_id28;
+                                        V35::Or(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id29, template_id:template_id29, } = e;
+                                            let vec30 = worker_id29;
                                             let ptr30 = vec30.as_ptr().cast::<u8>();
                                             let len30 = vec30.len();
+                                            let vec31 = template_id29;
+                                            let ptr31 = vec31.as_ptr().cast::<u8>();
+                                            let len31 = vec31.len();
 
-                                            (6i32, ptr29.cast_mut(), len29, ptr30.cast_mut(), len30)
+                                            (6i32, ptr30.cast_mut(), len30, ptr31.cast_mut(), len31)
                                         }
-                                        DerivedTimelineNode::Not(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id31,
-                                                template_id: template_id31,
-                                            } = e;
-                                            let vec32 = worker_id31;
-                                            let ptr32 = vec32.as_ptr().cast::<u8>();
-                                            let len32 = vec32.len();
-                                            let vec33 = template_id31;
+                                        V35::Not(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id32, template_id:template_id32, } = e;
+                                            let vec33 = worker_id32;
                                             let ptr33 = vec33.as_ptr().cast::<u8>();
                                             let len33 = vec33.len();
+                                            let vec34 = template_id32;
+                                            let ptr34 = vec34.as_ptr().cast::<u8>();
+                                            let len34 = vec34.len();
 
-                                            (7i32, ptr32.cast_mut(), len32, ptr33.cast_mut(), len33)
+                                            (7i32, ptr33.cast_mut(), len33, ptr34.cast_mut(), len34)
                                         }
                                     };
 
-                                (1i32, result34_0, result34_1, result34_2, result34_3, result34_4)
+                                (1i32, result36_0, result36_1, result36_2, result36_3, result36_4)
                             }
                         };
-                        let (result37_0, result37_1, result37_2) = match event_value {
-                            EventValue::StringValue(e) => {
-                                let vec36 = e;
-                                let ptr36 = vec36.as_ptr().cast::<u8>();
-                                let len36 = vec36.len();
+                        use super::super::super::timeline::event_processor_interface::api::EventValue as V40;
+                        let (result41_0, result41_1, result41_2) = match event_value {
+                            V40::StringValue(e) => {
+                                let vec39 = e;
+                                let ptr39 = vec39.as_ptr().cast::<u8>();
+                                let len39 = vec39.len();
 
                                 (
                                     0i32,
                                     {
                                         let mut t = ::core::mem::MaybeUninit::<u64>::uninit();
-                                        t.as_mut_ptr().cast::<*mut u8>().write(ptr36.cast_mut());
+                                        t.as_mut_ptr().cast::<*mut u8>().write(ptr39.cast_mut());
                                         t
                                     },
-                                    len36,
+                                    len39,
                                 )
                             }
-                            EventValue::IntValue(e) => {
+                            V40::IntValue(e) => {
                                 (1i32, ::core::mem::MaybeUninit::new(_rt::as_i64(e) as u64), 0usize)
                             }
-                            EventValue::FloatValue(e) => (
+                            V40::FloatValue(e) => (
                                 2i32,
                                 ::core::mem::MaybeUninit::new(
                                     (_rt::as_f64(e)).to_bits() as i64 as u64
                                 ),
                                 0usize,
                             ),
-                            EventValue::BoolValue(e) => (
+                            V40::BoolValue(e) => (
                                 3i32,
                                 ::core::mem::MaybeUninit::new(i64::from(match e {
                                     true => 1,
@@ -8766,15 +11148,15 @@ pub mod timeline {
                         }
                         let ret = wit_import(
                             (self).handle() as i32,
-                            result35_0,
-                            result35_1,
-                            result35_2,
-                            result35_3,
-                            result35_4,
-                            result35_5,
-                            result37_0,
-                            result37_1,
-                            result37_2,
+                            result38_0,
+                            result38_1,
+                            result38_2,
+                            result38_3,
+                            result38_4,
+                            result38_5,
+                            result41_0,
+                            result41_1,
+                            result41_2,
                         );
                         FutureInitializeGreaterThanOrEqualToResult::from_handle(ret as u32)
                     }
@@ -8791,22 +11173,21 @@ pub mod timeline {
                         #[repr(align(4))]
                         struct RetArea([::core::mem::MaybeUninit<u8>; 12]);
                         let mut ret_area = RetArea([::core::mem::MaybeUninit::uninit(); 12]);
+                        use super::super::super::timeline::timeline_processor_interface::api::TypedTimelineResultWorker as V37;
                         let (
-                            result35_0,
-                            result35_1,
-                            result35_2,
-                            result35_3,
-                            result35_4,
-                            result35_5,
+                            result38_0,
+                            result38_1,
+                            result38_2,
+                            result38_3,
+                            result38_4,
+                            result38_5,
                         ) = match child_worker {
-                            TypedTimelineResultWorker::LeafTimeline(e) => {
-                                let (result9_0, result9_1, result9_2, result9_3, result9_4) =
+                            V37::LeafTimeline(e) => {
+                                use super::super::super::timeline::timeline_processor_interface::api::LeafTimelineNode as V9;
+                                let (result10_0, result10_1, result10_2, result10_3, result10_4) =
                                     match e {
-                                        LeafTimelineNode::TlHasExisted(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id0,
-                                                template_id: template_id0,
-                                            } = e;
+                                        V9::TlHasExisted(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id0, template_id:template_id0, } = e;
                                             let vec1 = worker_id0;
                                             let ptr1 = vec1.as_ptr().cast::<u8>();
                                             let len1 = vec1.len();
@@ -8816,11 +11197,8 @@ pub mod timeline {
 
                                             (0i32, ptr1.cast_mut(), len1, ptr2.cast_mut(), len2)
                                         }
-                                        LeafTimelineNode::TlHasExistedWithin(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id3,
-                                                template_id: template_id3,
-                                            } = e;
+                                        V9::TlHasExistedWithin(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id3, template_id:template_id3, } = e;
                                             let vec4 = worker_id3;
                                             let ptr4 = vec4.as_ptr().cast::<u8>();
                                             let len4 = vec4.len();
@@ -8830,11 +11208,8 @@ pub mod timeline {
 
                                             (1i32, ptr4.cast_mut(), len4, ptr5.cast_mut(), len5)
                                         }
-                                        LeafTimelineNode::TlLatestEventToState(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id6,
-                                                template_id: template_id6,
-                                            } = e;
+                                        V9::TlLatestEventToState(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id6, template_id:template_id6, } = e;
                                             let vec7 = worker_id6;
                                             let ptr7 = vec7.as_ptr().cast::<u8>();
                                             let len7 = vec7.len();
@@ -8846,155 +11221,133 @@ pub mod timeline {
                                         }
                                     };
 
-                                (0i32, result9_0, result9_1, result9_2, result9_3, result9_4)
+                                (0i32, result10_0, result10_1, result10_2, result10_3, result10_4)
                             }
-                            TypedTimelineResultWorker::DerivedTimeline(e) => {
-                                let (result34_0, result34_1, result34_2, result34_3, result34_4) =
+                            V37::DerivedTimeline(e) => {
+                                use super::super::super::timeline::timeline_processor_interface::api::DerivedTimelineNode as V35;
+                                let (result36_0, result36_1, result36_2, result36_3, result36_4) =
                                     match e {
-                                        DerivedTimelineNode::EqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id10,
-                                                template_id: template_id10,
-                                            } = e;
-                                            let vec11 = worker_id10;
-                                            let ptr11 = vec11.as_ptr().cast::<u8>();
-                                            let len11 = vec11.len();
-                                            let vec12 = template_id10;
+                                        V35::EqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id11, template_id:template_id11, } = e;
+                                            let vec12 = worker_id11;
                                             let ptr12 = vec12.as_ptr().cast::<u8>();
                                             let len12 = vec12.len();
+                                            let vec13 = template_id11;
+                                            let ptr13 = vec13.as_ptr().cast::<u8>();
+                                            let len13 = vec13.len();
 
-                                            (0i32, ptr11.cast_mut(), len11, ptr12.cast_mut(), len12)
+                                            (0i32, ptr12.cast_mut(), len12, ptr13.cast_mut(), len13)
                                         }
-                                        DerivedTimelineNode::GreaterThan(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id13,
-                                                template_id: template_id13,
-                                            } = e;
-                                            let vec14 = worker_id13;
-                                            let ptr14 = vec14.as_ptr().cast::<u8>();
-                                            let len14 = vec14.len();
-                                            let vec15 = template_id13;
+                                        V35::GreaterThan(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id14, template_id:template_id14, } = e;
+                                            let vec15 = worker_id14;
                                             let ptr15 = vec15.as_ptr().cast::<u8>();
                                             let len15 = vec15.len();
+                                            let vec16 = template_id14;
+                                            let ptr16 = vec16.as_ptr().cast::<u8>();
+                                            let len16 = vec16.len();
 
-                                            (1i32, ptr14.cast_mut(), len14, ptr15.cast_mut(), len15)
+                                            (1i32, ptr15.cast_mut(), len15, ptr16.cast_mut(), len16)
                                         }
-                                        DerivedTimelineNode::GreaterThanOrEqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id16,
-                                                template_id: template_id16,
-                                            } = e;
-                                            let vec17 = worker_id16;
-                                            let ptr17 = vec17.as_ptr().cast::<u8>();
-                                            let len17 = vec17.len();
-                                            let vec18 = template_id16;
+                                        V35::GreaterThanOrEqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id17, template_id:template_id17, } = e;
+                                            let vec18 = worker_id17;
                                             let ptr18 = vec18.as_ptr().cast::<u8>();
                                             let len18 = vec18.len();
+                                            let vec19 = template_id17;
+                                            let ptr19 = vec19.as_ptr().cast::<u8>();
+                                            let len19 = vec19.len();
 
-                                            (2i32, ptr17.cast_mut(), len17, ptr18.cast_mut(), len18)
+                                            (2i32, ptr18.cast_mut(), len18, ptr19.cast_mut(), len19)
                                         }
-                                        DerivedTimelineNode::LessThan(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id19,
-                                                template_id: template_id19,
-                                            } = e;
-                                            let vec20 = worker_id19;
-                                            let ptr20 = vec20.as_ptr().cast::<u8>();
-                                            let len20 = vec20.len();
-                                            let vec21 = template_id19;
+                                        V35::LessThan(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id20, template_id:template_id20, } = e;
+                                            let vec21 = worker_id20;
                                             let ptr21 = vec21.as_ptr().cast::<u8>();
                                             let len21 = vec21.len();
+                                            let vec22 = template_id20;
+                                            let ptr22 = vec22.as_ptr().cast::<u8>();
+                                            let len22 = vec22.len();
 
-                                            (3i32, ptr20.cast_mut(), len20, ptr21.cast_mut(), len21)
+                                            (3i32, ptr21.cast_mut(), len21, ptr22.cast_mut(), len22)
                                         }
-                                        DerivedTimelineNode::LessThanOrEqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id22,
-                                                template_id: template_id22,
-                                            } = e;
-                                            let vec23 = worker_id22;
-                                            let ptr23 = vec23.as_ptr().cast::<u8>();
-                                            let len23 = vec23.len();
-                                            let vec24 = template_id22;
+                                        V35::LessThanOrEqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id23, template_id:template_id23, } = e;
+                                            let vec24 = worker_id23;
                                             let ptr24 = vec24.as_ptr().cast::<u8>();
                                             let len24 = vec24.len();
+                                            let vec25 = template_id23;
+                                            let ptr25 = vec25.as_ptr().cast::<u8>();
+                                            let len25 = vec25.len();
 
-                                            (4i32, ptr23.cast_mut(), len23, ptr24.cast_mut(), len24)
+                                            (4i32, ptr24.cast_mut(), len24, ptr25.cast_mut(), len25)
                                         }
-                                        DerivedTimelineNode::And(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id25,
-                                                template_id: template_id25,
-                                            } = e;
-                                            let vec26 = worker_id25;
-                                            let ptr26 = vec26.as_ptr().cast::<u8>();
-                                            let len26 = vec26.len();
-                                            let vec27 = template_id25;
+                                        V35::And(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id26, template_id:template_id26, } = e;
+                                            let vec27 = worker_id26;
                                             let ptr27 = vec27.as_ptr().cast::<u8>();
                                             let len27 = vec27.len();
+                                            let vec28 = template_id26;
+                                            let ptr28 = vec28.as_ptr().cast::<u8>();
+                                            let len28 = vec28.len();
 
-                                            (5i32, ptr26.cast_mut(), len26, ptr27.cast_mut(), len27)
+                                            (5i32, ptr27.cast_mut(), len27, ptr28.cast_mut(), len28)
                                         }
-                                        DerivedTimelineNode::Or(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id28,
-                                                template_id: template_id28,
-                                            } = e;
-                                            let vec29 = worker_id28;
-                                            let ptr29 = vec29.as_ptr().cast::<u8>();
-                                            let len29 = vec29.len();
-                                            let vec30 = template_id28;
+                                        V35::Or(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id29, template_id:template_id29, } = e;
+                                            let vec30 = worker_id29;
                                             let ptr30 = vec30.as_ptr().cast::<u8>();
                                             let len30 = vec30.len();
+                                            let vec31 = template_id29;
+                                            let ptr31 = vec31.as_ptr().cast::<u8>();
+                                            let len31 = vec31.len();
 
-                                            (6i32, ptr29.cast_mut(), len29, ptr30.cast_mut(), len30)
+                                            (6i32, ptr30.cast_mut(), len30, ptr31.cast_mut(), len31)
                                         }
-                                        DerivedTimelineNode::Not(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id31,
-                                                template_id: template_id31,
-                                            } = e;
-                                            let vec32 = worker_id31;
-                                            let ptr32 = vec32.as_ptr().cast::<u8>();
-                                            let len32 = vec32.len();
-                                            let vec33 = template_id31;
+                                        V35::Not(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id32, template_id:template_id32, } = e;
+                                            let vec33 = worker_id32;
                                             let ptr33 = vec33.as_ptr().cast::<u8>();
                                             let len33 = vec33.len();
+                                            let vec34 = template_id32;
+                                            let ptr34 = vec34.as_ptr().cast::<u8>();
+                                            let len34 = vec34.len();
 
-                                            (7i32, ptr32.cast_mut(), len32, ptr33.cast_mut(), len33)
+                                            (7i32, ptr33.cast_mut(), len33, ptr34.cast_mut(), len34)
                                         }
                                     };
 
-                                (1i32, result34_0, result34_1, result34_2, result34_3, result34_4)
+                                (1i32, result36_0, result36_1, result36_2, result36_3, result36_4)
                             }
                         };
-                        let (result37_0, result37_1, result37_2) = match event_value {
-                            EventValue::StringValue(e) => {
-                                let vec36 = e;
-                                let ptr36 = vec36.as_ptr().cast::<u8>();
-                                let len36 = vec36.len();
+                        use super::super::super::timeline::event_processor_interface::api::EventValue as V40;
+                        let (result41_0, result41_1, result41_2) = match event_value {
+                            V40::StringValue(e) => {
+                                let vec39 = e;
+                                let ptr39 = vec39.as_ptr().cast::<u8>();
+                                let len39 = vec39.len();
 
                                 (
                                     0i32,
                                     {
                                         let mut t = ::core::mem::MaybeUninit::<u64>::uninit();
-                                        t.as_mut_ptr().cast::<*mut u8>().write(ptr36.cast_mut());
+                                        t.as_mut_ptr().cast::<*mut u8>().write(ptr39.cast_mut());
                                         t
                                     },
-                                    len36,
+                                    len39,
                                 )
                             }
-                            EventValue::IntValue(e) => {
+                            V40::IntValue(e) => {
                                 (1i32, ::core::mem::MaybeUninit::new(_rt::as_i64(e) as u64), 0usize)
                             }
-                            EventValue::FloatValue(e) => (
+                            V40::FloatValue(e) => (
                                 2i32,
                                 ::core::mem::MaybeUninit::new(
                                     (_rt::as_f64(e)).to_bits() as i64 as u64
                                 ),
                                 0usize,
                             ),
-                            EventValue::BoolValue(e) => (
+                            V40::BoolValue(e) => (
                                 3i32,
                                 ::core::mem::MaybeUninit::new(i64::from(match e {
                                     true => 1,
@@ -9004,7 +11357,7 @@ pub mod timeline {
                                 0usize,
                             ),
                         };
-                        let ptr38 = ret_area.0.as_mut_ptr().cast::<u8>();
+                        let ptr42 = ret_area.0.as_mut_ptr().cast::<u8>();
                         #[cfg(target_arch = "wasm32")]
                         #[link(
                             wasm_import_module = "timeline:timeline-processor-stub/stub-timeline-processor"
@@ -9044,40 +11397,40 @@ pub mod timeline {
                         }
                         wit_import(
                             (self).handle() as i32,
-                            result35_0,
-                            result35_1,
-                            result35_2,
-                            result35_3,
-                            result35_4,
-                            result35_5,
-                            result37_0,
-                            result37_1,
-                            result37_2,
-                            ptr38,
+                            result38_0,
+                            result38_1,
+                            result38_2,
+                            result38_3,
+                            result38_4,
+                            result38_5,
+                            result41_0,
+                            result41_1,
+                            result41_2,
+                            ptr42,
                         );
-                        let l39 = i32::from(*ptr38.add(0).cast::<u8>());
-                        match l39 {
+                        let l43 = i32::from(*ptr42.add(0).cast::<u8>());
+                        match l43 {
                             0 => {
                                 let e = {
-                                    let l40 = *ptr38.add(4).cast::<*mut u8>();
-                                    let l41 = *ptr38.add(8).cast::<usize>();
-                                    let len42 = l41;
-                                    let bytes42 =
-                                        _rt::Vec::from_raw_parts(l40.cast(), len42, len42);
+                                    let l44 = *ptr42.add(4).cast::<*mut u8>();
+                                    let l45 = *ptr42.add(8).cast::<usize>();
+                                    let len46 = l45;
+                                    let bytes46 =
+                                        _rt::Vec::from_raw_parts(l44.cast(), len46, len46);
 
-                                    _rt::string_lift(bytes42)
+                                    _rt::string_lift(bytes46)
                                 };
                                 Ok(e)
                             }
                             1 => {
                                 let e = {
-                                    let l43 = *ptr38.add(4).cast::<*mut u8>();
-                                    let l44 = *ptr38.add(8).cast::<usize>();
-                                    let len45 = l44;
-                                    let bytes45 =
-                                        _rt::Vec::from_raw_parts(l43.cast(), len45, len45);
+                                    let l47 = *ptr42.add(4).cast::<*mut u8>();
+                                    let l48 = *ptr42.add(8).cast::<usize>();
+                                    let len49 = l48;
+                                    let bytes49 =
+                                        _rt::Vec::from_raw_parts(l47.cast(), len49, len49);
 
-                                    _rt::string_lift(bytes45)
+                                    _rt::string_lift(bytes49)
                                 };
                                 Err(e)
                             }
@@ -9094,22 +11447,21 @@ pub mod timeline {
                     event_value: &EventValue,
                 ) -> FutureInitializeLessThanResult {
                     unsafe {
+                        use super::super::super::timeline::timeline_processor_interface::api::TypedTimelineResultWorker as V37;
                         let (
-                            result35_0,
-                            result35_1,
-                            result35_2,
-                            result35_3,
-                            result35_4,
-                            result35_5,
+                            result38_0,
+                            result38_1,
+                            result38_2,
+                            result38_3,
+                            result38_4,
+                            result38_5,
                         ) = match child_worker {
-                            TypedTimelineResultWorker::LeafTimeline(e) => {
-                                let (result9_0, result9_1, result9_2, result9_3, result9_4) =
+                            V37::LeafTimeline(e) => {
+                                use super::super::super::timeline::timeline_processor_interface::api::LeafTimelineNode as V9;
+                                let (result10_0, result10_1, result10_2, result10_3, result10_4) =
                                     match e {
-                                        LeafTimelineNode::TlHasExisted(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id0,
-                                                template_id: template_id0,
-                                            } = e;
+                                        V9::TlHasExisted(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id0, template_id:template_id0, } = e;
                                             let vec1 = worker_id0;
                                             let ptr1 = vec1.as_ptr().cast::<u8>();
                                             let len1 = vec1.len();
@@ -9119,11 +11471,8 @@ pub mod timeline {
 
                                             (0i32, ptr1.cast_mut(), len1, ptr2.cast_mut(), len2)
                                         }
-                                        LeafTimelineNode::TlHasExistedWithin(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id3,
-                                                template_id: template_id3,
-                                            } = e;
+                                        V9::TlHasExistedWithin(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id3, template_id:template_id3, } = e;
                                             let vec4 = worker_id3;
                                             let ptr4 = vec4.as_ptr().cast::<u8>();
                                             let len4 = vec4.len();
@@ -9133,11 +11482,8 @@ pub mod timeline {
 
                                             (1i32, ptr4.cast_mut(), len4, ptr5.cast_mut(), len5)
                                         }
-                                        LeafTimelineNode::TlLatestEventToState(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id6,
-                                                template_id: template_id6,
-                                            } = e;
+                                        V9::TlLatestEventToState(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id6, template_id:template_id6, } = e;
                                             let vec7 = worker_id6;
                                             let ptr7 = vec7.as_ptr().cast::<u8>();
                                             let len7 = vec7.len();
@@ -9149,155 +11495,133 @@ pub mod timeline {
                                         }
                                     };
 
-                                (0i32, result9_0, result9_1, result9_2, result9_3, result9_4)
+                                (0i32, result10_0, result10_1, result10_2, result10_3, result10_4)
                             }
-                            TypedTimelineResultWorker::DerivedTimeline(e) => {
-                                let (result34_0, result34_1, result34_2, result34_3, result34_4) =
+                            V37::DerivedTimeline(e) => {
+                                use super::super::super::timeline::timeline_processor_interface::api::DerivedTimelineNode as V35;
+                                let (result36_0, result36_1, result36_2, result36_3, result36_4) =
                                     match e {
-                                        DerivedTimelineNode::EqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id10,
-                                                template_id: template_id10,
-                                            } = e;
-                                            let vec11 = worker_id10;
-                                            let ptr11 = vec11.as_ptr().cast::<u8>();
-                                            let len11 = vec11.len();
-                                            let vec12 = template_id10;
+                                        V35::EqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id11, template_id:template_id11, } = e;
+                                            let vec12 = worker_id11;
                                             let ptr12 = vec12.as_ptr().cast::<u8>();
                                             let len12 = vec12.len();
+                                            let vec13 = template_id11;
+                                            let ptr13 = vec13.as_ptr().cast::<u8>();
+                                            let len13 = vec13.len();
 
-                                            (0i32, ptr11.cast_mut(), len11, ptr12.cast_mut(), len12)
+                                            (0i32, ptr12.cast_mut(), len12, ptr13.cast_mut(), len13)
                                         }
-                                        DerivedTimelineNode::GreaterThan(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id13,
-                                                template_id: template_id13,
-                                            } = e;
-                                            let vec14 = worker_id13;
-                                            let ptr14 = vec14.as_ptr().cast::<u8>();
-                                            let len14 = vec14.len();
-                                            let vec15 = template_id13;
+                                        V35::GreaterThan(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id14, template_id:template_id14, } = e;
+                                            let vec15 = worker_id14;
                                             let ptr15 = vec15.as_ptr().cast::<u8>();
                                             let len15 = vec15.len();
+                                            let vec16 = template_id14;
+                                            let ptr16 = vec16.as_ptr().cast::<u8>();
+                                            let len16 = vec16.len();
 
-                                            (1i32, ptr14.cast_mut(), len14, ptr15.cast_mut(), len15)
+                                            (1i32, ptr15.cast_mut(), len15, ptr16.cast_mut(), len16)
                                         }
-                                        DerivedTimelineNode::GreaterThanOrEqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id16,
-                                                template_id: template_id16,
-                                            } = e;
-                                            let vec17 = worker_id16;
-                                            let ptr17 = vec17.as_ptr().cast::<u8>();
-                                            let len17 = vec17.len();
-                                            let vec18 = template_id16;
+                                        V35::GreaterThanOrEqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id17, template_id:template_id17, } = e;
+                                            let vec18 = worker_id17;
                                             let ptr18 = vec18.as_ptr().cast::<u8>();
                                             let len18 = vec18.len();
+                                            let vec19 = template_id17;
+                                            let ptr19 = vec19.as_ptr().cast::<u8>();
+                                            let len19 = vec19.len();
 
-                                            (2i32, ptr17.cast_mut(), len17, ptr18.cast_mut(), len18)
+                                            (2i32, ptr18.cast_mut(), len18, ptr19.cast_mut(), len19)
                                         }
-                                        DerivedTimelineNode::LessThan(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id19,
-                                                template_id: template_id19,
-                                            } = e;
-                                            let vec20 = worker_id19;
-                                            let ptr20 = vec20.as_ptr().cast::<u8>();
-                                            let len20 = vec20.len();
-                                            let vec21 = template_id19;
+                                        V35::LessThan(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id20, template_id:template_id20, } = e;
+                                            let vec21 = worker_id20;
                                             let ptr21 = vec21.as_ptr().cast::<u8>();
                                             let len21 = vec21.len();
+                                            let vec22 = template_id20;
+                                            let ptr22 = vec22.as_ptr().cast::<u8>();
+                                            let len22 = vec22.len();
 
-                                            (3i32, ptr20.cast_mut(), len20, ptr21.cast_mut(), len21)
+                                            (3i32, ptr21.cast_mut(), len21, ptr22.cast_mut(), len22)
                                         }
-                                        DerivedTimelineNode::LessThanOrEqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id22,
-                                                template_id: template_id22,
-                                            } = e;
-                                            let vec23 = worker_id22;
-                                            let ptr23 = vec23.as_ptr().cast::<u8>();
-                                            let len23 = vec23.len();
-                                            let vec24 = template_id22;
+                                        V35::LessThanOrEqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id23, template_id:template_id23, } = e;
+                                            let vec24 = worker_id23;
                                             let ptr24 = vec24.as_ptr().cast::<u8>();
                                             let len24 = vec24.len();
+                                            let vec25 = template_id23;
+                                            let ptr25 = vec25.as_ptr().cast::<u8>();
+                                            let len25 = vec25.len();
 
-                                            (4i32, ptr23.cast_mut(), len23, ptr24.cast_mut(), len24)
+                                            (4i32, ptr24.cast_mut(), len24, ptr25.cast_mut(), len25)
                                         }
-                                        DerivedTimelineNode::And(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id25,
-                                                template_id: template_id25,
-                                            } = e;
-                                            let vec26 = worker_id25;
-                                            let ptr26 = vec26.as_ptr().cast::<u8>();
-                                            let len26 = vec26.len();
-                                            let vec27 = template_id25;
+                                        V35::And(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id26, template_id:template_id26, } = e;
+                                            let vec27 = worker_id26;
                                             let ptr27 = vec27.as_ptr().cast::<u8>();
                                             let len27 = vec27.len();
+                                            let vec28 = template_id26;
+                                            let ptr28 = vec28.as_ptr().cast::<u8>();
+                                            let len28 = vec28.len();
 
-                                            (5i32, ptr26.cast_mut(), len26, ptr27.cast_mut(), len27)
+                                            (5i32, ptr27.cast_mut(), len27, ptr28.cast_mut(), len28)
                                         }
-                                        DerivedTimelineNode::Or(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id28,
-                                                template_id: template_id28,
-                                            } = e;
-                                            let vec29 = worker_id28;
-                                            let ptr29 = vec29.as_ptr().cast::<u8>();
-                                            let len29 = vec29.len();
-                                            let vec30 = template_id28;
+                                        V35::Or(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id29, template_id:template_id29, } = e;
+                                            let vec30 = worker_id29;
                                             let ptr30 = vec30.as_ptr().cast::<u8>();
                                             let len30 = vec30.len();
+                                            let vec31 = template_id29;
+                                            let ptr31 = vec31.as_ptr().cast::<u8>();
+                                            let len31 = vec31.len();
 
-                                            (6i32, ptr29.cast_mut(), len29, ptr30.cast_mut(), len30)
+                                            (6i32, ptr30.cast_mut(), len30, ptr31.cast_mut(), len31)
                                         }
-                                        DerivedTimelineNode::Not(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id31,
-                                                template_id: template_id31,
-                                            } = e;
-                                            let vec32 = worker_id31;
-                                            let ptr32 = vec32.as_ptr().cast::<u8>();
-                                            let len32 = vec32.len();
-                                            let vec33 = template_id31;
+                                        V35::Not(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id32, template_id:template_id32, } = e;
+                                            let vec33 = worker_id32;
                                             let ptr33 = vec33.as_ptr().cast::<u8>();
                                             let len33 = vec33.len();
+                                            let vec34 = template_id32;
+                                            let ptr34 = vec34.as_ptr().cast::<u8>();
+                                            let len34 = vec34.len();
 
-                                            (7i32, ptr32.cast_mut(), len32, ptr33.cast_mut(), len33)
+                                            (7i32, ptr33.cast_mut(), len33, ptr34.cast_mut(), len34)
                                         }
                                     };
 
-                                (1i32, result34_0, result34_1, result34_2, result34_3, result34_4)
+                                (1i32, result36_0, result36_1, result36_2, result36_3, result36_4)
                             }
                         };
-                        let (result37_0, result37_1, result37_2) = match event_value {
-                            EventValue::StringValue(e) => {
-                                let vec36 = e;
-                                let ptr36 = vec36.as_ptr().cast::<u8>();
-                                let len36 = vec36.len();
+                        use super::super::super::timeline::event_processor_interface::api::EventValue as V40;
+                        let (result41_0, result41_1, result41_2) = match event_value {
+                            V40::StringValue(e) => {
+                                let vec39 = e;
+                                let ptr39 = vec39.as_ptr().cast::<u8>();
+                                let len39 = vec39.len();
 
                                 (
                                     0i32,
                                     {
                                         let mut t = ::core::mem::MaybeUninit::<u64>::uninit();
-                                        t.as_mut_ptr().cast::<*mut u8>().write(ptr36.cast_mut());
+                                        t.as_mut_ptr().cast::<*mut u8>().write(ptr39.cast_mut());
                                         t
                                     },
-                                    len36,
+                                    len39,
                                 )
                             }
-                            EventValue::IntValue(e) => {
+                            V40::IntValue(e) => {
                                 (1i32, ::core::mem::MaybeUninit::new(_rt::as_i64(e) as u64), 0usize)
                             }
-                            EventValue::FloatValue(e) => (
+                            V40::FloatValue(e) => (
                                 2i32,
                                 ::core::mem::MaybeUninit::new(
                                     (_rt::as_f64(e)).to_bits() as i64 as u64
                                 ),
                                 0usize,
                             ),
-                            EventValue::BoolValue(e) => (
+                            V40::BoolValue(e) => (
                                 3i32,
                                 ::core::mem::MaybeUninit::new(i64::from(match e {
                                     true => 1,
@@ -9345,15 +11669,15 @@ pub mod timeline {
                         }
                         let ret = wit_import(
                             (self).handle() as i32,
-                            result35_0,
-                            result35_1,
-                            result35_2,
-                            result35_3,
-                            result35_4,
-                            result35_5,
-                            result37_0,
-                            result37_1,
-                            result37_2,
+                            result38_0,
+                            result38_1,
+                            result38_2,
+                            result38_3,
+                            result38_4,
+                            result38_5,
+                            result41_0,
+                            result41_1,
+                            result41_2,
                         );
                         FutureInitializeLessThanResult::from_handle(ret as u32)
                     }
@@ -9370,22 +11694,21 @@ pub mod timeline {
                         #[repr(align(4))]
                         struct RetArea([::core::mem::MaybeUninit<u8>; 12]);
                         let mut ret_area = RetArea([::core::mem::MaybeUninit::uninit(); 12]);
+                        use super::super::super::timeline::timeline_processor_interface::api::TypedTimelineResultWorker as V37;
                         let (
-                            result35_0,
-                            result35_1,
-                            result35_2,
-                            result35_3,
-                            result35_4,
-                            result35_5,
+                            result38_0,
+                            result38_1,
+                            result38_2,
+                            result38_3,
+                            result38_4,
+                            result38_5,
                         ) = match child_worker {
-                            TypedTimelineResultWorker::LeafTimeline(e) => {
-                                let (result9_0, result9_1, result9_2, result9_3, result9_4) =
+                            V37::LeafTimeline(e) => {
+                                use super::super::super::timeline::timeline_processor_interface::api::LeafTimelineNode as V9;
+                                let (result10_0, result10_1, result10_2, result10_3, result10_4) =
                                     match e {
-                                        LeafTimelineNode::TlHasExisted(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id0,
-                                                template_id: template_id0,
-                                            } = e;
+                                        V9::TlHasExisted(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id0, template_id:template_id0, } = e;
                                             let vec1 = worker_id0;
                                             let ptr1 = vec1.as_ptr().cast::<u8>();
                                             let len1 = vec1.len();
@@ -9395,11 +11718,8 @@ pub mod timeline {
 
                                             (0i32, ptr1.cast_mut(), len1, ptr2.cast_mut(), len2)
                                         }
-                                        LeafTimelineNode::TlHasExistedWithin(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id3,
-                                                template_id: template_id3,
-                                            } = e;
+                                        V9::TlHasExistedWithin(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id3, template_id:template_id3, } = e;
                                             let vec4 = worker_id3;
                                             let ptr4 = vec4.as_ptr().cast::<u8>();
                                             let len4 = vec4.len();
@@ -9409,11 +11729,8 @@ pub mod timeline {
 
                                             (1i32, ptr4.cast_mut(), len4, ptr5.cast_mut(), len5)
                                         }
-                                        LeafTimelineNode::TlLatestEventToState(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id6,
-                                                template_id: template_id6,
-                                            } = e;
+                                        V9::TlLatestEventToState(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id6, template_id:template_id6, } = e;
                                             let vec7 = worker_id6;
                                             let ptr7 = vec7.as_ptr().cast::<u8>();
                                             let len7 = vec7.len();
@@ -9425,155 +11742,133 @@ pub mod timeline {
                                         }
                                     };
 
-                                (0i32, result9_0, result9_1, result9_2, result9_3, result9_4)
+                                (0i32, result10_0, result10_1, result10_2, result10_3, result10_4)
                             }
-                            TypedTimelineResultWorker::DerivedTimeline(e) => {
-                                let (result34_0, result34_1, result34_2, result34_3, result34_4) =
+                            V37::DerivedTimeline(e) => {
+                                use super::super::super::timeline::timeline_processor_interface::api::DerivedTimelineNode as V35;
+                                let (result36_0, result36_1, result36_2, result36_3, result36_4) =
                                     match e {
-                                        DerivedTimelineNode::EqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id10,
-                                                template_id: template_id10,
-                                            } = e;
-                                            let vec11 = worker_id10;
-                                            let ptr11 = vec11.as_ptr().cast::<u8>();
-                                            let len11 = vec11.len();
-                                            let vec12 = template_id10;
+                                        V35::EqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id11, template_id:template_id11, } = e;
+                                            let vec12 = worker_id11;
                                             let ptr12 = vec12.as_ptr().cast::<u8>();
                                             let len12 = vec12.len();
+                                            let vec13 = template_id11;
+                                            let ptr13 = vec13.as_ptr().cast::<u8>();
+                                            let len13 = vec13.len();
 
-                                            (0i32, ptr11.cast_mut(), len11, ptr12.cast_mut(), len12)
+                                            (0i32, ptr12.cast_mut(), len12, ptr13.cast_mut(), len13)
                                         }
-                                        DerivedTimelineNode::GreaterThan(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id13,
-                                                template_id: template_id13,
-                                            } = e;
-                                            let vec14 = worker_id13;
-                                            let ptr14 = vec14.as_ptr().cast::<u8>();
-                                            let len14 = vec14.len();
-                                            let vec15 = template_id13;
+                                        V35::GreaterThan(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id14, template_id:template_id14, } = e;
+                                            let vec15 = worker_id14;
                                             let ptr15 = vec15.as_ptr().cast::<u8>();
                                             let len15 = vec15.len();
+                                            let vec16 = template_id14;
+                                            let ptr16 = vec16.as_ptr().cast::<u8>();
+                                            let len16 = vec16.len();
 
-                                            (1i32, ptr14.cast_mut(), len14, ptr15.cast_mut(), len15)
+                                            (1i32, ptr15.cast_mut(), len15, ptr16.cast_mut(), len16)
                                         }
-                                        DerivedTimelineNode::GreaterThanOrEqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id16,
-                                                template_id: template_id16,
-                                            } = e;
-                                            let vec17 = worker_id16;
-                                            let ptr17 = vec17.as_ptr().cast::<u8>();
-                                            let len17 = vec17.len();
-                                            let vec18 = template_id16;
+                                        V35::GreaterThanOrEqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id17, template_id:template_id17, } = e;
+                                            let vec18 = worker_id17;
                                             let ptr18 = vec18.as_ptr().cast::<u8>();
                                             let len18 = vec18.len();
+                                            let vec19 = template_id17;
+                                            let ptr19 = vec19.as_ptr().cast::<u8>();
+                                            let len19 = vec19.len();
 
-                                            (2i32, ptr17.cast_mut(), len17, ptr18.cast_mut(), len18)
+                                            (2i32, ptr18.cast_mut(), len18, ptr19.cast_mut(), len19)
                                         }
-                                        DerivedTimelineNode::LessThan(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id19,
-                                                template_id: template_id19,
-                                            } = e;
-                                            let vec20 = worker_id19;
-                                            let ptr20 = vec20.as_ptr().cast::<u8>();
-                                            let len20 = vec20.len();
-                                            let vec21 = template_id19;
+                                        V35::LessThan(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id20, template_id:template_id20, } = e;
+                                            let vec21 = worker_id20;
                                             let ptr21 = vec21.as_ptr().cast::<u8>();
                                             let len21 = vec21.len();
+                                            let vec22 = template_id20;
+                                            let ptr22 = vec22.as_ptr().cast::<u8>();
+                                            let len22 = vec22.len();
 
-                                            (3i32, ptr20.cast_mut(), len20, ptr21.cast_mut(), len21)
+                                            (3i32, ptr21.cast_mut(), len21, ptr22.cast_mut(), len22)
                                         }
-                                        DerivedTimelineNode::LessThanOrEqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id22,
-                                                template_id: template_id22,
-                                            } = e;
-                                            let vec23 = worker_id22;
-                                            let ptr23 = vec23.as_ptr().cast::<u8>();
-                                            let len23 = vec23.len();
-                                            let vec24 = template_id22;
+                                        V35::LessThanOrEqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id23, template_id:template_id23, } = e;
+                                            let vec24 = worker_id23;
                                             let ptr24 = vec24.as_ptr().cast::<u8>();
                                             let len24 = vec24.len();
+                                            let vec25 = template_id23;
+                                            let ptr25 = vec25.as_ptr().cast::<u8>();
+                                            let len25 = vec25.len();
 
-                                            (4i32, ptr23.cast_mut(), len23, ptr24.cast_mut(), len24)
+                                            (4i32, ptr24.cast_mut(), len24, ptr25.cast_mut(), len25)
                                         }
-                                        DerivedTimelineNode::And(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id25,
-                                                template_id: template_id25,
-                                            } = e;
-                                            let vec26 = worker_id25;
-                                            let ptr26 = vec26.as_ptr().cast::<u8>();
-                                            let len26 = vec26.len();
-                                            let vec27 = template_id25;
+                                        V35::And(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id26, template_id:template_id26, } = e;
+                                            let vec27 = worker_id26;
                                             let ptr27 = vec27.as_ptr().cast::<u8>();
                                             let len27 = vec27.len();
+                                            let vec28 = template_id26;
+                                            let ptr28 = vec28.as_ptr().cast::<u8>();
+                                            let len28 = vec28.len();
 
-                                            (5i32, ptr26.cast_mut(), len26, ptr27.cast_mut(), len27)
+                                            (5i32, ptr27.cast_mut(), len27, ptr28.cast_mut(), len28)
                                         }
-                                        DerivedTimelineNode::Or(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id28,
-                                                template_id: template_id28,
-                                            } = e;
-                                            let vec29 = worker_id28;
-                                            let ptr29 = vec29.as_ptr().cast::<u8>();
-                                            let len29 = vec29.len();
-                                            let vec30 = template_id28;
+                                        V35::Or(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id29, template_id:template_id29, } = e;
+                                            let vec30 = worker_id29;
                                             let ptr30 = vec30.as_ptr().cast::<u8>();
                                             let len30 = vec30.len();
+                                            let vec31 = template_id29;
+                                            let ptr31 = vec31.as_ptr().cast::<u8>();
+                                            let len31 = vec31.len();
 
-                                            (6i32, ptr29.cast_mut(), len29, ptr30.cast_mut(), len30)
+                                            (6i32, ptr30.cast_mut(), len30, ptr31.cast_mut(), len31)
                                         }
-                                        DerivedTimelineNode::Not(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id31,
-                                                template_id: template_id31,
-                                            } = e;
-                                            let vec32 = worker_id31;
-                                            let ptr32 = vec32.as_ptr().cast::<u8>();
-                                            let len32 = vec32.len();
-                                            let vec33 = template_id31;
+                                        V35::Not(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id32, template_id:template_id32, } = e;
+                                            let vec33 = worker_id32;
                                             let ptr33 = vec33.as_ptr().cast::<u8>();
                                             let len33 = vec33.len();
+                                            let vec34 = template_id32;
+                                            let ptr34 = vec34.as_ptr().cast::<u8>();
+                                            let len34 = vec34.len();
 
-                                            (7i32, ptr32.cast_mut(), len32, ptr33.cast_mut(), len33)
+                                            (7i32, ptr33.cast_mut(), len33, ptr34.cast_mut(), len34)
                                         }
                                     };
 
-                                (1i32, result34_0, result34_1, result34_2, result34_3, result34_4)
+                                (1i32, result36_0, result36_1, result36_2, result36_3, result36_4)
                             }
                         };
-                        let (result37_0, result37_1, result37_2) = match event_value {
-                            EventValue::StringValue(e) => {
-                                let vec36 = e;
-                                let ptr36 = vec36.as_ptr().cast::<u8>();
-                                let len36 = vec36.len();
+                        use super::super::super::timeline::event_processor_interface::api::EventValue as V40;
+                        let (result41_0, result41_1, result41_2) = match event_value {
+                            V40::StringValue(e) => {
+                                let vec39 = e;
+                                let ptr39 = vec39.as_ptr().cast::<u8>();
+                                let len39 = vec39.len();
 
                                 (
                                     0i32,
                                     {
                                         let mut t = ::core::mem::MaybeUninit::<u64>::uninit();
-                                        t.as_mut_ptr().cast::<*mut u8>().write(ptr36.cast_mut());
+                                        t.as_mut_ptr().cast::<*mut u8>().write(ptr39.cast_mut());
                                         t
                                     },
-                                    len36,
+                                    len39,
                                 )
                             }
-                            EventValue::IntValue(e) => {
+                            V40::IntValue(e) => {
                                 (1i32, ::core::mem::MaybeUninit::new(_rt::as_i64(e) as u64), 0usize)
                             }
-                            EventValue::FloatValue(e) => (
+                            V40::FloatValue(e) => (
                                 2i32,
                                 ::core::mem::MaybeUninit::new(
                                     (_rt::as_f64(e)).to_bits() as i64 as u64
                                 ),
                                 0usize,
                             ),
-                            EventValue::BoolValue(e) => (
+                            V40::BoolValue(e) => (
                                 3i32,
                                 ::core::mem::MaybeUninit::new(i64::from(match e {
                                     true => 1,
@@ -9583,7 +11878,7 @@ pub mod timeline {
                                 0usize,
                             ),
                         };
-                        let ptr38 = ret_area.0.as_mut_ptr().cast::<u8>();
+                        let ptr42 = ret_area.0.as_mut_ptr().cast::<u8>();
                         #[cfg(target_arch = "wasm32")]
                         #[link(
                             wasm_import_module = "timeline:timeline-processor-stub/stub-timeline-processor"
@@ -9623,40 +11918,40 @@ pub mod timeline {
                         }
                         wit_import(
                             (self).handle() as i32,
-                            result35_0,
-                            result35_1,
-                            result35_2,
-                            result35_3,
-                            result35_4,
-                            result35_5,
-                            result37_0,
-                            result37_1,
-                            result37_2,
-                            ptr38,
+                            result38_0,
+                            result38_1,
+                            result38_2,
+                            result38_3,
+                            result38_4,
+                            result38_5,
+                            result41_0,
+                            result41_1,
+                            result41_2,
+                            ptr42,
                         );
-                        let l39 = i32::from(*ptr38.add(0).cast::<u8>());
-                        match l39 {
+                        let l43 = i32::from(*ptr42.add(0).cast::<u8>());
+                        match l43 {
                             0 => {
                                 let e = {
-                                    let l40 = *ptr38.add(4).cast::<*mut u8>();
-                                    let l41 = *ptr38.add(8).cast::<usize>();
-                                    let len42 = l41;
-                                    let bytes42 =
-                                        _rt::Vec::from_raw_parts(l40.cast(), len42, len42);
+                                    let l44 = *ptr42.add(4).cast::<*mut u8>();
+                                    let l45 = *ptr42.add(8).cast::<usize>();
+                                    let len46 = l45;
+                                    let bytes46 =
+                                        _rt::Vec::from_raw_parts(l44.cast(), len46, len46);
 
-                                    _rt::string_lift(bytes42)
+                                    _rt::string_lift(bytes46)
                                 };
                                 Ok(e)
                             }
                             1 => {
                                 let e = {
-                                    let l43 = *ptr38.add(4).cast::<*mut u8>();
-                                    let l44 = *ptr38.add(8).cast::<usize>();
-                                    let len45 = l44;
-                                    let bytes45 =
-                                        _rt::Vec::from_raw_parts(l43.cast(), len45, len45);
+                                    let l47 = *ptr42.add(4).cast::<*mut u8>();
+                                    let l48 = *ptr42.add(8).cast::<usize>();
+                                    let len49 = l48;
+                                    let bytes49 =
+                                        _rt::Vec::from_raw_parts(l47.cast(), len49, len49);
 
-                                    _rt::string_lift(bytes45)
+                                    _rt::string_lift(bytes49)
                                 };
                                 Err(e)
                             }
@@ -9673,22 +11968,21 @@ pub mod timeline {
                     event_value: &EventValue,
                 ) -> FutureInitializeLessThanOrEqualToResult {
                     unsafe {
+                        use super::super::super::timeline::timeline_processor_interface::api::TypedTimelineResultWorker as V37;
                         let (
-                            result35_0,
-                            result35_1,
-                            result35_2,
-                            result35_3,
-                            result35_4,
-                            result35_5,
+                            result38_0,
+                            result38_1,
+                            result38_2,
+                            result38_3,
+                            result38_4,
+                            result38_5,
                         ) = match child_worker {
-                            TypedTimelineResultWorker::LeafTimeline(e) => {
-                                let (result9_0, result9_1, result9_2, result9_3, result9_4) =
+                            V37::LeafTimeline(e) => {
+                                use super::super::super::timeline::timeline_processor_interface::api::LeafTimelineNode as V9;
+                                let (result10_0, result10_1, result10_2, result10_3, result10_4) =
                                     match e {
-                                        LeafTimelineNode::TlHasExisted(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id0,
-                                                template_id: template_id0,
-                                            } = e;
+                                        V9::TlHasExisted(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id0, template_id:template_id0, } = e;
                                             let vec1 = worker_id0;
                                             let ptr1 = vec1.as_ptr().cast::<u8>();
                                             let len1 = vec1.len();
@@ -9698,11 +11992,8 @@ pub mod timeline {
 
                                             (0i32, ptr1.cast_mut(), len1, ptr2.cast_mut(), len2)
                                         }
-                                        LeafTimelineNode::TlHasExistedWithin(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id3,
-                                                template_id: template_id3,
-                                            } = e;
+                                        V9::TlHasExistedWithin(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id3, template_id:template_id3, } = e;
                                             let vec4 = worker_id3;
                                             let ptr4 = vec4.as_ptr().cast::<u8>();
                                             let len4 = vec4.len();
@@ -9712,11 +12003,8 @@ pub mod timeline {
 
                                             (1i32, ptr4.cast_mut(), len4, ptr5.cast_mut(), len5)
                                         }
-                                        LeafTimelineNode::TlLatestEventToState(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id6,
-                                                template_id: template_id6,
-                                            } = e;
+                                        V9::TlLatestEventToState(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id6, template_id:template_id6, } = e;
                                             let vec7 = worker_id6;
                                             let ptr7 = vec7.as_ptr().cast::<u8>();
                                             let len7 = vec7.len();
@@ -9728,155 +12016,133 @@ pub mod timeline {
                                         }
                                     };
 
-                                (0i32, result9_0, result9_1, result9_2, result9_3, result9_4)
+                                (0i32, result10_0, result10_1, result10_2, result10_3, result10_4)
                             }
-                            TypedTimelineResultWorker::DerivedTimeline(e) => {
-                                let (result34_0, result34_1, result34_2, result34_3, result34_4) =
+                            V37::DerivedTimeline(e) => {
+                                use super::super::super::timeline::timeline_processor_interface::api::DerivedTimelineNode as V35;
+                                let (result36_0, result36_1, result36_2, result36_3, result36_4) =
                                     match e {
-                                        DerivedTimelineNode::EqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id10,
-                                                template_id: template_id10,
-                                            } = e;
-                                            let vec11 = worker_id10;
-                                            let ptr11 = vec11.as_ptr().cast::<u8>();
-                                            let len11 = vec11.len();
-                                            let vec12 = template_id10;
+                                        V35::EqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id11, template_id:template_id11, } = e;
+                                            let vec12 = worker_id11;
                                             let ptr12 = vec12.as_ptr().cast::<u8>();
                                             let len12 = vec12.len();
+                                            let vec13 = template_id11;
+                                            let ptr13 = vec13.as_ptr().cast::<u8>();
+                                            let len13 = vec13.len();
 
-                                            (0i32, ptr11.cast_mut(), len11, ptr12.cast_mut(), len12)
+                                            (0i32, ptr12.cast_mut(), len12, ptr13.cast_mut(), len13)
                                         }
-                                        DerivedTimelineNode::GreaterThan(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id13,
-                                                template_id: template_id13,
-                                            } = e;
-                                            let vec14 = worker_id13;
-                                            let ptr14 = vec14.as_ptr().cast::<u8>();
-                                            let len14 = vec14.len();
-                                            let vec15 = template_id13;
+                                        V35::GreaterThan(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id14, template_id:template_id14, } = e;
+                                            let vec15 = worker_id14;
                                             let ptr15 = vec15.as_ptr().cast::<u8>();
                                             let len15 = vec15.len();
+                                            let vec16 = template_id14;
+                                            let ptr16 = vec16.as_ptr().cast::<u8>();
+                                            let len16 = vec16.len();
 
-                                            (1i32, ptr14.cast_mut(), len14, ptr15.cast_mut(), len15)
+                                            (1i32, ptr15.cast_mut(), len15, ptr16.cast_mut(), len16)
                                         }
-                                        DerivedTimelineNode::GreaterThanOrEqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id16,
-                                                template_id: template_id16,
-                                            } = e;
-                                            let vec17 = worker_id16;
-                                            let ptr17 = vec17.as_ptr().cast::<u8>();
-                                            let len17 = vec17.len();
-                                            let vec18 = template_id16;
+                                        V35::GreaterThanOrEqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id17, template_id:template_id17, } = e;
+                                            let vec18 = worker_id17;
                                             let ptr18 = vec18.as_ptr().cast::<u8>();
                                             let len18 = vec18.len();
+                                            let vec19 = template_id17;
+                                            let ptr19 = vec19.as_ptr().cast::<u8>();
+                                            let len19 = vec19.len();
 
-                                            (2i32, ptr17.cast_mut(), len17, ptr18.cast_mut(), len18)
+                                            (2i32, ptr18.cast_mut(), len18, ptr19.cast_mut(), len19)
                                         }
-                                        DerivedTimelineNode::LessThan(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id19,
-                                                template_id: template_id19,
-                                            } = e;
-                                            let vec20 = worker_id19;
-                                            let ptr20 = vec20.as_ptr().cast::<u8>();
-                                            let len20 = vec20.len();
-                                            let vec21 = template_id19;
+                                        V35::LessThan(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id20, template_id:template_id20, } = e;
+                                            let vec21 = worker_id20;
                                             let ptr21 = vec21.as_ptr().cast::<u8>();
                                             let len21 = vec21.len();
+                                            let vec22 = template_id20;
+                                            let ptr22 = vec22.as_ptr().cast::<u8>();
+                                            let len22 = vec22.len();
 
-                                            (3i32, ptr20.cast_mut(), len20, ptr21.cast_mut(), len21)
+                                            (3i32, ptr21.cast_mut(), len21, ptr22.cast_mut(), len22)
                                         }
-                                        DerivedTimelineNode::LessThanOrEqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id22,
-                                                template_id: template_id22,
-                                            } = e;
-                                            let vec23 = worker_id22;
-                                            let ptr23 = vec23.as_ptr().cast::<u8>();
-                                            let len23 = vec23.len();
-                                            let vec24 = template_id22;
+                                        V35::LessThanOrEqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id23, template_id:template_id23, } = e;
+                                            let vec24 = worker_id23;
                                             let ptr24 = vec24.as_ptr().cast::<u8>();
                                             let len24 = vec24.len();
+                                            let vec25 = template_id23;
+                                            let ptr25 = vec25.as_ptr().cast::<u8>();
+                                            let len25 = vec25.len();
 
-                                            (4i32, ptr23.cast_mut(), len23, ptr24.cast_mut(), len24)
+                                            (4i32, ptr24.cast_mut(), len24, ptr25.cast_mut(), len25)
                                         }
-                                        DerivedTimelineNode::And(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id25,
-                                                template_id: template_id25,
-                                            } = e;
-                                            let vec26 = worker_id25;
-                                            let ptr26 = vec26.as_ptr().cast::<u8>();
-                                            let len26 = vec26.len();
-                                            let vec27 = template_id25;
+                                        V35::And(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id26, template_id:template_id26, } = e;
+                                            let vec27 = worker_id26;
                                             let ptr27 = vec27.as_ptr().cast::<u8>();
                                             let len27 = vec27.len();
+                                            let vec28 = template_id26;
+                                            let ptr28 = vec28.as_ptr().cast::<u8>();
+                                            let len28 = vec28.len();
 
-                                            (5i32, ptr26.cast_mut(), len26, ptr27.cast_mut(), len27)
+                                            (5i32, ptr27.cast_mut(), len27, ptr28.cast_mut(), len28)
                                         }
-                                        DerivedTimelineNode::Or(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id28,
-                                                template_id: template_id28,
-                                            } = e;
-                                            let vec29 = worker_id28;
-                                            let ptr29 = vec29.as_ptr().cast::<u8>();
-                                            let len29 = vec29.len();
-                                            let vec30 = template_id28;
+                                        V35::Or(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id29, template_id:template_id29, } = e;
+                                            let vec30 = worker_id29;
                                             let ptr30 = vec30.as_ptr().cast::<u8>();
                                             let len30 = vec30.len();
+                                            let vec31 = template_id29;
+                                            let ptr31 = vec31.as_ptr().cast::<u8>();
+                                            let len31 = vec31.len();
 
-                                            (6i32, ptr29.cast_mut(), len29, ptr30.cast_mut(), len30)
+                                            (6i32, ptr30.cast_mut(), len30, ptr31.cast_mut(), len31)
                                         }
-                                        DerivedTimelineNode::Not(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id31,
-                                                template_id: template_id31,
-                                            } = e;
-                                            let vec32 = worker_id31;
-                                            let ptr32 = vec32.as_ptr().cast::<u8>();
-                                            let len32 = vec32.len();
-                                            let vec33 = template_id31;
+                                        V35::Not(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id32, template_id:template_id32, } = e;
+                                            let vec33 = worker_id32;
                                             let ptr33 = vec33.as_ptr().cast::<u8>();
                                             let len33 = vec33.len();
+                                            let vec34 = template_id32;
+                                            let ptr34 = vec34.as_ptr().cast::<u8>();
+                                            let len34 = vec34.len();
 
-                                            (7i32, ptr32.cast_mut(), len32, ptr33.cast_mut(), len33)
+                                            (7i32, ptr33.cast_mut(), len33, ptr34.cast_mut(), len34)
                                         }
                                     };
 
-                                (1i32, result34_0, result34_1, result34_2, result34_3, result34_4)
+                                (1i32, result36_0, result36_1, result36_2, result36_3, result36_4)
                             }
                         };
-                        let (result37_0, result37_1, result37_2) = match event_value {
-                            EventValue::StringValue(e) => {
-                                let vec36 = e;
-                                let ptr36 = vec36.as_ptr().cast::<u8>();
-                                let len36 = vec36.len();
+                        use super::super::super::timeline::event_processor_interface::api::EventValue as V40;
+                        let (result41_0, result41_1, result41_2) = match event_value {
+                            V40::StringValue(e) => {
+                                let vec39 = e;
+                                let ptr39 = vec39.as_ptr().cast::<u8>();
+                                let len39 = vec39.len();
 
                                 (
                                     0i32,
                                     {
                                         let mut t = ::core::mem::MaybeUninit::<u64>::uninit();
-                                        t.as_mut_ptr().cast::<*mut u8>().write(ptr36.cast_mut());
+                                        t.as_mut_ptr().cast::<*mut u8>().write(ptr39.cast_mut());
                                         t
                                     },
-                                    len36,
+                                    len39,
                                 )
                             }
-                            EventValue::IntValue(e) => {
+                            V40::IntValue(e) => {
                                 (1i32, ::core::mem::MaybeUninit::new(_rt::as_i64(e) as u64), 0usize)
                             }
-                            EventValue::FloatValue(e) => (
+                            V40::FloatValue(e) => (
                                 2i32,
                                 ::core::mem::MaybeUninit::new(
                                     (_rt::as_f64(e)).to_bits() as i64 as u64
                                 ),
                                 0usize,
                             ),
-                            EventValue::BoolValue(e) => (
+                            V40::BoolValue(e) => (
                                 3i32,
                                 ::core::mem::MaybeUninit::new(i64::from(match e {
                                     true => 1,
@@ -9924,15 +12190,15 @@ pub mod timeline {
                         }
                         let ret = wit_import(
                             (self).handle() as i32,
-                            result35_0,
-                            result35_1,
-                            result35_2,
-                            result35_3,
-                            result35_4,
-                            result35_5,
-                            result37_0,
-                            result37_1,
-                            result37_2,
+                            result38_0,
+                            result38_1,
+                            result38_2,
+                            result38_3,
+                            result38_4,
+                            result38_5,
+                            result41_0,
+                            result41_1,
+                            result41_2,
                         );
                         FutureInitializeLessThanOrEqualToResult::from_handle(ret as u32)
                     }
@@ -9949,22 +12215,21 @@ pub mod timeline {
                         #[repr(align(4))]
                         struct RetArea([::core::mem::MaybeUninit<u8>; 12]);
                         let mut ret_area = RetArea([::core::mem::MaybeUninit::uninit(); 12]);
+                        use super::super::super::timeline::timeline_processor_interface::api::TypedTimelineResultWorker as V37;
                         let (
-                            result35_0,
-                            result35_1,
-                            result35_2,
-                            result35_3,
-                            result35_4,
-                            result35_5,
+                            result38_0,
+                            result38_1,
+                            result38_2,
+                            result38_3,
+                            result38_4,
+                            result38_5,
                         ) = match child_worker1 {
-                            TypedTimelineResultWorker::LeafTimeline(e) => {
-                                let (result9_0, result9_1, result9_2, result9_3, result9_4) =
+                            V37::LeafTimeline(e) => {
+                                use super::super::super::timeline::timeline_processor_interface::api::LeafTimelineNode as V9;
+                                let (result10_0, result10_1, result10_2, result10_3, result10_4) =
                                     match e {
-                                        LeafTimelineNode::TlHasExisted(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id0,
-                                                template_id: template_id0,
-                                            } = e;
+                                        V9::TlHasExisted(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id0, template_id:template_id0, } = e;
                                             let vec1 = worker_id0;
                                             let ptr1 = vec1.as_ptr().cast::<u8>();
                                             let len1 = vec1.len();
@@ -9974,11 +12239,8 @@ pub mod timeline {
 
                                             (0i32, ptr1.cast_mut(), len1, ptr2.cast_mut(), len2)
                                         }
-                                        LeafTimelineNode::TlHasExistedWithin(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id3,
-                                                template_id: template_id3,
-                                            } = e;
+                                        V9::TlHasExistedWithin(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id3, template_id:template_id3, } = e;
                                             let vec4 = worker_id3;
                                             let ptr4 = vec4.as_ptr().cast::<u8>();
                                             let len4 = vec4.len();
@@ -9988,11 +12250,8 @@ pub mod timeline {
 
                                             (1i32, ptr4.cast_mut(), len4, ptr5.cast_mut(), len5)
                                         }
-                                        LeafTimelineNode::TlLatestEventToState(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id6,
-                                                template_id: template_id6,
-                                            } = e;
+                                        V9::TlLatestEventToState(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id6, template_id:template_id6, } = e;
                                             let vec7 = worker_id6;
                                             let ptr7 = vec7.as_ptr().cast::<u8>();
                                             let len7 = vec7.len();
@@ -10004,158 +12263,120 @@ pub mod timeline {
                                         }
                                     };
 
-                                (0i32, result9_0, result9_1, result9_2, result9_3, result9_4)
+                                (0i32, result10_0, result10_1, result10_2, result10_3, result10_4)
                             }
-                            TypedTimelineResultWorker::DerivedTimeline(e) => {
-                                let (result34_0, result34_1, result34_2, result34_3, result34_4) =
+                            V37::DerivedTimeline(e) => {
+                                use super::super::super::timeline::timeline_processor_interface::api::DerivedTimelineNode as V35;
+                                let (result36_0, result36_1, result36_2, result36_3, result36_4) =
                                     match e {
-                                        DerivedTimelineNode::EqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id10,
-                                                template_id: template_id10,
-                                            } = e;
-                                            let vec11 = worker_id10;
-                                            let ptr11 = vec11.as_ptr().cast::<u8>();
-                                            let len11 = vec11.len();
-                                            let vec12 = template_id10;
+                                        V35::EqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id11, template_id:template_id11, } = e;
+                                            let vec12 = worker_id11;
                                             let ptr12 = vec12.as_ptr().cast::<u8>();
                                             let len12 = vec12.len();
+                                            let vec13 = template_id11;
+                                            let ptr13 = vec13.as_ptr().cast::<u8>();
+                                            let len13 = vec13.len();
 
-                                            (0i32, ptr11.cast_mut(), len11, ptr12.cast_mut(), len12)
+                                            (0i32, ptr12.cast_mut(), len12, ptr13.cast_mut(), len13)
                                         }
-                                        DerivedTimelineNode::GreaterThan(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id13,
-                                                template_id: template_id13,
-                                            } = e;
-                                            let vec14 = worker_id13;
-                                            let ptr14 = vec14.as_ptr().cast::<u8>();
-                                            let len14 = vec14.len();
-                                            let vec15 = template_id13;
+                                        V35::GreaterThan(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id14, template_id:template_id14, } = e;
+                                            let vec15 = worker_id14;
                                             let ptr15 = vec15.as_ptr().cast::<u8>();
                                             let len15 = vec15.len();
+                                            let vec16 = template_id14;
+                                            let ptr16 = vec16.as_ptr().cast::<u8>();
+                                            let len16 = vec16.len();
 
-                                            (1i32, ptr14.cast_mut(), len14, ptr15.cast_mut(), len15)
+                                            (1i32, ptr15.cast_mut(), len15, ptr16.cast_mut(), len16)
                                         }
-                                        DerivedTimelineNode::GreaterThanOrEqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id16,
-                                                template_id: template_id16,
-                                            } = e;
-                                            let vec17 = worker_id16;
-                                            let ptr17 = vec17.as_ptr().cast::<u8>();
-                                            let len17 = vec17.len();
-                                            let vec18 = template_id16;
+                                        V35::GreaterThanOrEqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id17, template_id:template_id17, } = e;
+                                            let vec18 = worker_id17;
                                             let ptr18 = vec18.as_ptr().cast::<u8>();
                                             let len18 = vec18.len();
+                                            let vec19 = template_id17;
+                                            let ptr19 = vec19.as_ptr().cast::<u8>();
+                                            let len19 = vec19.len();
 
-                                            (2i32, ptr17.cast_mut(), len17, ptr18.cast_mut(), len18)
+                                            (2i32, ptr18.cast_mut(), len18, ptr19.cast_mut(), len19)
                                         }
-                                        DerivedTimelineNode::LessThan(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id19,
-                                                template_id: template_id19,
-                                            } = e;
-                                            let vec20 = worker_id19;
-                                            let ptr20 = vec20.as_ptr().cast::<u8>();
-                                            let len20 = vec20.len();
-                                            let vec21 = template_id19;
+                                        V35::LessThan(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id20, template_id:template_id20, } = e;
+                                            let vec21 = worker_id20;
                                             let ptr21 = vec21.as_ptr().cast::<u8>();
                                             let len21 = vec21.len();
+                                            let vec22 = template_id20;
+                                            let ptr22 = vec22.as_ptr().cast::<u8>();
+                                            let len22 = vec22.len();
 
-                                            (3i32, ptr20.cast_mut(), len20, ptr21.cast_mut(), len21)
+                                            (3i32, ptr21.cast_mut(), len21, ptr22.cast_mut(), len22)
                                         }
-                                        DerivedTimelineNode::LessThanOrEqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id22,
-                                                template_id: template_id22,
-                                            } = e;
-                                            let vec23 = worker_id22;
-                                            let ptr23 = vec23.as_ptr().cast::<u8>();
-                                            let len23 = vec23.len();
-                                            let vec24 = template_id22;
+                                        V35::LessThanOrEqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id23, template_id:template_id23, } = e;
+                                            let vec24 = worker_id23;
                                             let ptr24 = vec24.as_ptr().cast::<u8>();
                                             let len24 = vec24.len();
+                                            let vec25 = template_id23;
+                                            let ptr25 = vec25.as_ptr().cast::<u8>();
+                                            let len25 = vec25.len();
 
-                                            (4i32, ptr23.cast_mut(), len23, ptr24.cast_mut(), len24)
+                                            (4i32, ptr24.cast_mut(), len24, ptr25.cast_mut(), len25)
                                         }
-                                        DerivedTimelineNode::And(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id25,
-                                                template_id: template_id25,
-                                            } = e;
-                                            let vec26 = worker_id25;
-                                            let ptr26 = vec26.as_ptr().cast::<u8>();
-                                            let len26 = vec26.len();
-                                            let vec27 = template_id25;
+                                        V35::And(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id26, template_id:template_id26, } = e;
+                                            let vec27 = worker_id26;
                                             let ptr27 = vec27.as_ptr().cast::<u8>();
                                             let len27 = vec27.len();
+                                            let vec28 = template_id26;
+                                            let ptr28 = vec28.as_ptr().cast::<u8>();
+                                            let len28 = vec28.len();
 
-                                            (5i32, ptr26.cast_mut(), len26, ptr27.cast_mut(), len27)
+                                            (5i32, ptr27.cast_mut(), len27, ptr28.cast_mut(), len28)
                                         }
-                                        DerivedTimelineNode::Or(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id28,
-                                                template_id: template_id28,
-                                            } = e;
-                                            let vec29 = worker_id28;
-                                            let ptr29 = vec29.as_ptr().cast::<u8>();
-                                            let len29 = vec29.len();
-                                            let vec30 = template_id28;
+                                        V35::Or(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id29, template_id:template_id29, } = e;
+                                            let vec30 = worker_id29;
                                             let ptr30 = vec30.as_ptr().cast::<u8>();
                                             let len30 = vec30.len();
+                                            let vec31 = template_id29;
+                                            let ptr31 = vec31.as_ptr().cast::<u8>();
+                                            let len31 = vec31.len();
 
-                                            (6i32, ptr29.cast_mut(), len29, ptr30.cast_mut(), len30)
+                                            (6i32, ptr30.cast_mut(), len30, ptr31.cast_mut(), len31)
                                         }
-                                        DerivedTimelineNode::Not(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id31,
-                                                template_id: template_id31,
-                                            } = e;
-                                            let vec32 = worker_id31;
-                                            let ptr32 = vec32.as_ptr().cast::<u8>();
-                                            let len32 = vec32.len();
-                                            let vec33 = template_id31;
+                                        V35::Not(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id32, template_id:template_id32, } = e;
+                                            let vec33 = worker_id32;
                                             let ptr33 = vec33.as_ptr().cast::<u8>();
                                             let len33 = vec33.len();
+                                            let vec34 = template_id32;
+                                            let ptr34 = vec34.as_ptr().cast::<u8>();
+                                            let len34 = vec34.len();
 
-                                            (7i32, ptr32.cast_mut(), len32, ptr33.cast_mut(), len33)
+                                            (7i32, ptr33.cast_mut(), len33, ptr34.cast_mut(), len34)
                                         }
                                     };
 
-                                (1i32, result34_0, result34_1, result34_2, result34_3, result34_4)
+                                (1i32, result36_0, result36_1, result36_2, result36_3, result36_4)
                             }
                         };
+                        use super::super::super::timeline::timeline_processor_interface::api::TypedTimelineResultWorker as V76;
                         let (
-                            result71_0,
-                            result71_1,
-                            result71_2,
-                            result71_3,
-                            result71_4,
-                            result71_5,
+                            result77_0,
+                            result77_1,
+                            result77_2,
+                            result77_3,
+                            result77_4,
+                            result77_5,
                         ) = match child_worker2 {
-                            TypedTimelineResultWorker::LeafTimeline(e) => {
-                                let (result45_0, result45_1, result45_2, result45_3, result45_4) =
+                            V76::LeafTimeline(e) => {
+                                use super::super::super::timeline::timeline_processor_interface::api::LeafTimelineNode as V48;
+                                let (result49_0, result49_1, result49_2, result49_3, result49_4) =
                                     match e {
-                                        LeafTimelineNode::TlHasExisted(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id36,
-                                                template_id: template_id36,
-                                            } = e;
-                                            let vec37 = worker_id36;
-                                            let ptr37 = vec37.as_ptr().cast::<u8>();
-                                            let len37 = vec37.len();
-                                            let vec38 = template_id36;
-                                            let ptr38 = vec38.as_ptr().cast::<u8>();
-                                            let len38 = vec38.len();
-
-                                            (0i32, ptr37.cast_mut(), len37, ptr38.cast_mut(), len38)
-                                        }
-                                        LeafTimelineNode::TlHasExistedWithin(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id39,
-                                                template_id: template_id39,
-                                            } = e;
+                                        V48::TlHasExisted(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id39, template_id:template_id39, } = e;
                                             let vec40 = worker_id39;
                                             let ptr40 = vec40.as_ptr().cast::<u8>();
                                             let len40 = vec40.len();
@@ -10163,13 +12384,10 @@ pub mod timeline {
                                             let ptr41 = vec41.as_ptr().cast::<u8>();
                                             let len41 = vec41.len();
 
-                                            (1i32, ptr40.cast_mut(), len40, ptr41.cast_mut(), len41)
+                                            (0i32, ptr40.cast_mut(), len40, ptr41.cast_mut(), len41)
                                         }
-                                        LeafTimelineNode::TlLatestEventToState(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id42,
-                                                template_id: template_id42,
-                                            } = e;
+                                        V48::TlHasExistedWithin(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id42, template_id:template_id42, } = e;
                                             let vec43 = worker_id42;
                                             let ptr43 = vec43.as_ptr().cast::<u8>();
                                             let len43 = vec43.len();
@@ -10177,133 +12395,121 @@ pub mod timeline {
                                             let ptr44 = vec44.as_ptr().cast::<u8>();
                                             let len44 = vec44.len();
 
-                                            (2i32, ptr43.cast_mut(), len43, ptr44.cast_mut(), len44)
+                                            (1i32, ptr43.cast_mut(), len43, ptr44.cast_mut(), len44)
                                         }
-                                    };
-
-                                (0i32, result45_0, result45_1, result45_2, result45_3, result45_4)
-                            }
-                            TypedTimelineResultWorker::DerivedTimeline(e) => {
-                                let (result70_0, result70_1, result70_2, result70_3, result70_4) =
-                                    match e {
-                                        DerivedTimelineNode::EqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id46,
-                                                template_id: template_id46,
-                                            } = e;
-                                            let vec47 = worker_id46;
+                                        V48::TlLatestEventToState(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id45, template_id:template_id45, } = e;
+                                            let vec46 = worker_id45;
+                                            let ptr46 = vec46.as_ptr().cast::<u8>();
+                                            let len46 = vec46.len();
+                                            let vec47 = template_id45;
                                             let ptr47 = vec47.as_ptr().cast::<u8>();
                                             let len47 = vec47.len();
-                                            let vec48 = template_id46;
-                                            let ptr48 = vec48.as_ptr().cast::<u8>();
-                                            let len48 = vec48.len();
 
-                                            (0i32, ptr47.cast_mut(), len47, ptr48.cast_mut(), len48)
-                                        }
-                                        DerivedTimelineNode::GreaterThan(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id49,
-                                                template_id: template_id49,
-                                            } = e;
-                                            let vec50 = worker_id49;
-                                            let ptr50 = vec50.as_ptr().cast::<u8>();
-                                            let len50 = vec50.len();
-                                            let vec51 = template_id49;
-                                            let ptr51 = vec51.as_ptr().cast::<u8>();
-                                            let len51 = vec51.len();
-
-                                            (1i32, ptr50.cast_mut(), len50, ptr51.cast_mut(), len51)
-                                        }
-                                        DerivedTimelineNode::GreaterThanOrEqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id52,
-                                                template_id: template_id52,
-                                            } = e;
-                                            let vec53 = worker_id52;
-                                            let ptr53 = vec53.as_ptr().cast::<u8>();
-                                            let len53 = vec53.len();
-                                            let vec54 = template_id52;
-                                            let ptr54 = vec54.as_ptr().cast::<u8>();
-                                            let len54 = vec54.len();
-
-                                            (2i32, ptr53.cast_mut(), len53, ptr54.cast_mut(), len54)
-                                        }
-                                        DerivedTimelineNode::LessThan(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id55,
-                                                template_id: template_id55,
-                                            } = e;
-                                            let vec56 = worker_id55;
-                                            let ptr56 = vec56.as_ptr().cast::<u8>();
-                                            let len56 = vec56.len();
-                                            let vec57 = template_id55;
-                                            let ptr57 = vec57.as_ptr().cast::<u8>();
-                                            let len57 = vec57.len();
-
-                                            (3i32, ptr56.cast_mut(), len56, ptr57.cast_mut(), len57)
-                                        }
-                                        DerivedTimelineNode::LessThanOrEqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id58,
-                                                template_id: template_id58,
-                                            } = e;
-                                            let vec59 = worker_id58;
-                                            let ptr59 = vec59.as_ptr().cast::<u8>();
-                                            let len59 = vec59.len();
-                                            let vec60 = template_id58;
-                                            let ptr60 = vec60.as_ptr().cast::<u8>();
-                                            let len60 = vec60.len();
-
-                                            (4i32, ptr59.cast_mut(), len59, ptr60.cast_mut(), len60)
-                                        }
-                                        DerivedTimelineNode::And(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id61,
-                                                template_id: template_id61,
-                                            } = e;
-                                            let vec62 = worker_id61;
-                                            let ptr62 = vec62.as_ptr().cast::<u8>();
-                                            let len62 = vec62.len();
-                                            let vec63 = template_id61;
-                                            let ptr63 = vec63.as_ptr().cast::<u8>();
-                                            let len63 = vec63.len();
-
-                                            (5i32, ptr62.cast_mut(), len62, ptr63.cast_mut(), len63)
-                                        }
-                                        DerivedTimelineNode::Or(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id64,
-                                                template_id: template_id64,
-                                            } = e;
-                                            let vec65 = worker_id64;
-                                            let ptr65 = vec65.as_ptr().cast::<u8>();
-                                            let len65 = vec65.len();
-                                            let vec66 = template_id64;
-                                            let ptr66 = vec66.as_ptr().cast::<u8>();
-                                            let len66 = vec66.len();
-
-                                            (6i32, ptr65.cast_mut(), len65, ptr66.cast_mut(), len66)
-                                        }
-                                        DerivedTimelineNode::Not(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id67,
-                                                template_id: template_id67,
-                                            } = e;
-                                            let vec68 = worker_id67;
-                                            let ptr68 = vec68.as_ptr().cast::<u8>();
-                                            let len68 = vec68.len();
-                                            let vec69 = template_id67;
-                                            let ptr69 = vec69.as_ptr().cast::<u8>();
-                                            let len69 = vec69.len();
-
-                                            (7i32, ptr68.cast_mut(), len68, ptr69.cast_mut(), len69)
+                                            (2i32, ptr46.cast_mut(), len46, ptr47.cast_mut(), len47)
                                         }
                                     };
 
-                                (1i32, result70_0, result70_1, result70_2, result70_3, result70_4)
+                                (0i32, result49_0, result49_1, result49_2, result49_3, result49_4)
+                            }
+                            V76::DerivedTimeline(e) => {
+                                use super::super::super::timeline::timeline_processor_interface::api::DerivedTimelineNode as V74;
+                                let (result75_0, result75_1, result75_2, result75_3, result75_4) =
+                                    match e {
+                                        V74::EqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id50, template_id:template_id50, } = e;
+                                            let vec51 = worker_id50;
+                                            let ptr51 = vec51.as_ptr().cast::<u8>();
+                                            let len51 = vec51.len();
+                                            let vec52 = template_id50;
+                                            let ptr52 = vec52.as_ptr().cast::<u8>();
+                                            let len52 = vec52.len();
+
+                                            (0i32, ptr51.cast_mut(), len51, ptr52.cast_mut(), len52)
+                                        }
+                                        V74::GreaterThan(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id53, template_id:template_id53, } = e;
+                                            let vec54 = worker_id53;
+                                            let ptr54 = vec54.as_ptr().cast::<u8>();
+                                            let len54 = vec54.len();
+                                            let vec55 = template_id53;
+                                            let ptr55 = vec55.as_ptr().cast::<u8>();
+                                            let len55 = vec55.len();
+
+                                            (1i32, ptr54.cast_mut(), len54, ptr55.cast_mut(), len55)
+                                        }
+                                        V74::GreaterThanOrEqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id56, template_id:template_id56, } = e;
+                                            let vec57 = worker_id56;
+                                            let ptr57 = vec57.as_ptr().cast::<u8>();
+                                            let len57 = vec57.len();
+                                            let vec58 = template_id56;
+                                            let ptr58 = vec58.as_ptr().cast::<u8>();
+                                            let len58 = vec58.len();
+
+                                            (2i32, ptr57.cast_mut(), len57, ptr58.cast_mut(), len58)
+                                        }
+                                        V74::LessThan(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id59, template_id:template_id59, } = e;
+                                            let vec60 = worker_id59;
+                                            let ptr60 = vec60.as_ptr().cast::<u8>();
+                                            let len60 = vec60.len();
+                                            let vec61 = template_id59;
+                                            let ptr61 = vec61.as_ptr().cast::<u8>();
+                                            let len61 = vec61.len();
+
+                                            (3i32, ptr60.cast_mut(), len60, ptr61.cast_mut(), len61)
+                                        }
+                                        V74::LessThanOrEqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id62, template_id:template_id62, } = e;
+                                            let vec63 = worker_id62;
+                                            let ptr63 = vec63.as_ptr().cast::<u8>();
+                                            let len63 = vec63.len();
+                                            let vec64 = template_id62;
+                                            let ptr64 = vec64.as_ptr().cast::<u8>();
+                                            let len64 = vec64.len();
+
+                                            (4i32, ptr63.cast_mut(), len63, ptr64.cast_mut(), len64)
+                                        }
+                                        V74::And(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id65, template_id:template_id65, } = e;
+                                            let vec66 = worker_id65;
+                                            let ptr66 = vec66.as_ptr().cast::<u8>();
+                                            let len66 = vec66.len();
+                                            let vec67 = template_id65;
+                                            let ptr67 = vec67.as_ptr().cast::<u8>();
+                                            let len67 = vec67.len();
+
+                                            (5i32, ptr66.cast_mut(), len66, ptr67.cast_mut(), len67)
+                                        }
+                                        V74::Or(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id68, template_id:template_id68, } = e;
+                                            let vec69 = worker_id68;
+                                            let ptr69 = vec69.as_ptr().cast::<u8>();
+                                            let len69 = vec69.len();
+                                            let vec70 = template_id68;
+                                            let ptr70 = vec70.as_ptr().cast::<u8>();
+                                            let len70 = vec70.len();
+
+                                            (6i32, ptr69.cast_mut(), len69, ptr70.cast_mut(), len70)
+                                        }
+                                        V74::Not(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id71, template_id:template_id71, } = e;
+                                            let vec72 = worker_id71;
+                                            let ptr72 = vec72.as_ptr().cast::<u8>();
+                                            let len72 = vec72.len();
+                                            let vec73 = template_id71;
+                                            let ptr73 = vec73.as_ptr().cast::<u8>();
+                                            let len73 = vec73.len();
+
+                                            (7i32, ptr72.cast_mut(), len72, ptr73.cast_mut(), len73)
+                                        }
+                                    };
+
+                                (1i32, result75_0, result75_1, result75_2, result75_3, result75_4)
                             }
                         };
-                        let ptr72 = ret_area.0.as_mut_ptr().cast::<u8>();
+                        let ptr78 = ret_area.0.as_mut_ptr().cast::<u8>();
                         #[cfg(target_arch = "wasm32")]
                         #[link(
                             wasm_import_module = "timeline:timeline-processor-stub/stub-timeline-processor"
@@ -10349,43 +12555,43 @@ pub mod timeline {
                         }
                         wit_import(
                             (self).handle() as i32,
-                            result35_0,
-                            result35_1,
-                            result35_2,
-                            result35_3,
-                            result35_4,
-                            result35_5,
-                            result71_0,
-                            result71_1,
-                            result71_2,
-                            result71_3,
-                            result71_4,
-                            result71_5,
-                            ptr72,
+                            result38_0,
+                            result38_1,
+                            result38_2,
+                            result38_3,
+                            result38_4,
+                            result38_5,
+                            result77_0,
+                            result77_1,
+                            result77_2,
+                            result77_3,
+                            result77_4,
+                            result77_5,
+                            ptr78,
                         );
-                        let l73 = i32::from(*ptr72.add(0).cast::<u8>());
-                        match l73 {
+                        let l79 = i32::from(*ptr78.add(0).cast::<u8>());
+                        match l79 {
                             0 => {
                                 let e = {
-                                    let l74 = *ptr72.add(4).cast::<*mut u8>();
-                                    let l75 = *ptr72.add(8).cast::<usize>();
-                                    let len76 = l75;
-                                    let bytes76 =
-                                        _rt::Vec::from_raw_parts(l74.cast(), len76, len76);
+                                    let l80 = *ptr78.add(4).cast::<*mut u8>();
+                                    let l81 = *ptr78.add(8).cast::<usize>();
+                                    let len82 = l81;
+                                    let bytes82 =
+                                        _rt::Vec::from_raw_parts(l80.cast(), len82, len82);
 
-                                    _rt::string_lift(bytes76)
+                                    _rt::string_lift(bytes82)
                                 };
                                 Ok(e)
                             }
                             1 => {
                                 let e = {
-                                    let l77 = *ptr72.add(4).cast::<*mut u8>();
-                                    let l78 = *ptr72.add(8).cast::<usize>();
-                                    let len79 = l78;
-                                    let bytes79 =
-                                        _rt::Vec::from_raw_parts(l77.cast(), len79, len79);
+                                    let l83 = *ptr78.add(4).cast::<*mut u8>();
+                                    let l84 = *ptr78.add(8).cast::<usize>();
+                                    let len85 = l84;
+                                    let bytes85 =
+                                        _rt::Vec::from_raw_parts(l83.cast(), len85, len85);
 
-                                    _rt::string_lift(bytes79)
+                                    _rt::string_lift(bytes85)
                                 };
                                 Err(e)
                             }
@@ -10402,22 +12608,21 @@ pub mod timeline {
                     child_worker2: &TypedTimelineResultWorker,
                 ) -> FutureInitializeAndResult {
                     unsafe {
+                        use super::super::super::timeline::timeline_processor_interface::api::TypedTimelineResultWorker as V37;
                         let (
-                            result35_0,
-                            result35_1,
-                            result35_2,
-                            result35_3,
-                            result35_4,
-                            result35_5,
+                            result38_0,
+                            result38_1,
+                            result38_2,
+                            result38_3,
+                            result38_4,
+                            result38_5,
                         ) = match child_worker1 {
-                            TypedTimelineResultWorker::LeafTimeline(e) => {
-                                let (result9_0, result9_1, result9_2, result9_3, result9_4) =
+                            V37::LeafTimeline(e) => {
+                                use super::super::super::timeline::timeline_processor_interface::api::LeafTimelineNode as V9;
+                                let (result10_0, result10_1, result10_2, result10_3, result10_4) =
                                     match e {
-                                        LeafTimelineNode::TlHasExisted(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id0,
-                                                template_id: template_id0,
-                                            } = e;
+                                        V9::TlHasExisted(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id0, template_id:template_id0, } = e;
                                             let vec1 = worker_id0;
                                             let ptr1 = vec1.as_ptr().cast::<u8>();
                                             let len1 = vec1.len();
@@ -10427,11 +12632,8 @@ pub mod timeline {
 
                                             (0i32, ptr1.cast_mut(), len1, ptr2.cast_mut(), len2)
                                         }
-                                        LeafTimelineNode::TlHasExistedWithin(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id3,
-                                                template_id: template_id3,
-                                            } = e;
+                                        V9::TlHasExistedWithin(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id3, template_id:template_id3, } = e;
                                             let vec4 = worker_id3;
                                             let ptr4 = vec4.as_ptr().cast::<u8>();
                                             let len4 = vec4.len();
@@ -10441,11 +12643,8 @@ pub mod timeline {
 
                                             (1i32, ptr4.cast_mut(), len4, ptr5.cast_mut(), len5)
                                         }
-                                        LeafTimelineNode::TlLatestEventToState(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id6,
-                                                template_id: template_id6,
-                                            } = e;
+                                        V9::TlLatestEventToState(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id6, template_id:template_id6, } = e;
                                             let vec7 = worker_id6;
                                             let ptr7 = vec7.as_ptr().cast::<u8>();
                                             let len7 = vec7.len();
@@ -10457,158 +12656,120 @@ pub mod timeline {
                                         }
                                     };
 
-                                (0i32, result9_0, result9_1, result9_2, result9_3, result9_4)
+                                (0i32, result10_0, result10_1, result10_2, result10_3, result10_4)
                             }
-                            TypedTimelineResultWorker::DerivedTimeline(e) => {
-                                let (result34_0, result34_1, result34_2, result34_3, result34_4) =
+                            V37::DerivedTimeline(e) => {
+                                use super::super::super::timeline::timeline_processor_interface::api::DerivedTimelineNode as V35;
+                                let (result36_0, result36_1, result36_2, result36_3, result36_4) =
                                     match e {
-                                        DerivedTimelineNode::EqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id10,
-                                                template_id: template_id10,
-                                            } = e;
-                                            let vec11 = worker_id10;
-                                            let ptr11 = vec11.as_ptr().cast::<u8>();
-                                            let len11 = vec11.len();
-                                            let vec12 = template_id10;
+                                        V35::EqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id11, template_id:template_id11, } = e;
+                                            let vec12 = worker_id11;
                                             let ptr12 = vec12.as_ptr().cast::<u8>();
                                             let len12 = vec12.len();
+                                            let vec13 = template_id11;
+                                            let ptr13 = vec13.as_ptr().cast::<u8>();
+                                            let len13 = vec13.len();
 
-                                            (0i32, ptr11.cast_mut(), len11, ptr12.cast_mut(), len12)
+                                            (0i32, ptr12.cast_mut(), len12, ptr13.cast_mut(), len13)
                                         }
-                                        DerivedTimelineNode::GreaterThan(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id13,
-                                                template_id: template_id13,
-                                            } = e;
-                                            let vec14 = worker_id13;
-                                            let ptr14 = vec14.as_ptr().cast::<u8>();
-                                            let len14 = vec14.len();
-                                            let vec15 = template_id13;
+                                        V35::GreaterThan(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id14, template_id:template_id14, } = e;
+                                            let vec15 = worker_id14;
                                             let ptr15 = vec15.as_ptr().cast::<u8>();
                                             let len15 = vec15.len();
+                                            let vec16 = template_id14;
+                                            let ptr16 = vec16.as_ptr().cast::<u8>();
+                                            let len16 = vec16.len();
 
-                                            (1i32, ptr14.cast_mut(), len14, ptr15.cast_mut(), len15)
+                                            (1i32, ptr15.cast_mut(), len15, ptr16.cast_mut(), len16)
                                         }
-                                        DerivedTimelineNode::GreaterThanOrEqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id16,
-                                                template_id: template_id16,
-                                            } = e;
-                                            let vec17 = worker_id16;
-                                            let ptr17 = vec17.as_ptr().cast::<u8>();
-                                            let len17 = vec17.len();
-                                            let vec18 = template_id16;
+                                        V35::GreaterThanOrEqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id17, template_id:template_id17, } = e;
+                                            let vec18 = worker_id17;
                                             let ptr18 = vec18.as_ptr().cast::<u8>();
                                             let len18 = vec18.len();
+                                            let vec19 = template_id17;
+                                            let ptr19 = vec19.as_ptr().cast::<u8>();
+                                            let len19 = vec19.len();
 
-                                            (2i32, ptr17.cast_mut(), len17, ptr18.cast_mut(), len18)
+                                            (2i32, ptr18.cast_mut(), len18, ptr19.cast_mut(), len19)
                                         }
-                                        DerivedTimelineNode::LessThan(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id19,
-                                                template_id: template_id19,
-                                            } = e;
-                                            let vec20 = worker_id19;
-                                            let ptr20 = vec20.as_ptr().cast::<u8>();
-                                            let len20 = vec20.len();
-                                            let vec21 = template_id19;
+                                        V35::LessThan(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id20, template_id:template_id20, } = e;
+                                            let vec21 = worker_id20;
                                             let ptr21 = vec21.as_ptr().cast::<u8>();
                                             let len21 = vec21.len();
+                                            let vec22 = template_id20;
+                                            let ptr22 = vec22.as_ptr().cast::<u8>();
+                                            let len22 = vec22.len();
 
-                                            (3i32, ptr20.cast_mut(), len20, ptr21.cast_mut(), len21)
+                                            (3i32, ptr21.cast_mut(), len21, ptr22.cast_mut(), len22)
                                         }
-                                        DerivedTimelineNode::LessThanOrEqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id22,
-                                                template_id: template_id22,
-                                            } = e;
-                                            let vec23 = worker_id22;
-                                            let ptr23 = vec23.as_ptr().cast::<u8>();
-                                            let len23 = vec23.len();
-                                            let vec24 = template_id22;
+                                        V35::LessThanOrEqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id23, template_id:template_id23, } = e;
+                                            let vec24 = worker_id23;
                                             let ptr24 = vec24.as_ptr().cast::<u8>();
                                             let len24 = vec24.len();
+                                            let vec25 = template_id23;
+                                            let ptr25 = vec25.as_ptr().cast::<u8>();
+                                            let len25 = vec25.len();
 
-                                            (4i32, ptr23.cast_mut(), len23, ptr24.cast_mut(), len24)
+                                            (4i32, ptr24.cast_mut(), len24, ptr25.cast_mut(), len25)
                                         }
-                                        DerivedTimelineNode::And(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id25,
-                                                template_id: template_id25,
-                                            } = e;
-                                            let vec26 = worker_id25;
-                                            let ptr26 = vec26.as_ptr().cast::<u8>();
-                                            let len26 = vec26.len();
-                                            let vec27 = template_id25;
+                                        V35::And(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id26, template_id:template_id26, } = e;
+                                            let vec27 = worker_id26;
                                             let ptr27 = vec27.as_ptr().cast::<u8>();
                                             let len27 = vec27.len();
+                                            let vec28 = template_id26;
+                                            let ptr28 = vec28.as_ptr().cast::<u8>();
+                                            let len28 = vec28.len();
 
-                                            (5i32, ptr26.cast_mut(), len26, ptr27.cast_mut(), len27)
+                                            (5i32, ptr27.cast_mut(), len27, ptr28.cast_mut(), len28)
                                         }
-                                        DerivedTimelineNode::Or(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id28,
-                                                template_id: template_id28,
-                                            } = e;
-                                            let vec29 = worker_id28;
-                                            let ptr29 = vec29.as_ptr().cast::<u8>();
-                                            let len29 = vec29.len();
-                                            let vec30 = template_id28;
+                                        V35::Or(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id29, template_id:template_id29, } = e;
+                                            let vec30 = worker_id29;
                                             let ptr30 = vec30.as_ptr().cast::<u8>();
                                             let len30 = vec30.len();
+                                            let vec31 = template_id29;
+                                            let ptr31 = vec31.as_ptr().cast::<u8>();
+                                            let len31 = vec31.len();
 
-                                            (6i32, ptr29.cast_mut(), len29, ptr30.cast_mut(), len30)
+                                            (6i32, ptr30.cast_mut(), len30, ptr31.cast_mut(), len31)
                                         }
-                                        DerivedTimelineNode::Not(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id31,
-                                                template_id: template_id31,
-                                            } = e;
-                                            let vec32 = worker_id31;
-                                            let ptr32 = vec32.as_ptr().cast::<u8>();
-                                            let len32 = vec32.len();
-                                            let vec33 = template_id31;
+                                        V35::Not(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id32, template_id:template_id32, } = e;
+                                            let vec33 = worker_id32;
                                             let ptr33 = vec33.as_ptr().cast::<u8>();
                                             let len33 = vec33.len();
+                                            let vec34 = template_id32;
+                                            let ptr34 = vec34.as_ptr().cast::<u8>();
+                                            let len34 = vec34.len();
 
-                                            (7i32, ptr32.cast_mut(), len32, ptr33.cast_mut(), len33)
+                                            (7i32, ptr33.cast_mut(), len33, ptr34.cast_mut(), len34)
                                         }
                                     };
 
-                                (1i32, result34_0, result34_1, result34_2, result34_3, result34_4)
+                                (1i32, result36_0, result36_1, result36_2, result36_3, result36_4)
                             }
                         };
+                        use super::super::super::timeline::timeline_processor_interface::api::TypedTimelineResultWorker as V76;
                         let (
-                            result71_0,
-                            result71_1,
-                            result71_2,
-                            result71_3,
-                            result71_4,
-                            result71_5,
+                            result77_0,
+                            result77_1,
+                            result77_2,
+                            result77_3,
+                            result77_4,
+                            result77_5,
                         ) = match child_worker2 {
-                            TypedTimelineResultWorker::LeafTimeline(e) => {
-                                let (result45_0, result45_1, result45_2, result45_3, result45_4) =
+                            V76::LeafTimeline(e) => {
+                                use super::super::super::timeline::timeline_processor_interface::api::LeafTimelineNode as V48;
+                                let (result49_0, result49_1, result49_2, result49_3, result49_4) =
                                     match e {
-                                        LeafTimelineNode::TlHasExisted(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id36,
-                                                template_id: template_id36,
-                                            } = e;
-                                            let vec37 = worker_id36;
-                                            let ptr37 = vec37.as_ptr().cast::<u8>();
-                                            let len37 = vec37.len();
-                                            let vec38 = template_id36;
-                                            let ptr38 = vec38.as_ptr().cast::<u8>();
-                                            let len38 = vec38.len();
-
-                                            (0i32, ptr37.cast_mut(), len37, ptr38.cast_mut(), len38)
-                                        }
-                                        LeafTimelineNode::TlHasExistedWithin(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id39,
-                                                template_id: template_id39,
-                                            } = e;
+                                        V48::TlHasExisted(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id39, template_id:template_id39, } = e;
                                             let vec40 = worker_id39;
                                             let ptr40 = vec40.as_ptr().cast::<u8>();
                                             let len40 = vec40.len();
@@ -10616,13 +12777,10 @@ pub mod timeline {
                                             let ptr41 = vec41.as_ptr().cast::<u8>();
                                             let len41 = vec41.len();
 
-                                            (1i32, ptr40.cast_mut(), len40, ptr41.cast_mut(), len41)
+                                            (0i32, ptr40.cast_mut(), len40, ptr41.cast_mut(), len41)
                                         }
-                                        LeafTimelineNode::TlLatestEventToState(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id42,
-                                                template_id: template_id42,
-                                            } = e;
+                                        V48::TlHasExistedWithin(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id42, template_id:template_id42, } = e;
                                             let vec43 = worker_id42;
                                             let ptr43 = vec43.as_ptr().cast::<u8>();
                                             let len43 = vec43.len();
@@ -10630,130 +12788,118 @@ pub mod timeline {
                                             let ptr44 = vec44.as_ptr().cast::<u8>();
                                             let len44 = vec44.len();
 
-                                            (2i32, ptr43.cast_mut(), len43, ptr44.cast_mut(), len44)
+                                            (1i32, ptr43.cast_mut(), len43, ptr44.cast_mut(), len44)
                                         }
-                                    };
-
-                                (0i32, result45_0, result45_1, result45_2, result45_3, result45_4)
-                            }
-                            TypedTimelineResultWorker::DerivedTimeline(e) => {
-                                let (result70_0, result70_1, result70_2, result70_3, result70_4) =
-                                    match e {
-                                        DerivedTimelineNode::EqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id46,
-                                                template_id: template_id46,
-                                            } = e;
-                                            let vec47 = worker_id46;
+                                        V48::TlLatestEventToState(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id45, template_id:template_id45, } = e;
+                                            let vec46 = worker_id45;
+                                            let ptr46 = vec46.as_ptr().cast::<u8>();
+                                            let len46 = vec46.len();
+                                            let vec47 = template_id45;
                                             let ptr47 = vec47.as_ptr().cast::<u8>();
                                             let len47 = vec47.len();
-                                            let vec48 = template_id46;
-                                            let ptr48 = vec48.as_ptr().cast::<u8>();
-                                            let len48 = vec48.len();
 
-                                            (0i32, ptr47.cast_mut(), len47, ptr48.cast_mut(), len48)
-                                        }
-                                        DerivedTimelineNode::GreaterThan(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id49,
-                                                template_id: template_id49,
-                                            } = e;
-                                            let vec50 = worker_id49;
-                                            let ptr50 = vec50.as_ptr().cast::<u8>();
-                                            let len50 = vec50.len();
-                                            let vec51 = template_id49;
-                                            let ptr51 = vec51.as_ptr().cast::<u8>();
-                                            let len51 = vec51.len();
-
-                                            (1i32, ptr50.cast_mut(), len50, ptr51.cast_mut(), len51)
-                                        }
-                                        DerivedTimelineNode::GreaterThanOrEqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id52,
-                                                template_id: template_id52,
-                                            } = e;
-                                            let vec53 = worker_id52;
-                                            let ptr53 = vec53.as_ptr().cast::<u8>();
-                                            let len53 = vec53.len();
-                                            let vec54 = template_id52;
-                                            let ptr54 = vec54.as_ptr().cast::<u8>();
-                                            let len54 = vec54.len();
-
-                                            (2i32, ptr53.cast_mut(), len53, ptr54.cast_mut(), len54)
-                                        }
-                                        DerivedTimelineNode::LessThan(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id55,
-                                                template_id: template_id55,
-                                            } = e;
-                                            let vec56 = worker_id55;
-                                            let ptr56 = vec56.as_ptr().cast::<u8>();
-                                            let len56 = vec56.len();
-                                            let vec57 = template_id55;
-                                            let ptr57 = vec57.as_ptr().cast::<u8>();
-                                            let len57 = vec57.len();
-
-                                            (3i32, ptr56.cast_mut(), len56, ptr57.cast_mut(), len57)
-                                        }
-                                        DerivedTimelineNode::LessThanOrEqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id58,
-                                                template_id: template_id58,
-                                            } = e;
-                                            let vec59 = worker_id58;
-                                            let ptr59 = vec59.as_ptr().cast::<u8>();
-                                            let len59 = vec59.len();
-                                            let vec60 = template_id58;
-                                            let ptr60 = vec60.as_ptr().cast::<u8>();
-                                            let len60 = vec60.len();
-
-                                            (4i32, ptr59.cast_mut(), len59, ptr60.cast_mut(), len60)
-                                        }
-                                        DerivedTimelineNode::And(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id61,
-                                                template_id: template_id61,
-                                            } = e;
-                                            let vec62 = worker_id61;
-                                            let ptr62 = vec62.as_ptr().cast::<u8>();
-                                            let len62 = vec62.len();
-                                            let vec63 = template_id61;
-                                            let ptr63 = vec63.as_ptr().cast::<u8>();
-                                            let len63 = vec63.len();
-
-                                            (5i32, ptr62.cast_mut(), len62, ptr63.cast_mut(), len63)
-                                        }
-                                        DerivedTimelineNode::Or(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id64,
-                                                template_id: template_id64,
-                                            } = e;
-                                            let vec65 = worker_id64;
-                                            let ptr65 = vec65.as_ptr().cast::<u8>();
-                                            let len65 = vec65.len();
-                                            let vec66 = template_id64;
-                                            let ptr66 = vec66.as_ptr().cast::<u8>();
-                                            let len66 = vec66.len();
-
-                                            (6i32, ptr65.cast_mut(), len65, ptr66.cast_mut(), len66)
-                                        }
-                                        DerivedTimelineNode::Not(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id67,
-                                                template_id: template_id67,
-                                            } = e;
-                                            let vec68 = worker_id67;
-                                            let ptr68 = vec68.as_ptr().cast::<u8>();
-                                            let len68 = vec68.len();
-                                            let vec69 = template_id67;
-                                            let ptr69 = vec69.as_ptr().cast::<u8>();
-                                            let len69 = vec69.len();
-
-                                            (7i32, ptr68.cast_mut(), len68, ptr69.cast_mut(), len69)
+                                            (2i32, ptr46.cast_mut(), len46, ptr47.cast_mut(), len47)
                                         }
                                     };
 
-                                (1i32, result70_0, result70_1, result70_2, result70_3, result70_4)
+                                (0i32, result49_0, result49_1, result49_2, result49_3, result49_4)
+                            }
+                            V76::DerivedTimeline(e) => {
+                                use super::super::super::timeline::timeline_processor_interface::api::DerivedTimelineNode as V74;
+                                let (result75_0, result75_1, result75_2, result75_3, result75_4) =
+                                    match e {
+                                        V74::EqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id50, template_id:template_id50, } = e;
+                                            let vec51 = worker_id50;
+                                            let ptr51 = vec51.as_ptr().cast::<u8>();
+                                            let len51 = vec51.len();
+                                            let vec52 = template_id50;
+                                            let ptr52 = vec52.as_ptr().cast::<u8>();
+                                            let len52 = vec52.len();
+
+                                            (0i32, ptr51.cast_mut(), len51, ptr52.cast_mut(), len52)
+                                        }
+                                        V74::GreaterThan(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id53, template_id:template_id53, } = e;
+                                            let vec54 = worker_id53;
+                                            let ptr54 = vec54.as_ptr().cast::<u8>();
+                                            let len54 = vec54.len();
+                                            let vec55 = template_id53;
+                                            let ptr55 = vec55.as_ptr().cast::<u8>();
+                                            let len55 = vec55.len();
+
+                                            (1i32, ptr54.cast_mut(), len54, ptr55.cast_mut(), len55)
+                                        }
+                                        V74::GreaterThanOrEqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id56, template_id:template_id56, } = e;
+                                            let vec57 = worker_id56;
+                                            let ptr57 = vec57.as_ptr().cast::<u8>();
+                                            let len57 = vec57.len();
+                                            let vec58 = template_id56;
+                                            let ptr58 = vec58.as_ptr().cast::<u8>();
+                                            let len58 = vec58.len();
+
+                                            (2i32, ptr57.cast_mut(), len57, ptr58.cast_mut(), len58)
+                                        }
+                                        V74::LessThan(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id59, template_id:template_id59, } = e;
+                                            let vec60 = worker_id59;
+                                            let ptr60 = vec60.as_ptr().cast::<u8>();
+                                            let len60 = vec60.len();
+                                            let vec61 = template_id59;
+                                            let ptr61 = vec61.as_ptr().cast::<u8>();
+                                            let len61 = vec61.len();
+
+                                            (3i32, ptr60.cast_mut(), len60, ptr61.cast_mut(), len61)
+                                        }
+                                        V74::LessThanOrEqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id62, template_id:template_id62, } = e;
+                                            let vec63 = worker_id62;
+                                            let ptr63 = vec63.as_ptr().cast::<u8>();
+                                            let len63 = vec63.len();
+                                            let vec64 = template_id62;
+                                            let ptr64 = vec64.as_ptr().cast::<u8>();
+                                            let len64 = vec64.len();
+
+                                            (4i32, ptr63.cast_mut(), len63, ptr64.cast_mut(), len64)
+                                        }
+                                        V74::And(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id65, template_id:template_id65, } = e;
+                                            let vec66 = worker_id65;
+                                            let ptr66 = vec66.as_ptr().cast::<u8>();
+                                            let len66 = vec66.len();
+                                            let vec67 = template_id65;
+                                            let ptr67 = vec67.as_ptr().cast::<u8>();
+                                            let len67 = vec67.len();
+
+                                            (5i32, ptr66.cast_mut(), len66, ptr67.cast_mut(), len67)
+                                        }
+                                        V74::Or(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id68, template_id:template_id68, } = e;
+                                            let vec69 = worker_id68;
+                                            let ptr69 = vec69.as_ptr().cast::<u8>();
+                                            let len69 = vec69.len();
+                                            let vec70 = template_id68;
+                                            let ptr70 = vec70.as_ptr().cast::<u8>();
+                                            let len70 = vec70.len();
+
+                                            (6i32, ptr69.cast_mut(), len69, ptr70.cast_mut(), len70)
+                                        }
+                                        V74::Not(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id71, template_id:template_id71, } = e;
+                                            let vec72 = worker_id71;
+                                            let ptr72 = vec72.as_ptr().cast::<u8>();
+                                            let len72 = vec72.len();
+                                            let vec73 = template_id71;
+                                            let ptr73 = vec73.as_ptr().cast::<u8>();
+                                            let len73 = vec73.len();
+
+                                            (7i32, ptr72.cast_mut(), len72, ptr73.cast_mut(), len73)
+                                        }
+                                    };
+
+                                (1i32, result75_0, result75_1, result75_2, result75_3, result75_4)
                             }
                         };
 
@@ -10800,18 +12946,18 @@ pub mod timeline {
                         }
                         let ret = wit_import(
                             (self).handle() as i32,
-                            result35_0,
-                            result35_1,
-                            result35_2,
-                            result35_3,
-                            result35_4,
-                            result35_5,
-                            result71_0,
-                            result71_1,
-                            result71_2,
-                            result71_3,
-                            result71_4,
-                            result71_5,
+                            result38_0,
+                            result38_1,
+                            result38_2,
+                            result38_3,
+                            result38_4,
+                            result38_5,
+                            result77_0,
+                            result77_1,
+                            result77_2,
+                            result77_3,
+                            result77_4,
+                            result77_5,
                         );
                         FutureInitializeAndResult::from_handle(ret as u32)
                     }
@@ -10828,22 +12974,21 @@ pub mod timeline {
                         #[repr(align(4))]
                         struct RetArea([::core::mem::MaybeUninit<u8>; 12]);
                         let mut ret_area = RetArea([::core::mem::MaybeUninit::uninit(); 12]);
+                        use super::super::super::timeline::timeline_processor_interface::api::TypedTimelineResultWorker as V37;
                         let (
-                            result35_0,
-                            result35_1,
-                            result35_2,
-                            result35_3,
-                            result35_4,
-                            result35_5,
+                            result38_0,
+                            result38_1,
+                            result38_2,
+                            result38_3,
+                            result38_4,
+                            result38_5,
                         ) = match child_worker1 {
-                            TypedTimelineResultWorker::LeafTimeline(e) => {
-                                let (result9_0, result9_1, result9_2, result9_3, result9_4) =
+                            V37::LeafTimeline(e) => {
+                                use super::super::super::timeline::timeline_processor_interface::api::LeafTimelineNode as V9;
+                                let (result10_0, result10_1, result10_2, result10_3, result10_4) =
                                     match e {
-                                        LeafTimelineNode::TlHasExisted(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id0,
-                                                template_id: template_id0,
-                                            } = e;
+                                        V9::TlHasExisted(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id0, template_id:template_id0, } = e;
                                             let vec1 = worker_id0;
                                             let ptr1 = vec1.as_ptr().cast::<u8>();
                                             let len1 = vec1.len();
@@ -10853,11 +12998,8 @@ pub mod timeline {
 
                                             (0i32, ptr1.cast_mut(), len1, ptr2.cast_mut(), len2)
                                         }
-                                        LeafTimelineNode::TlHasExistedWithin(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id3,
-                                                template_id: template_id3,
-                                            } = e;
+                                        V9::TlHasExistedWithin(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id3, template_id:template_id3, } = e;
                                             let vec4 = worker_id3;
                                             let ptr4 = vec4.as_ptr().cast::<u8>();
                                             let len4 = vec4.len();
@@ -10867,11 +13009,8 @@ pub mod timeline {
 
                                             (1i32, ptr4.cast_mut(), len4, ptr5.cast_mut(), len5)
                                         }
-                                        LeafTimelineNode::TlLatestEventToState(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id6,
-                                                template_id: template_id6,
-                                            } = e;
+                                        V9::TlLatestEventToState(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id6, template_id:template_id6, } = e;
                                             let vec7 = worker_id6;
                                             let ptr7 = vec7.as_ptr().cast::<u8>();
                                             let len7 = vec7.len();
@@ -10883,158 +13022,120 @@ pub mod timeline {
                                         }
                                     };
 
-                                (0i32, result9_0, result9_1, result9_2, result9_3, result9_4)
+                                (0i32, result10_0, result10_1, result10_2, result10_3, result10_4)
                             }
-                            TypedTimelineResultWorker::DerivedTimeline(e) => {
-                                let (result34_0, result34_1, result34_2, result34_3, result34_4) =
+                            V37::DerivedTimeline(e) => {
+                                use super::super::super::timeline::timeline_processor_interface::api::DerivedTimelineNode as V35;
+                                let (result36_0, result36_1, result36_2, result36_3, result36_4) =
                                     match e {
-                                        DerivedTimelineNode::EqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id10,
-                                                template_id: template_id10,
-                                            } = e;
-                                            let vec11 = worker_id10;
-                                            let ptr11 = vec11.as_ptr().cast::<u8>();
-                                            let len11 = vec11.len();
-                                            let vec12 = template_id10;
+                                        V35::EqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id11, template_id:template_id11, } = e;
+                                            let vec12 = worker_id11;
                                             let ptr12 = vec12.as_ptr().cast::<u8>();
                                             let len12 = vec12.len();
+                                            let vec13 = template_id11;
+                                            let ptr13 = vec13.as_ptr().cast::<u8>();
+                                            let len13 = vec13.len();
 
-                                            (0i32, ptr11.cast_mut(), len11, ptr12.cast_mut(), len12)
+                                            (0i32, ptr12.cast_mut(), len12, ptr13.cast_mut(), len13)
                                         }
-                                        DerivedTimelineNode::GreaterThan(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id13,
-                                                template_id: template_id13,
-                                            } = e;
-                                            let vec14 = worker_id13;
-                                            let ptr14 = vec14.as_ptr().cast::<u8>();
-                                            let len14 = vec14.len();
-                                            let vec15 = template_id13;
+                                        V35::GreaterThan(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id14, template_id:template_id14, } = e;
+                                            let vec15 = worker_id14;
                                             let ptr15 = vec15.as_ptr().cast::<u8>();
                                             let len15 = vec15.len();
+                                            let vec16 = template_id14;
+                                            let ptr16 = vec16.as_ptr().cast::<u8>();
+                                            let len16 = vec16.len();
 
-                                            (1i32, ptr14.cast_mut(), len14, ptr15.cast_mut(), len15)
+                                            (1i32, ptr15.cast_mut(), len15, ptr16.cast_mut(), len16)
                                         }
-                                        DerivedTimelineNode::GreaterThanOrEqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id16,
-                                                template_id: template_id16,
-                                            } = e;
-                                            let vec17 = worker_id16;
-                                            let ptr17 = vec17.as_ptr().cast::<u8>();
-                                            let len17 = vec17.len();
-                                            let vec18 = template_id16;
+                                        V35::GreaterThanOrEqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id17, template_id:template_id17, } = e;
+                                            let vec18 = worker_id17;
                                             let ptr18 = vec18.as_ptr().cast::<u8>();
                                             let len18 = vec18.len();
+                                            let vec19 = template_id17;
+                                            let ptr19 = vec19.as_ptr().cast::<u8>();
+                                            let len19 = vec19.len();
 
-                                            (2i32, ptr17.cast_mut(), len17, ptr18.cast_mut(), len18)
+                                            (2i32, ptr18.cast_mut(), len18, ptr19.cast_mut(), len19)
                                         }
-                                        DerivedTimelineNode::LessThan(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id19,
-                                                template_id: template_id19,
-                                            } = e;
-                                            let vec20 = worker_id19;
-                                            let ptr20 = vec20.as_ptr().cast::<u8>();
-                                            let len20 = vec20.len();
-                                            let vec21 = template_id19;
+                                        V35::LessThan(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id20, template_id:template_id20, } = e;
+                                            let vec21 = worker_id20;
                                             let ptr21 = vec21.as_ptr().cast::<u8>();
                                             let len21 = vec21.len();
+                                            let vec22 = template_id20;
+                                            let ptr22 = vec22.as_ptr().cast::<u8>();
+                                            let len22 = vec22.len();
 
-                                            (3i32, ptr20.cast_mut(), len20, ptr21.cast_mut(), len21)
+                                            (3i32, ptr21.cast_mut(), len21, ptr22.cast_mut(), len22)
                                         }
-                                        DerivedTimelineNode::LessThanOrEqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id22,
-                                                template_id: template_id22,
-                                            } = e;
-                                            let vec23 = worker_id22;
-                                            let ptr23 = vec23.as_ptr().cast::<u8>();
-                                            let len23 = vec23.len();
-                                            let vec24 = template_id22;
+                                        V35::LessThanOrEqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id23, template_id:template_id23, } = e;
+                                            let vec24 = worker_id23;
                                             let ptr24 = vec24.as_ptr().cast::<u8>();
                                             let len24 = vec24.len();
+                                            let vec25 = template_id23;
+                                            let ptr25 = vec25.as_ptr().cast::<u8>();
+                                            let len25 = vec25.len();
 
-                                            (4i32, ptr23.cast_mut(), len23, ptr24.cast_mut(), len24)
+                                            (4i32, ptr24.cast_mut(), len24, ptr25.cast_mut(), len25)
                                         }
-                                        DerivedTimelineNode::And(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id25,
-                                                template_id: template_id25,
-                                            } = e;
-                                            let vec26 = worker_id25;
-                                            let ptr26 = vec26.as_ptr().cast::<u8>();
-                                            let len26 = vec26.len();
-                                            let vec27 = template_id25;
+                                        V35::And(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id26, template_id:template_id26, } = e;
+                                            let vec27 = worker_id26;
                                             let ptr27 = vec27.as_ptr().cast::<u8>();
                                             let len27 = vec27.len();
+                                            let vec28 = template_id26;
+                                            let ptr28 = vec28.as_ptr().cast::<u8>();
+                                            let len28 = vec28.len();
 
-                                            (5i32, ptr26.cast_mut(), len26, ptr27.cast_mut(), len27)
+                                            (5i32, ptr27.cast_mut(), len27, ptr28.cast_mut(), len28)
                                         }
-                                        DerivedTimelineNode::Or(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id28,
-                                                template_id: template_id28,
-                                            } = e;
-                                            let vec29 = worker_id28;
-                                            let ptr29 = vec29.as_ptr().cast::<u8>();
-                                            let len29 = vec29.len();
-                                            let vec30 = template_id28;
+                                        V35::Or(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id29, template_id:template_id29, } = e;
+                                            let vec30 = worker_id29;
                                             let ptr30 = vec30.as_ptr().cast::<u8>();
                                             let len30 = vec30.len();
+                                            let vec31 = template_id29;
+                                            let ptr31 = vec31.as_ptr().cast::<u8>();
+                                            let len31 = vec31.len();
 
-                                            (6i32, ptr29.cast_mut(), len29, ptr30.cast_mut(), len30)
+                                            (6i32, ptr30.cast_mut(), len30, ptr31.cast_mut(), len31)
                                         }
-                                        DerivedTimelineNode::Not(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id31,
-                                                template_id: template_id31,
-                                            } = e;
-                                            let vec32 = worker_id31;
-                                            let ptr32 = vec32.as_ptr().cast::<u8>();
-                                            let len32 = vec32.len();
-                                            let vec33 = template_id31;
+                                        V35::Not(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id32, template_id:template_id32, } = e;
+                                            let vec33 = worker_id32;
                                             let ptr33 = vec33.as_ptr().cast::<u8>();
                                             let len33 = vec33.len();
+                                            let vec34 = template_id32;
+                                            let ptr34 = vec34.as_ptr().cast::<u8>();
+                                            let len34 = vec34.len();
 
-                                            (7i32, ptr32.cast_mut(), len32, ptr33.cast_mut(), len33)
+                                            (7i32, ptr33.cast_mut(), len33, ptr34.cast_mut(), len34)
                                         }
                                     };
 
-                                (1i32, result34_0, result34_1, result34_2, result34_3, result34_4)
+                                (1i32, result36_0, result36_1, result36_2, result36_3, result36_4)
                             }
                         };
+                        use super::super::super::timeline::timeline_processor_interface::api::TypedTimelineResultWorker as V76;
                         let (
-                            result71_0,
-                            result71_1,
-                            result71_2,
-                            result71_3,
-                            result71_4,
-                            result71_5,
+                            result77_0,
+                            result77_1,
+                            result77_2,
+                            result77_3,
+                            result77_4,
+                            result77_5,
                         ) = match child_worker2 {
-                            TypedTimelineResultWorker::LeafTimeline(e) => {
-                                let (result45_0, result45_1, result45_2, result45_3, result45_4) =
+                            V76::LeafTimeline(e) => {
+                                use super::super::super::timeline::timeline_processor_interface::api::LeafTimelineNode as V48;
+                                let (result49_0, result49_1, result49_2, result49_3, result49_4) =
                                     match e {
-                                        LeafTimelineNode::TlHasExisted(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id36,
-                                                template_id: template_id36,
-                                            } = e;
-                                            let vec37 = worker_id36;
-                                            let ptr37 = vec37.as_ptr().cast::<u8>();
-                                            let len37 = vec37.len();
-                                            let vec38 = template_id36;
-                                            let ptr38 = vec38.as_ptr().cast::<u8>();
-                                            let len38 = vec38.len();
-
-                                            (0i32, ptr37.cast_mut(), len37, ptr38.cast_mut(), len38)
-                                        }
-                                        LeafTimelineNode::TlHasExistedWithin(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id39,
-                                                template_id: template_id39,
-                                            } = e;
+                                        V48::TlHasExisted(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id39, template_id:template_id39, } = e;
                                             let vec40 = worker_id39;
                                             let ptr40 = vec40.as_ptr().cast::<u8>();
                                             let len40 = vec40.len();
@@ -11042,13 +13143,10 @@ pub mod timeline {
                                             let ptr41 = vec41.as_ptr().cast::<u8>();
                                             let len41 = vec41.len();
 
-                                            (1i32, ptr40.cast_mut(), len40, ptr41.cast_mut(), len41)
+                                            (0i32, ptr40.cast_mut(), len40, ptr41.cast_mut(), len41)
                                         }
-                                        LeafTimelineNode::TlLatestEventToState(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id42,
-                                                template_id: template_id42,
-                                            } = e;
+                                        V48::TlHasExistedWithin(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id42, template_id:template_id42, } = e;
                                             let vec43 = worker_id42;
                                             let ptr43 = vec43.as_ptr().cast::<u8>();
                                             let len43 = vec43.len();
@@ -11056,133 +13154,121 @@ pub mod timeline {
                                             let ptr44 = vec44.as_ptr().cast::<u8>();
                                             let len44 = vec44.len();
 
-                                            (2i32, ptr43.cast_mut(), len43, ptr44.cast_mut(), len44)
+                                            (1i32, ptr43.cast_mut(), len43, ptr44.cast_mut(), len44)
                                         }
-                                    };
-
-                                (0i32, result45_0, result45_1, result45_2, result45_3, result45_4)
-                            }
-                            TypedTimelineResultWorker::DerivedTimeline(e) => {
-                                let (result70_0, result70_1, result70_2, result70_3, result70_4) =
-                                    match e {
-                                        DerivedTimelineNode::EqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id46,
-                                                template_id: template_id46,
-                                            } = e;
-                                            let vec47 = worker_id46;
+                                        V48::TlLatestEventToState(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id45, template_id:template_id45, } = e;
+                                            let vec46 = worker_id45;
+                                            let ptr46 = vec46.as_ptr().cast::<u8>();
+                                            let len46 = vec46.len();
+                                            let vec47 = template_id45;
                                             let ptr47 = vec47.as_ptr().cast::<u8>();
                                             let len47 = vec47.len();
-                                            let vec48 = template_id46;
-                                            let ptr48 = vec48.as_ptr().cast::<u8>();
-                                            let len48 = vec48.len();
 
-                                            (0i32, ptr47.cast_mut(), len47, ptr48.cast_mut(), len48)
-                                        }
-                                        DerivedTimelineNode::GreaterThan(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id49,
-                                                template_id: template_id49,
-                                            } = e;
-                                            let vec50 = worker_id49;
-                                            let ptr50 = vec50.as_ptr().cast::<u8>();
-                                            let len50 = vec50.len();
-                                            let vec51 = template_id49;
-                                            let ptr51 = vec51.as_ptr().cast::<u8>();
-                                            let len51 = vec51.len();
-
-                                            (1i32, ptr50.cast_mut(), len50, ptr51.cast_mut(), len51)
-                                        }
-                                        DerivedTimelineNode::GreaterThanOrEqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id52,
-                                                template_id: template_id52,
-                                            } = e;
-                                            let vec53 = worker_id52;
-                                            let ptr53 = vec53.as_ptr().cast::<u8>();
-                                            let len53 = vec53.len();
-                                            let vec54 = template_id52;
-                                            let ptr54 = vec54.as_ptr().cast::<u8>();
-                                            let len54 = vec54.len();
-
-                                            (2i32, ptr53.cast_mut(), len53, ptr54.cast_mut(), len54)
-                                        }
-                                        DerivedTimelineNode::LessThan(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id55,
-                                                template_id: template_id55,
-                                            } = e;
-                                            let vec56 = worker_id55;
-                                            let ptr56 = vec56.as_ptr().cast::<u8>();
-                                            let len56 = vec56.len();
-                                            let vec57 = template_id55;
-                                            let ptr57 = vec57.as_ptr().cast::<u8>();
-                                            let len57 = vec57.len();
-
-                                            (3i32, ptr56.cast_mut(), len56, ptr57.cast_mut(), len57)
-                                        }
-                                        DerivedTimelineNode::LessThanOrEqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id58,
-                                                template_id: template_id58,
-                                            } = e;
-                                            let vec59 = worker_id58;
-                                            let ptr59 = vec59.as_ptr().cast::<u8>();
-                                            let len59 = vec59.len();
-                                            let vec60 = template_id58;
-                                            let ptr60 = vec60.as_ptr().cast::<u8>();
-                                            let len60 = vec60.len();
-
-                                            (4i32, ptr59.cast_mut(), len59, ptr60.cast_mut(), len60)
-                                        }
-                                        DerivedTimelineNode::And(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id61,
-                                                template_id: template_id61,
-                                            } = e;
-                                            let vec62 = worker_id61;
-                                            let ptr62 = vec62.as_ptr().cast::<u8>();
-                                            let len62 = vec62.len();
-                                            let vec63 = template_id61;
-                                            let ptr63 = vec63.as_ptr().cast::<u8>();
-                                            let len63 = vec63.len();
-
-                                            (5i32, ptr62.cast_mut(), len62, ptr63.cast_mut(), len63)
-                                        }
-                                        DerivedTimelineNode::Or(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id64,
-                                                template_id: template_id64,
-                                            } = e;
-                                            let vec65 = worker_id64;
-                                            let ptr65 = vec65.as_ptr().cast::<u8>();
-                                            let len65 = vec65.len();
-                                            let vec66 = template_id64;
-                                            let ptr66 = vec66.as_ptr().cast::<u8>();
-                                            let len66 = vec66.len();
-
-                                            (6i32, ptr65.cast_mut(), len65, ptr66.cast_mut(), len66)
-                                        }
-                                        DerivedTimelineNode::Not(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id67,
-                                                template_id: template_id67,
-                                            } = e;
-                                            let vec68 = worker_id67;
-                                            let ptr68 = vec68.as_ptr().cast::<u8>();
-                                            let len68 = vec68.len();
-                                            let vec69 = template_id67;
-                                            let ptr69 = vec69.as_ptr().cast::<u8>();
-                                            let len69 = vec69.len();
-
-                                            (7i32, ptr68.cast_mut(), len68, ptr69.cast_mut(), len69)
+                                            (2i32, ptr46.cast_mut(), len46, ptr47.cast_mut(), len47)
                                         }
                                     };
 
-                                (1i32, result70_0, result70_1, result70_2, result70_3, result70_4)
+                                (0i32, result49_0, result49_1, result49_2, result49_3, result49_4)
+                            }
+                            V76::DerivedTimeline(e) => {
+                                use super::super::super::timeline::timeline_processor_interface::api::DerivedTimelineNode as V74;
+                                let (result75_0, result75_1, result75_2, result75_3, result75_4) =
+                                    match e {
+                                        V74::EqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id50, template_id:template_id50, } = e;
+                                            let vec51 = worker_id50;
+                                            let ptr51 = vec51.as_ptr().cast::<u8>();
+                                            let len51 = vec51.len();
+                                            let vec52 = template_id50;
+                                            let ptr52 = vec52.as_ptr().cast::<u8>();
+                                            let len52 = vec52.len();
+
+                                            (0i32, ptr51.cast_mut(), len51, ptr52.cast_mut(), len52)
+                                        }
+                                        V74::GreaterThan(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id53, template_id:template_id53, } = e;
+                                            let vec54 = worker_id53;
+                                            let ptr54 = vec54.as_ptr().cast::<u8>();
+                                            let len54 = vec54.len();
+                                            let vec55 = template_id53;
+                                            let ptr55 = vec55.as_ptr().cast::<u8>();
+                                            let len55 = vec55.len();
+
+                                            (1i32, ptr54.cast_mut(), len54, ptr55.cast_mut(), len55)
+                                        }
+                                        V74::GreaterThanOrEqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id56, template_id:template_id56, } = e;
+                                            let vec57 = worker_id56;
+                                            let ptr57 = vec57.as_ptr().cast::<u8>();
+                                            let len57 = vec57.len();
+                                            let vec58 = template_id56;
+                                            let ptr58 = vec58.as_ptr().cast::<u8>();
+                                            let len58 = vec58.len();
+
+                                            (2i32, ptr57.cast_mut(), len57, ptr58.cast_mut(), len58)
+                                        }
+                                        V74::LessThan(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id59, template_id:template_id59, } = e;
+                                            let vec60 = worker_id59;
+                                            let ptr60 = vec60.as_ptr().cast::<u8>();
+                                            let len60 = vec60.len();
+                                            let vec61 = template_id59;
+                                            let ptr61 = vec61.as_ptr().cast::<u8>();
+                                            let len61 = vec61.len();
+
+                                            (3i32, ptr60.cast_mut(), len60, ptr61.cast_mut(), len61)
+                                        }
+                                        V74::LessThanOrEqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id62, template_id:template_id62, } = e;
+                                            let vec63 = worker_id62;
+                                            let ptr63 = vec63.as_ptr().cast::<u8>();
+                                            let len63 = vec63.len();
+                                            let vec64 = template_id62;
+                                            let ptr64 = vec64.as_ptr().cast::<u8>();
+                                            let len64 = vec64.len();
+
+                                            (4i32, ptr63.cast_mut(), len63, ptr64.cast_mut(), len64)
+                                        }
+                                        V74::And(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id65, template_id:template_id65, } = e;
+                                            let vec66 = worker_id65;
+                                            let ptr66 = vec66.as_ptr().cast::<u8>();
+                                            let len66 = vec66.len();
+                                            let vec67 = template_id65;
+                                            let ptr67 = vec67.as_ptr().cast::<u8>();
+                                            let len67 = vec67.len();
+
+                                            (5i32, ptr66.cast_mut(), len66, ptr67.cast_mut(), len67)
+                                        }
+                                        V74::Or(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id68, template_id:template_id68, } = e;
+                                            let vec69 = worker_id68;
+                                            let ptr69 = vec69.as_ptr().cast::<u8>();
+                                            let len69 = vec69.len();
+                                            let vec70 = template_id68;
+                                            let ptr70 = vec70.as_ptr().cast::<u8>();
+                                            let len70 = vec70.len();
+
+                                            (6i32, ptr69.cast_mut(), len69, ptr70.cast_mut(), len70)
+                                        }
+                                        V74::Not(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id71, template_id:template_id71, } = e;
+                                            let vec72 = worker_id71;
+                                            let ptr72 = vec72.as_ptr().cast::<u8>();
+                                            let len72 = vec72.len();
+                                            let vec73 = template_id71;
+                                            let ptr73 = vec73.as_ptr().cast::<u8>();
+                                            let len73 = vec73.len();
+
+                                            (7i32, ptr72.cast_mut(), len72, ptr73.cast_mut(), len73)
+                                        }
+                                    };
+
+                                (1i32, result75_0, result75_1, result75_2, result75_3, result75_4)
                             }
                         };
-                        let ptr72 = ret_area.0.as_mut_ptr().cast::<u8>();
+                        let ptr78 = ret_area.0.as_mut_ptr().cast::<u8>();
                         #[cfg(target_arch = "wasm32")]
                         #[link(
                             wasm_import_module = "timeline:timeline-processor-stub/stub-timeline-processor"
@@ -11228,43 +13314,43 @@ pub mod timeline {
                         }
                         wit_import(
                             (self).handle() as i32,
-                            result35_0,
-                            result35_1,
-                            result35_2,
-                            result35_3,
-                            result35_4,
-                            result35_5,
-                            result71_0,
-                            result71_1,
-                            result71_2,
-                            result71_3,
-                            result71_4,
-                            result71_5,
-                            ptr72,
+                            result38_0,
+                            result38_1,
+                            result38_2,
+                            result38_3,
+                            result38_4,
+                            result38_5,
+                            result77_0,
+                            result77_1,
+                            result77_2,
+                            result77_3,
+                            result77_4,
+                            result77_5,
+                            ptr78,
                         );
-                        let l73 = i32::from(*ptr72.add(0).cast::<u8>());
-                        match l73 {
+                        let l79 = i32::from(*ptr78.add(0).cast::<u8>());
+                        match l79 {
                             0 => {
                                 let e = {
-                                    let l74 = *ptr72.add(4).cast::<*mut u8>();
-                                    let l75 = *ptr72.add(8).cast::<usize>();
-                                    let len76 = l75;
-                                    let bytes76 =
-                                        _rt::Vec::from_raw_parts(l74.cast(), len76, len76);
+                                    let l80 = *ptr78.add(4).cast::<*mut u8>();
+                                    let l81 = *ptr78.add(8).cast::<usize>();
+                                    let len82 = l81;
+                                    let bytes82 =
+                                        _rt::Vec::from_raw_parts(l80.cast(), len82, len82);
 
-                                    _rt::string_lift(bytes76)
+                                    _rt::string_lift(bytes82)
                                 };
                                 Ok(e)
                             }
                             1 => {
                                 let e = {
-                                    let l77 = *ptr72.add(4).cast::<*mut u8>();
-                                    let l78 = *ptr72.add(8).cast::<usize>();
-                                    let len79 = l78;
-                                    let bytes79 =
-                                        _rt::Vec::from_raw_parts(l77.cast(), len79, len79);
+                                    let l83 = *ptr78.add(4).cast::<*mut u8>();
+                                    let l84 = *ptr78.add(8).cast::<usize>();
+                                    let len85 = l84;
+                                    let bytes85 =
+                                        _rt::Vec::from_raw_parts(l83.cast(), len85, len85);
 
-                                    _rt::string_lift(bytes79)
+                                    _rt::string_lift(bytes85)
                                 };
                                 Err(e)
                             }
@@ -11281,22 +13367,21 @@ pub mod timeline {
                     child_worker2: &TypedTimelineResultWorker,
                 ) -> FutureInitializeOrResult {
                     unsafe {
+                        use super::super::super::timeline::timeline_processor_interface::api::TypedTimelineResultWorker as V37;
                         let (
-                            result35_0,
-                            result35_1,
-                            result35_2,
-                            result35_3,
-                            result35_4,
-                            result35_5,
+                            result38_0,
+                            result38_1,
+                            result38_2,
+                            result38_3,
+                            result38_4,
+                            result38_5,
                         ) = match child_worker1 {
-                            TypedTimelineResultWorker::LeafTimeline(e) => {
-                                let (result9_0, result9_1, result9_2, result9_3, result9_4) =
+                            V37::LeafTimeline(e) => {
+                                use super::super::super::timeline::timeline_processor_interface::api::LeafTimelineNode as V9;
+                                let (result10_0, result10_1, result10_2, result10_3, result10_4) =
                                     match e {
-                                        LeafTimelineNode::TlHasExisted(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id0,
-                                                template_id: template_id0,
-                                            } = e;
+                                        V9::TlHasExisted(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id0, template_id:template_id0, } = e;
                                             let vec1 = worker_id0;
                                             let ptr1 = vec1.as_ptr().cast::<u8>();
                                             let len1 = vec1.len();
@@ -11306,11 +13391,8 @@ pub mod timeline {
 
                                             (0i32, ptr1.cast_mut(), len1, ptr2.cast_mut(), len2)
                                         }
-                                        LeafTimelineNode::TlHasExistedWithin(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id3,
-                                                template_id: template_id3,
-                                            } = e;
+                                        V9::TlHasExistedWithin(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id3, template_id:template_id3, } = e;
                                             let vec4 = worker_id3;
                                             let ptr4 = vec4.as_ptr().cast::<u8>();
                                             let len4 = vec4.len();
@@ -11320,11 +13402,8 @@ pub mod timeline {
 
                                             (1i32, ptr4.cast_mut(), len4, ptr5.cast_mut(), len5)
                                         }
-                                        LeafTimelineNode::TlLatestEventToState(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id6,
-                                                template_id: template_id6,
-                                            } = e;
+                                        V9::TlLatestEventToState(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id6, template_id:template_id6, } = e;
                                             let vec7 = worker_id6;
                                             let ptr7 = vec7.as_ptr().cast::<u8>();
                                             let len7 = vec7.len();
@@ -11336,158 +13415,120 @@ pub mod timeline {
                                         }
                                     };
 
-                                (0i32, result9_0, result9_1, result9_2, result9_3, result9_4)
+                                (0i32, result10_0, result10_1, result10_2, result10_3, result10_4)
                             }
-                            TypedTimelineResultWorker::DerivedTimeline(e) => {
-                                let (result34_0, result34_1, result34_2, result34_3, result34_4) =
+                            V37::DerivedTimeline(e) => {
+                                use super::super::super::timeline::timeline_processor_interface::api::DerivedTimelineNode as V35;
+                                let (result36_0, result36_1, result36_2, result36_3, result36_4) =
                                     match e {
-                                        DerivedTimelineNode::EqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id10,
-                                                template_id: template_id10,
-                                            } = e;
-                                            let vec11 = worker_id10;
-                                            let ptr11 = vec11.as_ptr().cast::<u8>();
-                                            let len11 = vec11.len();
-                                            let vec12 = template_id10;
+                                        V35::EqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id11, template_id:template_id11, } = e;
+                                            let vec12 = worker_id11;
                                             let ptr12 = vec12.as_ptr().cast::<u8>();
                                             let len12 = vec12.len();
+                                            let vec13 = template_id11;
+                                            let ptr13 = vec13.as_ptr().cast::<u8>();
+                                            let len13 = vec13.len();
 
-                                            (0i32, ptr11.cast_mut(), len11, ptr12.cast_mut(), len12)
+                                            (0i32, ptr12.cast_mut(), len12, ptr13.cast_mut(), len13)
                                         }
-                                        DerivedTimelineNode::GreaterThan(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id13,
-                                                template_id: template_id13,
-                                            } = e;
-                                            let vec14 = worker_id13;
-                                            let ptr14 = vec14.as_ptr().cast::<u8>();
-                                            let len14 = vec14.len();
-                                            let vec15 = template_id13;
+                                        V35::GreaterThan(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id14, template_id:template_id14, } = e;
+                                            let vec15 = worker_id14;
                                             let ptr15 = vec15.as_ptr().cast::<u8>();
                                             let len15 = vec15.len();
+                                            let vec16 = template_id14;
+                                            let ptr16 = vec16.as_ptr().cast::<u8>();
+                                            let len16 = vec16.len();
 
-                                            (1i32, ptr14.cast_mut(), len14, ptr15.cast_mut(), len15)
+                                            (1i32, ptr15.cast_mut(), len15, ptr16.cast_mut(), len16)
                                         }
-                                        DerivedTimelineNode::GreaterThanOrEqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id16,
-                                                template_id: template_id16,
-                                            } = e;
-                                            let vec17 = worker_id16;
-                                            let ptr17 = vec17.as_ptr().cast::<u8>();
-                                            let len17 = vec17.len();
-                                            let vec18 = template_id16;
+                                        V35::GreaterThanOrEqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id17, template_id:template_id17, } = e;
+                                            let vec18 = worker_id17;
                                             let ptr18 = vec18.as_ptr().cast::<u8>();
                                             let len18 = vec18.len();
+                                            let vec19 = template_id17;
+                                            let ptr19 = vec19.as_ptr().cast::<u8>();
+                                            let len19 = vec19.len();
 
-                                            (2i32, ptr17.cast_mut(), len17, ptr18.cast_mut(), len18)
+                                            (2i32, ptr18.cast_mut(), len18, ptr19.cast_mut(), len19)
                                         }
-                                        DerivedTimelineNode::LessThan(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id19,
-                                                template_id: template_id19,
-                                            } = e;
-                                            let vec20 = worker_id19;
-                                            let ptr20 = vec20.as_ptr().cast::<u8>();
-                                            let len20 = vec20.len();
-                                            let vec21 = template_id19;
+                                        V35::LessThan(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id20, template_id:template_id20, } = e;
+                                            let vec21 = worker_id20;
                                             let ptr21 = vec21.as_ptr().cast::<u8>();
                                             let len21 = vec21.len();
+                                            let vec22 = template_id20;
+                                            let ptr22 = vec22.as_ptr().cast::<u8>();
+                                            let len22 = vec22.len();
 
-                                            (3i32, ptr20.cast_mut(), len20, ptr21.cast_mut(), len21)
+                                            (3i32, ptr21.cast_mut(), len21, ptr22.cast_mut(), len22)
                                         }
-                                        DerivedTimelineNode::LessThanOrEqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id22,
-                                                template_id: template_id22,
-                                            } = e;
-                                            let vec23 = worker_id22;
-                                            let ptr23 = vec23.as_ptr().cast::<u8>();
-                                            let len23 = vec23.len();
-                                            let vec24 = template_id22;
+                                        V35::LessThanOrEqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id23, template_id:template_id23, } = e;
+                                            let vec24 = worker_id23;
                                             let ptr24 = vec24.as_ptr().cast::<u8>();
                                             let len24 = vec24.len();
+                                            let vec25 = template_id23;
+                                            let ptr25 = vec25.as_ptr().cast::<u8>();
+                                            let len25 = vec25.len();
 
-                                            (4i32, ptr23.cast_mut(), len23, ptr24.cast_mut(), len24)
+                                            (4i32, ptr24.cast_mut(), len24, ptr25.cast_mut(), len25)
                                         }
-                                        DerivedTimelineNode::And(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id25,
-                                                template_id: template_id25,
-                                            } = e;
-                                            let vec26 = worker_id25;
-                                            let ptr26 = vec26.as_ptr().cast::<u8>();
-                                            let len26 = vec26.len();
-                                            let vec27 = template_id25;
+                                        V35::And(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id26, template_id:template_id26, } = e;
+                                            let vec27 = worker_id26;
                                             let ptr27 = vec27.as_ptr().cast::<u8>();
                                             let len27 = vec27.len();
+                                            let vec28 = template_id26;
+                                            let ptr28 = vec28.as_ptr().cast::<u8>();
+                                            let len28 = vec28.len();
 
-                                            (5i32, ptr26.cast_mut(), len26, ptr27.cast_mut(), len27)
+                                            (5i32, ptr27.cast_mut(), len27, ptr28.cast_mut(), len28)
                                         }
-                                        DerivedTimelineNode::Or(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id28,
-                                                template_id: template_id28,
-                                            } = e;
-                                            let vec29 = worker_id28;
-                                            let ptr29 = vec29.as_ptr().cast::<u8>();
-                                            let len29 = vec29.len();
-                                            let vec30 = template_id28;
+                                        V35::Or(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id29, template_id:template_id29, } = e;
+                                            let vec30 = worker_id29;
                                             let ptr30 = vec30.as_ptr().cast::<u8>();
                                             let len30 = vec30.len();
+                                            let vec31 = template_id29;
+                                            let ptr31 = vec31.as_ptr().cast::<u8>();
+                                            let len31 = vec31.len();
 
-                                            (6i32, ptr29.cast_mut(), len29, ptr30.cast_mut(), len30)
+                                            (6i32, ptr30.cast_mut(), len30, ptr31.cast_mut(), len31)
                                         }
-                                        DerivedTimelineNode::Not(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id31,
-                                                template_id: template_id31,
-                                            } = e;
-                                            let vec32 = worker_id31;
-                                            let ptr32 = vec32.as_ptr().cast::<u8>();
-                                            let len32 = vec32.len();
-                                            let vec33 = template_id31;
+                                        V35::Not(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id32, template_id:template_id32, } = e;
+                                            let vec33 = worker_id32;
                                             let ptr33 = vec33.as_ptr().cast::<u8>();
                                             let len33 = vec33.len();
+                                            let vec34 = template_id32;
+                                            let ptr34 = vec34.as_ptr().cast::<u8>();
+                                            let len34 = vec34.len();
 
-                                            (7i32, ptr32.cast_mut(), len32, ptr33.cast_mut(), len33)
+                                            (7i32, ptr33.cast_mut(), len33, ptr34.cast_mut(), len34)
                                         }
                                     };
 
-                                (1i32, result34_0, result34_1, result34_2, result34_3, result34_4)
+                                (1i32, result36_0, result36_1, result36_2, result36_3, result36_4)
                             }
                         };
+                        use super::super::super::timeline::timeline_processor_interface::api::TypedTimelineResultWorker as V76;
                         let (
-                            result71_0,
-                            result71_1,
-                            result71_2,
-                            result71_3,
-                            result71_4,
-                            result71_5,
+                            result77_0,
+                            result77_1,
+                            result77_2,
+                            result77_3,
+                            result77_4,
+                            result77_5,
                         ) = match child_worker2 {
-                            TypedTimelineResultWorker::LeafTimeline(e) => {
-                                let (result45_0, result45_1, result45_2, result45_3, result45_4) =
+                            V76::LeafTimeline(e) => {
+                                use super::super::super::timeline::timeline_processor_interface::api::LeafTimelineNode as V48;
+                                let (result49_0, result49_1, result49_2, result49_3, result49_4) =
                                     match e {
-                                        LeafTimelineNode::TlHasExisted(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id36,
-                                                template_id: template_id36,
-                                            } = e;
-                                            let vec37 = worker_id36;
-                                            let ptr37 = vec37.as_ptr().cast::<u8>();
-                                            let len37 = vec37.len();
-                                            let vec38 = template_id36;
-                                            let ptr38 = vec38.as_ptr().cast::<u8>();
-                                            let len38 = vec38.len();
-
-                                            (0i32, ptr37.cast_mut(), len37, ptr38.cast_mut(), len38)
-                                        }
-                                        LeafTimelineNode::TlHasExistedWithin(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id39,
-                                                template_id: template_id39,
-                                            } = e;
+                                        V48::TlHasExisted(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id39, template_id:template_id39, } = e;
                                             let vec40 = worker_id39;
                                             let ptr40 = vec40.as_ptr().cast::<u8>();
                                             let len40 = vec40.len();
@@ -11495,13 +13536,10 @@ pub mod timeline {
                                             let ptr41 = vec41.as_ptr().cast::<u8>();
                                             let len41 = vec41.len();
 
-                                            (1i32, ptr40.cast_mut(), len40, ptr41.cast_mut(), len41)
+                                            (0i32, ptr40.cast_mut(), len40, ptr41.cast_mut(), len41)
                                         }
-                                        LeafTimelineNode::TlLatestEventToState(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id42,
-                                                template_id: template_id42,
-                                            } = e;
+                                        V48::TlHasExistedWithin(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id42, template_id:template_id42, } = e;
                                             let vec43 = worker_id42;
                                             let ptr43 = vec43.as_ptr().cast::<u8>();
                                             let len43 = vec43.len();
@@ -11509,130 +13547,118 @@ pub mod timeline {
                                             let ptr44 = vec44.as_ptr().cast::<u8>();
                                             let len44 = vec44.len();
 
-                                            (2i32, ptr43.cast_mut(), len43, ptr44.cast_mut(), len44)
+                                            (1i32, ptr43.cast_mut(), len43, ptr44.cast_mut(), len44)
                                         }
-                                    };
-
-                                (0i32, result45_0, result45_1, result45_2, result45_3, result45_4)
-                            }
-                            TypedTimelineResultWorker::DerivedTimeline(e) => {
-                                let (result70_0, result70_1, result70_2, result70_3, result70_4) =
-                                    match e {
-                                        DerivedTimelineNode::EqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id46,
-                                                template_id: template_id46,
-                                            } = e;
-                                            let vec47 = worker_id46;
+                                        V48::TlLatestEventToState(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id45, template_id:template_id45, } = e;
+                                            let vec46 = worker_id45;
+                                            let ptr46 = vec46.as_ptr().cast::<u8>();
+                                            let len46 = vec46.len();
+                                            let vec47 = template_id45;
                                             let ptr47 = vec47.as_ptr().cast::<u8>();
                                             let len47 = vec47.len();
-                                            let vec48 = template_id46;
-                                            let ptr48 = vec48.as_ptr().cast::<u8>();
-                                            let len48 = vec48.len();
 
-                                            (0i32, ptr47.cast_mut(), len47, ptr48.cast_mut(), len48)
-                                        }
-                                        DerivedTimelineNode::GreaterThan(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id49,
-                                                template_id: template_id49,
-                                            } = e;
-                                            let vec50 = worker_id49;
-                                            let ptr50 = vec50.as_ptr().cast::<u8>();
-                                            let len50 = vec50.len();
-                                            let vec51 = template_id49;
-                                            let ptr51 = vec51.as_ptr().cast::<u8>();
-                                            let len51 = vec51.len();
-
-                                            (1i32, ptr50.cast_mut(), len50, ptr51.cast_mut(), len51)
-                                        }
-                                        DerivedTimelineNode::GreaterThanOrEqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id52,
-                                                template_id: template_id52,
-                                            } = e;
-                                            let vec53 = worker_id52;
-                                            let ptr53 = vec53.as_ptr().cast::<u8>();
-                                            let len53 = vec53.len();
-                                            let vec54 = template_id52;
-                                            let ptr54 = vec54.as_ptr().cast::<u8>();
-                                            let len54 = vec54.len();
-
-                                            (2i32, ptr53.cast_mut(), len53, ptr54.cast_mut(), len54)
-                                        }
-                                        DerivedTimelineNode::LessThan(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id55,
-                                                template_id: template_id55,
-                                            } = e;
-                                            let vec56 = worker_id55;
-                                            let ptr56 = vec56.as_ptr().cast::<u8>();
-                                            let len56 = vec56.len();
-                                            let vec57 = template_id55;
-                                            let ptr57 = vec57.as_ptr().cast::<u8>();
-                                            let len57 = vec57.len();
-
-                                            (3i32, ptr56.cast_mut(), len56, ptr57.cast_mut(), len57)
-                                        }
-                                        DerivedTimelineNode::LessThanOrEqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id58,
-                                                template_id: template_id58,
-                                            } = e;
-                                            let vec59 = worker_id58;
-                                            let ptr59 = vec59.as_ptr().cast::<u8>();
-                                            let len59 = vec59.len();
-                                            let vec60 = template_id58;
-                                            let ptr60 = vec60.as_ptr().cast::<u8>();
-                                            let len60 = vec60.len();
-
-                                            (4i32, ptr59.cast_mut(), len59, ptr60.cast_mut(), len60)
-                                        }
-                                        DerivedTimelineNode::And(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id61,
-                                                template_id: template_id61,
-                                            } = e;
-                                            let vec62 = worker_id61;
-                                            let ptr62 = vec62.as_ptr().cast::<u8>();
-                                            let len62 = vec62.len();
-                                            let vec63 = template_id61;
-                                            let ptr63 = vec63.as_ptr().cast::<u8>();
-                                            let len63 = vec63.len();
-
-                                            (5i32, ptr62.cast_mut(), len62, ptr63.cast_mut(), len63)
-                                        }
-                                        DerivedTimelineNode::Or(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id64,
-                                                template_id: template_id64,
-                                            } = e;
-                                            let vec65 = worker_id64;
-                                            let ptr65 = vec65.as_ptr().cast::<u8>();
-                                            let len65 = vec65.len();
-                                            let vec66 = template_id64;
-                                            let ptr66 = vec66.as_ptr().cast::<u8>();
-                                            let len66 = vec66.len();
-
-                                            (6i32, ptr65.cast_mut(), len65, ptr66.cast_mut(), len66)
-                                        }
-                                        DerivedTimelineNode::Not(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id67,
-                                                template_id: template_id67,
-                                            } = e;
-                                            let vec68 = worker_id67;
-                                            let ptr68 = vec68.as_ptr().cast::<u8>();
-                                            let len68 = vec68.len();
-                                            let vec69 = template_id67;
-                                            let ptr69 = vec69.as_ptr().cast::<u8>();
-                                            let len69 = vec69.len();
-
-                                            (7i32, ptr68.cast_mut(), len68, ptr69.cast_mut(), len69)
+                                            (2i32, ptr46.cast_mut(), len46, ptr47.cast_mut(), len47)
                                         }
                                     };
 
-                                (1i32, result70_0, result70_1, result70_2, result70_3, result70_4)
+                                (0i32, result49_0, result49_1, result49_2, result49_3, result49_4)
+                            }
+                            V76::DerivedTimeline(e) => {
+                                use super::super::super::timeline::timeline_processor_interface::api::DerivedTimelineNode as V74;
+                                let (result75_0, result75_1, result75_2, result75_3, result75_4) =
+                                    match e {
+                                        V74::EqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id50, template_id:template_id50, } = e;
+                                            let vec51 = worker_id50;
+                                            let ptr51 = vec51.as_ptr().cast::<u8>();
+                                            let len51 = vec51.len();
+                                            let vec52 = template_id50;
+                                            let ptr52 = vec52.as_ptr().cast::<u8>();
+                                            let len52 = vec52.len();
+
+                                            (0i32, ptr51.cast_mut(), len51, ptr52.cast_mut(), len52)
+                                        }
+                                        V74::GreaterThan(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id53, template_id:template_id53, } = e;
+                                            let vec54 = worker_id53;
+                                            let ptr54 = vec54.as_ptr().cast::<u8>();
+                                            let len54 = vec54.len();
+                                            let vec55 = template_id53;
+                                            let ptr55 = vec55.as_ptr().cast::<u8>();
+                                            let len55 = vec55.len();
+
+                                            (1i32, ptr54.cast_mut(), len54, ptr55.cast_mut(), len55)
+                                        }
+                                        V74::GreaterThanOrEqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id56, template_id:template_id56, } = e;
+                                            let vec57 = worker_id56;
+                                            let ptr57 = vec57.as_ptr().cast::<u8>();
+                                            let len57 = vec57.len();
+                                            let vec58 = template_id56;
+                                            let ptr58 = vec58.as_ptr().cast::<u8>();
+                                            let len58 = vec58.len();
+
+                                            (2i32, ptr57.cast_mut(), len57, ptr58.cast_mut(), len58)
+                                        }
+                                        V74::LessThan(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id59, template_id:template_id59, } = e;
+                                            let vec60 = worker_id59;
+                                            let ptr60 = vec60.as_ptr().cast::<u8>();
+                                            let len60 = vec60.len();
+                                            let vec61 = template_id59;
+                                            let ptr61 = vec61.as_ptr().cast::<u8>();
+                                            let len61 = vec61.len();
+
+                                            (3i32, ptr60.cast_mut(), len60, ptr61.cast_mut(), len61)
+                                        }
+                                        V74::LessThanOrEqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id62, template_id:template_id62, } = e;
+                                            let vec63 = worker_id62;
+                                            let ptr63 = vec63.as_ptr().cast::<u8>();
+                                            let len63 = vec63.len();
+                                            let vec64 = template_id62;
+                                            let ptr64 = vec64.as_ptr().cast::<u8>();
+                                            let len64 = vec64.len();
+
+                                            (4i32, ptr63.cast_mut(), len63, ptr64.cast_mut(), len64)
+                                        }
+                                        V74::And(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id65, template_id:template_id65, } = e;
+                                            let vec66 = worker_id65;
+                                            let ptr66 = vec66.as_ptr().cast::<u8>();
+                                            let len66 = vec66.len();
+                                            let vec67 = template_id65;
+                                            let ptr67 = vec67.as_ptr().cast::<u8>();
+                                            let len67 = vec67.len();
+
+                                            (5i32, ptr66.cast_mut(), len66, ptr67.cast_mut(), len67)
+                                        }
+                                        V74::Or(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id68, template_id:template_id68, } = e;
+                                            let vec69 = worker_id68;
+                                            let ptr69 = vec69.as_ptr().cast::<u8>();
+                                            let len69 = vec69.len();
+                                            let vec70 = template_id68;
+                                            let ptr70 = vec70.as_ptr().cast::<u8>();
+                                            let len70 = vec70.len();
+
+                                            (6i32, ptr69.cast_mut(), len69, ptr70.cast_mut(), len70)
+                                        }
+                                        V74::Not(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id71, template_id:template_id71, } = e;
+                                            let vec72 = worker_id71;
+                                            let ptr72 = vec72.as_ptr().cast::<u8>();
+                                            let len72 = vec72.len();
+                                            let vec73 = template_id71;
+                                            let ptr73 = vec73.as_ptr().cast::<u8>();
+                                            let len73 = vec73.len();
+
+                                            (7i32, ptr72.cast_mut(), len72, ptr73.cast_mut(), len73)
+                                        }
+                                    };
+
+                                (1i32, result75_0, result75_1, result75_2, result75_3, result75_4)
                             }
                         };
 
@@ -11679,18 +13705,18 @@ pub mod timeline {
                         }
                         let ret = wit_import(
                             (self).handle() as i32,
-                            result35_0,
-                            result35_1,
-                            result35_2,
-                            result35_3,
-                            result35_4,
-                            result35_5,
-                            result71_0,
-                            result71_1,
-                            result71_2,
-                            result71_3,
-                            result71_4,
-                            result71_5,
+                            result38_0,
+                            result38_1,
+                            result38_2,
+                            result38_3,
+                            result38_4,
+                            result38_5,
+                            result77_0,
+                            result77_1,
+                            result77_2,
+                            result77_3,
+                            result77_4,
+                            result77_5,
                         );
                         FutureInitializeOrResult::from_handle(ret as u32)
                     }
@@ -11706,22 +13732,21 @@ pub mod timeline {
                         #[repr(align(4))]
                         struct RetArea([::core::mem::MaybeUninit<u8>; 12]);
                         let mut ret_area = RetArea([::core::mem::MaybeUninit::uninit(); 12]);
+                        use super::super::super::timeline::timeline_processor_interface::api::TypedTimelineResultWorker as V37;
                         let (
-                            result35_0,
-                            result35_1,
-                            result35_2,
-                            result35_3,
-                            result35_4,
-                            result35_5,
+                            result38_0,
+                            result38_1,
+                            result38_2,
+                            result38_3,
+                            result38_4,
+                            result38_5,
                         ) = match child_worker {
-                            TypedTimelineResultWorker::LeafTimeline(e) => {
-                                let (result9_0, result9_1, result9_2, result9_3, result9_4) =
+                            V37::LeafTimeline(e) => {
+                                use super::super::super::timeline::timeline_processor_interface::api::LeafTimelineNode as V9;
+                                let (result10_0, result10_1, result10_2, result10_3, result10_4) =
                                     match e {
-                                        LeafTimelineNode::TlHasExisted(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id0,
-                                                template_id: template_id0,
-                                            } = e;
+                                        V9::TlHasExisted(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id0, template_id:template_id0, } = e;
                                             let vec1 = worker_id0;
                                             let ptr1 = vec1.as_ptr().cast::<u8>();
                                             let len1 = vec1.len();
@@ -11731,11 +13756,8 @@ pub mod timeline {
 
                                             (0i32, ptr1.cast_mut(), len1, ptr2.cast_mut(), len2)
                                         }
-                                        LeafTimelineNode::TlHasExistedWithin(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id3,
-                                                template_id: template_id3,
-                                            } = e;
+                                        V9::TlHasExistedWithin(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id3, template_id:template_id3, } = e;
                                             let vec4 = worker_id3;
                                             let ptr4 = vec4.as_ptr().cast::<u8>();
                                             let len4 = vec4.len();
@@ -11745,11 +13767,8 @@ pub mod timeline {
 
                                             (1i32, ptr4.cast_mut(), len4, ptr5.cast_mut(), len5)
                                         }
-                                        LeafTimelineNode::TlLatestEventToState(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id6,
-                                                template_id: template_id6,
-                                            } = e;
+                                        V9::TlLatestEventToState(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id6, template_id:template_id6, } = e;
                                             let vec7 = worker_id6;
                                             let ptr7 = vec7.as_ptr().cast::<u8>();
                                             let len7 = vec7.len();
@@ -11761,129 +13780,106 @@ pub mod timeline {
                                         }
                                     };
 
-                                (0i32, result9_0, result9_1, result9_2, result9_3, result9_4)
+                                (0i32, result10_0, result10_1, result10_2, result10_3, result10_4)
                             }
-                            TypedTimelineResultWorker::DerivedTimeline(e) => {
-                                let (result34_0, result34_1, result34_2, result34_3, result34_4) =
+                            V37::DerivedTimeline(e) => {
+                                use super::super::super::timeline::timeline_processor_interface::api::DerivedTimelineNode as V35;
+                                let (result36_0, result36_1, result36_2, result36_3, result36_4) =
                                     match e {
-                                        DerivedTimelineNode::EqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id10,
-                                                template_id: template_id10,
-                                            } = e;
-                                            let vec11 = worker_id10;
-                                            let ptr11 = vec11.as_ptr().cast::<u8>();
-                                            let len11 = vec11.len();
-                                            let vec12 = template_id10;
+                                        V35::EqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id11, template_id:template_id11, } = e;
+                                            let vec12 = worker_id11;
                                             let ptr12 = vec12.as_ptr().cast::<u8>();
                                             let len12 = vec12.len();
+                                            let vec13 = template_id11;
+                                            let ptr13 = vec13.as_ptr().cast::<u8>();
+                                            let len13 = vec13.len();
 
-                                            (0i32, ptr11.cast_mut(), len11, ptr12.cast_mut(), len12)
+                                            (0i32, ptr12.cast_mut(), len12, ptr13.cast_mut(), len13)
                                         }
-                                        DerivedTimelineNode::GreaterThan(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id13,
-                                                template_id: template_id13,
-                                            } = e;
-                                            let vec14 = worker_id13;
-                                            let ptr14 = vec14.as_ptr().cast::<u8>();
-                                            let len14 = vec14.len();
-                                            let vec15 = template_id13;
+                                        V35::GreaterThan(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id14, template_id:template_id14, } = e;
+                                            let vec15 = worker_id14;
                                             let ptr15 = vec15.as_ptr().cast::<u8>();
                                             let len15 = vec15.len();
+                                            let vec16 = template_id14;
+                                            let ptr16 = vec16.as_ptr().cast::<u8>();
+                                            let len16 = vec16.len();
 
-                                            (1i32, ptr14.cast_mut(), len14, ptr15.cast_mut(), len15)
+                                            (1i32, ptr15.cast_mut(), len15, ptr16.cast_mut(), len16)
                                         }
-                                        DerivedTimelineNode::GreaterThanOrEqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id16,
-                                                template_id: template_id16,
-                                            } = e;
-                                            let vec17 = worker_id16;
-                                            let ptr17 = vec17.as_ptr().cast::<u8>();
-                                            let len17 = vec17.len();
-                                            let vec18 = template_id16;
+                                        V35::GreaterThanOrEqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id17, template_id:template_id17, } = e;
+                                            let vec18 = worker_id17;
                                             let ptr18 = vec18.as_ptr().cast::<u8>();
                                             let len18 = vec18.len();
+                                            let vec19 = template_id17;
+                                            let ptr19 = vec19.as_ptr().cast::<u8>();
+                                            let len19 = vec19.len();
 
-                                            (2i32, ptr17.cast_mut(), len17, ptr18.cast_mut(), len18)
+                                            (2i32, ptr18.cast_mut(), len18, ptr19.cast_mut(), len19)
                                         }
-                                        DerivedTimelineNode::LessThan(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id19,
-                                                template_id: template_id19,
-                                            } = e;
-                                            let vec20 = worker_id19;
-                                            let ptr20 = vec20.as_ptr().cast::<u8>();
-                                            let len20 = vec20.len();
-                                            let vec21 = template_id19;
+                                        V35::LessThan(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id20, template_id:template_id20, } = e;
+                                            let vec21 = worker_id20;
                                             let ptr21 = vec21.as_ptr().cast::<u8>();
                                             let len21 = vec21.len();
+                                            let vec22 = template_id20;
+                                            let ptr22 = vec22.as_ptr().cast::<u8>();
+                                            let len22 = vec22.len();
 
-                                            (3i32, ptr20.cast_mut(), len20, ptr21.cast_mut(), len21)
+                                            (3i32, ptr21.cast_mut(), len21, ptr22.cast_mut(), len22)
                                         }
-                                        DerivedTimelineNode::LessThanOrEqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id22,
-                                                template_id: template_id22,
-                                            } = e;
-                                            let vec23 = worker_id22;
-                                            let ptr23 = vec23.as_ptr().cast::<u8>();
-                                            let len23 = vec23.len();
-                                            let vec24 = template_id22;
+                                        V35::LessThanOrEqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id23, template_id:template_id23, } = e;
+                                            let vec24 = worker_id23;
                                             let ptr24 = vec24.as_ptr().cast::<u8>();
                                             let len24 = vec24.len();
+                                            let vec25 = template_id23;
+                                            let ptr25 = vec25.as_ptr().cast::<u8>();
+                                            let len25 = vec25.len();
 
-                                            (4i32, ptr23.cast_mut(), len23, ptr24.cast_mut(), len24)
+                                            (4i32, ptr24.cast_mut(), len24, ptr25.cast_mut(), len25)
                                         }
-                                        DerivedTimelineNode::And(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id25,
-                                                template_id: template_id25,
-                                            } = e;
-                                            let vec26 = worker_id25;
-                                            let ptr26 = vec26.as_ptr().cast::<u8>();
-                                            let len26 = vec26.len();
-                                            let vec27 = template_id25;
+                                        V35::And(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id26, template_id:template_id26, } = e;
+                                            let vec27 = worker_id26;
                                             let ptr27 = vec27.as_ptr().cast::<u8>();
                                             let len27 = vec27.len();
+                                            let vec28 = template_id26;
+                                            let ptr28 = vec28.as_ptr().cast::<u8>();
+                                            let len28 = vec28.len();
 
-                                            (5i32, ptr26.cast_mut(), len26, ptr27.cast_mut(), len27)
+                                            (5i32, ptr27.cast_mut(), len27, ptr28.cast_mut(), len28)
                                         }
-                                        DerivedTimelineNode::Or(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id28,
-                                                template_id: template_id28,
-                                            } = e;
-                                            let vec29 = worker_id28;
-                                            let ptr29 = vec29.as_ptr().cast::<u8>();
-                                            let len29 = vec29.len();
-                                            let vec30 = template_id28;
+                                        V35::Or(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id29, template_id:template_id29, } = e;
+                                            let vec30 = worker_id29;
                                             let ptr30 = vec30.as_ptr().cast::<u8>();
                                             let len30 = vec30.len();
+                                            let vec31 = template_id29;
+                                            let ptr31 = vec31.as_ptr().cast::<u8>();
+                                            let len31 = vec31.len();
 
-                                            (6i32, ptr29.cast_mut(), len29, ptr30.cast_mut(), len30)
+                                            (6i32, ptr30.cast_mut(), len30, ptr31.cast_mut(), len31)
                                         }
-                                        DerivedTimelineNode::Not(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id31,
-                                                template_id: template_id31,
-                                            } = e;
-                                            let vec32 = worker_id31;
-                                            let ptr32 = vec32.as_ptr().cast::<u8>();
-                                            let len32 = vec32.len();
-                                            let vec33 = template_id31;
+                                        V35::Not(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id32, template_id:template_id32, } = e;
+                                            let vec33 = worker_id32;
                                             let ptr33 = vec33.as_ptr().cast::<u8>();
                                             let len33 = vec33.len();
+                                            let vec34 = template_id32;
+                                            let ptr34 = vec34.as_ptr().cast::<u8>();
+                                            let len34 = vec34.len();
 
-                                            (7i32, ptr32.cast_mut(), len32, ptr33.cast_mut(), len33)
+                                            (7i32, ptr33.cast_mut(), len33, ptr34.cast_mut(), len34)
                                         }
                                     };
 
-                                (1i32, result34_0, result34_1, result34_2, result34_3, result34_4)
+                                (1i32, result36_0, result36_1, result36_2, result36_3, result36_4)
                             }
                         };
-                        let ptr36 = ret_area.0.as_mut_ptr().cast::<u8>();
+                        let ptr39 = ret_area.0.as_mut_ptr().cast::<u8>();
                         #[cfg(target_arch = "wasm32")]
                         #[link(
                             wasm_import_module = "timeline:timeline-processor-stub/stub-timeline-processor"
@@ -11917,37 +13913,37 @@ pub mod timeline {
                         }
                         wit_import(
                             (self).handle() as i32,
-                            result35_0,
-                            result35_1,
-                            result35_2,
-                            result35_3,
-                            result35_4,
-                            result35_5,
-                            ptr36,
+                            result38_0,
+                            result38_1,
+                            result38_2,
+                            result38_3,
+                            result38_4,
+                            result38_5,
+                            ptr39,
                         );
-                        let l37 = i32::from(*ptr36.add(0).cast::<u8>());
-                        match l37 {
+                        let l40 = i32::from(*ptr39.add(0).cast::<u8>());
+                        match l40 {
                             0 => {
                                 let e = {
-                                    let l38 = *ptr36.add(4).cast::<*mut u8>();
-                                    let l39 = *ptr36.add(8).cast::<usize>();
-                                    let len40 = l39;
-                                    let bytes40 =
-                                        _rt::Vec::from_raw_parts(l38.cast(), len40, len40);
-
-                                    _rt::string_lift(bytes40)
-                                };
-                                Ok(e)
-                            }
-                            1 => {
-                                let e = {
-                                    let l41 = *ptr36.add(4).cast::<*mut u8>();
-                                    let l42 = *ptr36.add(8).cast::<usize>();
+                                    let l41 = *ptr39.add(4).cast::<*mut u8>();
+                                    let l42 = *ptr39.add(8).cast::<usize>();
                                     let len43 = l42;
                                     let bytes43 =
                                         _rt::Vec::from_raw_parts(l41.cast(), len43, len43);
 
                                     _rt::string_lift(bytes43)
+                                };
+                                Ok(e)
+                            }
+                            1 => {
+                                let e = {
+                                    let l44 = *ptr39.add(4).cast::<*mut u8>();
+                                    let l45 = *ptr39.add(8).cast::<usize>();
+                                    let len46 = l45;
+                                    let bytes46 =
+                                        _rt::Vec::from_raw_parts(l44.cast(), len46, len46);
+
+                                    _rt::string_lift(bytes46)
                                 };
                                 Err(e)
                             }
@@ -11963,22 +13959,21 @@ pub mod timeline {
                     child_worker: &TypedTimelineResultWorker,
                 ) -> FutureInitializeNotResult {
                     unsafe {
+                        use super::super::super::timeline::timeline_processor_interface::api::TypedTimelineResultWorker as V37;
                         let (
-                            result35_0,
-                            result35_1,
-                            result35_2,
-                            result35_3,
-                            result35_4,
-                            result35_5,
+                            result38_0,
+                            result38_1,
+                            result38_2,
+                            result38_3,
+                            result38_4,
+                            result38_5,
                         ) = match child_worker {
-                            TypedTimelineResultWorker::LeafTimeline(e) => {
-                                let (result9_0, result9_1, result9_2, result9_3, result9_4) =
+                            V37::LeafTimeline(e) => {
+                                use super::super::super::timeline::timeline_processor_interface::api::LeafTimelineNode as V9;
+                                let (result10_0, result10_1, result10_2, result10_3, result10_4) =
                                     match e {
-                                        LeafTimelineNode::TlHasExisted(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id0,
-                                                template_id: template_id0,
-                                            } = e;
+                                        V9::TlHasExisted(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id0, template_id:template_id0, } = e;
                                             let vec1 = worker_id0;
                                             let ptr1 = vec1.as_ptr().cast::<u8>();
                                             let len1 = vec1.len();
@@ -11988,11 +13983,8 @@ pub mod timeline {
 
                                             (0i32, ptr1.cast_mut(), len1, ptr2.cast_mut(), len2)
                                         }
-                                        LeafTimelineNode::TlHasExistedWithin(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id3,
-                                                template_id: template_id3,
-                                            } = e;
+                                        V9::TlHasExistedWithin(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id3, template_id:template_id3, } = e;
                                             let vec4 = worker_id3;
                                             let ptr4 = vec4.as_ptr().cast::<u8>();
                                             let len4 = vec4.len();
@@ -12002,11 +13994,8 @@ pub mod timeline {
 
                                             (1i32, ptr4.cast_mut(), len4, ptr5.cast_mut(), len5)
                                         }
-                                        LeafTimelineNode::TlLatestEventToState(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id6,
-                                                template_id: template_id6,
-                                            } = e;
+                                        V9::TlLatestEventToState(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id6, template_id:template_id6, } = e;
                                             let vec7 = worker_id6;
                                             let ptr7 = vec7.as_ptr().cast::<u8>();
                                             let len7 = vec7.len();
@@ -12018,126 +14007,103 @@ pub mod timeline {
                                         }
                                     };
 
-                                (0i32, result9_0, result9_1, result9_2, result9_3, result9_4)
+                                (0i32, result10_0, result10_1, result10_2, result10_3, result10_4)
                             }
-                            TypedTimelineResultWorker::DerivedTimeline(e) => {
-                                let (result34_0, result34_1, result34_2, result34_3, result34_4) =
+                            V37::DerivedTimeline(e) => {
+                                use super::super::super::timeline::timeline_processor_interface::api::DerivedTimelineNode as V35;
+                                let (result36_0, result36_1, result36_2, result36_3, result36_4) =
                                     match e {
-                                        DerivedTimelineNode::EqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id10,
-                                                template_id: template_id10,
-                                            } = e;
-                                            let vec11 = worker_id10;
-                                            let ptr11 = vec11.as_ptr().cast::<u8>();
-                                            let len11 = vec11.len();
-                                            let vec12 = template_id10;
+                                        V35::EqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id11, template_id:template_id11, } = e;
+                                            let vec12 = worker_id11;
                                             let ptr12 = vec12.as_ptr().cast::<u8>();
                                             let len12 = vec12.len();
+                                            let vec13 = template_id11;
+                                            let ptr13 = vec13.as_ptr().cast::<u8>();
+                                            let len13 = vec13.len();
 
-                                            (0i32, ptr11.cast_mut(), len11, ptr12.cast_mut(), len12)
+                                            (0i32, ptr12.cast_mut(), len12, ptr13.cast_mut(), len13)
                                         }
-                                        DerivedTimelineNode::GreaterThan(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id13,
-                                                template_id: template_id13,
-                                            } = e;
-                                            let vec14 = worker_id13;
-                                            let ptr14 = vec14.as_ptr().cast::<u8>();
-                                            let len14 = vec14.len();
-                                            let vec15 = template_id13;
+                                        V35::GreaterThan(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id14, template_id:template_id14, } = e;
+                                            let vec15 = worker_id14;
                                             let ptr15 = vec15.as_ptr().cast::<u8>();
                                             let len15 = vec15.len();
+                                            let vec16 = template_id14;
+                                            let ptr16 = vec16.as_ptr().cast::<u8>();
+                                            let len16 = vec16.len();
 
-                                            (1i32, ptr14.cast_mut(), len14, ptr15.cast_mut(), len15)
+                                            (1i32, ptr15.cast_mut(), len15, ptr16.cast_mut(), len16)
                                         }
-                                        DerivedTimelineNode::GreaterThanOrEqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id16,
-                                                template_id: template_id16,
-                                            } = e;
-                                            let vec17 = worker_id16;
-                                            let ptr17 = vec17.as_ptr().cast::<u8>();
-                                            let len17 = vec17.len();
-                                            let vec18 = template_id16;
+                                        V35::GreaterThanOrEqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id17, template_id:template_id17, } = e;
+                                            let vec18 = worker_id17;
                                             let ptr18 = vec18.as_ptr().cast::<u8>();
                                             let len18 = vec18.len();
+                                            let vec19 = template_id17;
+                                            let ptr19 = vec19.as_ptr().cast::<u8>();
+                                            let len19 = vec19.len();
 
-                                            (2i32, ptr17.cast_mut(), len17, ptr18.cast_mut(), len18)
+                                            (2i32, ptr18.cast_mut(), len18, ptr19.cast_mut(), len19)
                                         }
-                                        DerivedTimelineNode::LessThan(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id19,
-                                                template_id: template_id19,
-                                            } = e;
-                                            let vec20 = worker_id19;
-                                            let ptr20 = vec20.as_ptr().cast::<u8>();
-                                            let len20 = vec20.len();
-                                            let vec21 = template_id19;
+                                        V35::LessThan(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id20, template_id:template_id20, } = e;
+                                            let vec21 = worker_id20;
                                             let ptr21 = vec21.as_ptr().cast::<u8>();
                                             let len21 = vec21.len();
+                                            let vec22 = template_id20;
+                                            let ptr22 = vec22.as_ptr().cast::<u8>();
+                                            let len22 = vec22.len();
 
-                                            (3i32, ptr20.cast_mut(), len20, ptr21.cast_mut(), len21)
+                                            (3i32, ptr21.cast_mut(), len21, ptr22.cast_mut(), len22)
                                         }
-                                        DerivedTimelineNode::LessThanOrEqualTo(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id22,
-                                                template_id: template_id22,
-                                            } = e;
-                                            let vec23 = worker_id22;
-                                            let ptr23 = vec23.as_ptr().cast::<u8>();
-                                            let len23 = vec23.len();
-                                            let vec24 = template_id22;
+                                        V35::LessThanOrEqualTo(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id23, template_id:template_id23, } = e;
+                                            let vec24 = worker_id23;
                                             let ptr24 = vec24.as_ptr().cast::<u8>();
                                             let len24 = vec24.len();
+                                            let vec25 = template_id23;
+                                            let ptr25 = vec25.as_ptr().cast::<u8>();
+                                            let len25 = vec25.len();
 
-                                            (4i32, ptr23.cast_mut(), len23, ptr24.cast_mut(), len24)
+                                            (4i32, ptr24.cast_mut(), len24, ptr25.cast_mut(), len25)
                                         }
-                                        DerivedTimelineNode::And(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id25,
-                                                template_id: template_id25,
-                                            } = e;
-                                            let vec26 = worker_id25;
-                                            let ptr26 = vec26.as_ptr().cast::<u8>();
-                                            let len26 = vec26.len();
-                                            let vec27 = template_id25;
+                                        V35::And(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id26, template_id:template_id26, } = e;
+                                            let vec27 = worker_id26;
                                             let ptr27 = vec27.as_ptr().cast::<u8>();
                                             let len27 = vec27.len();
+                                            let vec28 = template_id26;
+                                            let ptr28 = vec28.as_ptr().cast::<u8>();
+                                            let len28 = vec28.len();
 
-                                            (5i32, ptr26.cast_mut(), len26, ptr27.cast_mut(), len27)
+                                            (5i32, ptr27.cast_mut(), len27, ptr28.cast_mut(), len28)
                                         }
-                                        DerivedTimelineNode::Or(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id28,
-                                                template_id: template_id28,
-                                            } = e;
-                                            let vec29 = worker_id28;
-                                            let ptr29 = vec29.as_ptr().cast::<u8>();
-                                            let len29 = vec29.len();
-                                            let vec30 = template_id28;
+                                        V35::Or(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id29, template_id:template_id29, } = e;
+                                            let vec30 = worker_id29;
                                             let ptr30 = vec30.as_ptr().cast::<u8>();
                                             let len30 = vec30.len();
+                                            let vec31 = template_id29;
+                                            let ptr31 = vec31.as_ptr().cast::<u8>();
+                                            let len31 = vec31.len();
 
-                                            (6i32, ptr29.cast_mut(), len29, ptr30.cast_mut(), len30)
+                                            (6i32, ptr30.cast_mut(), len30, ptr31.cast_mut(), len31)
                                         }
-                                        DerivedTimelineNode::Not(e) => {
-                                            let TimelineResultWorker {
-                                                worker_id: worker_id31,
-                                                template_id: template_id31,
-                                            } = e;
-                                            let vec32 = worker_id31;
-                                            let ptr32 = vec32.as_ptr().cast::<u8>();
-                                            let len32 = vec32.len();
-                                            let vec33 = template_id31;
+                                        V35::Not(e) => {
+                                            let super::super::super::timeline::timeline_processor_interface::api::TimelineResultWorker{ worker_id:worker_id32, template_id:template_id32, } = e;
+                                            let vec33 = worker_id32;
                                             let ptr33 = vec33.as_ptr().cast::<u8>();
                                             let len33 = vec33.len();
+                                            let vec34 = template_id32;
+                                            let ptr34 = vec34.as_ptr().cast::<u8>();
+                                            let len34 = vec34.len();
 
-                                            (7i32, ptr32.cast_mut(), len32, ptr33.cast_mut(), len33)
+                                            (7i32, ptr33.cast_mut(), len33, ptr34.cast_mut(), len34)
                                         }
                                     };
 
-                                (1i32, result34_0, result34_1, result34_2, result34_3, result34_4)
+                                (1i32, result36_0, result36_1, result36_2, result36_3, result36_4)
                             }
                         };
 
@@ -12172,12 +14138,12 @@ pub mod timeline {
                         }
                         let ret = wit_import(
                             (self).handle() as i32,
-                            result35_0,
-                            result35_1,
-                            result35_2,
-                            result35_3,
-                            result35_4,
-                            result35_5,
+                            result38_0,
+                            result38_1,
+                            result38_2,
+                            result38_3,
+                            result38_4,
+                            result38_5,
                         );
                         FutureInitializeNotResult::from_handle(ret as u32)
                     }
@@ -12223,6 +14189,7 @@ pub mod timeline {
                                             let l4 = *base.add(0).cast::<i64>();
                                             let l5 = i32::from(*base.add(8).cast::<u8>());
                                             let l7 = i32::from(*base.add(24).cast::<u8>());
+                                            use super::super::super::timeline::event_processor_interface::api::EventValue as V14;
                                             let v14 = match l7 {
                                                 0 => {
                                                     let e14 = {
@@ -12237,7 +14204,7 @@ pub mod timeline {
 
                                                         _rt::string_lift(bytes10)
                                                     };
-                                                    EventValue::StringValue(e14)
+                                                    V14::StringValue(e14)
                                                 }
                                                 1 => {
                                                     let e14 = {
@@ -12245,7 +14212,7 @@ pub mod timeline {
 
                                                         l11
                                                     };
-                                                    EventValue::IntValue(e14)
+                                                    V14::IntValue(e14)
                                                 }
                                                 2 => {
                                                     let e14 = {
@@ -12253,7 +14220,7 @@ pub mod timeline {
 
                                                         l12
                                                     };
-                                                    EventValue::FloatValue(e14)
+                                                    V14::FloatValue(e14)
                                                 }
                                                 n => {
                                                     debug_assert_eq!(
@@ -12266,35 +14233,36 @@ pub mod timeline {
 
                                                         _rt::bool_lift(l13 as u8)
                                                     };
-                                                    EventValue::BoolValue(e14)
+                                                    V14::BoolValue(e14)
                                                 }
                                             };
 
-                                            TimelineResultPoint {
-                                                time_period: TimePeriod {
-                                                    t1: l4 as u64,
-                                                    t2: match l5 {
-                                                        0 => None,
-                                                        1 => {
+                                            super::super::super::timeline::event_processor_interface::api::TimelineResultPoint{
+                                                      time_period: super::super::super::timeline::event_processor_interface::api::TimePeriod{
+                                                        t1: l4 as u64,
+                                                        t2: match l5 {
+                                                          0 => None,
+                                                          1 => {
                                                             let e = {
-                                                                let l6 =
-                                                                    *base.add(16).cast::<i64>();
+                                                              let l6 = *base.add(16).cast::<i64>();
 
-                                                                l6 as u64
+                                                              l6 as u64
                                                             };
                                                             Some(e)
-                                                        }
-                                                        _ => _rt::invalid_enum_discriminant(),
-                                                    },
-                                                },
-                                                value: v14,
-                                            }
+                                                          }
+                                                          _ => _rt::invalid_enum_discriminant(),
+                                                        },
+                                                      },
+                                                      value: v14,
+                                                    }
                                         };
                                         result15.push(e15);
                                     }
                                     _rt::cabi_dealloc(base15, len15 * 40, 8);
 
-                                    TimelineResult { results: result15 }
+                                    super::super::super::timeline::event_processor_interface::api::TimelineResult{
+                                                  results: result15,
+                                                }
                                 };
                                 Ok(e)
                             }
@@ -12517,7 +14485,7 @@ pub mod exports {
     #[allow(dead_code)]
     pub mod timeline {
         #[allow(dead_code)]
-        pub mod timeline_processor {
+        pub mod timeline_processor_interface {
             #[allow(dead_code, clippy::all)]
             pub mod api {
                 #[used]
@@ -12526,10 +14494,8 @@ pub mod exports {
                 static __FORCE_SECTION_REF: fn() =
                     super::super::super::super::__link_custom_section_describing_imports;
                 use super::super::super::super::_rt;
-                pub type EventValue =
-                    super::super::super::super::timeline::event_processor::api::EventValue;
-                pub type TimelineResult =
-                    super::super::super::super::timeline::event_processor::api::TimelineResult;
+                pub type EventValue = super::super::super::super::timeline::event_processor_interface::api::EventValue;
+                pub type TimelineResult = super::super::super::super::timeline::event_processor_interface::api::TimelineResult;
                 #[derive(Clone)]
                 pub struct TimelineResultWorker {
                     pub worker_id: _rt::String,
@@ -12842,7 +14808,7 @@ pub mod exports {
                             TypedTimelineResultWorker::DerivedTimeline(e24)
                         }
                     };
-                    use super::super::super::super::timeline::event_processor::api::EventValue as V26;
+                    use super::super::super::super::timeline::event_processor_interface::api::EventValue as V26;
                     let v26 = match arg6 {
                         0 => {
                             let e26 = {
@@ -13126,7 +15092,7 @@ pub mod exports {
                             TypedTimelineResultWorker::DerivedTimeline(e24)
                         }
                     };
-                    use super::super::super::super::timeline::event_processor::api::EventValue as V26;
+                    use super::super::super::super::timeline::event_processor_interface::api::EventValue as V26;
                     let v26 = match arg6 {
                         0 => {
                             let e26 = {
@@ -13410,7 +15376,7 @@ pub mod exports {
                             TypedTimelineResultWorker::DerivedTimeline(e24)
                         }
                     };
-                    use super::super::super::super::timeline::event_processor::api::EventValue as V26;
+                    use super::super::super::super::timeline::event_processor_interface::api::EventValue as V26;
                     let v26 = match arg6 {
                         0 => {
                             let e26 = {
@@ -13696,7 +15662,7 @@ pub mod exports {
                             TypedTimelineResultWorker::DerivedTimeline(e24)
                         }
                     };
-                    use super::super::super::super::timeline::event_processor::api::EventValue as V26;
+                    use super::super::super::super::timeline::event_processor_interface::api::EventValue as V26;
                     let v26 = match arg6 {
                         0 => {
                             let e26 = {
@@ -13980,7 +15946,7 @@ pub mod exports {
                             TypedTimelineResultWorker::DerivedTimeline(e24)
                         }
                     };
-                    use super::super::super::super::timeline::event_processor::api::EventValue as V26;
+                    use super::super::super::super::timeline::event_processor_interface::api::EventValue as V26;
                     let v26 = match arg6 {
                         0 => {
                             let e26 = {
@@ -15294,7 +17260,7 @@ pub mod exports {
                     match result0 {
                         Ok(e) => {
                             *ptr1.add(0).cast::<u8>() = (0i32) as u8;
-                            let super::super::super::super::timeline::event_processor::api::TimelineResult{ results:results2, } = e;
+                            let super::super::super::super::timeline::event_processor_interface::api::TimelineResult{ results:results2, } = e;
                             let vec7 = results2;
                             let len7 = vec7.len();
                             let layout7 =
@@ -15313,8 +17279,8 @@ pub mod exports {
                             for (i, e) in vec7.into_iter().enumerate() {
                                 let base = result7.add(i * 40);
                                 {
-                                    let super::super::super::super::timeline::event_processor::api::TimelineResultPoint{ time_period:time_period3, value:value3, } = e;
-                                    let super::super::super::super::timeline::event_processor::api::TimePeriod{ t1:t14, t2:t24, } = time_period3;
+                                    let super::super::super::super::timeline::event_processor_interface::api::TimelineResultPoint{ time_period:time_period3, value:value3, } = e;
+                                    let super::super::super::super::timeline::event_processor_interface::api::TimePeriod{ t1:t14, t2:t24, } = time_period3;
                                     *base.add(0).cast::<i64>() = _rt::as_i64(t14);
                                     match t24 {
                                         Some(e) => {
@@ -15325,7 +17291,7 @@ pub mod exports {
                                             *base.add(8).cast::<u8>() = (0i32) as u8;
                                         }
                                     };
-                                    use super::super::super::super::timeline::event_processor::api::EventValue as V6;
+                                    use super::super::super::super::timeline::event_processor_interface::api::EventValue as V6;
                                     match value3 {
                                         V6::StringValue(e) => {
                                             *base.add(24).cast::<u8>() = (0i32) as u8;
@@ -15441,85 +17407,85 @@ pub mod exports {
                 }
                 #[doc(hidden)]
 
-                macro_rules! __export_timeline_timeline_processor_api_cabi{
+                macro_rules! __export_timeline_timeline_processor_interface_api_cabi{
                       ($ty:ident with_types_in $($path_to_types:tt)*) => (const _: () = {
 
-                        #[export_name = "timeline:timeline-processor/api#initialize-equal"]
+                        #[export_name = "timeline:timeline-processor-interface/api#initialize-equal"]
                         unsafe extern "C" fn export_initialize_equal(arg0: i32,arg1: i32,arg2: *mut u8,arg3: usize,arg4: *mut u8,arg5: usize,arg6: i32,arg7: ::core::mem::MaybeUninit::<u64>,arg8: usize,) -> *mut u8 {
                           $($path_to_types)*::_export_initialize_equal_cabi::<$ty>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)
                         }
-                        #[export_name = "cabi_post_timeline:timeline-processor/api#initialize-equal"]
+                        #[export_name = "cabi_post_timeline:timeline-processor-interface/api#initialize-equal"]
                         unsafe extern "C" fn _post_return_initialize_equal(arg0: *mut u8,) {
                           $($path_to_types)*::__post_return_initialize_equal::<$ty>(arg0)
                         }
-                        #[export_name = "timeline:timeline-processor/api#initialize-greater-than"]
+                        #[export_name = "timeline:timeline-processor-interface/api#initialize-greater-than"]
                         unsafe extern "C" fn export_initialize_greater_than(arg0: i32,arg1: i32,arg2: *mut u8,arg3: usize,arg4: *mut u8,arg5: usize,arg6: i32,arg7: ::core::mem::MaybeUninit::<u64>,arg8: usize,) -> *mut u8 {
                           $($path_to_types)*::_export_initialize_greater_than_cabi::<$ty>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)
                         }
-                        #[export_name = "cabi_post_timeline:timeline-processor/api#initialize-greater-than"]
+                        #[export_name = "cabi_post_timeline:timeline-processor-interface/api#initialize-greater-than"]
                         unsafe extern "C" fn _post_return_initialize_greater_than(arg0: *mut u8,) {
                           $($path_to_types)*::__post_return_initialize_greater_than::<$ty>(arg0)
                         }
-                        #[export_name = "timeline:timeline-processor/api#initialize-greater-than-or-equal-to"]
+                        #[export_name = "timeline:timeline-processor-interface/api#initialize-greater-than-or-equal-to"]
                         unsafe extern "C" fn export_initialize_greater_than_or_equal_to(arg0: i32,arg1: i32,arg2: *mut u8,arg3: usize,arg4: *mut u8,arg5: usize,arg6: i32,arg7: ::core::mem::MaybeUninit::<u64>,arg8: usize,) -> *mut u8 {
                           $($path_to_types)*::_export_initialize_greater_than_or_equal_to_cabi::<$ty>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)
                         }
-                        #[export_name = "cabi_post_timeline:timeline-processor/api#initialize-greater-than-or-equal-to"]
+                        #[export_name = "cabi_post_timeline:timeline-processor-interface/api#initialize-greater-than-or-equal-to"]
                         unsafe extern "C" fn _post_return_initialize_greater_than_or_equal_to(arg0: *mut u8,) {
                           $($path_to_types)*::__post_return_initialize_greater_than_or_equal_to::<$ty>(arg0)
                         }
-                        #[export_name = "timeline:timeline-processor/api#initialize-less-than"]
+                        #[export_name = "timeline:timeline-processor-interface/api#initialize-less-than"]
                         unsafe extern "C" fn export_initialize_less_than(arg0: i32,arg1: i32,arg2: *mut u8,arg3: usize,arg4: *mut u8,arg5: usize,arg6: i32,arg7: ::core::mem::MaybeUninit::<u64>,arg8: usize,) -> *mut u8 {
                           $($path_to_types)*::_export_initialize_less_than_cabi::<$ty>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)
                         }
-                        #[export_name = "cabi_post_timeline:timeline-processor/api#initialize-less-than"]
+                        #[export_name = "cabi_post_timeline:timeline-processor-interface/api#initialize-less-than"]
                         unsafe extern "C" fn _post_return_initialize_less_than(arg0: *mut u8,) {
                           $($path_to_types)*::__post_return_initialize_less_than::<$ty>(arg0)
                         }
-                        #[export_name = "timeline:timeline-processor/api#initialize-less-than-or-equal-to"]
+                        #[export_name = "timeline:timeline-processor-interface/api#initialize-less-than-or-equal-to"]
                         unsafe extern "C" fn export_initialize_less_than_or_equal_to(arg0: i32,arg1: i32,arg2: *mut u8,arg3: usize,arg4: *mut u8,arg5: usize,arg6: i32,arg7: ::core::mem::MaybeUninit::<u64>,arg8: usize,) -> *mut u8 {
                           $($path_to_types)*::_export_initialize_less_than_or_equal_to_cabi::<$ty>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)
                         }
-                        #[export_name = "cabi_post_timeline:timeline-processor/api#initialize-less-than-or-equal-to"]
+                        #[export_name = "cabi_post_timeline:timeline-processor-interface/api#initialize-less-than-or-equal-to"]
                         unsafe extern "C" fn _post_return_initialize_less_than_or_equal_to(arg0: *mut u8,) {
                           $($path_to_types)*::__post_return_initialize_less_than_or_equal_to::<$ty>(arg0)
                         }
-                        #[export_name = "timeline:timeline-processor/api#initialize-and"]
+                        #[export_name = "timeline:timeline-processor-interface/api#initialize-and"]
                         unsafe extern "C" fn export_initialize_and(arg0: i32,arg1: i32,arg2: *mut u8,arg3: usize,arg4: *mut u8,arg5: usize,arg6: i32,arg7: i32,arg8: *mut u8,arg9: usize,arg10: *mut u8,arg11: usize,) -> *mut u8 {
                           $($path_to_types)*::_export_initialize_and_cabi::<$ty>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11)
                         }
-                        #[export_name = "cabi_post_timeline:timeline-processor/api#initialize-and"]
+                        #[export_name = "cabi_post_timeline:timeline-processor-interface/api#initialize-and"]
                         unsafe extern "C" fn _post_return_initialize_and(arg0: *mut u8,) {
                           $($path_to_types)*::__post_return_initialize_and::<$ty>(arg0)
                         }
-                        #[export_name = "timeline:timeline-processor/api#initialize-or"]
+                        #[export_name = "timeline:timeline-processor-interface/api#initialize-or"]
                         unsafe extern "C" fn export_initialize_or(arg0: i32,arg1: i32,arg2: *mut u8,arg3: usize,arg4: *mut u8,arg5: usize,arg6: i32,arg7: i32,arg8: *mut u8,arg9: usize,arg10: *mut u8,arg11: usize,) -> *mut u8 {
                           $($path_to_types)*::_export_initialize_or_cabi::<$ty>(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11)
                         }
-                        #[export_name = "cabi_post_timeline:timeline-processor/api#initialize-or"]
+                        #[export_name = "cabi_post_timeline:timeline-processor-interface/api#initialize-or"]
                         unsafe extern "C" fn _post_return_initialize_or(arg0: *mut u8,) {
                           $($path_to_types)*::__post_return_initialize_or::<$ty>(arg0)
                         }
-                        #[export_name = "timeline:timeline-processor/api#initialize-not"]
+                        #[export_name = "timeline:timeline-processor-interface/api#initialize-not"]
                         unsafe extern "C" fn export_initialize_not(arg0: i32,arg1: i32,arg2: *mut u8,arg3: usize,arg4: *mut u8,arg5: usize,) -> *mut u8 {
                           $($path_to_types)*::_export_initialize_not_cabi::<$ty>(arg0, arg1, arg2, arg3, arg4, arg5)
                         }
-                        #[export_name = "cabi_post_timeline:timeline-processor/api#initialize-not"]
+                        #[export_name = "cabi_post_timeline:timeline-processor-interface/api#initialize-not"]
                         unsafe extern "C" fn _post_return_initialize_not(arg0: *mut u8,) {
                           $($path_to_types)*::__post_return_initialize_not::<$ty>(arg0)
                         }
-                        #[export_name = "timeline:timeline-processor/api#get-timeline-result"]
+                        #[export_name = "timeline:timeline-processor-interface/api#get-timeline-result"]
                         unsafe extern "C" fn export_get_timeline_result(arg0: i64,) -> *mut u8 {
                           $($path_to_types)*::_export_get_timeline_result_cabi::<$ty>(arg0)
                         }
-                        #[export_name = "cabi_post_timeline:timeline-processor/api#get-timeline-result"]
+                        #[export_name = "cabi_post_timeline:timeline-processor-interface/api#get-timeline-result"]
                         unsafe extern "C" fn _post_return_get_timeline_result(arg0: *mut u8,) {
                           $($path_to_types)*::__post_return_get_timeline_result::<$ty>(arg0)
                         }
                       };);
                     }
                 #[doc(hidden)]
-                pub(crate) use __export_timeline_timeline_processor_api_cabi;
+                pub(crate) use __export_timeline_timeline_processor_interface_api_cabi;
                 #[repr(align(4))]
                 struct _RetArea([::core::mem::MaybeUninit<u8>; 12]);
                 static mut _RET_AREA: _RetArea = _RetArea([::core::mem::MaybeUninit::uninit(); 12]);
@@ -15830,7 +17796,7 @@ mod _rt {
 macro_rules! __export_timeline_processor_impl {
               ($ty:ident) => (self::export!($ty with_types_in self););
               ($ty:ident with_types_in $($path_to_types_root:tt)*) => (
-              $($path_to_types_root)*::exports::timeline::timeline_processor::api::__export_timeline_timeline_processor_api_cabi!($ty with_types_in $($path_to_types_root)*::exports::timeline::timeline_processor::api);
+              $($path_to_types_root)*::exports::timeline::timeline_processor_interface::api::__export_timeline_timeline_processor_interface_api_cabi!($ty with_types_in $($path_to_types_root)*::exports::timeline::timeline_processor_interface::api);
               )
             }
 #[doc(inline)]
@@ -15839,8 +17805,8 @@ pub(crate) use __export_timeline_processor_impl as export;
 #[cfg(target_arch = "wasm32")]
 #[link_section = "component-type:wit-bindgen:0.25.0:timeline-processor:encoded world"]
 #[doc(hidden)]
-pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 8982] = *b"\
-\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\x8dE\x01A\x02\x01A\x15\
+pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 9553] = *b"\
+\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\xc8I\x01A\x02\x01A\x1d\
 \x01B\x0a\x04\0\x08pollable\x03\x01\x01h\0\x01@\x01\x04self\x01\0\x7f\x04\0\x16[\
 method]pollable.ready\x01\x02\x01@\x01\x04self\x01\x01\0\x04\0\x16[method]pollab\
 le.block\x01\x03\x01p\x01\x01py\x01@\x01\x02in\x04\0\x05\x04\0\x04poll\x01\x06\x03\
@@ -15878,120 +17844,57 @@ s\x01@\x01\x0eevent-col-names\0\x12\x04\0\x1dinitialize-latest-event-state\x01\x
 \x01@\x02\x0fevent-predicate\x11\x04timew\0\x12\x04\0\x20initialize-tl-has-exist\
 ed-within\x01\x15\x01@\x01\x05event\x05\0\x12\x04\0\x09add-event\x01\x16\x01j\x01\
 \x0d\x01s\x01@\x01\x02t1w\0\x17\x04\0\x15latest-event-to-state\x01\x18\x04\0\x0e\
-tl-has-existed\x01\x18\x04\0\x15tl-has-existed-within\x01\x18\x03\x01\x1ctimelin\
-e:event-processor/api\x05\x03\x02\x03\0\x01\x03uri\x02\x03\0\x02\x0bevent-value\x02\
-\x03\0\x02\x05event\x02\x03\0\x02\x0btime-period\x02\x03\0\x02\x15timeline-resul\
-t-point\x02\x03\0\x02\x0ftimeline-result\x02\x03\0\x02\x12event-predicate-op\x02\
-\x03\0\x02\x0fevent-predicate\x01Bg\x02\x03\x02\x01\x04\x04\0\x0dgolem-rpc-uri\x03\
-\0\0\x02\x03\x02\x01\x01\x04\0\x10wasi-io-pollable\x03\0\x02\x02\x03\x02\x01\x05\
-\x04\0\x0bevent-value\x03\0\x04\x02\x03\x02\x01\x06\x04\0\x05event\x03\0\x06\x02\
-\x03\x02\x01\x07\x04\0\x0btime-period\x03\0\x08\x02\x03\x02\x01\x08\x04\0\x15tim\
-eline-result-point\x03\0\x0a\x02\x03\x02\x01\x09\x04\0\x0ftimeline-result\x03\0\x0c\
-\x02\x03\x02\x01\x0a\x04\0\x12event-predicate-op\x03\0\x0e\x02\x03\x02\x01\x0b\x04\
-\0\x0fevent-predicate\x03\0\x10\x04\0+future-initialize-latest-event-state-resul\
-t\x03\x01\x04\0'future-initialize-tl-has-existed-result\x03\x01\x04\0.future-ini\
-tialize-tl-has-existed-within-result\x03\x01\x04\0\x17future-add-event-result\x03\
-\x01\x04\0#future-latest-event-to-state-result\x03\x01\x04\0\x1cfuture-tl-has-ex\
-isted-result\x03\x01\x04\0#future-tl-has-existed-within-result\x03\x01\x04\0\x03\
-api\x03\x01\x01h\x12\x01i\x03\x01@\x01\x04self\x1a\0\x1b\x04\0=[method]future-in\
-itialize-latest-event-state-result.subscribe\x01\x1c\x01j\x01s\x01s\x01k\x1d\x01\
-@\x01\x04self\x1a\0\x1e\x04\07[method]future-initialize-latest-event-state-resul\
-t.get\x01\x1f\x01h\x13\x01@\x01\x04self\x20\0\x1b\x04\09[method]future-initializ\
-e-tl-has-existed-result.subscribe\x01!\x01@\x01\x04self\x20\0\x1e\x04\03[method]\
-future-initialize-tl-has-existed-result.get\x01\"\x01h\x14\x01@\x01\x04self#\0\x1b\
-\x04\0@[method]future-initialize-tl-has-existed-within-result.subscribe\x01$\x01\
-@\x01\x04self#\0\x1e\x04\0:[method]future-initialize-tl-has-existed-within-resul\
-t.get\x01%\x01h\x15\x01@\x01\x04self&\0\x1b\x04\0)[method]future-add-event-resul\
-t.subscribe\x01'\x01@\x01\x04self&\0\x1e\x04\0#[method]future-add-event-result.g\
-et\x01(\x01h\x16\x01@\x01\x04self)\0\x1b\x04\05[method]future-latest-event-to-st\
-ate-result.subscribe\x01*\x01j\x01\x0d\x01s\x01k+\x01@\x01\x04self)\0,\x04\0/[me\
-thod]future-latest-event-to-state-result.get\x01-\x01h\x17\x01@\x01\x04self.\0\x1b\
-\x04\0.[method]future-tl-has-existed-result.subscribe\x01/\x01@\x01\x04self.\0,\x04\
-\0([method]future-tl-has-existed-result.get\x010\x01h\x18\x01@\x01\x04self1\0\x1b\
-\x04\05[method]future-tl-has-existed-within-result.subscribe\x012\x01@\x01\x04se\
-lf1\0,\x04\0/[method]future-tl-has-existed-within-result.get\x013\x01i\x19\x01@\x01\
-\x08location\x01\04\x04\0\x10[constructor]api\x015\x01h\x19\x01@\x02\x04self6\x0e\
-event-col-names\0\x1d\x04\02[method]api.blocking-initialize-latest-event-state\x01\
-7\x01i\x12\x01@\x02\x04self6\x0eevent-col-names\08\x04\0)[method]api.initialize-\
-latest-event-state\x019\x01@\x02\x04self6\x0fevent-predicate\x11\0\x1d\x04\0.[me\
-thod]api.blocking-initialize-tl-has-existed\x01:\x01i\x13\x01@\x02\x04self6\x0fe\
-vent-predicate\x11\0;\x04\0%[method]api.initialize-tl-has-existed\x01<\x01@\x03\x04\
-self6\x0fevent-predicate\x11\x04timew\0\x1d\x04\05[method]api.blocking-initializ\
-e-tl-has-existed-within\x01=\x01i\x14\x01@\x03\x04self6\x0fevent-predicate\x11\x04\
-timew\0>\x04\0,[method]api.initialize-tl-has-existed-within\x01?\x01@\x02\x04sel\
-f6\x05event\x07\0\x1d\x04\0\x1e[method]api.blocking-add-event\x01@\x01i\x15\x01@\
-\x02\x04self6\x05event\x07\0\xc1\0\x04\0\x15[method]api.add-event\x01B\x01@\x02\x04\
-self6\x02t1w\0+\x04\0*[method]api.blocking-latest-event-to-state\x01C\x01i\x16\x01\
-@\x02\x04self6\x02t1w\0\xc4\0\x04\0![method]api.latest-event-to-state\x01E\x04\0\
-#[method]api.blocking-tl-has-existed\x01C\x01i\x17\x01@\x02\x04self6\x02t1w\0\xc6\
-\0\x04\0\x1a[method]api.tl-has-existed\x01G\x04\0*[method]api.blocking-tl-has-ex\
-isted-within\x01C\x01i\x18\x01@\x02\x04self6\x02t1w\0\xc8\0\x04\0![method]api.tl\
--has-existed-within\x01I\x03\x012timeline:event-processor-stub/stub-event-proces\
-sor\x05\x0c\x01B~\x02\x03\x02\x01\x04\x04\0\x0dgolem-rpc-uri\x03\0\0\x02\x03\x02\
-\x01\x01\x04\0\x10wasi-io-pollable\x03\0\x02\x01q\x04\x0cstring-value\x01s\0\x09\
-int-value\x01x\0\x0bfloat-value\x01u\0\x0abool-value\x01\x7f\0\x04\0\x0bevent-va\
-lue\x03\0\x04\x01kw\x01r\x02\x02t1w\x02t2\x06\x04\0\x0btime-period\x03\0\x07\x01\
-r\x02\x0btime-period\x08\x05value\x05\x04\0\x15timeline-result-point\x03\0\x09\x01\
-p\x0a\x01r\x01\x07results\x0b\x04\0\x0ftimeline-result\x03\0\x0c\x01r\x02\x09wor\
-ker-ids\x0btemplate-ids\x04\0\x16timeline-result-worker\x03\0\x0e\x01q\x03\x0etl\
--has-existed\x01\x0f\0\x15tl-has-existed-within\x01\x0f\0\x18tl-latest-event-to-\
-state\x01\x0f\0\x04\0\x12leaf-timeline-node\x03\0\x10\x01q\x08\x08equal-to\x01\x0f\
-\0\x0cgreater-than\x01\x0f\0\x18greater-than-or-equal-to\x01\x0f\0\x09less-than\x01\
-\x0f\0\x15less-than-or-equal-to\x01\x0f\0\x03and\x01\x0f\0\x02or\x01\x0f\0\x03no\
-t\x01\x0f\0\x04\0\x15derived-timeline-node\x03\0\x12\x01q\x02\x0dleaf-timeline\x01\
-\x11\0\x10derived-timeline\x01\x13\0\x04\0\x1ctyped-timeline-result-worker\x03\0\
-\x14\x04\0\x1efuture-initialize-equal-result\x03\x01\x04\0%future-initialize-gre\
-ater-than-result\x03\x01\x04\01future-initialize-greater-than-or-equal-to-result\
-\x03\x01\x04\0\"future-initialize-less-than-result\x03\x01\x04\0.future-initiali\
-ze-less-than-or-equal-to-result\x03\x01\x04\0\x1cfuture-initialize-and-result\x03\
-\x01\x04\0\x1bfuture-initialize-or-result\x03\x01\x04\0\x1cfuture-initialize-not\
--result\x03\x01\x04\0!future-get-timeline-result-result\x03\x01\x04\0\x03api\x03\
-\x01\x01h\x16\x01i\x03\x01@\x01\x04self\x20\0!\x04\00[method]future-initialize-e\
-qual-result.subscribe\x01\"\x01j\x01s\x01s\x01k#\x01@\x01\x04self\x20\0$\x04\0*[\
-method]future-initialize-equal-result.get\x01%\x01h\x17\x01@\x01\x04self&\0!\x04\
-\07[method]future-initialize-greater-than-result.subscribe\x01'\x01@\x01\x04self\
-&\0$\x04\01[method]future-initialize-greater-than-result.get\x01(\x01h\x18\x01@\x01\
-\x04self)\0!\x04\0C[method]future-initialize-greater-than-or-equal-to-result.sub\
-scribe\x01*\x01@\x01\x04self)\0$\x04\0=[method]future-initialize-greater-than-or\
--equal-to-result.get\x01+\x01h\x19\x01@\x01\x04self,\0!\x04\04[method]future-ini\
-tialize-less-than-result.subscribe\x01-\x01@\x01\x04self,\0$\x04\0.[method]futur\
-e-initialize-less-than-result.get\x01.\x01h\x1a\x01@\x01\x04self/\0!\x04\0@[meth\
-od]future-initialize-less-than-or-equal-to-result.subscribe\x010\x01@\x01\x04sel\
-f/\0$\x04\0:[method]future-initialize-less-than-or-equal-to-result.get\x011\x01h\
-\x1b\x01@\x01\x04self2\0!\x04\0.[method]future-initialize-and-result.subscribe\x01\
-3\x01@\x01\x04self2\0$\x04\0([method]future-initialize-and-result.get\x014\x01h\x1c\
-\x01@\x01\x04self5\0!\x04\0-[method]future-initialize-or-result.subscribe\x016\x01\
-@\x01\x04self5\0$\x04\0'[method]future-initialize-or-result.get\x017\x01h\x1d\x01\
-@\x01\x04self8\0!\x04\0.[method]future-initialize-not-result.subscribe\x019\x01@\
-\x01\x04self8\0$\x04\0([method]future-initialize-not-result.get\x01:\x01h\x1e\x01\
-@\x01\x04self;\0!\x04\03[method]future-get-timeline-result-result.subscribe\x01<\
-\x01j\x01\x0d\x01s\x01k=\x01@\x01\x04self;\0>\x04\0-[method]future-get-timeline-\
-result-result.get\x01?\x01i\x1f\x01@\x01\x08location\x01\0\xc0\0\x04\0\x10[const\
-ructor]api\x01A\x01h\x1f\x01@\x03\x04self\xc2\0\x0cchild-worker\x15\x0bevent-val\
-ue\x05\0#\x04\0%[method]api.blocking-initialize-equal\x01C\x01i\x16\x01@\x03\x04\
-self\xc2\0\x0cchild-worker\x15\x0bevent-value\x05\0\xc4\0\x04\0\x1c[method]api.i\
-nitialize-equal\x01E\x04\0,[method]api.blocking-initialize-greater-than\x01C\x01\
-i\x17\x01@\x03\x04self\xc2\0\x0cchild-worker\x15\x0bevent-value\x05\0\xc6\0\x04\0\
-#[method]api.initialize-greater-than\x01G\x04\08[method]api.blocking-initialize-\
-greater-than-or-equal-to\x01C\x01i\x18\x01@\x03\x04self\xc2\0\x0cchild-worker\x15\
-\x0bevent-value\x05\0\xc8\0\x04\0/[method]api.initialize-greater-than-or-equal-t\
-o\x01I\x04\0)[method]api.blocking-initialize-less-than\x01C\x01i\x19\x01@\x03\x04\
-self\xc2\0\x0cchild-worker\x15\x0bevent-value\x05\0\xca\0\x04\0\x20[method]api.i\
-nitialize-less-than\x01K\x04\05[method]api.blocking-initialize-less-than-or-equa\
-l-to\x01C\x01i\x1a\x01@\x03\x04self\xc2\0\x0cchild-worker\x15\x0bevent-value\x05\
-\0\xcc\0\x04\0,[method]api.initialize-less-than-or-equal-to\x01M\x01@\x03\x04sel\
-f\xc2\0\x0dchild-worker1\x15\x0dchild-worker2\x15\0#\x04\0#[method]api.blocking-\
-initialize-and\x01N\x01i\x1b\x01@\x03\x04self\xc2\0\x0dchild-worker1\x15\x0dchil\
-d-worker2\x15\0\xcf\0\x04\0\x1a[method]api.initialize-and\x01P\x04\0\"[method]ap\
-i.blocking-initialize-or\x01N\x01i\x1c\x01@\x03\x04self\xc2\0\x0dchild-worker1\x15\
-\x0dchild-worker2\x15\0\xd1\0\x04\0\x19[method]api.initialize-or\x01R\x01@\x02\x04\
-self\xc2\0\x0cchild-worker\x15\0#\x04\0#[method]api.blocking-initialize-not\x01S\
-\x01i\x1d\x01@\x02\x04self\xc2\0\x0cchild-worker\x15\0\xd4\0\x04\0\x1a[method]ap\
-i.initialize-not\x01U\x01@\x02\x04self\xc2\0\x02t1w\0=\x04\0([method]api.blockin\
-g-get-timeline-result\x01V\x01i\x1e\x01@\x02\x04self\xc2\0\x02t1w\0\xd7\0\x04\0\x1f\
-[method]api.get-timeline-result\x01X\x03\x018timeline:timeline-processor-stub/st\
-ub-timeline-processor\x05\x0d\x01B\x1b\x02\x03\x02\x01\x05\x04\0\x0bevent-value\x03\
-\0\0\x02\x03\x02\x01\x09\x04\0\x0ftimeline-result\x03\0\x02\x01r\x02\x09worker-i\
+tl-has-existed\x01\x18\x04\0\x15tl-has-existed-within\x01\x18\x03\x01&timeline:e\
+vent-processor-interface/api\x05\x03\x02\x03\0\x01\x03uri\x02\x03\0\x02\x05event\
+\x02\x03\0\x02\x0fevent-predicate\x02\x03\0\x02\x12event-predicate-op\x02\x03\0\x02\
+\x0bevent-value\x02\x03\0\x02\x0btime-period\x02\x03\0\x02\x0ftimeline-result\x02\
+\x03\0\x02\x15timeline-result-point\x01Bg\x02\x03\x02\x01\x04\x04\0\x0dgolem-rpc\
+-uri\x03\0\0\x02\x03\x02\x01\x01\x04\0\x10wasi-io-pollable\x03\0\x02\x02\x03\x02\
+\x01\x05\x04\0\x05event\x03\0\x04\x02\x03\x02\x01\x06\x04\0\x0fevent-predicate\x03\
+\0\x06\x02\x03\x02\x01\x07\x04\0\x12event-predicate-op\x03\0\x08\x02\x03\x02\x01\
+\x08\x04\0\x0bevent-value\x03\0\x0a\x02\x03\x02\x01\x09\x04\0\x0btime-period\x03\
+\0\x0c\x02\x03\x02\x01\x0a\x04\0\x0ftimeline-result\x03\0\x0e\x02\x03\x02\x01\x0b\
+\x04\0\x15timeline-result-point\x03\0\x10\x04\0+future-initialize-latest-event-s\
+tate-result\x03\x01\x04\0'future-initialize-tl-has-existed-result\x03\x01\x04\0.\
+future-initialize-tl-has-existed-within-result\x03\x01\x04\0\x17future-add-event\
+-result\x03\x01\x04\0#future-latest-event-to-state-result\x03\x01\x04\0\x1cfutur\
+e-tl-has-existed-result\x03\x01\x04\0#future-tl-has-existed-within-result\x03\x01\
+\x04\0\x03api\x03\x01\x01h\x12\x01i\x03\x01@\x01\x04self\x1a\0\x1b\x04\0=[method\
+]future-initialize-latest-event-state-result.subscribe\x01\x1c\x01j\x01s\x01s\x01\
+k\x1d\x01@\x01\x04self\x1a\0\x1e\x04\07[method]future-initialize-latest-event-st\
+ate-result.get\x01\x1f\x01h\x13\x01@\x01\x04self\x20\0\x1b\x04\09[method]future-\
+initialize-tl-has-existed-result.subscribe\x01!\x01@\x01\x04self\x20\0\x1e\x04\0\
+3[method]future-initialize-tl-has-existed-result.get\x01\"\x01h\x14\x01@\x01\x04\
+self#\0\x1b\x04\0@[method]future-initialize-tl-has-existed-within-result.subscri\
+be\x01$\x01@\x01\x04self#\0\x1e\x04\0:[method]future-initialize-tl-has-existed-w\
+ithin-result.get\x01%\x01h\x15\x01@\x01\x04self&\0\x1b\x04\0)[method]future-add-\
+event-result.subscribe\x01'\x01@\x01\x04self&\0\x1e\x04\0#[method]future-add-eve\
+nt-result.get\x01(\x01h\x16\x01@\x01\x04self)\0\x1b\x04\05[method]future-latest-\
+event-to-state-result.subscribe\x01*\x01j\x01\x0f\x01s\x01k+\x01@\x01\x04self)\0\
+,\x04\0/[method]future-latest-event-to-state-result.get\x01-\x01h\x17\x01@\x01\x04\
+self.\0\x1b\x04\0.[method]future-tl-has-existed-result.subscribe\x01/\x01@\x01\x04\
+self.\0,\x04\0([method]future-tl-has-existed-result.get\x010\x01h\x18\x01@\x01\x04\
+self1\0\x1b\x04\05[method]future-tl-has-existed-within-result.subscribe\x012\x01\
+@\x01\x04self1\0,\x04\0/[method]future-tl-has-existed-within-result.get\x013\x01\
+i\x19\x01@\x01\x08location\x01\04\x04\0\x10[constructor]api\x015\x01h\x19\x01@\x02\
+\x04self6\x0eevent-col-names\0\x1d\x04\02[method]api.blocking-initialize-latest-\
+event-state\x017\x01i\x12\x01@\x02\x04self6\x0eevent-col-names\08\x04\0)[method]\
+api.initialize-latest-event-state\x019\x01@\x02\x04self6\x0fevent-predicate\x07\0\
+\x1d\x04\0.[method]api.blocking-initialize-tl-has-existed\x01:\x01i\x13\x01@\x02\
+\x04self6\x0fevent-predicate\x07\0;\x04\0%[method]api.initialize-tl-has-existed\x01\
+<\x01@\x03\x04self6\x0fevent-predicate\x07\x04timew\0\x1d\x04\05[method]api.bloc\
+king-initialize-tl-has-existed-within\x01=\x01i\x14\x01@\x03\x04self6\x0fevent-p\
+redicate\x07\x04timew\0>\x04\0,[method]api.initialize-tl-has-existed-within\x01?\
+\x01@\x02\x04self6\x05event\x05\0\x1d\x04\0\x1e[method]api.blocking-add-event\x01\
+@\x01i\x15\x01@\x02\x04self6\x05event\x05\0\xc1\0\x04\0\x15[method]api.add-event\
+\x01B\x01@\x02\x04self6\x02t1w\0+\x04\0*[method]api.blocking-latest-event-to-sta\
+te\x01C\x01i\x16\x01@\x02\x04self6\x02t1w\0\xc4\0\x04\0![method]api.latest-event\
+-to-state\x01E\x04\0#[method]api.blocking-tl-has-existed\x01C\x01i\x17\x01@\x02\x04\
+self6\x02t1w\0\xc6\0\x04\0\x1a[method]api.tl-has-existed\x01G\x04\0*[method]api.\
+blocking-tl-has-existed-within\x01C\x01i\x18\x01@\x02\x04self6\x02t1w\0\xc8\0\x04\
+\0![method]api.tl-has-existed-within\x01I\x03\x012timeline:event-processor-stub/\
+stub-event-processor\x05\x0c\x01B\x1b\x02\x03\x02\x01\x08\x04\0\x0bevent-value\x03\
+\0\0\x02\x03\x02\x01\x0a\x04\0\x0ftimeline-result\x03\0\x02\x01r\x02\x09worker-i\
 ds\x0btemplate-ids\x04\0\x16timeline-result-worker\x03\0\x04\x01q\x03\x0etl-has-\
 existed\x01\x05\0\x15tl-has-existed-within\x01\x05\0\x18tl-latest-event-to-state\
 \x01\x05\0\x04\0\x12leaf-timeline-node\x03\0\x06\x01q\x08\x08equal-to\x01\x05\0\x0c\
@@ -16005,10 +17908,86 @@ e-greater-than-or-equal-to\x01\x0d\x04\0\x14initialize-less-than\x01\x0d\x04\0\x
 initialize-less-than-or-equal-to\x01\x0d\x01@\x02\x0dchild-worker1\x0b\x0dchild-\
 worker2\x0b\0\x0c\x04\0\x0einitialize-and\x01\x0e\x04\0\x0dinitialize-or\x01\x0e\
 \x01@\x01\x0cchild-worker\x0b\0\x0c\x04\0\x0einitialize-not\x01\x0f\x01j\x01\x03\
-\x01s\x01@\x01\x02t1w\0\x10\x04\0\x13get-timeline-result\x01\x11\x04\x01\x1ftime\
-line:timeline-processor/api\x05\x0e\x04\x01.timeline:timeline-processor/timeline\
--processor\x04\0\x0b\x18\x01\0\x12timeline-processor\x03\0\0\0G\x09producers\x01\
-\x0cprocessed-by\x02\x0dwit-component\x070.208.1\x10wit-bindgen-rust\x060.25.0";
+\x01s\x01@\x01\x02t1w\0\x10\x04\0\x13get-timeline-result\x01\x11\x03\x01)timelin\
+e:timeline-processor-interface/api\x05\x0d\x02\x03\0\x04\x15derived-timeline-nod\
+e\x02\x03\0\x04\x0bevent-value\x02\x03\0\x04\x12leaf-timeline-node\x02\x03\0\x04\
+\x0ftimeline-result\x02\x03\0\x04\x16timeline-result-worker\x02\x03\0\x04\x1ctyp\
+ed-timeline-result-worker\x01Bx\x02\x03\x02\x01\x04\x04\0\x0dgolem-rpc-uri\x03\0\
+\0\x02\x03\x02\x01\x01\x04\0\x10wasi-io-pollable\x03\0\x02\x02\x03\x02\x01\x0e\x04\
+\0\x15derived-timeline-node\x03\0\x04\x02\x03\x02\x01\x0f\x04\0\x0bevent-value\x03\
+\0\x06\x02\x03\x02\x01\x10\x04\0\x12leaf-timeline-node\x03\0\x08\x02\x03\x02\x01\
+\x11\x04\0\x0ftimeline-result\x03\0\x0a\x02\x03\x02\x01\x12\x04\0\x16timeline-re\
+sult-worker\x03\0\x0c\x02\x03\x02\x01\x13\x04\0\x1ctyped-timeline-result-worker\x03\
+\0\x0e\x04\0\x1efuture-initialize-equal-result\x03\x01\x04\0%future-initialize-g\
+reater-than-result\x03\x01\x04\01future-initialize-greater-than-or-equal-to-resu\
+lt\x03\x01\x04\0\"future-initialize-less-than-result\x03\x01\x04\0.future-initia\
+lize-less-than-or-equal-to-result\x03\x01\x04\0\x1cfuture-initialize-and-result\x03\
+\x01\x04\0\x1bfuture-initialize-or-result\x03\x01\x04\0\x1cfuture-initialize-not\
+-result\x03\x01\x04\0!future-get-timeline-result-result\x03\x01\x04\0\x03api\x03\
+\x01\x01h\x10\x01i\x03\x01@\x01\x04self\x1a\0\x1b\x04\00[method]future-initializ\
+e-equal-result.subscribe\x01\x1c\x01j\x01s\x01s\x01k\x1d\x01@\x01\x04self\x1a\0\x1e\
+\x04\0*[method]future-initialize-equal-result.get\x01\x1f\x01h\x11\x01@\x01\x04s\
+elf\x20\0\x1b\x04\07[method]future-initialize-greater-than-result.subscribe\x01!\
+\x01@\x01\x04self\x20\0\x1e\x04\01[method]future-initialize-greater-than-result.\
+get\x01\"\x01h\x12\x01@\x01\x04self#\0\x1b\x04\0C[method]future-initialize-great\
+er-than-or-equal-to-result.subscribe\x01$\x01@\x01\x04self#\0\x1e\x04\0=[method]\
+future-initialize-greater-than-or-equal-to-result.get\x01%\x01h\x13\x01@\x01\x04\
+self&\0\x1b\x04\04[method]future-initialize-less-than-result.subscribe\x01'\x01@\
+\x01\x04self&\0\x1e\x04\0.[method]future-initialize-less-than-result.get\x01(\x01\
+h\x14\x01@\x01\x04self)\0\x1b\x04\0@[method]future-initialize-less-than-or-equal\
+-to-result.subscribe\x01*\x01@\x01\x04self)\0\x1e\x04\0:[method]future-initializ\
+e-less-than-or-equal-to-result.get\x01+\x01h\x15\x01@\x01\x04self,\0\x1b\x04\0.[\
+method]future-initialize-and-result.subscribe\x01-\x01@\x01\x04self,\0\x1e\x04\0\
+([method]future-initialize-and-result.get\x01.\x01h\x16\x01@\x01\x04self/\0\x1b\x04\
+\0-[method]future-initialize-or-result.subscribe\x010\x01@\x01\x04self/\0\x1e\x04\
+\0'[method]future-initialize-or-result.get\x011\x01h\x17\x01@\x01\x04self2\0\x1b\
+\x04\0.[method]future-initialize-not-result.subscribe\x013\x01@\x01\x04self2\0\x1e\
+\x04\0([method]future-initialize-not-result.get\x014\x01h\x18\x01@\x01\x04self5\0\
+\x1b\x04\03[method]future-get-timeline-result-result.subscribe\x016\x01j\x01\x0b\
+\x01s\x01k7\x01@\x01\x04self5\08\x04\0-[method]future-get-timeline-result-result\
+.get\x019\x01i\x19\x01@\x01\x08location\x01\0:\x04\0\x10[constructor]api\x01;\x01\
+h\x19\x01@\x03\x04self<\x0cchild-worker\x0f\x0bevent-value\x07\0\x1d\x04\0%[meth\
+od]api.blocking-initialize-equal\x01=\x01i\x10\x01@\x03\x04self<\x0cchild-worker\
+\x0f\x0bevent-value\x07\0>\x04\0\x1c[method]api.initialize-equal\x01?\x04\0,[met\
+hod]api.blocking-initialize-greater-than\x01=\x01i\x11\x01@\x03\x04self<\x0cchil\
+d-worker\x0f\x0bevent-value\x07\0\xc0\0\x04\0#[method]api.initialize-greater-tha\
+n\x01A\x04\08[method]api.blocking-initialize-greater-than-or-equal-to\x01=\x01i\x12\
+\x01@\x03\x04self<\x0cchild-worker\x0f\x0bevent-value\x07\0\xc2\0\x04\0/[method]\
+api.initialize-greater-than-or-equal-to\x01C\x04\0)[method]api.blocking-initiali\
+ze-less-than\x01=\x01i\x13\x01@\x03\x04self<\x0cchild-worker\x0f\x0bevent-value\x07\
+\0\xc4\0\x04\0\x20[method]api.initialize-less-than\x01E\x04\05[method]api.blocki\
+ng-initialize-less-than-or-equal-to\x01=\x01i\x14\x01@\x03\x04self<\x0cchild-wor\
+ker\x0f\x0bevent-value\x07\0\xc6\0\x04\0,[method]api.initialize-less-than-or-equ\
+al-to\x01G\x01@\x03\x04self<\x0dchild-worker1\x0f\x0dchild-worker2\x0f\0\x1d\x04\
+\0#[method]api.blocking-initialize-and\x01H\x01i\x15\x01@\x03\x04self<\x0dchild-\
+worker1\x0f\x0dchild-worker2\x0f\0\xc9\0\x04\0\x1a[method]api.initialize-and\x01\
+J\x04\0\"[method]api.blocking-initialize-or\x01H\x01i\x16\x01@\x03\x04self<\x0dc\
+hild-worker1\x0f\x0dchild-worker2\x0f\0\xcb\0\x04\0\x19[method]api.initialize-or\
+\x01L\x01@\x02\x04self<\x0cchild-worker\x0f\0\x1d\x04\0#[method]api.blocking-ini\
+tialize-not\x01M\x01i\x17\x01@\x02\x04self<\x0cchild-worker\x0f\0\xce\0\x04\0\x1a\
+[method]api.initialize-not\x01O\x01@\x02\x04self<\x02t1w\07\x04\0([method]api.bl\
+ocking-get-timeline-result\x01P\x01i\x18\x01@\x02\x04self<\x02t1w\0\xd1\0\x04\0\x1f\
+[method]api.get-timeline-result\x01R\x03\x018timeline:timeline-processor-stub/st\
+ub-timeline-processor\x05\x14\x01B\x1b\x02\x03\x02\x01\x08\x04\0\x0bevent-value\x03\
+\0\0\x02\x03\x02\x01\x0a\x04\0\x0ftimeline-result\x03\0\x02\x01r\x02\x09worker-i\
+ds\x0btemplate-ids\x04\0\x16timeline-result-worker\x03\0\x04\x01q\x03\x0etl-has-\
+existed\x01\x05\0\x15tl-has-existed-within\x01\x05\0\x18tl-latest-event-to-state\
+\x01\x05\0\x04\0\x12leaf-timeline-node\x03\0\x06\x01q\x08\x08equal-to\x01\x05\0\x0c\
+greater-than\x01\x05\0\x18greater-than-or-equal-to\x01\x05\0\x09less-than\x01\x05\
+\0\x15less-than-or-equal-to\x01\x05\0\x03and\x01\x05\0\x02or\x01\x05\0\x03not\x01\
+\x05\0\x04\0\x15derived-timeline-node\x03\0\x08\x01q\x02\x0dleaf-timeline\x01\x07\
+\0\x10derived-timeline\x01\x09\0\x04\0\x1ctyped-timeline-result-worker\x03\0\x0a\
+\x01j\x01s\x01s\x01@\x02\x0cchild-worker\x0b\x0bevent-value\x01\0\x0c\x04\0\x10i\
+nitialize-equal\x01\x0d\x04\0\x17initialize-greater-than\x01\x0d\x04\0#initializ\
+e-greater-than-or-equal-to\x01\x0d\x04\0\x14initialize-less-than\x01\x0d\x04\0\x20\
+initialize-less-than-or-equal-to\x01\x0d\x01@\x02\x0dchild-worker1\x0b\x0dchild-\
+worker2\x0b\0\x0c\x04\0\x0einitialize-and\x01\x0e\x04\0\x0dinitialize-or\x01\x0e\
+\x01@\x01\x0cchild-worker\x0b\0\x0c\x04\0\x0einitialize-not\x01\x0f\x01j\x01\x03\
+\x01s\x01@\x01\x02t1w\0\x10\x04\0\x13get-timeline-result\x01\x11\x04\x01)timelin\
+e:timeline-processor-interface/api\x05\x15\x04\x01.timeline:timeline-processor/t\
+imeline-processor\x04\0\x0b\x18\x01\0\x12timeline-processor\x03\0\0\0G\x09produc\
+ers\x01\x0cprocessed-by\x02\x0dwit-component\x070.208.1\x10wit-bindgen-rust\x060\
+.25.0";
 
 #[inline(never)]
 #[doc(hidden)]

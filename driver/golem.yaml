@@ -1,0 +1,24 @@
+apiVersion: core.oam.dev/v1beta1
+kind: Application
+metadata:
+  name: App
+spec:
+  components:
+  - name: driver
+    type: wasm
+    properties:
+      build:
+      - command: cargo-component build
+        inputs:
+        - src
+        - wit
+        outputs:
+        - ../target/wasm32-wasi/debug/driver.wasm
+      inputWit: wit
+      outputWit: wit-generated
+      inputWasm: ../target/wasm32-wasi/debug/driver.wasm
+      outputWasm: ../target/golem-components/driver.wasm
+    traits:
+    - type: wasm-rpc
+      properties:
+        componentName: core

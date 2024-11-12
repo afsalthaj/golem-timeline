@@ -1,6 +1,7 @@
-use crate::bindings::timeline::event_processor::api::{
-    EventValue, TimePeriod, TimelineResult, TimelineResultPoint,
+use crate::bindings::exports::timeline::timeline_processor_interface::api::{
+    EventValue, TimelineResult,
 };
+use crate::bindings::timeline::event_processor_interface::api::{TimePeriod, TimelineResultPoint};
 use std::fmt::Debug;
 use timeline::*;
 

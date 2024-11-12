@@ -1,0 +1,11 @@
+apiVersion: core.oam.dev/v1beta1
+kind: Application
+metadata:
+  name: App
+spec:
+  components:
+  - name: wasm-build
+    type: wasm-build
+    properties:
+      buildDir: target/golem-build
+      include: "*/golem.yaml"

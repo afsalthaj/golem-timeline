@@ -1,15 +1,11 @@
+use crate::bindings::timeline::core_interface::api::Server as WitTimeLineNodeWorker;
+use crate::bindings::timeline::core_interface::api::TimelineOp as WitTimeLineOp;
+use crate::bindings::timeline::event_processor_interface::api::EventPredicate as WitEventPredicate;
+use crate::bindings::timeline::event_processor_interface::api::EventPredicateOp;
+use crate::bindings::timeline::event_processor_interface::api::EventValue as WitEventValue;
+use crate::builder::WitValueBuilder;
 use std::fmt::Debug;
 use timeline::*;
-
-use crate::bindings::timeline::event_processor::api::EventPredicate as WitEventPredicate;
-
-use crate::bindings::timeline::core::api::Server as WitTimeLineNodeWorker;
-use crate::bindings::timeline::event_processor::api::EventValue as WitEventValue;
-
-use crate::bindings::timeline::core::api::TimelineOp as WitTimeLineOp;
-use crate::bindings::timeline::event_processor::api::EventPredicateOp;
-
-use crate::builder::WitValueBuilder;
 
 pub trait Conversion: Clone + Debug {
     type WitType: Clone;
@@ -118,7 +114,7 @@ mod internals {
     use timeline::TimeLineOp;
     use timeline::{EventColumnName, GolemEventPredicate};
 
-    use crate::bindings::timeline::core::api::{
+    use crate::bindings::timeline::core_interface::api::{
         TimelineConstantComparator, TimelineNode as WitTimeLineNode, TimelineNode,
     };
 
