@@ -8,7 +8,7 @@ spec:
     type: wasm
     properties:
       build:
-      - command: cargo-component build
+      - command: cargo component build
         inputs:
         - src
         - wit
