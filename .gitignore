@@ -1,4 +1,4 @@
 .idea
-binding.rs
+bindings.rs
 target
 wit-generated
