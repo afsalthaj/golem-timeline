@@ -28,9 +28,6 @@ path = "wit-generated/deps/io"
 once_cell = "1.17.1"
 rand = "0.8.5"
 
-[dependencies.core]
-path = "../core"
-
 [dependencies.timeline]
 path = "../timeline"
 

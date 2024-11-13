@@ -119,8 +119,6 @@ checksum = "06ea2b9bc92be3c2baa9334a323ebca2d6f074ff852cd1d7b11064035cd3868f"
 name = "driver"
 version = "0.0.1"
 dependencies = [
- "core",
- "event-processor",
  "once_cell",
  "rand",
  "serde",
@@ -133,7 +131,6 @@ dependencies = [
 name = "event-processor"
 version = "0.0.1"
 dependencies = [
- "core",
  "once_cell",
  "rand",
  "timeline",
@@ -480,7 +477,6 @@ dependencies = [
 name = "timeline-processor"
 version = "0.0.1"
 dependencies = [
- "core",
  "once_cell",
  "rand",
  "timeline",
