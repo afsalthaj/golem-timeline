@@ -4,11 +4,6 @@ package timeline:driver;
 interface api {
   use timeline:core-interface/api.{worker-details};
 
-  // TODO: workaround until fixing auto adding transient deps
-  use timeline:event-processor-interface/api.{event};
-  // TODO: workaround until fixing auto adding transient deps
-  use timeline:timeline-processor-interface/api.{timeline-result-worker};
-
   run: func(core-template-id: string, leaf-template-id: string, event-to-state-template-id: string) -> result<worker-details, string>;
 }
 
