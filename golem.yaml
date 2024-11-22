@@ -24,6 +24,8 @@ spec:
               outputWit: wit-generated
               inputWasm: ../target/wasm32-wasi/debug/{{ componentName | to_snake_case }}.wasm
               outputWasm: ../target/golem-components/debug/{{ componentName | to_snake_case }}.wasm
+              clean:
+              - src/bindings.rs
             release:
               build:
               - command: cargo component build --release
@@ -36,4 +38,6 @@ spec:
               outputWit: wit-generated
               inputWasm: ../target/wasm32-wasi/release/{{ componentName | to_snake_case }}.wasm
               outputWasm: ../target/golem-components/release/{{ componentName | to_snake_case }}.wasm
+              clean:
+              - src/bindings.rs
           defaultProfile: debug
