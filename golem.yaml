@@ -9,3 +9,31 @@ spec:
     properties:
       buildDir: target/golem-build
       include: "*/golem.yaml"
+      componentTemplates:
+        rust:
+          profiles:
+            debug:
+              build:
+              - command: cargo component build
+                inputs:
+                - src
+                - wit
+                outputs:
+                - ../target/wasm32-wasi/debug/{{ componentName | to_snake_case }}.wasm
+              inputWit: wit
+              outputWit: wit-generated
+              inputWasm: ../target/wasm32-wasi/debug/{{ componentName | to_snake_case }}.wasm
+              outputWasm: ../target/golem-components/debug/{{ componentName | to_snake_case }}.wasm
+            release:
+              build:
+              - command: cargo component build --release
+                inputs:
+                - src
+                - wit
+                outputs:
+                - ../target/wasm32-wasi/release/{{ componentName | to_snake_case }}.wasm
+              inputWit: wit
+              outputWit: wit-generated
+              inputWasm: ../target/wasm32-wasi/release/{{ componentName | to_snake_case }}.wasm
+              outputWasm: ../target/golem-components/release/{{ componentName | to_snake_case }}.wasm
+          defaultProfile: debug

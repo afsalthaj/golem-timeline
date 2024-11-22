@@ -7,17 +7,7 @@ spec:
   - name: event-processor
     type: wasm
     properties:
-      build:
-      - command: cargo component build
-        inputs:
-        - src
-        - wit
-        outputs:
-        - ../target/wasm32-wasi/debug/event_processor.wasm
-      inputWit: wit
-      outputWit: wit-generated
-      inputWasm: ../target/wasm32-wasi/debug/event_processor.wasm
-      outputWasm: ../target/golem-components/event_processor.wasm
+      componentTemplate: rust
     traits:
     - type: wasm-rpc
       properties:
