@@ -1,0 +1,9 @@
+components:
+  timeline-processor:
+    template: rust
+dependencies:
+  timeline-processor:
+  - type: wasm-rpc
+    target: event-processor
+  - type: wasm-rpc
+    target: timeline-processor

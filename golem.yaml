@@ -1,0 +1,37 @@
+includes:
+- "*/golem.yaml"
+witDeps:
+- wit-deps
+tempDir: target/golem-temp
+templates:
+  rust:
+    profiles:
+      debug:
+        build:
+        - command: cargo component build
+          sources:
+          - src
+          - wit
+          targets:
+          - ../target/wasm32-wasi/debug/{{ componentName | to_snake_case }}.wasm
+        sourceWit: wit
+        generatedWit: wit-generated
+        componentWasm: ../target/wasm32-wasi/debug/{{ componentName | to_snake_case }}.wasm
+        linkedWasm: ../target/golem-components/debug/{{ componentName | to_snake_case }}.wasm
+        clean:
+        - src/bindings.rs
+      release:
+        build:
+        - command: cargo component build --release
+          sources:
+          - src
+          - wit
+          targets:
+          - ../target/wasm32-wasi/release/{{ componentName | to_snake_case }}.wasm
+        sourceWit: wit
+        generatedWit: wit-generated
+        componentWasm: ../target/wasm32-wasi/release/{{ componentName | to_snake_case }}.wasm
+        linkedWasm: ../target/golem-components/release/{{ componentName | to_snake_case }}.wasm
+        clean:
+        - src/bindings.rs
+    defaultProfile: debug

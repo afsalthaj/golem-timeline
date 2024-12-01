@@ -1,0 +1,7 @@
+components:
+  driver:
+    template: rust
+dependencies:
+  driver:
+  - type: wasm-rpc
+    target: core

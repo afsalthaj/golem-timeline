@@ -1,0 +1,7 @@
+components:
+  event-processor:
+    template: rust
+dependencies:
+  event-processor:
+  - type: wasm-rpc
+    target: core
