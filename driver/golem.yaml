@@ -1,14 +1,7 @@
-apiVersion: core.oam.dev/v1beta1
-kind: Application
-metadata:
-  name: App
-spec:
-  components:
-  - name: driver
-    type: wasm
-    properties:
-      componentTemplate: rust
-    traits:
-    - type: wasm-rpc
-      properties:
-        componentName: core
+components:
+  driver:
+    template: rust
+dependencies:
+  driver:
+  - type: wasm-rpc
+    target: core

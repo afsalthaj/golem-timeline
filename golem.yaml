@@ -1,43 +1,37 @@
-apiVersion: core.oam.dev/v1beta1
-kind: Application
-metadata:
-  name: App
-spec:
-  components:
-  - name: wasm-build
-    type: wasm-build
-    properties:
-      buildDir: target/golem-build
-      include: "*/golem.yaml"
-      componentTemplates:
-        rust:
-          profiles:
-            debug:
-              build:
-              - command: cargo component build
-                inputs:
-                - src
-                - wit
-                outputs:
-                - ../target/wasm32-wasi/debug/{{ componentName | to_snake_case }}.wasm
-              inputWit: wit
-              outputWit: wit-generated
-              inputWasm: ../target/wasm32-wasi/debug/{{ componentName | to_snake_case }}.wasm
-              outputWasm: ../target/golem-components/debug/{{ componentName | to_snake_case }}.wasm
-              clean:
-              - src/bindings.rs
-            release:
-              build:
-              - command: cargo component build --release
-                inputs:
-                - src
-                - wit
-                outputs:
-                - ../target/wasm32-wasi/release/{{ componentName | to_snake_case }}.wasm
-              inputWit: wit
-              outputWit: wit-generated
-              inputWasm: ../target/wasm32-wasi/release/{{ componentName | to_snake_case }}.wasm
-              outputWasm: ../target/golem-components/release/{{ componentName | to_snake_case }}.wasm
-              clean:
-              - src/bindings.rs
-          defaultProfile: debug
+includes:
+- "*/golem.yaml"
+witDeps:
+- wit-deps
+tempDir: target/golem-temp
+templates:
+  rust:
+    profiles:
+      debug:
+        build:
+        - command: cargo component build
+          sources:
+          - src
+          - wit
+          targets:
+          - ../target/wasm32-wasi/debug/{{ componentName | to_snake_case }}.wasm
+        sourceWit: wit
+        generatedWit: wit-generated
+        componentWasm: ../target/wasm32-wasi/debug/{{ componentName | to_snake_case }}.wasm
+        linkedWasm: ../target/golem-components/debug/{{ componentName | to_snake_case }}.wasm
+        clean:
+        - src/bindings.rs
+      release:
+        build:
+        - command: cargo component build --release
+          sources:
+          - src
+          - wit
+          targets:
+          - ../target/wasm32-wasi/release/{{ componentName | to_snake_case }}.wasm
+        sourceWit: wit
+        generatedWit: wit-generated
+        componentWasm: ../target/wasm32-wasi/release/{{ componentName | to_snake_case }}.wasm
+        linkedWasm: ../target/golem-components/release/{{ componentName | to_snake_case }}.wasm
+        clean:
+        - src/bindings.rs
+    defaultProfile: debug

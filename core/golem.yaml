@@ -1,17 +1,9 @@
-apiVersion: core.oam.dev/v1beta1
-kind: Application
-metadata:
-  name: App
-spec:
-  components:
-  - name: core
-    type: wasm
-    properties:
-      componentTemplate: rust
-    traits:
-    - type: wasm-rpc
-      properties:
-        componentName: event-processor
-    - type: wasm-rpc
-      properties:
-        componentName: timeline-processor
+components:
+  core:
+    template: rust
+dependencies:
+  core:
+  - type: wasm-rpc
+    target: event-processor
+  - type: wasm-rpc
+    target: timeline-processor
