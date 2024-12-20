@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::fmt::Debug;
 
-use crate::bindings::exports::timeline::event_processor_interface::api::{
+use crate::bindings::exports::timeline::event_processor_exports::api::{
     Event, EventPredicate, EventPredicateOp, EventValue,
 };
 use timeline::{EventColumnName, EventColumnValue, GolemEventPredicate};

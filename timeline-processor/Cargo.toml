@@ -9,17 +9,17 @@ path = "wit-generated"
 [package.metadata.component.target.dependencies."golem:rpc"]
 path = "wit-generated/deps/wasm-rpc"
 
-[package.metadata.component.target.dependencies."timeline:event-processor-interface"]
-path = "wit-generated/deps/timeline_event-processor-interface"
+[package.metadata.component.target.dependencies."timeline:event-processor-client"]
+path = "wit-generated/deps/timeline_event-processor-client"
 
-[package.metadata.component.target.dependencies."timeline:event-processor-stub"]
-path = "wit-generated/deps/timeline_event-processor-stub"
+[package.metadata.component.target.dependencies."timeline:event-processor-exports"]
+path = "wit-generated/deps/timeline_event-processor-exports"
 
-[package.metadata.component.target.dependencies."timeline:timeline-processor-interface"]
-path = "wit-generated/deps/timeline_timeline-processor-interface"
+[package.metadata.component.target.dependencies."timeline:timeline-processor-client"]
+path = "wit-generated/deps/timeline_timeline-processor-client"
 
-[package.metadata.component.target.dependencies."timeline:timeline-processor-stub"]
-path = "wit-generated/deps/timeline_timeline-processor-stub"
+[package.metadata.component.target.dependencies."timeline:timeline-processor-exports"]
+path = "wit-generated/deps/timeline_timeline-processor-exports"
 
 [package.metadata.component.target.dependencies."wasi:io"]
 path = "wit-generated/deps/io"

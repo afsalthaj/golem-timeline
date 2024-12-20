@@ -1,4 +1,6 @@
-use crate::bindings::exports::timeline::timeline_processor_interface::api::{EventValue, Guest, TimelineResult, TypedTimelineResultWorker};
+use crate::bindings::exports::timeline::timeline_processor_exports::api::{
+    EventValue, Guest, TimelineResult, TypedTimelineResultWorker,
+};
 use conversions::Conversion;
 use extensions::WorkerResultExt;
 use std::cell::RefCell;

@@ -1,5 +1,5 @@
-use crate::bindings::timeline::core_interface::api::TimelineOp as WitTimeLineOp;
-use crate::bindings::timeline::core_interface::api::{
+use crate::bindings::timeline::core_exports::api::TimelineOp as WitTimeLineOp;
+use crate::bindings::timeline::core_exports::api::{
     BiTimelineWithServer, NodeIndex, ServerWithEventColumnName, ServerWithEventPredicate,
     ServerWithEventPredicateWithin, TimelineConstantComparator, TimelineConstantCompared,
     TimelineNegated, TimelineNode, TimelineWithServer,

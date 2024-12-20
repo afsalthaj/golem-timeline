@@ -1,7 +1,7 @@
-use crate::bindings::exports::timeline::driver_interface::api::Guest;
+use crate::bindings::exports::timeline::driver_exports::api::Guest;
 use crate::bindings::golem::rpc::types::Uri;
-use crate::bindings::timeline::core_interface::api::WorkerDetails;
-use crate::bindings::timeline::core_stub::stub_core;
+use crate::bindings::timeline::core_exports::api::WorkerDetails;
+use crate::bindings::timeline::core_client::core_client;
 use conversions::Conversion;
 use timeline::*;
 
@@ -22,7 +22,7 @@ impl Guest for Component {
         let uri =
             Uri { value: format!("urn:worker:{core_component_id}/{}", "initialize-timeline") };
 
-        let core = stub_core::Api::new(&uri);
+        let core = core_client::Api::new(&uri);
 
         // let cirr = tl_and(
         //     tl_and(

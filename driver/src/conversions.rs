@@ -1,8 +1,8 @@
-use crate::bindings::timeline::core_interface::api::Server as WitTimeLineNodeWorker;
-use crate::bindings::timeline::core_interface::api::TimelineOp as WitTimeLineOp;
-use crate::bindings::timeline::event_processor_interface::api::EventPredicate as WitEventPredicate;
-use crate::bindings::timeline::event_processor_interface::api::EventPredicateOp;
-use crate::bindings::timeline::event_processor_interface::api::EventValue as WitEventValue;
+use crate::bindings::timeline::core_exports::api::Server as WitTimeLineNodeWorker;
+use crate::bindings::timeline::core_exports::api::TimelineOp as WitTimeLineOp;
+use crate::bindings::timeline::event_processor_exports::api::EventPredicate as WitEventPredicate;
+use crate::bindings::timeline::event_processor_exports::api::EventPredicateOp;
+use crate::bindings::timeline::event_processor_exports::api::EventValue as WitEventValue;
 use crate::builder::WitValueBuilder;
 use std::fmt::Debug;
 use timeline::*;
@@ -114,7 +114,7 @@ mod internals {
     use timeline::TimeLineOp;
     use timeline::{EventColumnName, GolemEventPredicate};
 
-    use crate::bindings::timeline::core_interface::api::{
+    use crate::bindings::timeline::core_exports::api::{
         TimelineConstantComparator, TimelineNode as WitTimeLineNode, TimelineNode,
     };
 

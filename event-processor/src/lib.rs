@@ -1,6 +1,6 @@
 use std::cell::RefCell;
 
-use crate::bindings::exports::timeline::event_processor_interface::api::{
+use crate::bindings::exports::timeline::event_processor_exports::api::{
     Event, EventPredicate, EventValue, Guest, TimePeriod, TimelineResult, TimelineResultPoint,
 };
 use crate::conversions::Conversion;

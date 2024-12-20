@@ -1,12 +1,12 @@
-use crate::bindings::exports::timeline::core_interface::api::EventPredicate as WitEventPredicate;
-use crate::bindings::exports::timeline::core_interface::api::EventValue as WitEventValue;
-use crate::bindings::exports::timeline::core_interface::api::Server as WitTimeLineNodeWorker;
-use crate::bindings::exports::timeline::core_interface::api::TimelineOp as WitTimeLineOp;
-use crate::bindings::exports::timeline::core_interface::api::TypedTimelineResultWorker as WitTypedTimeLineResultWorker;
-use crate::bindings::timeline::event_processor_interface::api::EventPredicateOp;
-use crate::bindings::timeline::timeline_processor_interface::api::DerivedTimelineNode as WitDerivedTimeLineNode;
-use crate::bindings::timeline::timeline_processor_interface::api::LeafTimelineNode as WitLeafTimeLineNode;
-use crate::bindings::timeline::timeline_processor_interface::api::TimelineResultWorker as WitTimeLineResultWorker;
+use crate::bindings::exports::timeline::core_exports::api::EventPredicate as WitEventPredicate;
+use crate::bindings::exports::timeline::core_exports::api::EventValue as WitEventValue;
+use crate::bindings::exports::timeline::core_exports::api::Server as WitTimeLineNodeWorker;
+use crate::bindings::exports::timeline::core_exports::api::TimelineOp as WitTimeLineOp;
+use crate::bindings::exports::timeline::core_exports::api::TypedTimelineResultWorker as WitTypedTimeLineResultWorker;
+use crate::bindings::timeline::event_processor_exports::api::EventPredicateOp;
+use crate::bindings::timeline::timeline_processor_exports::api::DerivedTimelineNode as WitDerivedTimeLineNode;
+use crate::bindings::timeline::timeline_processor_exports::api::LeafTimelineNode as WitLeafTimeLineNode;
+use crate::bindings::timeline::timeline_processor_exports::api::TimelineResultWorker as WitTimeLineResultWorker;
 use crate::builder::WitValueBuilder;
 use std::fmt::Debug;
 use timeline::GolemEventValue;
@@ -324,7 +324,7 @@ impl Conversion for TimeLineOp {
 mod internals {
     use timeline::*;
 
-    use crate::bindings::exports::timeline::core_interface::api::{
+    use crate::bindings::exports::timeline::core_exports::api::{
         TimelineConstantComparator, TimelineNode as WitTimeLineNode, TimelineNode,
     };
 

@@ -1,4 +1,4 @@
-use crate::bindings::exports::timeline::core_interface::api::{
+use crate::bindings::exports::timeline::core_exports::api::{
     BiTimelineWithServer, NodeIndex, ServerWithEventColumnName, ServerWithEventPredicate,
     ServerWithEventPredicateWithin, TimelineConstantComparator, TimelineConstantCompared,
     TimelineNegated, TimelineNode, TimelineOp as WitTimeLineOp, TimelineWithServer,
