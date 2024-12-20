@@ -1,11 +1,10 @@
 use std::cell::RefCell;
 
-use timeline::*;
-
-use crate::bindings::exports::timeline::event_processor::api::{
+use crate::bindings::exports::timeline::event_processor_exports::api::{
     Event, EventPredicate, EventValue, Guest, TimePeriod, TimelineResult, TimelineResultPoint,
 };
 use crate::conversions::Conversion;
+use timeline::*;
 
 #[allow(dead_code)]
 #[rustfmt::skip]

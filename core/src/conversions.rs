@@ -1,5 +1,14 @@
+use crate::bindings::exports::timeline::core_exports::api::EventPredicate as WitEventPredicate;
+use crate::bindings::exports::timeline::core_exports::api::EventValue as WitEventValue;
+use crate::bindings::exports::timeline::core_exports::api::Server as WitTimeLineNodeWorker;
+use crate::bindings::exports::timeline::core_exports::api::TimelineOp as WitTimeLineOp;
+use crate::bindings::exports::timeline::core_exports::api::TypedTimelineResultWorker as WitTypedTimeLineResultWorker;
+use crate::bindings::timeline::event_processor_exports::api::EventPredicateOp;
+use crate::bindings::timeline::timeline_processor_exports::api::DerivedTimelineNode as WitDerivedTimeLineNode;
+use crate::bindings::timeline::timeline_processor_exports::api::LeafTimelineNode as WitLeafTimeLineNode;
+use crate::bindings::timeline::timeline_processor_exports::api::TimelineResultWorker as WitTimeLineResultWorker;
+use crate::builder::WitValueBuilder;
 use std::fmt::Debug;
-
 use timeline::GolemEventValue;
 use timeline::TimeLineOp;
 use timeline::{
@@ -7,17 +16,6 @@ use timeline::{
     TimeLineWorkerId, TimeLineWorkerIdPrefix, TypedTimeLineResultWorker,
 };
 use timeline::{EventColumnName, EventColumnValue, GolemEventPredicate};
-
-use crate::bindings::exports::timeline::core::api::Server as WitTimeLineNodeWorker;
-use crate::bindings::exports::timeline::core::api::TimelineOp as WitTimeLineOp;
-use crate::bindings::timeline::event_processor::api::EventPredicate as WitEventPredicate;
-use crate::bindings::timeline::event_processor::api::EventPredicateOp;
-use crate::bindings::timeline::event_processor::api::EventValue as WitEventValue;
-use crate::bindings::timeline::timeline_processor::api::DerivedTimelineNode as WitDerivedTimeLineNode;
-use crate::bindings::timeline::timeline_processor::api::LeafTimelineNode as WitLeafTimeLineNode;
-use crate::bindings::timeline::timeline_processor::api::TimelineResultWorker as WitTimeLineResultWorker;
-use crate::bindings::timeline::timeline_processor::api::TypedTimelineResultWorker as WitTypedTimeLineResultWorker;
-use crate::builder::WitValueBuilder;
 
 // TODO: Some of these conversions are repeated even after reusing WIT files. Make sure to fix it
 
@@ -326,16 +324,13 @@ impl Conversion for TimeLineOp {
 mod internals {
     use timeline::*;
 
-    use crate::bindings::exports::timeline::core::api::{
+    use crate::bindings::exports::timeline::core_exports::api::{
         TimelineConstantComparator, TimelineNode as WitTimeLineNode, TimelineNode,
     };
 
     use super::Conversion;
 
-    pub(crate) fn build_timeline_tree(
-        node: &crate::bindings::exports::timeline::core::api::TimelineNode,
-        nodes: &[crate::bindings::exports::timeline::core::api::TimelineNode],
-    ) -> TimeLineOp {
+    pub(crate) fn build_timeline_tree(node: &TimelineNode, nodes: &[TimelineNode]) -> TimeLineOp {
         match node {
             WitTimeLineNode::TimelineComparison(timeline_constant_compared) => {
                 let time_line = build_timeline_tree(

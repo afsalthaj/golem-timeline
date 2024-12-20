@@ -1,11 +1,9 @@
-use crate::bindings::exports::timeline::timeline_processor::api::{
+use crate::bindings::exports::timeline::timeline_processor_exports::api::{
     EventValue, Guest, TimelineResult, TypedTimelineResultWorker,
 };
-
 use conversions::Conversion;
 use extensions::WorkerResultExt;
 use std::cell::RefCell;
-
 use timeline::*;
 
 #[allow(dead_code)]

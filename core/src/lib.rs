@@ -1,18 +1,15 @@
-use uuid::Uuid;
-
-use conversions::Conversion;
+use crate::bindings::exports::timeline::core_exports::api::{
+    Guest, TimelineOp, TypedTimelineResultWorker, WorkerDetails,
+};
+use crate::bindings::golem::rpc::types::Uri;
+use crate::bindings::timeline::event_processor_client::event_processor_client;
+use crate::bindings::timeline::timeline_processor_client::timeline_processor_client;
+use crate::conversions::Conversion;
 use timeline::TimeLineOp as CoreTimeLineOp;
 use timeline::{
     TimeLineResultWorker, TimeLineWorkerId, TimeLineWorkerIdPrefix, TypedTimeLineResultWorker,
 };
-
-use crate::bindings::exports::timeline::core::api::TimelineOp;
-use crate::bindings::exports::timeline::core::api::{
-    Guest, TypedTimelineResultWorker, WorkerDetails,
-};
-use crate::bindings::golem::rpc::types::Uri;
-use crate::bindings::timeline::event_processor_stub::stub_event_processor;
-use crate::bindings::timeline::timeline_processor_stub::stub_timeline_processor;
+use uuid::Uuid;
 
 #[allow(dead_code)]
 #[rustfmt::skip]
@@ -36,18 +33,20 @@ impl Guest for Component {
             match core_time_line_op {
                 CoreTimeLineOp::EqualTo(worker, left, right) => {
                     dbg!("here?????", worker.clone());
-                    let (component_id, worker_id_prefix) = worker.clone().map(
-                        |w| (w.component_id, w.worker_id_prefix),
-                    ).ok_or("No worker id for timeline found")?;
+                    let (component_id, worker_id_prefix) = worker
+                        .clone()
+                        .map(|w| (w.component_id, w.worker_id_prefix))
+                        .ok_or("No worker id for timeline found")?;
 
                     let uuid = Uuid::new_v4();
 
                     // Connecting to the worker that should compute equal
-                    let worker_name = TimeLineWorkerId(format!("{}-tleq-{}", worker_id_prefix, uuid));
+                    let worker_name =
+                        TimeLineWorkerId(format!("{}-tleq-{}", worker_id_prefix, uuid));
 
                     let uri = Uri { value: format!("urn:worker:{component_id}/{}", &worker_name) };
 
-                    let timeline_processor_api = stub_timeline_processor::Api::new(&uri);
+                    let timeline_processor_api = timeline_processor_client::Api::new(&uri);
 
                     // Specifying the worker the timeline-equal worker should fetch the results from to compare with a constant
                     let child_worker = go(left, event_processors)?;
@@ -58,7 +57,10 @@ impl Guest for Component {
 
                     // The worker in which the comparison with a constant actually executes
                     let typed_timeline_result_worker = TypedTimeLineResultWorker::equal_to({
-                        TimeLineResultWorker { component_id: component_id.clone(), worker_id: worker_name }
+                        TimeLineResultWorker {
+                            component_id: component_id.clone(),
+                            worker_id: worker_name,
+                        }
                     });
 
                     Ok(typed_timeline_result_worker)
@@ -75,14 +77,16 @@ impl Guest for Component {
 
                     let uri = Uri { value: format!("urn:worker:{component_id}/{}", &worker_id) };
 
-                    let timeline_processor_api = stub_timeline_processor::Api::new(&uri);
+                    let timeline_processor_api = timeline_processor_client::Api::new(&uri);
 
                     // Specifying the worker the timeline-equal worker should fetch the results from to compare with a constant
                     let child_worker = go(timeline, event_processors)?;
 
                     // We initialise this node into some worker along with the information about child worker that it needs to fetch the result from
-                    timeline_processor_api
-                        .blocking_initialize_greater_than(&child_worker.to_wit(), &value.to_wit())?;
+                    timeline_processor_api.blocking_initialize_greater_than(
+                        &child_worker.to_wit(),
+                        &value.to_wit(),
+                    )?;
 
                     // The worker in which the comparison with a constant actually executes
                     let typed_timeline_result_worker = TypedTimeLineResultWorker::greater_than({
@@ -104,7 +108,7 @@ impl Guest for Component {
 
                     let uri = Uri { value: format!("urn:worker:{component_id}/{}", &worker_id) };
 
-                    let timeline_processor_api = stub_timeline_processor::Api::new(&uri);
+                    let timeline_processor_api = timeline_processor_client::Api::new(&uri);
 
                     // Specifying the worker the timeline-equal worker should fetch the results from to compare with a constant
                     let child_worker = go(timeline, event_processors)?;
@@ -135,14 +139,16 @@ impl Guest for Component {
 
                     let uri = Uri { value: format!("urn:worker:{component_id}/{}", &worker_id) };
 
-                    let timeline_processor_api = stub_timeline_processor::Api::new(&uri);
+                    let timeline_processor_api = timeline_processor_client::Api::new(&uri);
 
                     // Specifying the worker the timeline-equal worker should fetch the results from to compare with a constant
                     let child_worker = go(timeline, event_processors)?;
 
                     // We initialise this node into some worker along with the information about child worker that it needs to fetch the result from
-                    timeline_processor_api
-                        .blocking_initialize_less_than(&child_worker.to_wit(), &event_value.to_wit())?;
+                    timeline_processor_api.blocking_initialize_less_than(
+                        &child_worker.to_wit(),
+                        &event_value.to_wit(),
+                    )?;
 
                     // The worker in which the comparison with a constant actually executes
                     let typed_timeline_result_worker = TypedTimeLineResultWorker::greater_than({
@@ -164,7 +170,7 @@ impl Guest for Component {
 
                     let uri = Uri { value: format!("urn:worker:{component_id}/{}", &worker_id) };
 
-                    let timeline_processor_api = stub_timeline_processor::Api::new(&uri);
+                    let timeline_processor_api = timeline_processor_client::Api::new(&uri);
 
                     // Specifying the worker the timeline-equal worker should fetch the results from to compare with a constant
                     let child_worker = go(timeline, event_processors)?;
@@ -194,7 +200,7 @@ impl Guest for Component {
 
                     let uri = Uri { value: format!("urn:worker:{component_id}/{}", &worker_id) };
 
-                    let core = stub_timeline_processor::Api::new(&uri);
+                    let core = timeline_processor_client::Api::new(&uri);
 
                     let left_worker = go(left, event_processors)?;
                     let right_worker = go(right, event_processors)?;
@@ -221,7 +227,7 @@ impl Guest for Component {
 
                     let uri = Uri { value: format!("urn:worker:{component_id}/{}", &worker_id) };
 
-                    let core = stub_timeline_processor::Api::new(&uri);
+                    let core = timeline_processor_client::Api::new(&uri);
 
                     let left_worker = go(left, event_processors)?;
                     let right_worker = go(right, event_processors)?;
@@ -248,7 +254,7 @@ impl Guest for Component {
 
                     let uri = Uri { value: format!("urn:worker:{component_id}/{}", &worker_id) };
 
-                    let core = stub_timeline_processor::Api::new(&uri);
+                    let core = timeline_processor_client::Api::new(&uri);
 
                     let child_worker = go(timeline, event_processors)?;
 
@@ -273,7 +279,7 @@ impl Guest for Component {
 
                     let uri = Uri { value: format!("urn:worker:{component_id}/{}", &worker_id) };
 
-                    let core = stub_event_processor::Api::new(&uri);
+                    let core = event_processor_client::Api::new(&uri);
 
                     core.blocking_initialize_tl_has_existed(&predicate.to_wit())?;
 
@@ -298,7 +304,7 @@ impl Guest for Component {
 
                     let uri = Uri { value: format!("urn:worker:{component_id}/{}", worker_id) };
 
-                    let core = stub_event_processor::Api::new(&uri);
+                    let core = event_processor_client::Api::new(&uri);
 
                     // The result of this node will be available in this worker
                     core.blocking_initialize_tl_has_existed_within(&predicate.to_wit(), *within)?;
@@ -325,7 +331,7 @@ impl Guest for Component {
 
                     let uri = Uri { value: format!("urn:worker:{component_id}/{}", worker_id) };
 
-                    let core = stub_event_processor::Api::new(&uri);
+                    let core = event_processor_client::Api::new(&uri);
 
                     core.blocking_initialize_latest_event_state(event_column_name.0.as_str())?;
 

@@ -1,12 +1,11 @@
 use std::collections::HashMap;
 use std::fmt::Debug;
 
-use timeline::{EventColumnName, EventColumnValue, GolemEventPredicate};
-use timeline::{GolemEvent, GolemEventValue};
-
-use crate::bindings::exports::timeline::event_processor::api::{
+use crate::bindings::exports::timeline::event_processor_exports::api::{
     Event, EventPredicate, EventPredicateOp, EventValue,
 };
+use timeline::{EventColumnName, EventColumnValue, GolemEventPredicate};
+use timeline::{GolemEvent, GolemEventValue};
 
 pub trait Conversion: Clone + Debug {
     type WitType: Clone;
