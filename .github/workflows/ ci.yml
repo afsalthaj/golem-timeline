@@ -39,7 +39,7 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       - uses: cargo-bins/cargo-binstall@main
       - name: Install cargo-component
-        run: cargo binstall --no-confirm cargo-component@0.13.2
+        run: cargo binstall --no-confirm cargo-component@0.20.0
       - name: Install golem-cli
         run: cargo binstall --no-confirm golem-cli@1.1.15
       - name: Init golem-cli

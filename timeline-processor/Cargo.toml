@@ -32,7 +32,7 @@ rand = "0.8.5"
 path = "../timeline"
 
 [dependencies.wit-bindgen-rt]
-version = "0.26.0"
+version = "=0.37.0"
 features = ["bitflags"]
 
 [lib]

@@ -43,7 +43,7 @@ version = "1.8.0"
 features = ["v4"]
 
 [dependencies.wit-bindgen-rt]
-version = "0.26.0"
+version = "=0.37.0"
 features = ["bitflags"]
 
 [lib]
