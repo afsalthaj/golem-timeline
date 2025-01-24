@@ -47,7 +47,7 @@ jobs:
       - name: Init golem-cli
         run: golem-cli profile add --set-active --component-url http://localhost:8083/ --worker-url http://localhost:9005/ default
       - uses: actions/checkout@v3
-      - name: Build debug version
+      - name: Build debug components
         run: golem-cli app build
-      - name: Build release version
+      - name: Build release components
         run: golem-cli app --build-profile release build

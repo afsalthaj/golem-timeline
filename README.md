@@ -126,14 +126,14 @@ Please refer to .env variables to understand the port configurations of worker-s
 #### Spin up golem and Pulsar streaming 
 
 ```sh
-docker-compose up -d
+docker compose up -d
 ```
 
 This wil deploy the OSS version of Golem , along with Pulsar (which will be used later). Pulsar sort of simulates
 the existence of events in streaming platforms employed in various companies.
 
 The docker version should correspond to 0.0.96 similar to CLI.
-It's good to download the latest dockeer-compose from golem website or repository, to avoid any issues.
+It's good to download the latest docker-compose from golem website or repository, to avoid any issues.
 
 
 #### Build and deploy timeline project
