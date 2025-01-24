@@ -2,13 +2,11 @@ package timeline:driver;
 
 
 interface api {
-  use timeline:core/api.{worker-details};
+  use timeline:core-exports/api.{worker-details};
 
-  run: func(core-template-id: string, leaf-template-id: string, event-to-state-tempalte-id: string) -> result<worker-details, string>;
+  run: func(core-template-id: string, leaf-template-id: string, event-to-state-template-id: string) -> result<worker-details, string>;
 }
 
 world driver {
-  import timeline:core-stub/stub-core;
-
   export api;
 }

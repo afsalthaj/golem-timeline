@@ -96,7 +96,7 @@ TL_HasExistedWithin(TL_DurationInCurState(TL_LatestEventToState(col("lat_long"))
 # Install Rust
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 rustup install stable && rustup default stable
-rustup target add wasm32-wasi
+rustup target add wasm32-wasip1
 
 # Install wasm tools 
 cargo install --force --locked  wasm-tools@1.210.0
@@ -126,31 +126,29 @@ Please refer to .env variables to understand the port configurations of worker-s
 #### Spin up golem and Pulsar streaming 
 
 ```sh
-docker-compose up -d
+docker compose up -d
 ```
 
 This wil deploy the OSS version of Golem , along with Pulsar (which will be used later). Pulsar sort of simulates
 the existence of events in streaming platforms employed in various companies.
 
 The docker version should correspond to 0.0.96 similar to CLI.
-It's good to download the latest dockeer-compose from golem website or repository, to avoid any issues.
+It's good to download the latest docker-compose from golem website or repository, to avoid any issues.
 
 
-#### Generate all required code and build timeline project
+#### Build and deploy timeline project
 
-Currently, I acknowledge that the build of this project is complicated.
+For building debug version of the components, use:
+```sh
+golem-cli app build
+golem-cli components add --non-interactive
+```
 
-If you are making changes to this project (Example: Wit files, Rust code etc), then you will
-need to read through the script `quick_full_build.sh` in the root directory.
-
-While golem OSS already exposes a few utilities to build similar projects, there are still manual interventions 
-required to get this project up and working. This is why we have some scripts to maintain which is going to be temporary. 
-It is temporary, because golem team is working on great improvements in managing projects like `timeline`.
-
-PS: We have removed the approach of  `cargo make build-flow` with `golem-cli stubgen initalise` command, 
-and we are using rest of the `golem-cli` commands directly to get a better control over what's going on.
-
-If you just want to build this project (rather than contributing), probably all you need to do is to run `quick_build.sh` file
+For release version, use:
+```sh
+golem-cli app -b release build
+golem-cli components add --build-profile release --non-interactive
+```
 
 ## Run a quick test
 

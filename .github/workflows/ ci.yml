@@ -33,13 +33,21 @@ jobs:
         with:
           toolchain: stable
           override: true
+      - name: Install Rust target wasm32-wasip1
+        run: rustup target add wasm32-wasip1
       - name: Install Protoc
         uses: arduino/setup-protoc@v1
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       - uses: cargo-bins/cargo-binstall@main
       - name: Install cargo-component
-        run: cargo binstall --no-confirm cargo-component@0.13.2
+        run: cargo binstall --no-confirm cargo-component@0.20.0
+      - name: Install golem-cli
+        run: cargo binstall --no-confirm golem-cli@1.1.15
+      - name: Init golem-cli
+        run: golem-cli profile add --set-active --component-url http://localhost:8083/ --worker-url http://localhost:9005/ default
       - uses: actions/checkout@v3
-      - name: Build
-        run: cargo component build
+      - name: Build debug components
+        run: golem-cli app build
+      - name: Build release components
+        run: golem-cli app --build-profile release build

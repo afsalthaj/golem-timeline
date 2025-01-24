@@ -4,26 +4,28 @@ version = "0.1.0"
 edition = "2021"
 
 [package.metadata.component.target]
-world = "core"
-path = "wit"
+path = "wit-generated"
 
 [package.metadata.component.target.dependencies."golem:rpc"]
-path = "wit/deps/wasm-rpc"
+path = "wit-generated/deps/wasm-rpc"
 
-[package.metadata.component.target.dependencies."timeline:event-processor"]
-path = "wit/deps/timeline_event-processor"
+[package.metadata.component.target.dependencies."timeline:core-exports"]
+path = "wit-generated/deps/timeline_core-exports"
 
-[package.metadata.component.target.dependencies."timeline:event-processor-stub"]
-path = "wit/deps/timeline_event-processor-stub"
+[package.metadata.component.target.dependencies."timeline:event-processor-client"]
+path = "wit-generated/deps/timeline_event-processor-client"
 
-[package.metadata.component.target.dependencies."timeline:timeline-processor"]
-path = "wit/deps/timeline_timeline-processor"
+[package.metadata.component.target.dependencies."timeline:event-processor-exports"]
+path = "wit-generated/deps/timeline_event-processor-exports"
 
-[package.metadata.component.target.dependencies."timeline:timeline-processor-stub"]
-path = "wit/deps/timeline_timeline-processor-stub"
+[package.metadata.component.target.dependencies."timeline:timeline-processor-client"]
+path = "wit-generated/deps/timeline_timeline-processor-client"
+
+[package.metadata.component.target.dependencies."timeline:timeline-processor-exports"]
+path = "wit-generated/deps/timeline_timeline-processor-exports"
 
 [package.metadata.component.target.dependencies."wasi:io"]
-path = "wit/deps/io"
+path = "wit-generated/deps/io"
 
 [dependencies]
 bitflags = "2.4.2"
@@ -41,7 +43,7 @@ version = "1.8.0"
 features = ["v4"]
 
 [dependencies.wit-bindgen-rt]
-version = "0.26.0"
+version = "0.37.0"
 features = ["bitflags"]
 
 [lib]

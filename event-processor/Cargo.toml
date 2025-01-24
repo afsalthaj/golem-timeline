@@ -3,22 +3,39 @@ name = "event-processor"
 version = "0.0.1"
 edition = "2021"
 
+[package.metadata.component.target]
+path = "wit-generated"
+
+[package.metadata.component.target.dependencies."golem:rpc"]
+path = "wit-generated/deps/wasm-rpc"
+
+[package.metadata.component.target.dependencies."timeline:core-client"]
+path = "wit-generated/deps/timeline_core-client"
+
+[package.metadata.component.target.dependencies."timeline:core-exports"]
+path = "wit-generated/deps/timeline_core-exports"
+
+[package.metadata.component.target.dependencies."timeline:event-processor-exports"]
+path = "wit-generated/deps/timeline_event-processor-exports"
+
+[package.metadata.component.target.dependencies."timeline:timeline-processor-exports"]
+path = "wit-generated/deps/timeline_timeline-processor-exports"
+
+[package.metadata.component.target.dependencies."wasi:io"]
+path = "wit-generated/deps/io"
+
+[dependencies]
+once_cell = "1.17.1"
+rand = "0.8.5"
+
+[dependencies.timeline]
+path = "../timeline"
+
+[dependencies.wit-bindgen-rt]
+version = "0.37.0"
+features = ["bitflags"]
+
 [lib]
 path = "src/lib.rs"
 crate-type = ["cdylib"]
-
-[dependencies]
-timeline = { path = "../timeline" }
-once_cell = "1.17.1"
-rand = "0.8.5"
-core = {path = "../core"}
-
-[package.metadata.component.target]
-path = "wit"
-world = "event-processor"
-
-[dependencies.wit-bindgen-rt]
-version = "0.26.0"
-features = ["bitflags"]
-
-[package.metadata.component.target.dependencies]
+required-features = []

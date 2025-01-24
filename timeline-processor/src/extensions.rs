@@ -1,11 +1,10 @@
-use crate::bindings::exports::timeline::timeline_processor::api::{
-    DerivedTimelineNode, LeafTimelineNode, TimelineResultWorker, TypedTimelineResultWorker,
+use crate::bindings::exports::timeline::timeline_processor_exports::api::{
+    DerivedTimelineNode, LeafTimelineNode, TimelineResult, TimelineResultWorker,
+    TypedTimelineResultWorker,
 };
 use crate::bindings::golem::rpc::types::Uri;
-use crate::bindings::timeline::event_processor::api::{EventValue, TimePeriod, TimelineResult, TimelineResultPoint};
-use crate::bindings::timeline::event_processor_stub::stub_event_processor;
-use crate::bindings::timeline::timeline_processor_stub::stub_timeline_processor;
-use crate::bindings::timeline::timeline_processor_stub::stub_timeline_processor::EventValue as InlinedEventValue;
+use crate::bindings::timeline::event_processor_client::event_processor_client;
+use crate::bindings::timeline::timeline_processor_client::timeline_processor_client;
 
 pub(crate) trait WorkerExt {
     fn get_worker_info(&self) -> WorkerInfo;
@@ -67,36 +66,20 @@ impl WorkerResultExt for TypedTimelineResultWorker {
     fn get_timeline_result(&self, t1: u64) -> Result<TimelineResult, String> {
         match self {
             TypedTimelineResultWorker::DerivedTimeline(_) => {
-                let api = stub_timeline_processor::Api::new(&self.get_worker_info().get_uri());
-                api.blocking_get_timeline_result(t1).map(|time_line_result| {
-                    TimelineResult {
-                        // It shouldn't have happened
-                        results: time_line_result.results.iter().map(|x| TimelineResultPoint {
-                            time_period: TimePeriod {
-                                t1: x.clone().time_period.t1,
-                                t2: x.clone().time_period.t2,
-                            },
-                            value: match x.clone().value {
-                                InlinedEventValue::StringValue(str) => EventValue::StringValue(str),
-                                InlinedEventValue::BoolValue(bool) => EventValue::BoolValue(bool),
-                                InlinedEventValue::FloatValue(s) => EventValue::FloatValue(s),
-                                InlinedEventValue::IntValue(i64) => EventValue::IntValue(i64),
-                            }
-                        }).collect()
-                    }
-                })
+                let api = timeline_processor_client::Api::new(&self.get_worker_info().get_uri());
+                api.blocking_get_timeline_result(t1)
             }
             TypedTimelineResultWorker::LeafTimeline(leaf_node) => match leaf_node {
                 LeafTimelineNode::TlHasExisted(worker) => {
-                    let api = stub_event_processor::Api::new(&worker.get_worker_info().get_uri());
+                    let api = event_processor_client::Api::new(&worker.get_worker_info().get_uri());
                     api.blocking_tl_has_existed_within(t1)
                 }
                 LeafTimelineNode::TlHasExistedWithin(worker) => {
-                    let api = stub_event_processor::Api::new(&worker.get_worker_info().get_uri());
+                    let api = event_processor_client::Api::new(&worker.get_worker_info().get_uri());
                     api.blocking_tl_has_existed_within(t1)
                 }
                 LeafTimelineNode::TlLatestEventToState(worker) => {
-                    let api = stub_event_processor::Api::new(&worker.get_worker_info().get_uri());
+                    let api = event_processor_client::Api::new(&worker.get_worker_info().get_uri());
                     api.blocking_latest_event_to_state(t1)
                 }
             },
