@@ -96,7 +96,7 @@ TL_HasExistedWithin(TL_DurationInCurState(TL_LatestEventToState(col("lat_long"))
 # Install Rust
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 rustup install stable && rustup default stable
-rustup target add wasm32-wasi
+rustup target add wasm32-wasip1
 
 # Install wasm tools 
 cargo install --force --locked  wasm-tools@1.210.0
