@@ -33,6 +33,8 @@ jobs:
         with:
           toolchain: stable
           override: true
+      - name: Install Rust target wasm32-wasip1
+        run: rustup target add wasm32-wasip1
       - name: Install Protoc
         uses: arduino/setup-protoc@v1
         with:
