@@ -43,7 +43,7 @@ jobs:
       - name: Install golem-cli
         run: cargo binstall --no-confirm golem-cli@1.1.15
       - name: Init golem-cli
-        run: golem-cli init
+        run: golem-cli profile add --set-active --component-url http://localhost:8083/ --worker-url http://localhost:9005/ default
       - uses: actions/checkout@v3
       - name: Build debug version
         run: golem-cli app build
