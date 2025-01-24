@@ -40,6 +40,10 @@ jobs:
       - uses: cargo-bins/cargo-binstall@main
       - name: Install cargo-component
         run: cargo binstall --no-confirm cargo-component@0.13.2
+      - name: Install golem-cli
+        run: cargo binstall --no-confirm golem-cli@1.1.15
       - uses: actions/checkout@v3
-      - name: Build
-        run: cargo component build
+      - name: Build debug version
+        run: golem-cli app build
+      - name: Build release version
+        run: golem-cli app --build-profile release build

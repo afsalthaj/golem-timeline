@@ -136,21 +136,19 @@ The docker version should correspond to 0.0.96 similar to CLI.
 It's good to download the latest dockeer-compose from golem website or repository, to avoid any issues.
 
 
-#### Generate all required code and build timeline project
+#### Build and deploy timeline project
 
-Currently, I acknowledge that the build of this project is complicated.
+For building debug version of the components, use:
+```sh
+golem-cli app build
+golem-cli components add --non-interactive
+```
 
-If you are making changes to this project (Example: Wit files, Rust code etc), then you will
-need to read through the script `quick_full_build.sh` in the root directory.
-
-While golem OSS already exposes a few utilities to build similar projects, there are still manual interventions 
-required to get this project up and working. This is why we have some scripts to maintain which is going to be temporary. 
-It is temporary, because golem team is working on great improvements in managing projects like `timeline`.
-
-PS: We have removed the approach of  `cargo make build-flow` with `golem-cli stubgen initalise` command, 
-and we are using rest of the `golem-cli` commands directly to get a better control over what's going on.
-
-If you just want to build this project (rather than contributing), probably all you need to do is to run `quick_build.sh` file
+For release version, use:
+```sh
+golem-cli app -b release build
+golem-cli components add --build-profile release --non-interactive
+```
 
 ## Run a quick test
 
