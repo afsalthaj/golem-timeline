@@ -37,7 +37,7 @@ serde_json = "1.0.116"
 path = "../timeline"
 
 [dependencies.wit-bindgen-rt]
-version = "=0.37.0"
+version = "0.37.0"
 features = ["bitflags"]
 
 [lib]
