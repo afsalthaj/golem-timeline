@@ -23,7 +23,10 @@ impl WorkerInfo {
 
 impl WorkerExt for TimelineResultWorker {
     fn get_worker_info(&self) -> WorkerInfo {
-        WorkerInfo { worker_name: self.worker_name.clone(), component_name: self.component_name.clone() }
+        WorkerInfo {
+            worker_name: self.worker_name.clone(),
+            component_name: self.component_name.clone(),
+        }
     }
 }
 

@@ -222,10 +222,7 @@ impl Conversion for TypedTimeLineResultWorker {
                         let worker = result_worker.worker_name.0.clone();
 
                         WitTypedTimeLineResultWorker::DerivedTimeline(WitDerivedTimeLineNode::Or(
-                            WitTimeLineResultWorker {
-                                component_name,
-                                worker_name: worker,
-                            },
+                            WitTimeLineResultWorker { component_name, worker_name: worker },
                         ))
                     }
                     DerivedTimeLineNode::Not { result_worker } => {
