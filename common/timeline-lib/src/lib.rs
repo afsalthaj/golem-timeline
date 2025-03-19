@@ -5,10 +5,10 @@ pub use state_dynamic_timeline_point::*;
 pub use timeline_node_worker::*;
 pub use timeline_op::*;
 
-mod internals;
-mod golem_event;
 mod event_predicate;
 pub mod event_timeline;
+mod golem_event;
+mod internals;
 mod state_dynamic_timeline;
 mod state_dynamic_timeline_point;
 mod timeline_node_worker;

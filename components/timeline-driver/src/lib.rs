@@ -1,13 +1,15 @@
 mod bindings;
-mod conversions;
 mod builder;
+mod conversions;
 
 use crate::bindings::exports::timeline::driver_exports::api::{Guest, WorkerDetails};
-use std::cell::RefCell;
-use timeline_lib::*;
 use crate::bindings::golem::rpc::types::Uri;
 use crate::bindings::timeline::core_client::core_client;
+use crate::bindings::timeline::core_client::core_client::GolemRpcUri;
 use crate::conversions::Conversion;
+use golem_rust::bindings::golem::api::host::{resolve_worker_id, worker_uri};
+use std::cell::RefCell;
+use timeline_lib::*;
 
 /// This is one of any number of data types that our application
 /// uses. Golem will take care to persist all application state,
@@ -28,21 +30,25 @@ struct Component;
 
 impl Guest for Component {
     fn run(
-        core_component_id: String,
-        event_processor_component_id: String,
-        timeline_processor_component_id: String,
+        core_component_name: String,
+        event_processor_component_name: String,
+        timeline_processor_component_name: String,
     ) -> Result<WorkerDetails, String> {
-        let uri =
-            Uri { value: format!("urn:worker:{core_component_id}/{}", "initialize-timeline") };
+        let worker_name = TimeLineWorkerName("initialize-timeline".to_string());
 
-        let core = core_client::Api::new(&uri);
+        let worker_id = resolve_worker_id("timeline:core", &worker_name.0)
+            .expect("Failed to resolve worker id");
+
+        let uri = worker_uri(&worker_id);
+
+        let core = core_client::Api::new(&GolemRpcUri { value: uri.value });
 
         let simple_timeline =
             tl_equal_to(tl_latest_event_to_state(col("playerStateChange")), string_value("play"))
                 .with_worker_details(
                     "cirr".to_string(),
-                    event_processor_component_id,
-                    timeline_processor_component_id,
+                    "timeline:event-processor".to_string(),
+                    "timeline:timeline-processor".to_string(),
                 );
 
         let result = core.blocking_hello_world();
@@ -57,8 +63,6 @@ impl Guest for Component {
                 Err(error)
             }
         }
-
-
     }
 }
 

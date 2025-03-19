@@ -1,10 +1,10 @@
-use timeline_lib::TimeLineOp;
 use crate::bindings::exports::timeline::core_exports::api::{
     BiTimelineWithServer, NodeIndex, ServerWithEventColumnName, ServerWithEventPredicate,
     ServerWithEventPredicateWithin, TimelineConstantComparator, TimelineConstantCompared,
     TimelineNegated, TimelineNode, TimelineOp as WitTimeLineOp, TimelineWithServer,
 };
 use crate::conversions::Conversion;
+use timeline_lib::TimeLineOp;
 
 pub struct WitValueBuilder {
     nodes: Vec<TimelineNode>,

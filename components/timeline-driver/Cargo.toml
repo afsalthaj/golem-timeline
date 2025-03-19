@@ -27,4 +27,5 @@ required-features = []
 
 [dependencies]
 timeline-lib = { path = "../../common/timeline-lib" }
+golem-rust = "1.2.1"
 wit-bindgen-rt = { workspace = true }

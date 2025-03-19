@@ -420,7 +420,7 @@ impl<T: Debug + Clone + PartialOrd> StateDynamicsTimeLine<T> {
                                 &existing.value,
                                 Box::new(left_ex.value.clone()),
                             ))
-                                .merge(&f),
+                            .merge(&f),
                         }
                     })
                     .or_insert(left_ex.apply_f(&f));
@@ -437,7 +437,7 @@ impl<T: Debug + Clone + PartialOrd> StateDynamicsTimeLine<T> {
                                 &existing.value,
                                 Box::new(right_ex.value.clone()),
                             ))
-                                .merge(&f),
+                            .merge(&f),
                         }
                     })
                     .or_insert(right_ex.apply_f(&f));

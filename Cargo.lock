@@ -472,6 +472,7 @@ dependencies = [
 name = "timeline_driver"
 version = "0.0.1"
 dependencies = [
+ "golem-rust",
  "timeline-lib",
  "wit-bindgen-rt 0.40.0",
 ]

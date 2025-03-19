@@ -13,7 +13,7 @@ use timeline_lib::GolemEventValue;
 use timeline_lib::TimeLineOp;
 use timeline_lib::{
     DerivedTimeLineNode, LeafTimeLineNode, TimeLineNodeWorkerInput, TimeLineResultWorker,
-    TimeLineWorkerName, TimeLineWorkerIdPrefix, TypedTimeLineResultWorker,
+    TimeLineWorkerIdPrefix, TimeLineWorkerName, TypedTimeLineResultWorker,
 };
 use timeline_lib::{EventColumnName, EventColumnValue, GolemEventPredicate};
 
@@ -55,49 +55,65 @@ impl Conversion for TypedTimeLineResultWorker {
                 match derived_timeline {
                     WitDerivedTimeLineNode::EqualTo(timeline_result_worker) => {
                         TypedTimeLineResultWorker::equal_to(TimeLineResultWorker {
-                            worker_name: TimeLineWorkerName(timeline_result_worker.worker_id.clone()),
+                            worker_name: TimeLineWorkerName(
+                                timeline_result_worker.worker_id.clone(),
+                            ),
                             component_name: timeline_result_worker.template_id.clone(),
                         })
                     }
                     WitDerivedTimeLineNode::GreaterThan(timeline_result_worker) => {
                         TypedTimeLineResultWorker::greater_than(TimeLineResultWorker {
-                            worker_name: TimeLineWorkerName(timeline_result_worker.worker_id.clone()),
+                            worker_name: TimeLineWorkerName(
+                                timeline_result_worker.worker_id.clone(),
+                            ),
                             component_name: timeline_result_worker.template_id.clone(),
                         })
                     }
                     WitDerivedTimeLineNode::GreaterThanOrEqualTo(timeline_result_worker) => {
                         TypedTimeLineResultWorker::greater_than_or_equal_to(TimeLineResultWorker {
-                            worker_name: TimeLineWorkerName(timeline_result_worker.worker_id.clone()),
+                            worker_name: TimeLineWorkerName(
+                                timeline_result_worker.worker_id.clone(),
+                            ),
                             component_name: timeline_result_worker.template_id.clone(),
                         })
                     }
                     WitDerivedTimeLineNode::LessThan(timeline_result_worker) => {
                         TypedTimeLineResultWorker::less_than(TimeLineResultWorker {
-                            worker_name: TimeLineWorkerName(timeline_result_worker.worker_id.clone()),
+                            worker_name: TimeLineWorkerName(
+                                timeline_result_worker.worker_id.clone(),
+                            ),
                             component_name: timeline_result_worker.template_id.clone(),
                         })
                     }
                     WitDerivedTimeLineNode::LessThanOrEqualTo(timeline_result_worker) => {
                         TypedTimeLineResultWorker::less_than_or_equal_to(TimeLineResultWorker {
-                            worker_name: TimeLineWorkerName(timeline_result_worker.worker_id.clone()),
+                            worker_name: TimeLineWorkerName(
+                                timeline_result_worker.worker_id.clone(),
+                            ),
                             component_name: timeline_result_worker.template_id.clone(),
                         })
                     }
                     WitDerivedTimeLineNode::And(timeline_result_worker) => {
                         TypedTimeLineResultWorker::and(TimeLineResultWorker {
-                            worker_name: TimeLineWorkerName(timeline_result_worker.worker_id.clone()),
+                            worker_name: TimeLineWorkerName(
+                                timeline_result_worker.worker_id.clone(),
+                            ),
                             component_name: timeline_result_worker.template_id.clone(),
                         })
                     }
                     WitDerivedTimeLineNode::Or(timeline_result_worker) => {
                         TypedTimeLineResultWorker::or(TimeLineResultWorker {
-                            worker_name: TimeLineWorkerName(timeline_result_worker.worker_id.clone()),
+                            worker_name: TimeLineWorkerName(
+                                timeline_result_worker.worker_id.clone(),
+                            ),
                             component_name: timeline_result_worker.template_id.clone(),
                         })
                     }
                     WitDerivedTimeLineNode::Not(timeline_result_worker) => {
                         TypedTimeLineResultWorker::not(TimeLineResultWorker {
-                            worker_name: TimeLineWorkerName(timeline_result_worker.worker_id.clone()),
+                            worker_name: TimeLineWorkerName(
+                                timeline_result_worker.worker_id.clone(),
+                            ),
                             component_name: timeline_result_worker.template_id.clone(),
                         })
                     }
