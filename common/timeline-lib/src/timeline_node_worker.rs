@@ -3,8 +3,8 @@ use std::fmt::Display;
 
 #[derive(Clone, Debug)]
 pub struct TimeLineNodeWorkerInput {
-    pub worker_id_prefix: TimeLineWorkerIdPrefix,
-    pub component_id: String,
+    pub worker_name_prefix: TimeLineWorkerIdPrefix,
+    pub component_name: String,
 }
 
 #[derive(Clone, Debug)]
@@ -18,14 +18,14 @@ impl Display for TimeLineWorkerIdPrefix {
 
 impl Display for TimeLineNodeWorkerInput {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}.{}", self.component_id, self.worker_id_prefix)
+        write!(f, "{}.{}", self.component_name, self.worker_name_prefix)
     }
 }
 
 #[derive(Clone, Debug, Serialize)]
-pub struct TimeLineWorkerId(pub String);
+pub struct TimeLineWorkerName(pub String);
 
-impl Display for TimeLineWorkerId {
+impl Display for TimeLineWorkerName {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.0)
     }
@@ -37,8 +37,8 @@ impl Display for TimeLineWorkerId {
 
 #[derive(Clone, Debug, Serialize)]
 pub struct TimeLineResultWorker {
-    pub worker_id: TimeLineWorkerId,
-    pub component_id: String,
+    pub worker_name: TimeLineWorkerName,
+    pub component_name: String,
 }
 
 // This not only says the worker in which result is available,

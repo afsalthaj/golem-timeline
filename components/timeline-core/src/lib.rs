@@ -6,7 +6,7 @@ use crate::bindings::golem::rpc::types::Uri;
 use timeline_lib::TimeLineOp as CoreTimeLineOp;
 use crate::conversions::Conversion;
 use timeline_lib::{
-    TimeLineResultWorker, TimeLineWorkerId, TimeLineWorkerIdPrefix, TypedTimeLineResultWorker,
+    TimeLineResultWorker, TimeLineWorkerName, TimeLineWorkerIdPrefix, TypedTimeLineResultWorker,
 };
 use crate::bindings::exports::timeline::core_exports::api::{Guest, TimelineOp, TypedTimelineResultWorker, WorkerDetails};
 
@@ -14,6 +14,8 @@ use std::cell::RefCell;
 use uuid::Uuid;
 use crate::bindings::timeline::event_processor_client::event_processor_client;
 use crate::bindings::timeline::timeline_processor_client::timeline_processor_client;
+use golem_rust::bindings::golem::api::host::{resolve_worker_id, worker_uri};
+use crate::bindings::timeline::timeline_processor_client::timeline_processor_client::GolemRpcUri;
 
 /// This is one of any number of data types that our application
 /// uses. Golem will take care to persist all application state,
@@ -43,20 +45,23 @@ impl Guest for Component {
         ) -> Result<TypedTimeLineResultWorker, String> {
             match core_time_line_op {
                 CoreTimeLineOp::EqualTo(worker, left, right) => {
-                    let (component_id, worker_id_prefix) = worker
+                    let (component_name, worker_id_prefix) = worker
                         .clone()
-                        .map(|w| (w.component_id, w.worker_id_prefix))
+                        .map(|w| (w.component_name, w.worker_name_prefix))
                         .ok_or("No worker id for timeline found")?;
 
                     let uuid = Uuid::new_v4();
 
                     // Connecting to the worker that should compute equal
                     let worker_name =
-                        TimeLineWorkerId(format!("{}-tleq-{}", worker_id_prefix, uuid));
+                        TimeLineWorkerName(format!("{}-tleq-{}", worker_id_prefix, uuid));
 
-                    let uri = Uri { value: format!("urn:worker:{component_id}/{}", &worker_name) };
+                    let worker_id = resolve_worker_id(component_name.as_str(), worker_name.0.as_str())
+                        .expect("Failed to resolve worker ID");
 
-                    let timeline_processor_api = timeline_processor_client::Api::new(&uri);
+                    let uri = worker_uri(&worker_id);
+
+                    let timeline_processor_api = timeline_processor_client::Api::new(&GolemRpcUri { value: uri.value });
 
                     // Specifying the worker the timeline-equal worker should fetch the results from to compare with a constant
                     let child_worker = go(left, event_processors)?;
@@ -68,26 +73,31 @@ impl Guest for Component {
                     // The worker in which the comparison with a constant actually executes
                     let typed_timeline_result_worker = TypedTimeLineResultWorker::equal_to({
                         TimeLineResultWorker {
-                            component_id: component_id.clone(),
-                            worker_id: worker_name,
+                            component_name: component_name.clone(),
+                            worker_name: worker_name,
                         }
                     });
 
                     Ok(typed_timeline_result_worker)
                 }
                 CoreTimeLineOp::GreaterThan(worker, timeline, value) => {
-                    let (component_id, worker_id_prefix) = worker.clone().map_or(
+                    let (component_name, worker_id_prefix) = worker.clone().map_or(
                         ("default".to_string(), TimeLineWorkerIdPrefix("default".to_string())),
-                        |w| (w.component_id, w.worker_id_prefix),
-                    ); // FIXME need to derive component and worker id here when user does not provide any
+                        |w| (w.component_name, w.worker_name_prefix),
+                    );
                     let uuid = Uuid::new_v4();
 
                     // Connecting to the worker that should compute equal
-                    let worker_id = TimeLineWorkerId(format!("{}-tlgt-{}", worker_id_prefix, uuid));
+                    let worker_name = format!("{}-tlgt-{}", worker_id_prefix, uuid);
 
-                    let uri = Uri { value: format!("urn:worker:{component_id}/{}", &worker_id) };
+                    let worker_id = resolve_worker_id(component_name.as_str(), worker_name.as_str())
+                        .expect("Failed to resolve worker ID");
 
-                    let timeline_processor_api = timeline_processor_client::Api::new(&uri);
+                    let target_uri: golem_rust::bindings::golem::api::host::Uri =
+                        worker_uri(&worker_id);
+
+                    let timeline_processor_api =
+                        timeline_processor_client::Api::new(&GolemRpcUri { value: target_uri.value });
 
                     // Specifying the worker the timeline-equal worker should fetch the results from to compare with a constant
                     let child_worker = go(timeline, event_processors)?;
@@ -100,25 +110,28 @@ impl Guest for Component {
 
                     // The worker in which the comparison with a constant actually executes
                     let typed_timeline_result_worker = TypedTimeLineResultWorker::greater_than({
-                        TimeLineResultWorker { component_id: component_id.clone(), worker_id }
+                        TimeLineResultWorker { component_name: component_name.clone(), worker_name: TimeLineWorkerName(worker_name) }
                     });
 
                     Ok(typed_timeline_result_worker)
                 }
                 CoreTimeLineOp::GreaterThanOrEqual(worker, timeline, value) => {
-                    let (component_id, worker_id_prefix) = worker.clone().map_or(
+                    let (component_name, worker_id_prefix) = worker.clone().map_or(
                         ("default".to_string(), TimeLineWorkerIdPrefix("default".to_string())),
-                        |w| (w.component_id, w.worker_id_prefix),
-                    ); // FIXME need to derive component and worker id here when user does not provide any
+                        |w| (w.component_name, w.worker_name_prefix),
+                    );
                     let uuid = Uuid::new_v4();
 
                     // Connecting to the worker that should compute equal
-                    let worker_id =
-                        TimeLineWorkerId(format!("{}-tlgteq-{}", worker_id_prefix, uuid));
+                    let worker_name =
+                        format!("{}-tlgteq-{}", worker_id_prefix, uuid);
 
-                    let uri = Uri { value: format!("urn:worker:{component_id}/{}", &worker_id) };
+                    let worker_id = resolve_worker_id(component_name.as_str(), worker_name.as_str())
+                        .expect("Failed to resolve worker ID");
 
-                    let timeline_processor_api = timeline_processor_client::Api::new(&uri);
+                    let uri = worker_uri(&worker_id);
+
+                    let timeline_processor_api = timeline_processor_client::Api::new(&GolemRpcUri { value: uri.value });
 
                     // Specifying the worker the timeline-equal worker should fetch the results from to compare with a constant
                     let child_worker = go(timeline, event_processors)?;
@@ -132,7 +145,7 @@ impl Guest for Component {
                     // The worker in which the comparison with a constant actually executes
                     let typed_timeline_result_worker =
                         TypedTimeLineResultWorker::greater_than_or_equal_to({
-                            TimeLineResultWorker { component_id: component_id.clone(), worker_id }
+                            TimeLineResultWorker { component_name: component_name.clone(), worker_name: TimeLineWorkerName(worker_name) }
                         });
 
                     Ok(typed_timeline_result_worker)
@@ -140,16 +153,19 @@ impl Guest for Component {
                 CoreTimeLineOp::LessThan(worker, timeline, event_value) => {
                     let (component_id, worker_id_prefix) = worker.clone().map_or(
                         ("default".to_string(), TimeLineWorkerIdPrefix("default".to_string())),
-                        |w| (w.component_id, w.worker_id_prefix),
-                    ); // FIXME need to derive component and worker id here when user does not provide any
+                        |w| (w.component_name, w.worker_name_prefix),
+                    );
                     let uuid = Uuid::new_v4();
 
                     // Connecting to the worker that should compute equal
-                    let worker_id = TimeLineWorkerId(format!("{}-tllt-{}", worker_id_prefix, uuid));
+                    let worker_name = TimeLineWorkerName(format!("{}-tllt-{}", worker_id_prefix, uuid));
 
-                    let uri = Uri { value: format!("urn:worker:{component_id}/{}", &worker_id) };
+                    let worker_id = resolve_worker_id(component_id.as_str(), worker_name.0.as_str())
+                        .expect("Failed to resolve worker ID");
 
-                    let timeline_processor_api = timeline_processor_client::Api::new(&uri);
+                    let uri = worker_uri(&worker_id);
+
+                    let timeline_processor_api = timeline_processor_client::Api::new(&GolemRpcUri { value: uri.value });
 
                     // Specifying the worker the timeline-equal worker should fetch the results from to compare with a constant
                     let child_worker = go(timeline, event_processors)?;
@@ -162,25 +178,28 @@ impl Guest for Component {
 
                     // The worker in which the comparison with a constant actually executes
                     let typed_timeline_result_worker = TypedTimeLineResultWorker::greater_than({
-                        TimeLineResultWorker { component_id: component_id.clone(), worker_id }
+                        TimeLineResultWorker { component_name: component_id.clone(), worker_name }
                     });
 
                     Ok(typed_timeline_result_worker)
                 }
                 CoreTimeLineOp::LessThanOrEqual(worker, timeline, event_value) => {
-                    let (component_id, worker_id_prefix) = worker.clone().map_or(
+                    let (component_name, worker_id_prefix) = worker.clone().map_or(
                         ("default".to_string(), TimeLineWorkerIdPrefix("default".to_string())),
-                        |w| (w.component_id, w.worker_id_prefix),
-                    ); // FIXME need to derive component and worker id here when user does not provide any
+                        |w| (w.component_name, w.worker_name_prefix),
+                    );
                     let uuid = Uuid::new_v4();
 
                     // Connecting to the worker that should compute equal
-                    let worker_id =
-                        TimeLineWorkerId(format!("{}-tllteq-{}", worker_id_prefix, uuid));
+                    let worker_name =
+                        TimeLineWorkerName(format!("{}-tllteq-{}", worker_id_prefix, uuid));
 
-                    let uri = Uri { value: format!("urn:worker:{component_id}/{}", &worker_id) };
+                    let worker_id = resolve_worker_id(component_name.as_str(), worker_name.0.as_str())
+                        .expect("Failed to resolve worker ID");
 
-                    let timeline_processor_api = timeline_processor_client::Api::new(&uri);
+                    let uri = worker_uri(&worker_id);
+
+                    let timeline_processor_api = timeline_processor_client::Api::new(&GolemRpcUri { value: uri.value });
 
                     // Specifying the worker the timeline-equal worker should fetch the results from to compare with a constant
                     let child_worker = go(timeline, event_processors)?;
@@ -193,24 +212,27 @@ impl Guest for Component {
                     // The worker in which the comparison with a constant actually executes
                     let typed_timeline_result_worker =
                         TypedTimeLineResultWorker::less_than_or_equal_to({
-                            TimeLineResultWorker { component_id: component_id.clone(), worker_id }
+                            TimeLineResultWorker { component_name: component_name.clone(), worker_name }
                         });
 
                     Ok(typed_timeline_result_worker)
                 }
                 CoreTimeLineOp::And(worker, left, right) => {
-                    let (component_id, worker_id_prefix) = worker.clone().map_or(
+                    let (component_name, worker_id_prefix) = worker.clone().map_or(
                         ("default".to_string(), TimeLineWorkerIdPrefix("default".to_string())),
-                        |w| (w.component_id, w.worker_id_prefix),
-                    ); // FIXME need to derive component and worker id here when user does not provide any
+                        |w| (w.component_name, w.worker_name_prefix),
+                    );
                     let uuid = Uuid::new_v4();
 
-                    let worker_id =
-                        TimeLineWorkerId(format!("{}-tl-and-{}", worker_id_prefix, uuid));
+                    let worker_name =
+                        TimeLineWorkerName(format!("{}-tl-and-{}", worker_id_prefix, uuid));
 
-                    let uri = Uri { value: format!("urn:worker:{component_id}/{}", &worker_id) };
+                    let worker_id = resolve_worker_id(component_name.as_str(), worker_name.0.as_str())
+                        .expect("Failed to resolve worker ID");
 
-                    let core = timeline_processor_client::Api::new(&uri);
+                    let uri = worker_uri(&worker_id);
+
+                    let core = timeline_processor_client::Api::new(&GolemRpcUri { value: uri.value });
 
                     let left_worker = go(left, event_processors)?;
                     let right_worker = go(right, event_processors)?;
@@ -220,24 +242,27 @@ impl Guest for Component {
 
                     // The result of this node will be available in this worker
                     let typed_timeline_result_worker = TypedTimeLineResultWorker::and({
-                        TimeLineResultWorker { component_id: component_id.clone(), worker_id }
+                        TimeLineResultWorker { component_name: component_name.clone(), worker_name }
                     });
 
                     Ok(typed_timeline_result_worker)
                 }
                 CoreTimeLineOp::Or(worker, left, right) => {
-                    let (component_id, worker_id_prefix) = worker.clone().map_or(
+                    let (component_name, worker_id_prefix) = worker.clone().map_or(
                         ("default".to_string(), TimeLineWorkerIdPrefix("default".to_string())),
-                        |w| (w.component_id, w.worker_id_prefix),
-                    ); // FIXME need to derive component and worker id here when user does not provide any
+                        |w| (w.component_name, w.worker_name_prefix),
+                    );
                     let uuid = Uuid::new_v4();
 
-                    let worker_id =
-                        TimeLineWorkerId(format!("{}-tl-and-{}", worker_id_prefix, uuid));
+                    let worker_name =
+                        TimeLineWorkerName(format!("{}-tl-and-{}", worker_id_prefix, uuid));
 
-                    let uri = Uri { value: format!("urn:worker:{component_id}/{}", &worker_id) };
+                    let worker_id = resolve_worker_id(component_name.as_str(), worker_name.0.as_str())
+                        .expect("Failed to resolve worker ID");
 
-                    let core = timeline_processor_client::Api::new(&uri);
+                    let uri = worker_uri(&worker_id);
+
+                    let core = timeline_processor_client::Api::new(&GolemRpcUri { value: uri.value });
 
                     let left_worker = go(left, event_processors)?;
                     let right_worker = go(right, event_processors)?;
@@ -247,24 +272,27 @@ impl Guest for Component {
 
                     // The result of this node will be available in this worker
                     let typed_timeline_result_worker = TypedTimeLineResultWorker::or({
-                        TimeLineResultWorker { component_id: component_id.clone(), worker_id }
+                        TimeLineResultWorker { component_name: component_name.clone(), worker_name }
                     });
 
                     Ok(typed_timeline_result_worker)
                 }
                 CoreTimeLineOp::Not(worker, timeline) => {
-                    let (component_id, worker_id_prefix) = worker.clone().map_or(
+                    let (component_name, worker_id_prefix) = worker.clone().map_or(
                         ("default".to_string(), TimeLineWorkerIdPrefix("default".to_string())),
-                        |w| (w.component_id, w.worker_id_prefix),
-                    ); // FIXME need to derive component and worker id here when user does not provide any
+                        |w| (w.component_name, w.worker_name_prefix),
+                    );
                     let uuid = Uuid::new_v4();
 
-                    let worker_id =
-                        TimeLineWorkerId(format!("{}-tl-not-{}", worker_id_prefix, uuid));
+                    let worker_name =
+                        TimeLineWorkerName(format!("{}-tl-not-{}", worker_id_prefix, uuid));
 
-                    let uri = Uri { value: format!("urn:worker:{component_id}/{}", &worker_id) };
+                    let worker_id = resolve_worker_id(component_name.as_str(), worker_name.0.as_str())
+                        .expect("Failed to resolve worker ID");
 
-                    let core = timeline_processor_client::Api::new(&uri);
+                    let uri = worker_uri(&worker_id);
+
+                    let core = timeline_processor_client::Api::new(&GolemRpcUri { value: uri.value });
 
                     let child_worker = go(timeline, event_processors)?;
 
@@ -273,29 +301,32 @@ impl Guest for Component {
 
                     // The result of this node will be available in this worker
                     let typed_timeline_result_worker = TypedTimeLineResultWorker::not({
-                        TimeLineResultWorker { component_id: component_id.clone(), worker_id }
+                        TimeLineResultWorker { component_name: component_name.clone(), worker_name }
                     });
 
                     Ok(typed_timeline_result_worker)
                 }
                 CoreTimeLineOp::TlHasExisted(worker, predicate) => {
-                    let (component_id, worker_id_prefix) = worker.clone().map_or(
+                    let (component_name, worker_id_prefix) = worker.clone().map_or(
                         ("default".to_string(), TimeLineWorkerIdPrefix("default".to_string())),
-                        |w| (w.component_id, w.worker_id_prefix),
-                    ); // FIXME need to derive component and worker id here when user does not provide any
+                        |w| (w.component_name, w.worker_name_prefix),
+                    );
                     let uuid = Uuid::new_v4();
 
-                    let worker_id = TimeLineWorkerId(format!("{}-tlhe-{}", worker_id_prefix, uuid));
+                    let worker_name = TimeLineWorkerName(format!("{}-tlhe-{}", worker_id_prefix, uuid));
 
-                    let uri = Uri { value: format!("urn:worker:{component_id}/{}", &worker_id) };
+                    let worker_id = resolve_worker_id(component_name.as_str(), worker_name.0.as_str())
+                        .expect("Failed to resolve worker ID");
 
-                    let core = event_processor_client::Api::new(&uri);
+                    let uri = worker_uri(&worker_id);
+
+                    let core = event_processor_client::Api::new(&GolemRpcUri { value: uri.value });
 
                     core.blocking_initialize_tl_has_existed(&predicate.to_wit())?;
 
                     // The result of this node will be available in this worker
                     let typed_timeline_result_worker = TypedTimeLineResultWorker::tl_has_existed({
-                        TimeLineResultWorker { component_id: component_id.clone(), worker_id }
+                        TimeLineResultWorker { component_name: component_name.clone(), worker_name }
                     });
 
                     event_processors.push(typed_timeline_result_worker.to_wit());
@@ -303,18 +334,21 @@ impl Guest for Component {
                     Ok(typed_timeline_result_worker)
                 }
                 CoreTimeLineOp::TlHasExistedWithin(worker, predicate, within) => {
-                    let (component_id, worker_id_prefix) = worker.clone().map_or(
+                    let (component_name, worker_id_prefix) = worker.clone().map_or(
                         ("default".to_string(), TimeLineWorkerIdPrefix("default".to_string())),
-                        |w| (w.component_id, w.worker_id_prefix),
-                    ); // FIXME need to derive component and worker id here when user does not provide any
+                        |w| (w.component_name, w.worker_name_prefix),
+                    );
                     let uuid = Uuid::new_v4();
 
-                    let worker_id =
-                        TimeLineWorkerId(format!("{}-tlhew-{}", worker_id_prefix, uuid));
+                    let worker_name =
+                        TimeLineWorkerName(format!("{}-tlhew-{}", worker_id_prefix, uuid));
 
-                    let uri = Uri { value: format!("urn:worker:{component_id}/{}", worker_id) };
+                    let worker_id = resolve_worker_id(component_name.as_str(), worker_name.0.as_str())
+                        .expect("Failed to resolve worker ID");
 
-                    let core = event_processor_client::Api::new(&uri);
+                    let uri = worker_uri(&worker_id);
+
+                    let core = event_processor_client::Api::new(&GolemRpcUri { value: uri.value });
 
                     // The result of this node will be available in this worker
                     core.blocking_initialize_tl_has_existed_within(&predicate.to_wit(), *within)?;
@@ -322,7 +356,7 @@ impl Guest for Component {
                     // The result of this node will be available in this worker
                     let typed_timeline_result_worker =
                         TypedTimeLineResultWorker::tl_has_existed_within({
-                            TimeLineResultWorker { component_id: component_id.clone(), worker_id }
+                            TimeLineResultWorker { component_name: component_name.clone(), worker_name }
                         });
 
                     event_processors.push(typed_timeline_result_worker.to_wit());
@@ -330,25 +364,28 @@ impl Guest for Component {
                     Ok(typed_timeline_result_worker)
                 }
                 CoreTimeLineOp::TlLatestEventToState(worker, event_column_name) => {
-                    let (component_id, worker_id_prefix) = worker.clone().map_or(
+                    let (component_name, worker_id_prefix) = worker.clone().map_or(
                         ("default".to_string(), TimeLineWorkerIdPrefix("default".to_string())),
-                        |w| (w.component_id, w.worker_id_prefix),
-                    ); // FIXME need to derive component and worker id here when user does not provide any
-                    let worker_id = TimeLineWorkerId(format!(
+                        |w| (w.component_name, w.worker_name_prefix),
+                    );
+                    let worker_name = TimeLineWorkerName(format!(
                         "{}-le2s-{}",
                         worker_id_prefix, event_column_name
                     ));
 
-                    let uri = Uri { value: format!("urn:worker:{component_id}/{}", worker_id) };
+                    let worker_id = resolve_worker_id(component_name.as_str(), worker_name.0.as_str())
+                        .expect("Failed to resolve worker ID");
 
-                    let core = event_processor_client::Api::new(&uri);
+                    let uri = worker_uri(&worker_id);
+
+                    let core = event_processor_client::Api::new(&GolemRpcUri { value: uri.value });
 
                     core.blocking_initialize_latest_event_state(event_column_name.0.as_str())?;
 
                     // The result of this node will be available in this worker
                     let typed_timeline_result_worker =
                         TypedTimeLineResultWorker::tl_event_to_latest_state({
-                            TimeLineResultWorker { component_id: component_id.clone(), worker_id }
+                            TimeLineResultWorker { component_name: component_name.clone(), worker_name }
                         });
 
                     event_processors.push(typed_timeline_result_worker.to_wit());

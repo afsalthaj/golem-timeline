@@ -77,15 +77,15 @@ impl Conversion for TimeLineNodeWorkerInput {
 
     fn from_wit(input: Self::WitType) -> Self {
         TimeLineNodeWorkerInput {
-            worker_id_prefix: TimeLineWorkerIdPrefix(input.worker_id_prefix),
-            component_id: input.template_id,
+            worker_name_prefix: TimeLineWorkerIdPrefix(input.worker_id_prefix),
+            component_name: input.template_id,
         }
     }
 
     fn to_wit(&self) -> Self::WitType {
         WitTimeLineNodeWorker {
-            worker_id_prefix: self.worker_id_prefix.0.clone(),
-            template_id: self.component_id.clone(),
+            worker_id_prefix: self.worker_name_prefix.0.clone(),
+            template_id: self.component_name.clone(),
         }
     }
 }

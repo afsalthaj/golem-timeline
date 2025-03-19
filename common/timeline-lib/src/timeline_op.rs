@@ -157,13 +157,13 @@ impl TimeLineOp {
         timeline_processor_component_id: String,
     ) -> TimeLineOp {
         let event_processor_worker_details = TimeLineNodeWorkerInput {
-            worker_id_prefix: TimeLineWorkerIdPrefix(worker_prefix.clone()),
-            component_id: event_processor_component_id,
+            worker_name_prefix: TimeLineWorkerIdPrefix(worker_prefix.clone()),
+            component_name: event_processor_component_id,
         };
 
         let timeline_processor_worker_details = TimeLineNodeWorkerInput {
-            worker_id_prefix: TimeLineWorkerIdPrefix(worker_prefix.clone()),
-            component_id: timeline_processor_component_id,
+            worker_name_prefix: TimeLineWorkerIdPrefix(worker_prefix.clone()),
+            component_name: timeline_processor_component_id,
         };
 
         fn go(
