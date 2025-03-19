@@ -101,20 +101,6 @@ golem server run
 
 ```
 
-#### Build and deploy timeline project
-
-For building debug version of the components, use:
-```sh
-golem-cli app build
-golem-cli components add --non-interactive
-```
-
-For release version, use:
-```sh
-golem-cli app -b release build
-golem-cli components add --build-profile release --non-interactive
-```
-
 ## Run a quick test
 
 ```bash
@@ -126,17 +112,9 @@ golem-cli components add --build-profile release --non-interactive
 This should give some output like this,
 
 ```bash
-...
-Core Composed: "16809bce-95df-4607-9697-55edb2dfea71"
-Raw Events: "17e0839e-9e9b-4e3f-bcd0-26de49aefa98"
-Driver: "0a3072c5-b7d7-489b-8ee8-c3add4fa093e"
-A dry run on deployed timeline...
-
-...
 Invocation results in WAVE format:
-- ok("cirr-le2s-playerStateChange")
-
-...
+  - ok({event-processor-workers: [leaf-timeline(tl-latest-event-to-state({worker-id: "cirr-le2s-playerStateChange", template-id: "timeline:event-processor"}))], result-worker: derived-timeline(equal-to({worker-id: "cirr-tleq-30e0f4b7-3c05-42da-8392-dcd0cc3b2096", template-id: "timeline:timeline-processor"}))})
+A sample invocation succeeded!
 ```
 
 ## Streaming with Pulsar
