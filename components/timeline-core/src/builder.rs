@@ -1,4 +1,4 @@
-use common_lib::TimeLineOp;
+use timeline_lib::TimeLineOp;
 use crate::bindings::exports::timeline::core_exports::api::{
     BiTimelineWithServer, NodeIndex, ServerWithEventColumnName, ServerWithEventPredicate,
     ServerWithEventPredicateWithin, TimelineConstantComparator, TimelineConstantCompared,

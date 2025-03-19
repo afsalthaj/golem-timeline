@@ -5,7 +5,7 @@ use crate::bindings::timeline::event_processor_exports::api::EventPredicateOp;
 use crate::bindings::timeline::event_processor_exports::api::EventValue as WitEventValue;
 use crate::builder::WitValueBuilder;
 use std::fmt::Debug;
-use common_lib::*;
+use timeline_lib::*;
 
 pub trait Conversion: Clone + Debug {
     type WitType: Clone;
@@ -109,10 +109,10 @@ impl Conversion for TimeLineOp {
 }
 
 mod internals {
-    use common_lib::GolemEventValue;
-    use common_lib::TimeLineNodeWorkerInput;
-    use common_lib::TimeLineOp;
-    use common_lib::{EventColumnName, GolemEventPredicate};
+    use timeline_lib::GolemEventValue;
+    use timeline_lib::TimeLineNodeWorkerInput;
+    use timeline_lib::TimeLineOp;
+    use timeline_lib::{EventColumnName, GolemEventPredicate};
 
     use crate::bindings::timeline::core_exports::api::{
         TimelineConstantComparator, TimelineNode as WitTimeLineNode, TimelineNode,

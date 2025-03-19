@@ -4,7 +4,7 @@ use crate::bindings::exports::timeline::event_processor_exports::api::{
     Event, EventPredicate, EventValue, Guest, TimePeriod, TimelineResult, TimelineResultPoint,
 };
 use crate::conversions::Conversion;
-use common_lib::*;
+use timeline_lib::*;
 
 #[allow(dead_code)]
 #[rustfmt::skip]

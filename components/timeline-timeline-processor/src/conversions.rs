@@ -3,7 +3,7 @@ use crate::bindings::exports::timeline::timeline_processor_exports::api::{
 };
 use crate::bindings::timeline::event_processor_exports::api::{TimePeriod, TimelineResultPoint};
 use std::fmt::Debug;
-use common_lib::*;
+use timeline_lib::*;
 
 pub trait Conversion: Clone + Debug {
     type WitType: Clone;

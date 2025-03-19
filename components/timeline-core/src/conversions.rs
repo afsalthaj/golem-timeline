@@ -9,13 +9,13 @@ use crate::bindings::timeline::timeline_processor_exports::api::LeafTimelineNode
 use crate::bindings::timeline::timeline_processor_exports::api::TimelineResultWorker as WitTimeLineResultWorker;
 use crate::builder::WitValueBuilder;
 use std::fmt::Debug;
-use common_lib::GolemEventValue;
-use common_lib::TimeLineOp;
-use common_lib::{
+use timeline_lib::GolemEventValue;
+use timeline_lib::TimeLineOp;
+use timeline_lib::{
     DerivedTimeLineNode, LeafTimeLineNode, TimeLineNodeWorkerInput, TimeLineResultWorker,
     TimeLineWorkerId, TimeLineWorkerIdPrefix, TypedTimeLineResultWorker,
 };
-use common_lib::{EventColumnName, EventColumnValue, GolemEventPredicate};
+use timeline_lib::{EventColumnName, EventColumnValue, GolemEventPredicate};
 
 // TODO: Some of these conversions are repeated even after reusing WIT files. Make sure to fix it
 
@@ -322,7 +322,7 @@ impl Conversion for TimeLineOp {
 }
 
 mod internals {
-    use common_lib::*;
+    use timeline_lib::*;
 
     use crate::bindings::exports::timeline::core_exports::api::{
         TimelineConstantComparator, TimelineNode as WitTimeLineNode, TimelineNode,

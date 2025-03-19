@@ -4,8 +4,8 @@ use std::fmt::Debug;
 use crate::bindings::exports::timeline::event_processor_exports::api::{
     Event, EventPredicate, EventPredicateOp, EventValue,
 };
-use common_lib::{EventColumnName, EventColumnValue, GolemEventPredicate};
-use common_lib::{GolemEvent, GolemEventValue};
+use timeline_lib::{EventColumnName, EventColumnValue, GolemEventPredicate};
+use timeline_lib::{GolemEvent, GolemEventValue};
 
 pub trait Conversion: Clone + Debug {
     type WitType: Clone;

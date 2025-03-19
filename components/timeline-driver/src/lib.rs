@@ -4,7 +4,7 @@ mod builder;
 
 use crate::bindings::exports::timeline::driver_exports::api::{Guest, WorkerDetails};
 use std::cell::RefCell;
-use common_lib::*;
+use timeline_lib::*;
 use crate::bindings::golem::rpc::types::Uri;
 use crate::bindings::timeline::core_client::core_client;
 use crate::conversions::Conversion;

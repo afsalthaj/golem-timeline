@@ -3,9 +3,9 @@ mod builder;
 mod conversions;
 
 use crate::bindings::golem::rpc::types::Uri;
-use common_lib::TimeLineOp as CoreTimeLineOp;
+use timeline_lib::TimeLineOp as CoreTimeLineOp;
 use crate::conversions::Conversion;
-use common_lib::{
+use timeline_lib::{
     TimeLineResultWorker, TimeLineWorkerId, TimeLineWorkerIdPrefix, TypedTimeLineResultWorker,
 };
 use crate::bindings::exports::timeline::core_exports::api::{Guest, TimelineOp, TypedTimelineResultWorker, WorkerDetails};
