@@ -3,7 +3,7 @@ package timeline:driver;
 interface api {
   use timeline:core-exports/api.{worker-details};
 
-  run: func(core-template-id: string, leaf-template-id: string, event-to-state-template-id: string) -> result<worker-details, string>;
+  run: func() -> result<worker-details, string>;
 }
 
 world driver {

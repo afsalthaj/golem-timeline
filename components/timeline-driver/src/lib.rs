@@ -29,11 +29,7 @@ thread_local! {
 struct Component;
 
 impl Guest for Component {
-    fn run(
-        core_component_name: String,
-        event_processor_component_name: String,
-        timeline_processor_component_name: String,
-    ) -> Result<WorkerDetails, String> {
+    fn run() -> Result<WorkerDetails, String> {
         let worker_name = TimeLineWorkerName("initialize-timeline".to_string());
 
         let worker_id = resolve_worker_id("timeline:core", &worker_name.0)
