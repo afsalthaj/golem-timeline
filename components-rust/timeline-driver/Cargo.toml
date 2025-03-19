@@ -1,0 +1,30 @@
+[package]
+name = "timeline_driver"
+version = "0.0.1"
+edition = "2021"
+
+[package.metadata]
+
+[package.metadata.component]
+
+[package.metadata.component.target]
+path = "wit-generated"
+
+[package.metadata.component.target.dependencies]
+"wasi:clocks" = { path = "wit-generated/deps/clocks" }
+"wasi:io" = { path = "wit-generated/deps/io" }
+"golem:rpc" = { path = "wit-generated/deps/wasm-rpc" }
+"timeline:event-processor-exports" = { path = "wit-generated/deps/timeline_event-processor-exports" }
+"timeline:timeline-processor-exports" = { path = "wit-generated/deps/timeline_timeline-processor-exports" }
+"timeline:core-exports" = { path = "wit-generated/deps/timeline_core-exports" }
+"timeline:core-client" = { path = "wit-generated/deps/timeline_core-client" }
+"timeline:driver-exports" = { path = "wit-generated/deps/timeline_driver-exports" }
+
+[lib]
+path = "src/lib.rs"
+crate-type = ["cdylib"]
+required-features = []
+
+[dependencies]
+common-lib = { path = "../../common-rust/common-lib" }
+wit-bindgen-rt = { workspace = true }

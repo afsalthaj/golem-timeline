@@ -1,4 +1,7 @@
+/golem-temp
+/target
 .idea
 bindings.rs
 target
 wit-generated
+.vscode
