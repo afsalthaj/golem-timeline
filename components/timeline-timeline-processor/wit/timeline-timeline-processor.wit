@@ -5,8 +5,8 @@ interface api {
   use timeline:event-processor-exports/api.{timeline-result};
 
   record timeline-result-worker {
-    worker-id: string,
-    template-id: string
+    worker-name: string,
+    component-name: string
   }
 
   variant typed-timeline-result-worker {

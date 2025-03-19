@@ -33,20 +33,20 @@ impl Conversion for TypedTimeLineResultWorker {
             WitTypedTimeLineResultWorker::LeafTimeline(leaf_time_line) => match leaf_time_line {
                 WitLeafTimeLineNode::TlHasExisted(timeline_result_worker) => {
                     TypedTimeLineResultWorker::tl_has_existed(TimeLineResultWorker {
-                        worker_name: TimeLineWorkerName(timeline_result_worker.worker_id.clone()),
-                        component_name: timeline_result_worker.template_id.clone(),
+                        worker_name: TimeLineWorkerName(timeline_result_worker.worker_name.clone()),
+                        component_name: timeline_result_worker.component_name.clone(),
                     })
                 }
                 WitLeafTimeLineNode::TlHasExistedWithin(timeline_result_worker) => {
                     TypedTimeLineResultWorker::tl_has_existed_within(TimeLineResultWorker {
-                        worker_name: TimeLineWorkerName(timeline_result_worker.worker_id.clone()),
-                        component_name: timeline_result_worker.template_id.clone(),
+                        worker_name: TimeLineWorkerName(timeline_result_worker.worker_name.clone()),
+                        component_name: timeline_result_worker.component_name.clone(),
                     })
                 }
                 WitLeafTimeLineNode::TlLatestEventToState(timeline_result_worker) => {
                     TypedTimeLineResultWorker::tl_event_to_latest_state(TimeLineResultWorker {
-                        worker_name: TimeLineWorkerName(timeline_result_worker.worker_id.clone()),
-                        component_name: timeline_result_worker.template_id.clone(),
+                        worker_name: TimeLineWorkerName(timeline_result_worker.worker_name.clone()),
+                        component_name: timeline_result_worker.component_name.clone(),
                     })
                 }
             },
@@ -56,65 +56,65 @@ impl Conversion for TypedTimeLineResultWorker {
                     WitDerivedTimeLineNode::EqualTo(timeline_result_worker) => {
                         TypedTimeLineResultWorker::equal_to(TimeLineResultWorker {
                             worker_name: TimeLineWorkerName(
-                                timeline_result_worker.worker_id.clone(),
+                                timeline_result_worker.worker_name.clone(),
                             ),
-                            component_name: timeline_result_worker.template_id.clone(),
+                            component_name: timeline_result_worker.component_name.clone(),
                         })
                     }
                     WitDerivedTimeLineNode::GreaterThan(timeline_result_worker) => {
                         TypedTimeLineResultWorker::greater_than(TimeLineResultWorker {
                             worker_name: TimeLineWorkerName(
-                                timeline_result_worker.worker_id.clone(),
+                                timeline_result_worker.worker_name.clone(),
                             ),
-                            component_name: timeline_result_worker.template_id.clone(),
+                            component_name: timeline_result_worker.component_name.clone(),
                         })
                     }
                     WitDerivedTimeLineNode::GreaterThanOrEqualTo(timeline_result_worker) => {
                         TypedTimeLineResultWorker::greater_than_or_equal_to(TimeLineResultWorker {
                             worker_name: TimeLineWorkerName(
-                                timeline_result_worker.worker_id.clone(),
+                                timeline_result_worker.worker_name.clone(),
                             ),
-                            component_name: timeline_result_worker.template_id.clone(),
+                            component_name: timeline_result_worker.component_name.clone(),
                         })
                     }
                     WitDerivedTimeLineNode::LessThan(timeline_result_worker) => {
                         TypedTimeLineResultWorker::less_than(TimeLineResultWorker {
                             worker_name: TimeLineWorkerName(
-                                timeline_result_worker.worker_id.clone(),
+                                timeline_result_worker.worker_name.clone(),
                             ),
-                            component_name: timeline_result_worker.template_id.clone(),
+                            component_name: timeline_result_worker.component_name.clone(),
                         })
                     }
                     WitDerivedTimeLineNode::LessThanOrEqualTo(timeline_result_worker) => {
                         TypedTimeLineResultWorker::less_than_or_equal_to(TimeLineResultWorker {
                             worker_name: TimeLineWorkerName(
-                                timeline_result_worker.worker_id.clone(),
+                                timeline_result_worker.worker_name.clone(),
                             ),
-                            component_name: timeline_result_worker.template_id.clone(),
+                            component_name: timeline_result_worker.component_name.clone(),
                         })
                     }
                     WitDerivedTimeLineNode::And(timeline_result_worker) => {
                         TypedTimeLineResultWorker::and(TimeLineResultWorker {
                             worker_name: TimeLineWorkerName(
-                                timeline_result_worker.worker_id.clone(),
+                                timeline_result_worker.worker_name.clone(),
                             ),
-                            component_name: timeline_result_worker.template_id.clone(),
+                            component_name: timeline_result_worker.component_name.clone(),
                         })
                     }
                     WitDerivedTimeLineNode::Or(timeline_result_worker) => {
                         TypedTimeLineResultWorker::or(TimeLineResultWorker {
                             worker_name: TimeLineWorkerName(
-                                timeline_result_worker.worker_id.clone(),
+                                timeline_result_worker.worker_name.clone(),
                             ),
-                            component_name: timeline_result_worker.template_id.clone(),
+                            component_name: timeline_result_worker.component_name.clone(),
                         })
                     }
                     WitDerivedTimeLineNode::Not(timeline_result_worker) => {
                         TypedTimeLineResultWorker::not(TimeLineResultWorker {
                             worker_name: TimeLineWorkerName(
-                                timeline_result_worker.worker_id.clone(),
+                                timeline_result_worker.worker_name.clone(),
                             ),
-                            component_name: timeline_result_worker.template_id.clone(),
+                            component_name: timeline_result_worker.component_name.clone(),
                         })
                     }
                 }
@@ -127,29 +127,29 @@ impl Conversion for TypedTimeLineResultWorker {
             TypedTimeLineResultWorker::LeafTimeLine(leaf_timeline) => match leaf_timeline {
                 LeafTimeLineNode::TLHasExisted { time_line_worker } => {
                     let component_id = time_line_worker.component_name.clone();
-                    let worker_id = time_line_worker.worker_name.0.clone();
+                    let worker_name = time_line_worker.worker_name.0.clone();
                     WitTypedTimeLineResultWorker::LeafTimeline(WitLeafTimeLineNode::TlHasExisted(
-                        WitTimeLineResultWorker { template_id: component_id, worker_id },
+                        WitTimeLineResultWorker { component_name: component_id, worker_name },
                     ))
                 }
                 LeafTimeLineNode::TLHasExistedWithin { time_line_worker } => {
-                    let component_id = time_line_worker.component_name.clone();
-                    let worker_id = time_line_worker.worker_name.0.clone();
+                    let component_name = time_line_worker.component_name.clone();
+                    let worker_name = time_line_worker.worker_name.0.clone();
                     WitTypedTimeLineResultWorker::LeafTimeline(
                         WitLeafTimeLineNode::TlHasExistedWithin(WitTimeLineResultWorker {
-                            template_id: component_id,
-                            worker_id,
+                            component_name,
+                            worker_name,
                         }),
                     )
                 }
 
                 LeafTimeLineNode::TLEventToLatestState { time_line_worker } => {
-                    let component_id = time_line_worker.component_name.clone();
-                    let worker_id = time_line_worker.worker_name.0.clone();
+                    let component_name = time_line_worker.component_name.clone();
+                    let worker_name = time_line_worker.worker_name.0.clone();
                     WitTypedTimeLineResultWorker::LeafTimeline(
                         WitLeafTimeLineNode::TlLatestEventToState(WitTimeLineResultWorker {
-                            template_id: component_id,
-                            worker_id,
+                            component_name,
+                            worker_name,
                         }),
                     )
                 }
@@ -158,81 +158,81 @@ impl Conversion for TypedTimeLineResultWorker {
             TypedTimeLineResultWorker::DerivedTimeLine(derived_timeline) => {
                 match derived_timeline {
                     DerivedTimeLineNode::EqualTo { result_worker } => {
-                        let component_id = result_worker.component_name.clone();
-                        let worker_id = result_worker.worker_name.0.clone();
+                        let component_name = result_worker.component_name.clone();
+                        let worker_name = result_worker.worker_name.0.clone();
                         WitTypedTimeLineResultWorker::DerivedTimeline(
                             WitDerivedTimeLineNode::EqualTo(WitTimeLineResultWorker {
-                                template_id: component_id,
-                                worker_id,
+                                component_name,
+                                worker_name,
                             }),
                         )
                     }
                     DerivedTimeLineNode::GreaterThan { result_worker } => {
-                        let component_id = result_worker.component_name.clone();
-                        let worker_id = result_worker.worker_name.0.clone();
+                        let component_name = result_worker.component_name.clone();
+                        let worker_name = result_worker.worker_name.0.clone();
                         WitTypedTimeLineResultWorker::DerivedTimeline(
                             WitDerivedTimeLineNode::GreaterThan(WitTimeLineResultWorker {
-                                template_id: component_id,
-                                worker_id,
+                                component_name,
+                                worker_name,
                             }),
                         )
                     }
                     DerivedTimeLineNode::GreaterThanOrEqualTo { result_worker } => {
-                        let component_id = result_worker.component_name.clone();
-                        let worker_id = result_worker.worker_name.0.clone();
+                        let component_name = result_worker.component_name.clone();
+                        let worker_name = result_worker.worker_name.0.clone();
 
                         WitTypedTimeLineResultWorker::DerivedTimeline(
                             WitDerivedTimeLineNode::GreaterThanOrEqualTo(WitTimeLineResultWorker {
-                                template_id: component_id,
-                                worker_id,
+                                component_name,
+                                worker_name,
                             }),
                         )
                     }
                     DerivedTimeLineNode::LessThan { result_worker } => {
-                        let component_id = result_worker.component_name.clone();
-                        let worker_id = result_worker.worker_name.0.clone();
+                        let component_name = result_worker.component_name.clone();
+                        let worker_name = result_worker.worker_name.0.clone();
 
                         WitTypedTimeLineResultWorker::DerivedTimeline(
                             WitDerivedTimeLineNode::LessThan(WitTimeLineResultWorker {
-                                template_id: component_id,
-                                worker_id,
+                                component_name,
+                                worker_name,
                             }),
                         )
                     }
                     DerivedTimeLineNode::LessThanOrEqualTo { result_worker } => {
-                        let component_id = result_worker.component_name.clone();
-                        let worker_id = result_worker.worker_name.0.clone();
+                        let component_name = result_worker.component_name.clone();
+                        let worker_name = result_worker.worker_name.0.clone();
                         WitTypedTimeLineResultWorker::DerivedTimeline(
                             WitDerivedTimeLineNode::LessThanOrEqualTo(WitTimeLineResultWorker {
-                                template_id: component_id,
-                                worker_id,
+                                component_name,
+                                worker_name,
                             }),
                         )
                     }
 
                     DerivedTimeLineNode::And { result_worker } => {
-                        let component_id = result_worker.component_name.clone();
-                        let worker_id = result_worker.worker_name.0.clone();
+                        let component_name = result_worker.component_name.clone();
+                        let worker_name = result_worker.worker_name.0.clone();
                         WitTypedTimeLineResultWorker::DerivedTimeline(WitDerivedTimeLineNode::And(
-                            WitTimeLineResultWorker { template_id: component_id, worker_id },
+                            WitTimeLineResultWorker { component_name, worker_name },
                         ))
                     }
                     DerivedTimeLineNode::Or { result_worker } => {
-                        let component_id = result_worker.component_name.clone();
+                        let component_name = result_worker.component_name.clone();
                         let worker = result_worker.worker_name.0.clone();
 
                         WitTypedTimeLineResultWorker::DerivedTimeline(WitDerivedTimeLineNode::Or(
                             WitTimeLineResultWorker {
-                                template_id: component_id,
-                                worker_id: worker,
+                                component_name,
+                                worker_name: worker,
                             },
                         ))
                     }
                     DerivedTimeLineNode::Not { result_worker } => {
-                        let component_id = result_worker.component_name.clone();
-                        let worker_id = result_worker.worker_name.0.clone();
+                        let component_name = result_worker.component_name.clone();
+                        let worker_name = result_worker.worker_name.0.clone();
                         WitTypedTimeLineResultWorker::DerivedTimeline(WitDerivedTimeLineNode::Not(
-                            WitTimeLineResultWorker { template_id: component_id, worker_id },
+                            WitTimeLineResultWorker { component_name, worker_name },
                         ))
                     }
                 }
@@ -270,15 +270,15 @@ impl Conversion for TimeLineNodeWorkerInput {
 
     fn from_wit(input: Self::WitType) -> Self {
         TimeLineNodeWorkerInput {
-            worker_name_prefix: TimeLineWorkerIdPrefix(input.worker_id_prefix),
-            component_name: input.template_id,
+            worker_name_prefix: TimeLineWorkerIdPrefix(input.worker_name_prefix),
+            component_name: input.component_name,
         }
     }
 
     fn to_wit(&self) -> Self::WitType {
         WitTimeLineNodeWorker {
-            worker_id_prefix: self.worker_name_prefix.0.clone(),
-            template_id: self.component_name.clone(),
+            worker_name_prefix: self.worker_name_prefix.0.clone(),
+            component_name: self.component_name.clone(),
         }
     }
 }

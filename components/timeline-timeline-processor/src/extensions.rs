@@ -11,19 +11,19 @@ pub(crate) trait WorkerExt {
 }
 
 pub struct WorkerInfo {
-    worker_id: String,
-    component_id: String,
+    worker_name: String,
+    component_name: String,
 }
 
 impl WorkerInfo {
     pub fn get_uri(&self) -> Uri {
-        Uri { value: format!("urn:worker:{}/{}", self.component_id, self.worker_id) }
+        Uri { value: format!("urn:worker:{}/{}", self.component_name, self.worker_name) }
     }
 }
 
 impl WorkerExt for TimelineResultWorker {
     fn get_worker_info(&self) -> WorkerInfo {
-        WorkerInfo { worker_id: self.worker_id.clone(), component_id: self.template_id.clone() }
+        WorkerInfo { worker_name: self.worker_name.clone(), component_name: self.component_name.clone() }
     }
 }
 

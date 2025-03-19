@@ -44,11 +44,11 @@ interface api {
   // In future, we can allow users to simply use prefix
   // to aggregate workers (to reduce number of workers)
   record server {
-    worker-id-prefix: string,
-    template-id: string
+    worker-name-prefix: string,
+    component-name: string
   }
 
-  record worker-id {
+  record worker-name {
     name: string
   }
 
