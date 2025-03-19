@@ -1,0 +1,12 @@
+package timeline:driver;
+
+interface api {
+  use timeline:core-exports/api.{worker-details};
+
+  run: func() -> result<worker-details, string>;
+}
+
+world driver {
+  export api;
+}
+

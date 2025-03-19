@@ -3,8 +3,13 @@
 # Schema for vscode-yaml
 # yaml-language-server: $schema=https://schema.golem.cloud/app/golem/1.1.1/golem.schema.json
 
-includes:
-- common/golem.yaml
-- components/*/golem.yaml
-witDeps:
-- wit/deps
+components:
+  timeline:core:
+    template: rust
+dependencies:
+  timeline:core:
+   - type: wasm-rpc
+     target: timeline:event-processor
+   - type: wasm-rpc
+     target: timeline:timeline-processor
+

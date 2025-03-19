@@ -1,6 +1,6 @@
 # Golem Timeline
 
-[TimeLine Analytics](https://www.cidrdb.org/cidr2023/papers/p22-milner.pdf) backed by Durable Execution Engine provided by [Golem](https://learn.golem.cloud) 
+[TimeLine Analytics](https://www.cidrdb.org/cidr2023/papers/p22-milner.pdf) backed by Durable Execution Engine provided by [Golem](https://learn.golem.cloud)
 
 Watch the talk from Afsal at [LambdaConf:2024:Estes-Park:Colorado](https://www.youtube.com/watch?v=9WjUBOfgriY)
 
@@ -26,7 +26,7 @@ t ---------------------------------------------->
                 t1        t2          t3          t10
 ```
 
-### TimeLine DSL semantics   
+### TimeLine DSL semantics
 
 #### TLHas_Existed(play)
 
@@ -64,7 +64,7 @@ t1          t3
 t1------t2----------t7
 ```
 
-#### TL_duration_where: 
+#### TL_duration_where:
 
 ```
 
@@ -90,64 +90,15 @@ The summary of the above timeline is as follows:
 TL_HasExistedWithin(TL_DurationInCurState(TL_LatestEventToState(col("lat_long")), col(duration) < 10)
 ```
 
-## Project Setup
+#### Golem QuickStart
+https://learn.golem.cloud/docs/quickstart
 
-```sh
-# Install Rust
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-rustup install stable && rustup default stable
-rustup target add wasm32-wasip1
+This should allow you to run a golem server locally.
 
-# Install wasm tools 
-cargo install --force --locked  wasm-tools@1.210.0
+```shell
 
-# Install Cargo Component
-cargo install --force --locked cargo-component@0.13.2
+golem server run
 
-# Install golem-cli (OSS, for enterprise edition, golem-cloud-cli)
-cargo install golem-cli
-
-```
-
-## Initalise golem profile using golem-cli
-
-```
-
-golem-cli init
-
-```
-
-Select `golem` profile instead of cloud if you are using OSS.
-We will be using docker-compose in docker-examples folder in golem repository.
-Please refer to .env variables to understand the port configurations of worker-service and component-service
-
-## Quick Start to spin up Golem Timeline with Golem OSS
-
-#### Spin up golem and Pulsar streaming 
-
-```sh
-docker compose up -d
-```
-
-This wil deploy the OSS version of Golem , along with Pulsar (which will be used later). Pulsar sort of simulates
-the existence of events in streaming platforms employed in various companies.
-
-The docker version should correspond to 0.0.96 similar to CLI.
-It's good to download the latest docker-compose from golem website or repository, to avoid any issues.
-
-
-#### Build and deploy timeline project
-
-For building debug version of the components, use:
-```sh
-golem-cli app build
-golem-cli components add --non-interactive
-```
-
-For release version, use:
-```sh
-golem-cli app -b release build
-golem-cli components add --build-profile release --non-interactive
 ```
 
 ## Run a quick test
@@ -161,17 +112,9 @@ golem-cli components add --build-profile release --non-interactive
 This should give some output like this,
 
 ```bash
-...
-Core Composed: "16809bce-95df-4607-9697-55edb2dfea71"
-Raw Events: "17e0839e-9e9b-4e3f-bcd0-26de49aefa98"
-Driver: "0a3072c5-b7d7-489b-8ee8-c3add4fa093e"
-A dry run on deployed timeline...
-
-...
 Invocation results in WAVE format:
-- ok("cirr-le2s-playerStateChange")
-
-...
+  - ok({event-processor-workers: [leaf-timeline(tl-latest-event-to-state({worker-id: "cirr-le2s-playerStateChange", template-id: "timeline:event-processor"}))], result-worker: derived-timeline(equal-to({worker-id: "cirr-tleq-30e0f4b7-3c05-42da-8392-dcd0cc3b2096", template-id: "timeline:timeline-processor"}))})
+A sample invocation succeeded!
 ```
 
 ## Streaming with Pulsar
@@ -179,7 +122,7 @@ Invocation results in WAVE format:
 Now for demo purpose we use `pulsar` for streaming. We have a sample `producer` and a `feeder` (which reads the events and feeds it to the worker that handles the events directly).
 More explanations on different types of workers (processing events, processing timelines itself etc) will be given later.
 
-You can test this workflow by first building the producer and feeder, and run them separately. 
+You can test this workflow by first building the producer and feeder, and run them separately.
 
 ```bash
 cd sample-event-feeder
@@ -189,7 +132,7 @@ export COMPONENT_ID=17e0839e-9e9b-4e3f-bcd0-26de49aefa98
 RUST_LOG=DEBUG target/debug/sample-event-feeder
 ```
 
-Now the consumer is running, ready to accept the events produced by `sample-event-producer`. 
+Now the consumer is running, ready to accept the events produced by `sample-event-producer`.
 
 ```bash
 cd sample-event-producer
