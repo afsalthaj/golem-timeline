@@ -34,6 +34,9 @@ jobs:
             target/
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
+      - name: Install cargo-component
+        run: cargo install --force cargo-component@0.21.1
+
       - name: Install Golem CLI
         run: |
           curl -L -o golem https://github.com/golemcloud/golem/releases/download/v${GOLEM_VERSION}/golem-x86_64-unknown-linux-gnu
