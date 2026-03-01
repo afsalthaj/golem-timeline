@@ -1,0 +1,17 @@
+[package]
+name = "timeline_core"
+version = "0.0.1"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+path = "src/lib.rs"
+
+[dependencies]
+common-lib = { path = "../../common-rust/common-lib" }
+
+log = { workspace = true }
+golem-rust = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+wstd = { workspace = true }
