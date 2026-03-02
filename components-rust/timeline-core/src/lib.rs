@@ -1,5 +1,4 @@
 use golem_rust::{agent_definition, agent_implementation, Schema};
-use std::collections::HashMap;
 
 use common_lib::{
     EventColumnName, GolemEvent, GolemEventPredicate, GolemEventValue,
@@ -139,12 +138,30 @@ impl EventValue {
         }
     }
 
+    fn into_domain(self) -> GolemEventValue {
+        match self {
+            EventValue::StringValue(s) => GolemEventValue::StringValue(s),
+            EventValue::IntValue(i) => GolemEventValue::IntValue(i),
+            EventValue::FloatValue(f) => GolemEventValue::FloatValue(f),
+            EventValue::BoolValue(b) => GolemEventValue::BoolValue(b),
+        }
+    }
+
     fn from_domain(v: &GolemEventValue) -> Self {
         match v {
             GolemEventValue::StringValue(s) => EventValue::StringValue(s.clone()),
             GolemEventValue::IntValue(i) => EventValue::IntValue(*i),
             GolemEventValue::FloatValue(f) => EventValue::FloatValue(*f),
             GolemEventValue::BoolValue(b) => EventValue::BoolValue(*b),
+        }
+    }
+
+    fn from_domain_owned(v: GolemEventValue) -> Self {
+        match v {
+            GolemEventValue::StringValue(s) => EventValue::StringValue(s),
+            GolemEventValue::IntValue(i) => EventValue::IntValue(i),
+            GolemEventValue::FloatValue(f) => EventValue::FloatValue(f),
+            GolemEventValue::BoolValue(b) => EventValue::BoolValue(b),
         }
     }
 }
@@ -162,11 +179,10 @@ impl EventPredicate {
 }
 
 impl Event {
-    fn to_domain(&self) -> GolemEvent<GolemEventValue> {
-        let mut map = HashMap::new();
-        for (k, v) in &self.event {
-            map.insert(EventColumnName(k.clone()), v.to_domain());
-        }
+    fn into_domain(self) -> GolemEvent<GolemEventValue> {
+        let map = self.event.into_iter()
+            .map(|(k, v)| (EventColumnName(k), v.into_domain()))
+            .collect();
         GolemEvent { time: self.time, event: map }
     }
 }
@@ -387,13 +403,14 @@ impl EventProcessor for EventProcessorImpl {
 
     fn add_event(&mut self, event: Event) -> Result<String, String> {
         let op = self.operation.as_ref().ok_or("Not initialized")?;
-        let domain_event = event.to_domain();
+        let time = event.time;
+        let mut domain_event = event.into_domain();
 
         match op {
             LeafOperation::LatestEventToState(col_name) => {
                 let col = EventColumnName(col_name.clone());
-                if let Some(val) = domain_event.event.get(&col) {
-                    self.latest_event_state.add_state_dynamic_info(event.time, val.clone());
+                if let Some(val) = domain_event.event.remove(&col) {
+                    self.latest_event_state.add_state_dynamic_info(time, val);
                 }
             }
             LeafOperation::TlHasExisted(pred) => {
@@ -403,9 +420,9 @@ impl EventProcessor for EventProcessorImpl {
                 {
                     let result = predicate.evaluate(&domain_event);
                     if result {
-                        self.tl_has_existed_state.add_state_dynamic_info(event.time, true);
+                        self.tl_has_existed_state.add_state_dynamic_info(time, true);
                     } else if !self.tl_has_existed_state.future_is(false) {
-                        self.tl_has_existed_state.add_state_dynamic_info(event.time, false);
+                        self.tl_has_existed_state.add_state_dynamic_info(time, false);
                     }
                 }
             }
@@ -416,10 +433,10 @@ impl EventProcessor for EventProcessorImpl {
                 {
                     let result = predicate.evaluate(&domain_event);
                     if result {
-                        self.tl_has_existed_within_state.add_state_dynamic_info(event.time, true);
-                        self.tl_has_existed_within_state.add_state_dynamic_info(event.time + within, false);
+                        self.tl_has_existed_within_state.add_state_dynamic_info(time, true);
+                        self.tl_has_existed_within_state.add_state_dynamic_info(time + within, false);
                     } else if !self.tl_has_existed_within_state.future_is(false) {
-                        self.tl_has_existed_within_state.add_state_dynamic_info(event.time, false);
+                        self.tl_has_existed_within_state.add_state_dynamic_info(time, false);
                     }
                 }
             }
@@ -433,16 +450,22 @@ impl EventProcessor for EventProcessorImpl {
 
         match op {
             LeafOperation::LatestEventToState(_) => {
-                let state = self.latest_event_state.get_state_at(t1);
-                Ok(state_to_result(state.map(|s| (s.t1, s.t2, EventValue::from_domain(&s.value)))))
+                Ok(state_to_result(
+                    self.latest_event_state.get_state_at(t1)
+                        .map(|s| (s.t1, s.t2, EventValue::from_domain(&s.value)))
+                ))
             }
             LeafOperation::TlHasExisted(_) => {
-                let state = self.tl_has_existed_state.get_state_at(t1);
-                Ok(state_to_result(state.map(|s| (s.t1, s.t2, EventValue::BoolValue(s.value)))))
+                Ok(state_to_result(
+                    self.tl_has_existed_state.get_state_at(t1)
+                        .map(|s| (s.t1, s.t2, EventValue::BoolValue(s.value)))
+                ))
             }
             LeafOperation::TlHasExistedWithin(_, _) => {
-                let state = self.tl_has_existed_within_state.get_state_at(t1);
-                Ok(state_to_result(state.map(|s| (s.t1, s.t2, EventValue::BoolValue(s.value)))))
+                Ok(state_to_result(
+                    self.tl_has_existed_within_state.get_state_at(t1)
+                        .map(|s| (s.t1, s.t2, EventValue::BoolValue(s.value)))
+                ))
             }
         }
     }
@@ -498,7 +521,7 @@ impl TimelineProcessor for TimelineProcessorImpl {
                 let child_name = self.children.first().ok_or("No child worker")?.worker_name.clone();
                 let child = EventProcessorClient::get(child_name);
                 let child_result = child.get_leaf_result(t1).await?;
-                let domain_tl = timeline_result_to_domain(&child_result);
+                let domain_tl = timeline_result_to_domain(child_result);
                 let constant = value.to_domain();
                 let bool_tl = match compare_op {
                     CompareOp::EqualTo => domain_tl.equal_to(constant),
@@ -507,20 +530,20 @@ impl TimelineProcessor for TimelineProcessorImpl {
                     CompareOp::LessThan => domain_tl.less_than(constant),
                     CompareOp::LessThanOrEqual => domain_tl.less_than_or_equal_to(constant),
                 };
-                Ok(domain_bool_tl_to_result(&bool_tl))
+                Ok(domain_bool_tl_to_result(bool_tl))
             }
 
             DerivedOperation::Negation => {
                 let child_name = self.children.first().ok_or("No child worker")?.worker_name.clone();
                 let child = EventProcessorClient::get(child_name);
                 let child_result = child.get_leaf_result(t1).await?;
-                let domain_tl = timeline_result_to_domain(&child_result);
+                let domain_tl = timeline_result_to_domain(child_result);
                 let negated = domain_tl.map_fallible(|v| {
                     v.get_bool()
                         .map(|b| GolemEventValue::BoolValue(!b))
                         .ok_or("Not a boolean timeline".to_string())
                 })?;
-                Ok(domain_tl_to_result(&negated))
+                Ok(domain_tl_to_result(negated))
             }
 
             DerivedOperation::And => {
@@ -529,10 +552,10 @@ impl TimelineProcessor for TimelineProcessorImpl {
                 let right_client = EventProcessorClient::get(right_name);
                 let left_result = left_client.get_leaf_result(t1).await?;
                 let right_result = right_client.get_leaf_result(t1).await?;
-                let left_tl = timeline_result_to_bool_domain(&left_result)?;
-                let right_tl = timeline_result_to_bool_domain(&right_result)?;
+                let left_tl = timeline_result_to_bool_domain(left_result)?;
+                let right_tl = timeline_result_to_bool_domain(right_result)?;
                 let result = left_tl.and(right_tl);
-                Ok(domain_bool_tl_to_result(&result))
+                Ok(domain_bool_tl_to_result(result))
             }
 
             DerivedOperation::Or => {
@@ -541,10 +564,10 @@ impl TimelineProcessor for TimelineProcessorImpl {
                 let right_client = EventProcessorClient::get(right_name);
                 let left_result = left_client.get_leaf_result(t1).await?;
                 let right_result = right_client.get_leaf_result(t1).await?;
-                let left_tl = timeline_result_to_bool_domain(&left_result)?;
-                let right_tl = timeline_result_to_bool_domain(&right_result)?;
+                let left_tl = timeline_result_to_bool_domain(left_result)?;
+                let right_tl = timeline_result_to_bool_domain(right_result)?;
                 let result = left_tl.or(right_tl);
-                Ok(domain_bool_tl_to_result(&result))
+                Ok(domain_bool_tl_to_result(result))
             }
 
             DerivedOperation::DurationWhere | DerivedOperation::DurationInCurState => {
@@ -561,27 +584,27 @@ fn two_children(children: &[ChildWorkerRef]) -> Result<(String, String), String>
     Ok((children[0].worker_name.clone(), children[1].worker_name.clone()))
 }
 
-fn timeline_result_to_domain(result: &TimelineResult) -> StateDynamicsTimeLine<GolemEventValue> {
+fn timeline_result_to_domain(result: TimelineResult) -> StateDynamicsTimeLine<GolemEventValue> {
     let mut tl = StateDynamicsTimeLine::default();
-    for point in &result.results {
-        tl.add_state_dynamic_info(point.t1, point.value.to_domain());
+    for point in result.results {
+        tl.add_state_dynamic_info(point.t1, point.value.into_domain());
     }
     tl
 }
 
-fn timeline_result_to_bool_domain(result: &TimelineResult) -> Result<StateDynamicsTimeLine<bool>, String> {
+fn timeline_result_to_bool_domain(result: TimelineResult) -> Result<StateDynamicsTimeLine<bool>, String> {
     let mut tl = StateDynamicsTimeLine::default();
-    for point in &result.results {
-        let b = point.value.to_domain().get_bool()
+    for point in result.results {
+        let b = point.value.into_domain().get_bool()
             .ok_or("Expected boolean timeline value")?;
         tl.add_state_dynamic_info(point.t1, b);
     }
     Ok(tl)
 }
 
-fn domain_bool_tl_to_result(tl: &StateDynamicsTimeLine<bool>) -> TimelineResult {
+fn domain_bool_tl_to_result(tl: StateDynamicsTimeLine<bool>) -> TimelineResult {
     TimelineResult {
-        results: tl.points.iter().map(|(_, p)| TimelineResultPoint {
+        results: tl.points.into_values().map(|p| TimelineResultPoint {
             t1: p.t1,
             t2: p.t2,
             value: EventValue::BoolValue(p.value),
@@ -589,12 +612,12 @@ fn domain_bool_tl_to_result(tl: &StateDynamicsTimeLine<bool>) -> TimelineResult 
     }
 }
 
-fn domain_tl_to_result(tl: &StateDynamicsTimeLine<GolemEventValue>) -> TimelineResult {
+fn domain_tl_to_result(tl: StateDynamicsTimeLine<GolemEventValue>) -> TimelineResult {
     TimelineResult {
-        results: tl.points.iter().map(|(_, p)| TimelineResultPoint {
+        results: tl.points.into_values().map(|p| TimelineResultPoint {
             t1: p.t1,
             t2: p.t2,
-            value: EventValue::from_domain(&p.value),
+            value: EventValue::from_domain_owned(p.value),
         }).collect(),
     }
 }
