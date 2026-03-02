@@ -23,6 +23,10 @@ impl<'t, T: Clone> StateDynamicsTimeLinePoint<ZipResult<'t, T>> {
     where
         F: Fn(&T, &T) -> T,
     {
-        StateDynamicsTimeLinePoint { t1: self.t1, t2: self.t2, value: self.value.merge(&f) }
+        StateDynamicsTimeLinePoint {
+            t1: self.t1,
+            t2: self.t2,
+            value: self.value.merge(&f),
+        }
     }
 }
