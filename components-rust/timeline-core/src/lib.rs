@@ -122,6 +122,7 @@ pub enum DerivedOperation {
 #[derive(Clone, Debug, Schema)]
 pub struct ChildWorkerRef {
     pub worker_name: String,
+    pub is_leaf: bool,
 }
 
 // ============================================================================
@@ -518,9 +519,8 @@ impl TimelineProcessor for TimelineProcessorImpl {
 
         match op {
             DerivedOperation::Comparison(compare_op, value) => {
-                let child_name = self.children.first().ok_or("No child worker")?.worker_name.clone();
-                let child = EventProcessorClient::get(child_name);
-                let child_result = child.get_leaf_result(t1).await?;
+                let child_ref = self.children.first().ok_or("No child worker")?;
+                let child_result = fetch_child_result(child_ref, t1).await?;
                 let domain_tl = timeline_result_to_domain(child_result);
                 let constant = value.to_domain();
                 let bool_tl = match compare_op {
@@ -534,9 +534,8 @@ impl TimelineProcessor for TimelineProcessorImpl {
             }
 
             DerivedOperation::Negation => {
-                let child_name = self.children.first().ok_or("No child worker")?.worker_name.clone();
-                let child = EventProcessorClient::get(child_name);
-                let child_result = child.get_leaf_result(t1).await?;
+                let child_ref = self.children.first().ok_or("No child worker")?;
+                let child_result = fetch_child_result(child_ref, t1).await?;
                 let domain_tl = timeline_result_to_domain(child_result);
                 let negated = domain_tl.map_fallible(|v| {
                     v.get_bool()
@@ -547,11 +546,9 @@ impl TimelineProcessor for TimelineProcessorImpl {
             }
 
             DerivedOperation::And => {
-                let (left_name, right_name) = two_children(&self.children)?;
-                let left_client = EventProcessorClient::get(left_name);
-                let right_client = EventProcessorClient::get(right_name);
-                let left_result = left_client.get_leaf_result(t1).await?;
-                let right_result = right_client.get_leaf_result(t1).await?;
+                let (left_ref, right_ref) = two_children(&self.children)?;
+                let left_result = fetch_child_result(left_ref, t1).await?;
+                let right_result = fetch_child_result(right_ref, t1).await?;
                 let left_tl = timeline_result_to_bool_domain(left_result)?;
                 let right_tl = timeline_result_to_bool_domain(right_result)?;
                 let result = left_tl.and(right_tl);
@@ -559,11 +556,9 @@ impl TimelineProcessor for TimelineProcessorImpl {
             }
 
             DerivedOperation::Or => {
-                let (left_name, right_name) = two_children(&self.children)?;
-                let left_client = EventProcessorClient::get(left_name);
-                let right_client = EventProcessorClient::get(right_name);
-                let left_result = left_client.get_leaf_result(t1).await?;
-                let right_result = right_client.get_leaf_result(t1).await?;
+                let (left_ref, right_ref) = two_children(&self.children)?;
+                let left_result = fetch_child_result(left_ref, t1).await?;
+                let right_result = fetch_child_result(right_ref, t1).await?;
                 let left_tl = timeline_result_to_bool_domain(left_result)?;
                 let right_tl = timeline_result_to_bool_domain(right_result)?;
                 let result = left_tl.or(right_tl);
@@ -577,11 +572,21 @@ impl TimelineProcessor for TimelineProcessorImpl {
     }
 }
 
-fn two_children(children: &[ChildWorkerRef]) -> Result<(String, String), String> {
+fn two_children(children: &[ChildWorkerRef]) -> Result<(&ChildWorkerRef, &ChildWorkerRef), String> {
     if children.len() < 2 {
         return Err("Need two child workers".to_string());
     }
-    Ok((children[0].worker_name.clone(), children[1].worker_name.clone()))
+    Ok((&children[0], &children[1]))
+}
+
+async fn fetch_child_result(child: &ChildWorkerRef, t1: u64) -> Result<TimelineResult, String> {
+    if child.is_leaf {
+        let client = EventProcessorClient::get(child.worker_name.clone());
+        client.get_leaf_result(t1).await.map_err(|e| e.to_string())
+    } else {
+        let client = TimelineProcessorClient::get(child.worker_name.clone());
+        client.get_derived_result(t1).await.map_err(|e| e.to_string())
+    }
 }
 
 fn timeline_result_to_domain(result: TimelineResult) -> StateDynamicsTimeLine<GolemEventValue> {
@@ -646,13 +651,14 @@ impl TimelineDriver for TimelineDriverImpl {
 
     async fn initialize_timeline(&self, timeline: TimelineOpGraph) -> Result<String, String> {
         let recursive_op = timeline.to_recursive();
-        let result_worker = self.setup_node(&recursive_op, &mut 0).await?;
+        let (result_worker, _) = self.setup_node(&recursive_op, &mut 0).await?;
         Ok(format!("Timeline initialized. Result worker: {}", result_worker))
     }
 }
 
 impl TimelineDriverImpl {
-    fn setup_node<'a>(&'a self, op: &'a common_lib::TimeLineOp, counter: &'a mut u64) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<String, String>> + 'a>> {
+    /// Returns `(worker_name, is_leaf)`.
+    fn setup_node<'a>(&'a self, op: &'a common_lib::TimeLineOp, counter: &'a mut u64) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<(String, bool), String>> + 'a>> {
         Box::pin(async move {
         *counter += 1;
         let worker_name = format!("{}-node-{}", self.name, counter);
@@ -661,115 +667,115 @@ impl TimelineDriverImpl {
             common_lib::TimeLineOp::TlLatestEventToState(col) => {
                 let mut ep = EventProcessorClient::get(worker_name.clone());
                 ep.initialize_leaf(LeafOperation::LatestEventToState(col.0.clone())).await;
-                Ok(worker_name)
+                Ok((worker_name, true))
             }
             common_lib::TimeLineOp::TlHasExisted(pred) => {
                 let mut ep = EventProcessorClient::get(worker_name.clone());
                 ep.initialize_leaf(LeafOperation::TlHasExisted(predicate_to_api(pred))).await;
-                Ok(worker_name)
+                Ok((worker_name, true))
             }
             common_lib::TimeLineOp::TlHasExistedWithin(pred, dur) => {
                 let mut ep = EventProcessorClient::get(worker_name.clone());
                 ep.initialize_leaf(LeafOperation::TlHasExistedWithin(predicate_to_api(pred), *dur)).await;
-                Ok(worker_name)
+                Ok((worker_name, true))
             }
             common_lib::TimeLineOp::EqualTo(child, val) => {
-                let child_worker = self.setup_node(child, counter).await?;
+                let (child_worker, child_is_leaf) = self.setup_node(child, counter).await?;
                 let mut tp = TimelineProcessorClient::get(worker_name.clone());
                 tp.initialize_derived(
                     DerivedOperation::Comparison(CompareOp::EqualTo, EventValue::from_domain(val)),
-                    vec![ChildWorkerRef { worker_name: child_worker }],
+                    vec![ChildWorkerRef { worker_name: child_worker, is_leaf: child_is_leaf }],
                 ).await;
-                Ok(worker_name)
+                Ok((worker_name, false))
             }
             common_lib::TimeLineOp::GreaterThan(child, val) => {
-                let child_worker = self.setup_node(child, counter).await?;
+                let (child_worker, child_is_leaf) = self.setup_node(child, counter).await?;
                 let mut tp = TimelineProcessorClient::get(worker_name.clone());
                 tp.initialize_derived(
                     DerivedOperation::Comparison(CompareOp::GreaterThan, EventValue::from_domain(val)),
-                    vec![ChildWorkerRef { worker_name: child_worker }],
+                    vec![ChildWorkerRef { worker_name: child_worker, is_leaf: child_is_leaf }],
                 ).await;
-                Ok(worker_name)
+                Ok((worker_name, false))
             }
             common_lib::TimeLineOp::GreaterThanOrEqual(child, val) => {
-                let child_worker = self.setup_node(child, counter).await?;
+                let (child_worker, child_is_leaf) = self.setup_node(child, counter).await?;
                 let mut tp = TimelineProcessorClient::get(worker_name.clone());
                 tp.initialize_derived(
                     DerivedOperation::Comparison(CompareOp::GreaterThanOrEqual, EventValue::from_domain(val)),
-                    vec![ChildWorkerRef { worker_name: child_worker }],
+                    vec![ChildWorkerRef { worker_name: child_worker, is_leaf: child_is_leaf }],
                 ).await;
-                Ok(worker_name)
+                Ok((worker_name, false))
             }
             common_lib::TimeLineOp::LessThan(child, val) => {
-                let child_worker = self.setup_node(child, counter).await?;
+                let (child_worker, child_is_leaf) = self.setup_node(child, counter).await?;
                 let mut tp = TimelineProcessorClient::get(worker_name.clone());
                 tp.initialize_derived(
                     DerivedOperation::Comparison(CompareOp::LessThan, EventValue::from_domain(val)),
-                    vec![ChildWorkerRef { worker_name: child_worker }],
+                    vec![ChildWorkerRef { worker_name: child_worker, is_leaf: child_is_leaf }],
                 ).await;
-                Ok(worker_name)
+                Ok((worker_name, false))
             }
             common_lib::TimeLineOp::LessThanOrEqual(child, val) => {
-                let child_worker = self.setup_node(child, counter).await?;
+                let (child_worker, child_is_leaf) = self.setup_node(child, counter).await?;
                 let mut tp = TimelineProcessorClient::get(worker_name.clone());
                 tp.initialize_derived(
                     DerivedOperation::Comparison(CompareOp::LessThanOrEqual, EventValue::from_domain(val)),
-                    vec![ChildWorkerRef { worker_name: child_worker }],
+                    vec![ChildWorkerRef { worker_name: child_worker, is_leaf: child_is_leaf }],
                 ).await;
-                Ok(worker_name)
+                Ok((worker_name, false))
             }
             common_lib::TimeLineOp::Not(child) => {
-                let child_worker = self.setup_node(child, counter).await?;
+                let (child_worker, child_is_leaf) = self.setup_node(child, counter).await?;
                 let mut tp = TimelineProcessorClient::get(worker_name.clone());
                 tp.initialize_derived(
                     DerivedOperation::Negation,
-                    vec![ChildWorkerRef { worker_name: child_worker }],
+                    vec![ChildWorkerRef { worker_name: child_worker, is_leaf: child_is_leaf }],
                 ).await;
-                Ok(worker_name)
+                Ok((worker_name, false))
             }
             common_lib::TimeLineOp::And(left, right) => {
-                let left_worker = self.setup_node(left, counter).await?;
-                let right_worker = self.setup_node(right, counter).await?;
+                let (left_worker, left_is_leaf) = self.setup_node(left, counter).await?;
+                let (right_worker, right_is_leaf) = self.setup_node(right, counter).await?;
                 let mut tp = TimelineProcessorClient::get(worker_name.clone());
                 tp.initialize_derived(
                     DerivedOperation::And,
                     vec![
-                        ChildWorkerRef { worker_name: left_worker },
-                        ChildWorkerRef { worker_name: right_worker },
+                        ChildWorkerRef { worker_name: left_worker, is_leaf: left_is_leaf },
+                        ChildWorkerRef { worker_name: right_worker, is_leaf: right_is_leaf },
                     ],
                 ).await;
-                Ok(worker_name)
+                Ok((worker_name, false))
             }
             common_lib::TimeLineOp::Or(left, right) => {
-                let left_worker = self.setup_node(left, counter).await?;
-                let right_worker = self.setup_node(right, counter).await?;
+                let (left_worker, left_is_leaf) = self.setup_node(left, counter).await?;
+                let (right_worker, right_is_leaf) = self.setup_node(right, counter).await?;
                 let mut tp = TimelineProcessorClient::get(worker_name.clone());
                 tp.initialize_derived(
                     DerivedOperation::Or,
                     vec![
-                        ChildWorkerRef { worker_name: left_worker },
-                        ChildWorkerRef { worker_name: right_worker },
+                        ChildWorkerRef { worker_name: left_worker, is_leaf: left_is_leaf },
+                        ChildWorkerRef { worker_name: right_worker, is_leaf: right_is_leaf },
                     ],
                 ).await;
-                Ok(worker_name)
+                Ok((worker_name, false))
             }
             common_lib::TimeLineOp::TlDurationWhere(child) => {
-                let child_worker = self.setup_node(child, counter).await?;
+                let (child_worker, child_is_leaf) = self.setup_node(child, counter).await?;
                 let mut tp = TimelineProcessorClient::get(worker_name.clone());
                 tp.initialize_derived(
                     DerivedOperation::DurationWhere,
-                    vec![ChildWorkerRef { worker_name: child_worker }],
+                    vec![ChildWorkerRef { worker_name: child_worker, is_leaf: child_is_leaf }],
                 ).await;
-                Ok(worker_name)
+                Ok((worker_name, false))
             }
             common_lib::TimeLineOp::TlDurationInCurState(child) => {
-                let child_worker = self.setup_node(child, counter).await?;
+                let (child_worker, child_is_leaf) = self.setup_node(child, counter).await?;
                 let mut tp = TimelineProcessorClient::get(worker_name.clone());
                 tp.initialize_derived(
                     DerivedOperation::DurationInCurState,
-                    vec![ChildWorkerRef { worker_name: child_worker }],
+                    vec![ChildWorkerRef { worker_name: child_worker, is_leaf: child_is_leaf }],
                 ).await;
-                Ok(worker_name)
+                Ok((worker_name, false))
             }
         }
         })
