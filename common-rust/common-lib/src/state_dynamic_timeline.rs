@@ -42,8 +42,8 @@ impl<T: Clone + PartialEq> StateDynamicsTimeLine<T> {
         StateDynamicsTimeLine { points }
     }
 
-    pub fn last(&self) -> Option<StateDynamicsTimeLinePoint<T>> {
-        self.points.last_key_value().map(|x| x.1.clone())
+    pub fn last(&self) -> Option<&StateDynamicsTimeLinePoint<T>> {
+        self.points.last_key_value().map(|(_, v)| v)
     }
 
     pub fn last_value_is(&self, value: T) -> bool {
@@ -58,8 +58,8 @@ impl<T: Clone + PartialEq> StateDynamicsTimeLine<T> {
         self.points.is_empty()
     }
 
-    pub fn get_state_at(&self, t: u64) -> Option<StateDynamicsTimeLinePoint<T>> {
-        self.points.range(..t).next_back().map(|x| x.1.clone())
+    pub fn get_state_at(&self, t: u64) -> Option<&StateDynamicsTimeLinePoint<T>> {
+        self.points.range(..t).next_back().map(|(_, v)| v)
     }
 
     pub fn boundary(&self, t: u64) -> Option<u64> {
@@ -89,106 +89,70 @@ impl<T: Clone + PartialEq> StateDynamicsTimeLine<T> {
 
     // Aka building tl_latest_event_to_state
     pub fn add_state_dynamic_info(&mut self, new_time: u64, value: T) {
-        let binding = self.points.clone();
-        let previous_point = binding.range(..new_time).next_back();
+        // Extract only the needed scalar data from neighbors (avoids cloning the entire BTreeMap).
+        // For prev: we need t1, t2, and the value (cloned once).
+        // For next: we only need t1, t2, and whether the value equals the new one.
+        let prev = self.points.range(..new_time).next_back()
+            .map(|(_, p)| (p.t1, p.t2, p.value.clone()));
+        let next = self.points.range(new_time..).next()
+            .map(|(_, p)| (p.t1, p.t2, p.value == value));
 
-        let next_point = binding.range(new_time..).next();
-
-        match (previous_point, next_point) {
+        match (prev, next) {
             // The new time is in between timelines.
-            (Some((_, left)), Some((_, _))) => {
-                if left.value != value {
-                    let l = &left.t1;
-                    let r = new_time;
-                    let updated_left: StateDynamicsTimeLinePoint<T> = StateDynamicsTimeLinePoint {
-                        t1: *l,
-                        t2: Some(r),
-                        value: left.value.clone(),
-                    };
-
-                    let new_point = StateDynamicsTimeLinePoint { t1: r, t2: left.t2, value };
-
-                    self.points.insert(*l, updated_left);
-                    self.points.insert(r, new_point);
+            (Some((left_t1, left_t2, left_val)), Some(_)) => {
+                if left_val != value {
+                    self.points.insert(left_t1, StateDynamicsTimeLinePoint {
+                        t1: left_t1, t2: Some(new_time), value: left_val,
+                    });
+                    self.points.insert(new_time, StateDynamicsTimeLinePoint {
+                        t1: new_time, t2: left_t2, value,
+                    });
                 }
             }
 
             // the new event falls on the right side of the existing time line
-            (Some((_, left)), None) => {
-                // For some reason we end up having a finite timeline
-                // && a new event came in that tells us the same value
-                // we correct the timeline by saying the future holds the same value
-                if left.value == value && left.t2.is_some() && left.t2.unwrap() < new_time {
-                    let updated_left = StateDynamicsTimeLinePoint {
-                        t1: left.t1,
-                        t2: None,
-                        value: left.value.clone(),
-                    };
-
-                    self.points.insert(left.t1, updated_left);
-                } else {
-                    // If values are different, then we break the future into two
-                    // i.e, from left.t1 to new_time, the value is left.value
-                    // from new_time to left.t2, the value is the new value.
-                    // here we say its future if the right is `None`, or the new time stamp is less
-                    // than the existing right boundary
-                    if left.value != value {
-                        if left.t2.is_none() || left.t2.unwrap() > new_time {
-                            let l = &left.t1;
-                            let r = new_time;
-                            let updated_left = StateDynamicsTimeLinePoint {
-                                t1: *l,
-                                t2: Some(r),
-                                value: left.value.clone(),
-                            };
-
-                            let new_point =
-                                StateDynamicsTimeLinePoint { t1: r, t2: left.t2, value };
-
-                            self.points.insert(*l, updated_left);
-                            self.points.insert(r, new_point);
-                        } else if left.t2.is_some() || left.t2.unwrap() < new_time {
-                            let updated_left = StateDynamicsTimeLinePoint {
-                                t1: left.t1,
-                                t2: Some(new_time),
-                                value: left.value.clone(),
-                            };
-
-                            let new_point =
-                                StateDynamicsTimeLinePoint { t1: new_time, t2: None, value };
-
-                            self.points.insert(left.t1, updated_left);
-                            self.points.insert(new_time, new_point);
-                        }
+            (Some((left_t1, left_t2, left_val)), None) => {
+                if left_val == value && left_t2.is_some() && left_t2.unwrap() < new_time {
+                    self.points.insert(left_t1, StateDynamicsTimeLinePoint {
+                        t1: left_t1, t2: None, value: left_val,
+                    });
+                } else if left_val != value {
+                    if left_t2.is_none() || left_t2.unwrap() > new_time {
+                        self.points.insert(left_t1, StateDynamicsTimeLinePoint {
+                            t1: left_t1, t2: Some(new_time), value: left_val,
+                        });
+                        self.points.insert(new_time, StateDynamicsTimeLinePoint {
+                            t1: new_time, t2: left_t2, value,
+                        });
+                    } else if left_t2.is_some() || left_t2.unwrap() < new_time {
+                        self.points.insert(left_t1, StateDynamicsTimeLinePoint {
+                            t1: left_t1, t2: Some(new_time), value: left_val,
+                        });
+                        self.points.insert(new_time, StateDynamicsTimeLinePoint {
+                            t1: new_time, t2: None, value,
+                        });
                     }
                 }
             }
 
             // the new event falls on the left side of the existing timeline
-            (None, Some((_, right))) => {
-                // this indicates we have a timeline that goes in graph with the very first point
-                if right.value == value {
-                    let updated_right = StateDynamicsTimeLinePoint {
-                        t1: new_time,
-                        t2: right.t2,
-                        value: right.value.clone(),
-                    };
-
-                    self.points.remove_entry(&right.t1);
-                    self.points.insert(new_time, updated_right);
+            (None, Some((right_t1, right_t2, values_equal))) => {
+                if values_equal {
+                    self.points.remove(&right_t1);
+                    self.points.insert(new_time, StateDynamicsTimeLinePoint {
+                        t1: new_time, t2: right_t2, value,
+                    });
                 } else {
-                    let new_point =
-                        StateDynamicsTimeLinePoint { t1: new_time, t2: Some(right.t1), value };
-                    self.points.insert(new_time, new_point);
+                    self.points.insert(new_time, StateDynamicsTimeLinePoint {
+                        t1: new_time, t2: Some(right_t1), value,
+                    });
                 }
             }
 
-            // Both left and right exist
             (None, None) => {
-                let l = new_time;
-                let r = None;
-                let new_point = StateDynamicsTimeLinePoint { t1: l, t2: r, value };
-                self.points.insert(l, new_point);
+                self.points.insert(new_time, StateDynamicsTimeLinePoint {
+                    t1: new_time, t2: None, value,
+                });
             }
         }
     }
@@ -202,14 +166,7 @@ impl<T> Default for StateDynamicsTimeLine<T> {
 
 impl StateDynamicsTimeLine<bool> {
     pub fn negate(&self) -> StateDynamicsTimeLine<bool> {
-        let mut negated_timeline = StateDynamicsTimeLine::default();
-
-        for point in &self.points {
-            let negated_value = !point.1.value;
-            negated_timeline.add_state_dynamic_info(*point.0, negated_value);
-        }
-
-        negated_timeline
+        self.map(|v| !v)
     }
 
     pub fn tl_duration_where(&self) -> EventTimeLine<u64> {
@@ -318,58 +275,23 @@ impl<T: Debug + Clone + PartialOrd> StateDynamicsTimeLine<T> {
     }
 
     pub fn equal_to(&self, constant: T) -> StateDynamicsTimeLine<bool> {
-        let mut state_dynamics_time_line = StateDynamicsTimeLine::default();
-
-        for point in &self.points {
-            let is_equal = point.1.value == constant;
-            state_dynamics_time_line.add_state_dynamic_info(*point.0, is_equal);
-        }
-
-        state_dynamics_time_line
+        self.map(|v| *v == constant)
     }
 
     pub fn greater_than(&self, constant: T) -> StateDynamicsTimeLine<bool> {
-        let mut state_dynamics_time_line = StateDynamicsTimeLine::default();
-
-        for point in &self.points {
-            let is_greater_than = point.1.value > constant;
-            state_dynamics_time_line.add_state_dynamic_info(*point.0, is_greater_than);
-        }
-
-        state_dynamics_time_line
+        self.map(|v| *v > constant)
     }
 
     pub fn greater_than_or_equal_to(&self, constant: T) -> StateDynamicsTimeLine<bool> {
-        let mut state_dynamics_time_line = StateDynamicsTimeLine::default();
-
-        for point in &self.points {
-            let is_greater_than_or_equal = point.1.value >= constant;
-            state_dynamics_time_line.add_state_dynamic_info(*point.0, is_greater_than_or_equal);
-        }
-
-        state_dynamics_time_line
+        self.map(|v| *v >= constant)
     }
 
     pub fn less_than(&self, constant: T) -> StateDynamicsTimeLine<bool> {
-        let mut state_dynamics_time_line = StateDynamicsTimeLine::default();
-
-        for point in &self.points {
-            let is_less_than = point.1.value < constant;
-            state_dynamics_time_line.add_state_dynamic_info(*point.0, is_less_than);
-        }
-
-        state_dynamics_time_line
+        self.map(|v| *v < constant)
     }
 
     pub fn less_than_or_equal_to(&self, constant: T) -> StateDynamicsTimeLine<bool> {
-        let mut state_dynamics_time_line = StateDynamicsTimeLine::default();
-
-        for point in &self.points {
-            let is_less_than_or_equal = point.1.value <= constant;
-            state_dynamics_time_line.add_state_dynamic_info(*point.0, is_less_than_or_equal);
-        }
-
-        state_dynamics_time_line
+        self.map(|v| *v <= constant)
     }
 
     pub fn zip_with<F>(&self, other: &StateDynamicsTimeLine<T>, f: F) -> StateDynamicsTimeLine<T>
@@ -379,26 +301,27 @@ impl<T: Debug + Clone + PartialOrd> StateDynamicsTimeLine<T> {
         let mut flattened_time_line_points: BTreeMap<u64, StateDynamicsTimeLinePoint<T>> =
             BTreeMap::new();
 
-        let mut self_cloned = self.clone();
-        let mut right_cloned = other.clone();
+        let AlignedStateDynamicsTimeLine {
+            time_line1: aligned_left,
+            time_line2: aligned_right,
+            removed_points_timeline1,
+            removed_points_timeline2,
+        } = AlignedStateDynamicsTimeLine::from_left_and_right(self.clone(), other.clone());
 
-        let aligned_time_lines =
-            AlignedStateDynamicsTimeLine::from_left_and_right(&mut self_cloned, &mut right_cloned);
-
-        let mut self_iter = aligned_time_lines.time_line1.points.iter().peekable();
-        let mut other_iter = aligned_time_lines.time_line2.points.iter().peekable();
-
-        if let Some(removed_time_lines) = &aligned_time_lines.removed_points_timeline1 {
-            for point in &removed_time_lines.points {
-                flattened_time_line_points.insert(*point.0, point.1.clone());
+        if let Some(removed) = removed_points_timeline1 {
+            for (k, point) in removed.points {
+                flattened_time_line_points.insert(k, point);
             }
         }
 
-        if let Some(removed_time_lines) = &aligned_time_lines.removed_points_timeline2 {
-            for point in &removed_time_lines.points {
-                flattened_time_line_points.insert(*point.0, point.1.clone());
+        if let Some(removed) = removed_points_timeline2 {
+            for (k, point) in removed.points {
+                flattened_time_line_points.insert(k, point);
             }
         }
+
+        let mut self_iter = aligned_left.points.iter().peekable();
+        let mut other_iter = aligned_right.points.iter().peekable();
 
         while self_iter.peek().is_some() && other_iter.peek().is_some() {
             let self_point = self_iter.next().unwrap();
