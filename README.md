@@ -34,7 +34,7 @@ duration_where(
   has_existed(playerStateChange == "play")
   && !has_existed_within(playerStateChange == "seek", 5)
   && latest_event_to_state(playerStateChange) == "buffer"
-) | aggregate(group_by=cdn, count, sum, avg)
+) | aggregate(group_by(cdn), count, sum, avg)
 ```
 
 
@@ -44,7 +44,7 @@ duration_where(
 ```javascript
 duration_in_cur_state(
   latest_event_to_state(status) == "idle"
-) | aggregate(group_by=region, count, avg, max)
+) | aggregate(group_by(region), count, avg, max)
 ```
 
 **Credit card location anomaly — location changed within 10 minutes:**
