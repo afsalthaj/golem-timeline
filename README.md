@@ -1,12 +1,13 @@
 # Golem Timeline
 
-[TimeLine Analytics](https://www.cidrdb.org/cidr2023/papers/p22-milner.pdf) backed by Durable Execution Engine provided by [Golem](https://learn.golem.cloud)
+This is inspired from [TimeLine Analytics](https://www.cidrdb.org/cidr2023/papers/p22-milner.pdf) and it's extention, but most importantly,
+system being backed by new agentic runtime [Golem](https://learn.golem.cloud) that's also a durable execution engine
 
 Watch the talk from Afsal at [LambdaConf:2024:Estes-Park:Colorado](https://www.youtube.com/watch?v=9WjUBOfgriY)
 
 ## Overview
 
-The project implements the TimeLine DSL — a composable language for expressing temporal analytics over event streams.
+The project is a merging the ideas from the TimeLine DSL — a composable language for expressing temporal analytics over event streams, into Golem's Runtime.
 Each node in a timeline expression maps to a durable Golem agent (worker). The architecture is **fully push-based**:
 leaf nodes ingest events and push state changes upward through the agent tree. Derived nodes recompute
 incrementally on each notification and cascade changes to their parents. Point-in-time queries are local
