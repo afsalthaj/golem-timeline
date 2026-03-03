@@ -1,4 +1,4 @@
-# Golem Timeline
+# Durable Timeline Analytics For Data Engineering
 
 This is inspired from [TimeLine Analytics](https://www.cidrdb.org/cidr2023/papers/p22-milner.pdf) and it's extention, but most importantly,
 system being backed by new agentic runtime [Golem](https://learn.golem.cloud) that's also a durable execution engine
