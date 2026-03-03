@@ -663,3 +663,177 @@ and never hit the network.
 | **Hot aggregator** (one aggregator per CDN receiving millions of deltas) | `on_delta` is O(1) — a single addition. If a single CDN has 5M sessions and each emits ~2 events/min, that's ~170K deltas/sec to one aggregator. May need sharding (e.g., `aggregator-cdn-x-shard-0`) for extreme cases. |
 | **Cold-start latency** (resuming a suspended agent) | Golem's resume time is typically <10ms. For latency-sensitive paths, keep agents warm with periodic heartbeats. |
 | **Event ordering across leaves** | The push-based model processes events per-leaf independently. Two leaves in the same session may receive events at different wall-clock times. The `And`/`Or` nodes use `time + 1` lookups to see the latest state, which handles this correctly for monotonically increasing timestamps. |
+
+## Future Design: Compute Reuse Across Workflows
+
+### The opportunity
+
+Timeline expressions naturally share sub-expressions. Consider a streaming platform that
+runs two workflows for the same session:
+
+```
+Workflow A (CIRR):
+  TlDurationWhere(
+    And(
+      EqualTo(TlLatestEventToState("playerStateChange"), "buffer"),   ← subtree X
+      TlHasExisted(playerStateChange == "play")                       ← subtree Y
+    )
+  )
+
+Workflow B (Time-to-First-Play):
+  TlHasExisted(playerStateChange == "play")                           ← same as Y
+```
+
+Subtree `Y` is identical in both workflows. Ideally, a single `EventProcessor` agent
+computes `Y` once, and both Workflow A's `And` node and Workflow B's root consume its
+output. This is **compute reuse** — the agent DAG shares common sub-expressions instead
+of duplicating them.
+
+```
+Without reuse (current):              With reuse (future):
+
+  Workflow A        Workflow B           Workflow A        Workflow B
+  ┌───────┐         ┌───────┐           ┌───────┐
+  │ DurWh │         │       │           │ DurWh │
+  └───┬───┘         │       │           └───┬───┘
+  ┌───┴───┐         │       │           ┌───┴───┐
+  │  And  │         │       │           │  And  │
+  └─┬───┬─┘         │       │           └─┬───┬─┘
+    │   │           │       │             │   │
+  ┌─┴─┐ ┌┴──┐    ┌──┴──┐              ┌─┴─┐ │
+  │ X │ │ Y │    │ Y'  │  ← duplicate  │ X │ │
+  └───┘ └───┘    └─────┘              └───┘ │
+                                             │    ┌───────┐
+    2 leaves compute Y                       └────┤   Y   ├──── Workflow B root
+    same events sent twice                        └───────┘
+                                              1 leaf, shared
+```
+
+At Disney+ scale with 10M sessions and 3 workflows sharing 2 common sub-expressions,
+this saves ~20M redundant agents and eliminates duplicate event processing.
+
+### Why it doesn't work today
+
+Three structural limitations prevent compute reuse in the current implementation:
+
+**1. `ParentRef` is singular**
+
+Each agent has at most one parent:
+
+```rust
+pub struct ParentRef {
+    pub worker_name: String,
+    pub child_index: u32,
+}
+```
+
+If `Y` pushes to Workflow A's `And` node, it cannot also push to Workflow B's root.
+Sharing requires fan-out to multiple parents.
+
+**2. Agent naming is positional, not content-addressed**
+
+The `TimelineDriver` names agents by traversal order:
+
+```rust
+let worker_name = format!("{}-node-{}", self.name, counter);
+```
+
+Two workflows traversing the same sub-expression `Y` produce different names
+(`sess-1-node-4` vs `sess-1-node-7`). There is no way to detect that they
+compute the same thing.
+
+**3. The driver always re-initializes**
+
+Calling `initialize_leaf` on an existing agent overwrites its operation and parent ref.
+There is no "add another parent" operation.
+
+### What the fix looks like
+
+```
+                 Current                              Future
+          ┌──────────────────┐                ┌──────────────────┐
+          │   ParentRef      │                │   Vec<ParentRef> │
+          │   (single)       │                │   (fan-out)      │
+          └──────────────────┘                └──────────────────┘
+
+          ┌──────────────────┐                ┌──────────────────┐
+          │  "{sid}-node-{N}"│                │  content-addressed│
+          │  (positional)    │                │  naming (hash of │
+          └──────────────────┘                │  operation + cols)│
+                                              └──────────────────┘
+
+          ┌──────────────────┐                ┌──────────────────┐
+          │  initialize_leaf │                │  add_parent_ref  │
+          │  (overwrite)     │                │  (append)        │
+          └──────────────────┘                └──────────────────┘
+```
+
+**Step 1: Content-addressed agent names**
+
+Name agents by what they compute, not where they appear in the tree:
+
+```rust
+// Instead of: "{sid}-node-4"
+// Use:        "{sid}-leaf-{hash(TlHasExisted, playerStateChange, play)}"
+fn agent_name(session_id: &str, op: &TimeLineOp) -> String {
+    let hash = hash_operation(op);  // deterministic hash of the subtree
+    format!("{}-{}", session_id, hash)
+}
+```
+
+Two workflows requesting `TlHasExisted(playerStateChange == "play")` for the same
+session produce the same agent name → same agent.
+
+**Step 2: Fan-out parent refs**
+
+```rust
+// Before:
+pub parent: Option<ParentRef>,
+
+// After:
+pub parents: Vec<ParentRef>,
+```
+
+`notify_parent` becomes `notify_parents` — iterates over all registered parents:
+
+```rust
+async fn notify_parents(parents: &[ParentRef], time: u64, value: EventValue) {
+    for parent in parents {
+        let mut client = TimelineProcessorClient::get(parent.worker_name.clone());
+        client.on_child_state_changed(parent.child_index, time, value.clone()).await;
+    }
+}
+```
+
+**Step 3: Idempotent initialization with parent accumulation**
+
+The driver checks if an agent already exists before creating it:
+
+```rust
+if agent_exists(&worker_name) {
+    // Agent already computing this — just add our parent ref
+    add_parent_ref(&worker_name, new_parent_ref).await;
+} else {
+    // First time — create and initialize
+    initialize_leaf(&worker_name, operation).await;
+    set_parent(&worker_name, new_parent_ref).await;
+}
+```
+
+### Trade-offs of compute reuse
+
+| Benefit | Cost |
+|---|---|
+| Fewer agents (saves memory + storage) | Agent naming becomes content-dependent — harder to debug |
+| Less duplicate event processing | Fan-out notifications add latency (serial parent pushes) |
+| Fewer events routed by feeder | Cleanup requires reference counting (can't delete a shared agent until all workflows are done) |
+| Natural DAG structure | The tree becomes a DAG — cycle detection may be needed for safety |
+
+### Impact at scale
+
+| Metric | Without reuse | With reuse |
+|---|---|---|
+| Agents per session (3 workflows, 2 shared subtrees) | 24 | 16 |
+| Total agents at 10M sessions | 240M | 160M |
+| Events processed per input event | 3× (duplicated leaves) | 1× |
+| Aggregator delta calls | Same | Same |
