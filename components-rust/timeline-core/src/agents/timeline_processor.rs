@@ -5,13 +5,78 @@ use common_lib::{GolemEventValue, StateDynamicsTimeLine};
 use crate::agents::helpers::*;
 use crate::types::*;
 
+/// Derived node agent. Receives state changes from children, recomputes its own
+/// state, and pushes upward. The root node (no parent) pushes to the Aggregator.
+///
+/// CIRR example — the full derived tree for session "sess-42":
+///   ```text
+///   duration_where(                                         ← node-8 (root, DurationWhere)
+///     has_existed(playerStateChange == "play")               ← node-1 (leaf)
+///     && !has_existed_within(playerStateChange == "seek", 5) ← node-3 (leaf), node-4 (Not)
+///     && latest_event_to_state(playerStateChange) == "buffer" ← node-5 (leaf), node-6 (EqualTo)
+///   )                                       node-2 (And: node-1 & node-4)
+///                                           node-7 (And: node-2 & node-6)
+///   ```
+///
+/// Push cascade when user starts buffering at time 200 (cdn = "akamai"):
+///   1. Leaf node-5 pushes ("buffer", "akamai") → node-6 (EqualTo "buffer") → computes `true`
+///   2. node-6 pushes (true, "akamai") → node-7 (And) → both children true → computes `true`
+///   3. node-7 pushes (true, "akamai") → node-8 (DurationWhere) → starts counting
+///   4. node-8 is root with aggregation config → calls `Aggregator::get("aggregator-cdn-akamai").on_delta(0.0)`
 #[agent_definition]
 pub trait TimelineProcessor {
     fn new(name: String) -> Self;
+
+    /// Tell this node what to compute and which children to depend on.
+    ///
+    /// CIRR example:
+    ///   - node-2: `initialize_derived(And, [node-1, node-4])` — AND of has_existed and Not(has_existed_within)
+    ///   - node-4: `initialize_derived(Negation, [node-3])` — NOT of has_existed_within
+    ///   - node-6: `initialize_derived(Comparison(EqualTo, "buffer"), [node-5])` — latest state == "buffer"
+    ///   - node-7: `initialize_derived(And, [node-2, node-6])` — all three conditions combined
+    ///   - node-8: `initialize_derived(DurationWhere, [node-7])` — cumulative time where all true
     fn initialize_derived(&mut self, operation: DerivedOperation, children: Vec<ChildWorkerRef>);
+
+    /// Wire this node to its parent. Not set on the root — the root pushes to the Aggregator.
+    ///
+    /// CIRR example:
+    ///   - node-2 (And) → `set_parent("node-7", child_index: 0)` — feeds into the outer And
+    ///   - node-7 (And) → `set_parent("node-8", child_index: 0)` — feeds into DurationWhere
+    ///   - node-8 (root) → no set_parent call — it has set_aggregation instead
     fn set_parent(&mut self, parent: ParentRef);
-    fn set_aggregator(&mut self, aggregator: AggregatorRef);
-    async fn on_child_state_changed(&mut self, child_index: u32, time: u64, value: EventValue);
+
+    /// Called only on the root node. Tells it which event column determines
+    /// aggregator routing and which functions (count, sum, avg...) to compute.
+    /// The root does not pre-create the Aggregator — it lazily creates it on first delta.
+    ///
+    /// CIRR example:
+    ///   `node-8.set_aggregation(AggregationConfig { group_by_column: "cdn", aggregations: [Count, Sum, Avg] })`
+    ///   Later, when node-8 receives group_by_value="akamai" from the cascade:
+    ///     → constructs aggregator name "aggregator-cdn-akamai"
+    ///     → calls `Aggregator::get("aggregator-cdn-akamai").on_delta(delta)`
+    fn set_aggregation(&mut self, config: AggregationConfig);
+
+    /// Receive a state change from a child. `group_by_value` is the aggregation
+    /// column value (e.g., "akamai") extracted by the leaf and propagated through
+    /// every node in the cascade.
+    ///
+    /// CIRR example — user starts playing at time 100 on CDN "akamai":
+    ///   Leaf node-1 (has_existed "play") flips to `true` and pushes to node-2:
+    ///     `node-2.on_child_state_changed(0, 100, BoolValue(true), Some(StringValue("akamai")))`
+    ///   node-2 (And) recomputes: left=true, right=already true → result=true
+    ///   node-2 pushes to node-7, which pushes to node-8, each passing "akamai" along.
+    async fn on_child_state_changed(
+        &mut self,
+        child_index: u32,
+        time: u64,
+        value: EventValue,
+        group_by_value: Option<EventValue>,
+    );
+
+    /// Point-in-time query on precomputed state.
+    ///
+    /// CIRR example:
+    ///   `node-8.get_derived_result(250)` → `IntValue(50)` — 50 seconds of connection-induced buffering by time 250
     fn get_derived_result(&self, t1: u64) -> Result<TimelineResult, String>;
 }
 
@@ -20,14 +85,12 @@ struct TimelineProcessorImpl {
     operation: Option<DerivedOperation>,
     children: Vec<ChildWorkerRef>,
     parent: Option<ParentRef>,
-    aggregator: Option<AggregatorRef>,
+    aggregation: Option<AggregationConfig>,
+    aggregator_worker: Option<String>,
     last_aggregated_value: Option<f64>,
-    // Child state storage for binary ops (And/Or)
     left_child_state: StateDynamicsTimeLine<GolemEventValue>,
     right_child_state: StateDynamicsTimeLine<GolemEventValue>,
-    // Result state
     result_state: StateDynamicsTimeLine<GolemEventValue>,
-    // Duration tracking for TlDurationWhere
     duration_state: Option<DurationState>,
 }
 
@@ -39,7 +102,8 @@ impl TimelineProcessor for TimelineProcessorImpl {
             operation: None,
             children: Vec::new(),
             parent: None,
-            aggregator: None,
+            aggregation: None,
+            aggregator_worker: None,
             last_aggregated_value: None,
             left_child_state: StateDynamicsTimeLine::default(),
             right_child_state: StateDynamicsTimeLine::default(),
@@ -57,11 +121,17 @@ impl TimelineProcessor for TimelineProcessorImpl {
         self.parent = Some(parent);
     }
 
-    fn set_aggregator(&mut self, aggregator: AggregatorRef) {
-        self.aggregator = Some(aggregator);
+    fn set_aggregation(&mut self, config: AggregationConfig) {
+        self.aggregation = Some(config);
     }
 
-    async fn on_child_state_changed(&mut self, child_index: u32, time: u64, value: EventValue) {
+    async fn on_child_state_changed(
+        &mut self,
+        child_index: u32,
+        time: u64,
+        value: EventValue,
+        group_by_value: Option<EventValue>,
+    ) {
         let op = match self.operation.as_ref() {
             Some(op) => op.clone(),
             None => return,
@@ -87,12 +157,14 @@ impl TimelineProcessor for TimelineProcessorImpl {
                 if prev.as_ref() != Some(&new_val) {
                     self.result_state.add_state_dynamic_info(time, new_val);
                     let event_val = EventValue::BoolValue(result);
-                    notify_parent(&self.parent, time, event_val.clone()).await;
+                    notify_parent(&self.parent, time, event_val.clone(), &group_by_value).await;
                     notify_aggregator(
-                        &self.aggregator,
+                        &self.aggregation,
+                        &mut self.aggregator_worker,
                         &mut self.last_aggregated_value,
                         time,
                         &event_val,
+                        &group_by_value,
                     )
                     .await;
                 }
@@ -109,12 +181,15 @@ impl TimelineProcessor for TimelineProcessorImpl {
                     if prev.as_ref() != Some(&new_val) {
                         self.result_state.add_state_dynamic_info(time, new_val);
                         let event_val = EventValue::BoolValue(negated);
-                        notify_parent(&self.parent, time, event_val.clone()).await;
+                        notify_parent(&self.parent, time, event_val.clone(), &group_by_value)
+                            .await;
                         notify_aggregator(
-                            &self.aggregator,
+                            &self.aggregation,
+                            &mut self.aggregator_worker,
                             &mut self.last_aggregated_value,
                             time,
                             &event_val,
+                            &group_by_value,
                         )
                         .await;
                     }
@@ -147,12 +222,15 @@ impl TimelineProcessor for TimelineProcessorImpl {
                     if prev.as_ref() != Some(&new_val) {
                         self.result_state.add_state_dynamic_info(time, new_val);
                         let event_val = EventValue::BoolValue(result);
-                        notify_parent(&self.parent, time, event_val.clone()).await;
+                        notify_parent(&self.parent, time, event_val.clone(), &group_by_value)
+                            .await;
                         notify_aggregator(
-                            &self.aggregator,
+                            &self.aggregation,
+                            &mut self.aggregator_worker,
                             &mut self.last_aggregated_value,
                             time,
                             &event_val,
+                            &group_by_value,
                         )
                         .await;
                     }
@@ -185,12 +263,15 @@ impl TimelineProcessor for TimelineProcessorImpl {
                     if prev.as_ref() != Some(&new_val) {
                         self.result_state.add_state_dynamic_info(time, new_val);
                         let event_val = EventValue::BoolValue(result);
-                        notify_parent(&self.parent, time, event_val.clone()).await;
+                        notify_parent(&self.parent, time, event_val.clone(), &group_by_value)
+                            .await;
                         notify_aggregator(
-                            &self.aggregator,
+                            &self.aggregation,
+                            &mut self.aggregator_worker,
                             &mut self.last_aggregated_value,
                             time,
                             &event_val,
+                            &group_by_value,
                         )
                         .await;
                     }
@@ -206,13 +287,11 @@ impl TimelineProcessor for TimelineProcessorImpl {
                     };
 
                     if b {
-                        // Start climbing from current count
                         self.duration_state = Some(DurationState::Climbing {
                             base: current_count,
                             since: time,
                         });
                     } else {
-                        // Go flat at current count
                         self.duration_state = Some(DurationState::Flat {
                             value: current_count,
                         });
@@ -222,20 +301,20 @@ impl TimelineProcessor for TimelineProcessorImpl {
                     self.result_state
                         .add_state_dynamic_info(time, result_value.clone());
                     let event_val = EventValue::IntValue(current_count as i64);
-                    notify_parent(&self.parent, time, event_val.clone()).await;
+                    notify_parent(&self.parent, time, event_val.clone(), &group_by_value).await;
                     notify_aggregator(
-                        &self.aggregator,
+                        &self.aggregation,
+                        &mut self.aggregator_worker,
                         &mut self.last_aggregated_value,
                         time,
                         &event_val,
+                        &group_by_value,
                     )
                     .await;
                 }
             }
 
             DerivedOperation::DurationInCurState => {
-                // Track how long we've been in the current state
-                // On any state change, reset to 0 and start climbing
                 self.duration_state = Some(DurationState::Climbing {
                     base: 0,
                     since: time,
@@ -243,12 +322,14 @@ impl TimelineProcessor for TimelineProcessorImpl {
                 let result_value = GolemEventValue::IntValue(0);
                 self.result_state.add_state_dynamic_info(time, result_value);
                 let event_val = EventValue::IntValue(0);
-                notify_parent(&self.parent, time, event_val.clone()).await;
+                notify_parent(&self.parent, time, event_val.clone(), &group_by_value).await;
                 notify_aggregator(
-                    &self.aggregator,
+                    &self.aggregation,
+                    &mut self.aggregator_worker,
                     &mut self.last_aggregated_value,
                     time,
                     &event_val,
+                    &group_by_value,
                 )
                 .await;
             }
@@ -258,8 +339,6 @@ impl TimelineProcessor for TimelineProcessorImpl {
     fn get_derived_result(&self, t1: u64) -> Result<TimelineResult, String> {
         let _op = self.operation.as_ref().ok_or("Not initialized")?;
 
-        // For DurationWhere/DurationInCurState, compute the actual value at t1
-        // based on whether we're climbing or flat
         if let Some(ref dur) = self.duration_state {
             let value = match dur {
                 DurationState::Climbing { base, since } => {

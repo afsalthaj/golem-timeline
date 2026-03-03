@@ -76,7 +76,7 @@ impl From<LexError> for ParseError {
 /// pred_op     = "==" | ">" | "<"
 /// cmp_op      = "==" | ">" | ">=" | "<" | "<="
 /// value       = string | int | float | bool
-/// aggregate   = "aggregate" "(" "group_by" "=" string "," agg_fn ("," agg_fn)* ")"
+/// aggregate   = "aggregate" "(" "group_by" "(" ident ")" "," agg_fn ("," agg_fn)* ")"
 /// agg_fn      = "count" | "sum" | "avg" | "min" | "max"
 /// ```
 pub fn parse(input: &str) -> Result<ParsedTimeline, ParseError> {
@@ -321,16 +321,6 @@ impl Parser {
         }
     }
 
-    fn parse_string_lit(&mut self) -> Result<String, ParseError> {
-        match self.peek().clone() {
-            Token::StringLit(s) => {
-                self.advance();
-                Ok(s)
-            }
-            _ => Err(self.error(format!("expected string, found '{}'", self.peek()))),
-        }
-    }
-
     fn parse_int_lit(&mut self) -> Result<i64, ParseError> {
         match self.peek().clone() {
             Token::IntLit(n) => {
@@ -355,8 +345,9 @@ impl Parser {
         self.expect(Token::Aggregate)?;
         self.expect(Token::LParen)?;
         self.expect(Token::GroupBy)?;
-        self.expect(Token::Eq)?;
-        let group_by = self.parse_string_lit()?;
+        self.expect(Token::LParen)?;
+        let group_by = self.parse_column_name()?;
+        self.expect(Token::RParen)?;
         self.expect(Token::Comma)?;
 
         let mut functions = vec![self.parse_agg_fn()?];

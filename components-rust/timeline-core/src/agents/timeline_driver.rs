@@ -3,13 +3,56 @@ use golem_rust::{agent_definition, agent_implementation};
 use crate::agents::helpers::*;
 use crate::agents::event_processor::EventProcessorClient;
 use crate::agents::timeline_processor::TimelineProcessorClient;
-use crate::agents::aggregator::AggregatorClient;
 use crate::conversions::predicate_to_api;
 use crate::types::*;
 
+/// Orchestrator agent. Walks a timeline expression tree, spawns all leaf and
+/// derived agents, and wires them together. One driver per session.
+///
+/// CIRR example for session "sess-42":
+///   ```text
+///   duration_where(
+///     has_existed(playerStateChange == "play")
+///     && !has_existed_within(playerStateChange == "seek", 5)
+///     && latest_event_to_state(playerStateChange) == "buffer"
+///   ) | aggregate(group_by=cdn, count, sum, avg)
+///   ```
+///
+///   The driver spawns 8 agents for this session:
+///     Leaves (EventProcessor):
+///       - sess-42-node-1: has_existed(playerStateChange == "play")
+///       - sess-42-node-3: has_existed_within(playerStateChange == "seek", 5)
+///       - sess-42-node-5: latest_event_to_state("playerStateChange")
+///     Derived (TimelineProcessor):
+///       - sess-42-node-2: And(node-1, node-4)
+///       - sess-42-node-4: Not(node-3)
+///       - sess-42-node-6: EqualTo(node-5, "buffer")
+///       - sess-42-node-7: And(node-2, node-6)
+///       - sess-42-node-8: DurationWhere(node-7) ← root
+///
+///   Then wires aggregation:
+///     - All 3 leaves get `set_group_by_column("cdn")` — so they extract "cdn" from events
+///     - Root node-8 gets `set_aggregation(group_by_column="cdn", [Count, Sum, Avg])`
+///     - No Aggregator is created yet — node-8 lazily creates "aggregator-cdn-akamai"
+///       on the first delta push when it receives group_by_value="akamai" from the cascade
 #[agent_definition]
 pub trait TimelineDriver {
     fn new(name: String) -> Self;
+
+    /// Spawn all agents for a timeline expression and wire them together.
+    ///
+    /// CIRR example:
+    ///   ```text
+    ///   TimelineDriver("sess-42").initialize_timeline(
+    ///     cirr_graph,
+    ///     Some(AggregationConfig { group_by_column: "cdn", aggregations: [Count, Sum, Avg] })
+    ///   )
+    ///   ```
+    ///   → spawns 3 EventProcessors + 5 TimelineProcessors
+    ///   → wires parent refs so pushes cascade upward
+    ///   → tells leaves to extract the "cdn" column from events
+    ///   → tells root node-8 to push deltas to Aggregator::get("aggregator-cdn-{value}")
+    ///   → returns "Timeline initialized. Result worker: sess-42-node-8"
     async fn initialize_timeline(
         &self,
         timeline: TimelineOpGraph,
@@ -33,27 +76,27 @@ impl TimelineDriver for TimelineDriverImpl {
         aggregation: Option<AggregationConfig>,
     ) -> Result<String, String> {
         let recursive_op = timeline.to_recursive();
-        let (result, _) = self.setup_node(&recursive_op, &mut 0, &None).await?;
+        let mut leaves = Vec::new();
+        let (result, _) = self
+            .setup_node(&recursive_op, &mut 0, &None, &mut leaves)
+            .await?;
 
-        // Wire root node to aggregator if aggregation config is provided
-        if let Some(agg_config) = aggregation {
-            let aggregator_name = format!("aggregator-{}", agg_config.group_by_value);
-            let mut agg_client = AggregatorClient::get(aggregator_name.clone());
-            agg_client
-                .initialize_aggregator(agg_config.aggregations)
-                .await;
-            agg_client.register_session().await;
+        // If aggregation is configured:
+        // - Tell every leaf which event column to extract for grouping (e.g., "cdn").
+        //   The leaf reads this column from each event and propagates its value up the cascade.
+        // - Tell the root TimelineProcessor the aggregation config so it can lazily
+        //   create the Aggregator agent on first delta push.
+        if let Some(ref agg_config) = aggregation {
+            for leaf_name in &leaves {
+                let mut client = EventProcessorClient::get(leaf_name.clone());
+                client
+                    .set_group_by_column(agg_config.group_by_column.clone())
+                    .await;
+            }
 
-            let agg_ref = AggregatorRef {
-                worker_name: aggregator_name,
-            };
-
-            if result.is_leaf {
-                // Root is a leaf — a single-node expression like TlLatestEventToState.
-                // Aggregation on raw leaf values is unusual; skip for now.
-            } else {
+            if !result.is_leaf {
                 let mut client = TimelineProcessorClient::get(result.worker_name.clone());
-                client.set_aggregator(agg_ref).await;
+                client.set_aggregation(agg_config.clone()).await;
             }
         }
 
@@ -65,15 +108,12 @@ impl TimelineDriver for TimelineDriverImpl {
 }
 
 impl TimelineDriverImpl {
-    /// Recursively set up agents for each node in the timeline expression tree.
-    /// `parent_ref` is passed to leaf nodes that are direct children of derived nodes
-    /// that don't need a separate TimelineProcessor (not used currently — parent wiring
-    /// happens after creation via `set_child_parent`).
     fn setup_node<'a>(
         &'a self,
         op: &'a common_lib::TimeLineOp,
         counter: &'a mut u64,
         _parent_ref: &'a Option<ParentRef>,
+        leaves: &'a mut Vec<String>,
     ) -> std::pin::Pin<
         Box<dyn std::future::Future<Output = Result<(SetupResult, bool), String>> + 'a>,
     > {
@@ -86,6 +126,7 @@ impl TimelineDriverImpl {
                     let mut ep = EventProcessorClient::get(worker_name.clone());
                     ep.initialize_leaf(LeafOperation::LatestEventToState(col.0.clone()))
                         .await;
+                    leaves.push(worker_name.clone());
                     Ok((
                         SetupResult {
                             worker_name,
@@ -98,6 +139,7 @@ impl TimelineDriverImpl {
                     let mut ep = EventProcessorClient::get(worker_name.clone());
                     ep.initialize_leaf(LeafOperation::TlHasExisted(predicate_to_api(pred)))
                         .await;
+                    leaves.push(worker_name.clone());
                     Ok((
                         SetupResult {
                             worker_name,
@@ -113,6 +155,7 @@ impl TimelineDriverImpl {
                         *dur,
                     ))
                     .await;
+                    leaves.push(worker_name.clone());
                     Ok((
                         SetupResult {
                             worker_name,
@@ -122,7 +165,8 @@ impl TimelineDriverImpl {
                     ))
                 }
                 common_lib::TimeLineOp::EqualTo(child, val) => {
-                    let (child_result, _) = self.setup_node(child, counter, _parent_ref).await?;
+                    let (child_result, _) =
+                        self.setup_node(child, counter, _parent_ref, leaves).await?;
                     let mut tp = TimelineProcessorClient::get(worker_name.clone());
                     tp.initialize_derived(
                         DerivedOperation::Comparison(
@@ -145,7 +189,8 @@ impl TimelineDriverImpl {
                     ))
                 }
                 common_lib::TimeLineOp::GreaterThan(child, val) => {
-                    let (child_result, _) = self.setup_node(child, counter, _parent_ref).await?;
+                    let (child_result, _) =
+                        self.setup_node(child, counter, _parent_ref, leaves).await?;
                     let mut tp = TimelineProcessorClient::get(worker_name.clone());
                     tp.initialize_derived(
                         DerivedOperation::Comparison(
@@ -168,7 +213,8 @@ impl TimelineDriverImpl {
                     ))
                 }
                 common_lib::TimeLineOp::GreaterThanOrEqual(child, val) => {
-                    let (child_result, _) = self.setup_node(child, counter, _parent_ref).await?;
+                    let (child_result, _) =
+                        self.setup_node(child, counter, _parent_ref, leaves).await?;
                     let mut tp = TimelineProcessorClient::get(worker_name.clone());
                     tp.initialize_derived(
                         DerivedOperation::Comparison(
@@ -191,7 +237,8 @@ impl TimelineDriverImpl {
                     ))
                 }
                 common_lib::TimeLineOp::LessThan(child, val) => {
-                    let (child_result, _) = self.setup_node(child, counter, _parent_ref).await?;
+                    let (child_result, _) =
+                        self.setup_node(child, counter, _parent_ref, leaves).await?;
                     let mut tp = TimelineProcessorClient::get(worker_name.clone());
                     tp.initialize_derived(
                         DerivedOperation::Comparison(
@@ -214,7 +261,8 @@ impl TimelineDriverImpl {
                     ))
                 }
                 common_lib::TimeLineOp::LessThanOrEqual(child, val) => {
-                    let (child_result, _) = self.setup_node(child, counter, _parent_ref).await?;
+                    let (child_result, _) =
+                        self.setup_node(child, counter, _parent_ref, leaves).await?;
                     let mut tp = TimelineProcessorClient::get(worker_name.clone());
                     tp.initialize_derived(
                         DerivedOperation::Comparison(
@@ -237,7 +285,8 @@ impl TimelineDriverImpl {
                     ))
                 }
                 common_lib::TimeLineOp::Not(child) => {
-                    let (child_result, _) = self.setup_node(child, counter, _parent_ref).await?;
+                    let (child_result, _) =
+                        self.setup_node(child, counter, _parent_ref, leaves).await?;
                     let mut tp = TimelineProcessorClient::get(worker_name.clone());
                     tp.initialize_derived(
                         DerivedOperation::Negation,
@@ -257,8 +306,10 @@ impl TimelineDriverImpl {
                     ))
                 }
                 common_lib::TimeLineOp::And(left, right) => {
-                    let (left_result, _) = self.setup_node(left, counter, _parent_ref).await?;
-                    let (right_result, _) = self.setup_node(right, counter, _parent_ref).await?;
+                    let (left_result, _) =
+                        self.setup_node(left, counter, _parent_ref, leaves).await?;
+                    let (right_result, _) =
+                        self.setup_node(right, counter, _parent_ref, leaves).await?;
                     let mut tp = TimelineProcessorClient::get(worker_name.clone());
                     tp.initialize_derived(
                         DerivedOperation::And,
@@ -285,8 +336,10 @@ impl TimelineDriverImpl {
                     ))
                 }
                 common_lib::TimeLineOp::Or(left, right) => {
-                    let (left_result, _) = self.setup_node(left, counter, _parent_ref).await?;
-                    let (right_result, _) = self.setup_node(right, counter, _parent_ref).await?;
+                    let (left_result, _) =
+                        self.setup_node(left, counter, _parent_ref, leaves).await?;
+                    let (right_result, _) =
+                        self.setup_node(right, counter, _parent_ref, leaves).await?;
                     let mut tp = TimelineProcessorClient::get(worker_name.clone());
                     tp.initialize_derived(
                         DerivedOperation::Or,
@@ -313,7 +366,8 @@ impl TimelineDriverImpl {
                     ))
                 }
                 common_lib::TimeLineOp::TlDurationWhere(child) => {
-                    let (child_result, _) = self.setup_node(child, counter, _parent_ref).await?;
+                    let (child_result, _) =
+                        self.setup_node(child, counter, _parent_ref, leaves).await?;
                     let mut tp = TimelineProcessorClient::get(worker_name.clone());
                     tp.initialize_derived(
                         DerivedOperation::DurationWhere,
@@ -333,7 +387,8 @@ impl TimelineDriverImpl {
                     ))
                 }
                 common_lib::TimeLineOp::TlDurationInCurState(child) => {
-                    let (child_result, _) = self.setup_node(child, counter, _parent_ref).await?;
+                    let (child_result, _) =
+                        self.setup_node(child, counter, _parent_ref, leaves).await?;
                     let mut tp = TimelineProcessorClient::get(worker_name.clone());
                     tp.initialize_derived(
                         DerivedOperation::DurationInCurState,
