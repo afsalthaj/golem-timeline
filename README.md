@@ -5,6 +5,60 @@ system being backed by new agentic runtime [Golem](https://learn.golem.cloud) th
 
 Watch the talk from Afsal at [LambdaConf:2024:Estes-Park:Colorado](https://www.youtube.com/watch?v=9WjUBOfgriY)
 
+## Timeline Query DSL
+
+A text-based DSL for expressing temporal analytics over event streams. Write a query, deploy it,
+and the system materializes a push-based agent graph that processes events in real time.
+
+### CIRR — Connection Induced Rebuffering Ratio
+
+A user is experiencing connection-induced rebuffering when:
+1. They started playing at some point (`has_existed`)
+2. There was no recent seek event (`!has_existed_within` — rules out seek-induced buffering)
+3. The current player state is `"buffer"` (`latest_event_to_state == "buffer"`)
+
+All three must be true simultaneously, and we measure how long that condition holds.
+
+```
+duration_where(
+  has_existed(playerStateChange == "play")
+  && !has_existed_within(playerStateChange == "seek", 5)
+  && latest_event_to_state("playerStateChange") == "buffer"
+)
+```
+
+With cross-session aggregation per CDN:
+
+```
+duration_where(
+  has_existed(playerStateChange == "play")
+  && !has_existed_within(playerStateChange == "seek", 5)
+  && latest_event_to_state("playerStateChange") == "buffer"
+) | aggregate(group_by="cdn-x", count, sum, avg)
+```
+
+
+### More examples
+
+**Time spent idle per region:**
+```
+duration_in_cur_state(
+  latest_event_to_state("status") == "idle"
+) | aggregate(group_by="region", count, avg, max)
+```
+
+**Credit card location anomaly — location changed within 10 minutes:**
+```
+has_existed_within(
+  lat_long > 0, 600
+)
+```
+
+**User engaged: played and never errored:**
+```
+has_existed(playerStateChange == "play") && !has_existed(error == "fatal")
+```
+
 ## Overview
 
 The project is a merging the ideas from the TimeLine DSL — a composable language for expressing temporal analytics over event streams, into Golem's Runtime.

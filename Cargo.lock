@@ -817,6 +817,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "timeline-dsl"
+version = "0.1.0"
+dependencies = [
+ "common-lib",
+]
+
+[[package]]
 name = "timeline_core"
 version = "0.0.1"
 dependencies = [
