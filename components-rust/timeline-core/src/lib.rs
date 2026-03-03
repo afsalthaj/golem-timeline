@@ -144,7 +144,6 @@ pub enum DurationState {
 #[derive(Clone, Debug, Schema)]
 pub struct AggregatorRef {
     pub worker_name: String,
-    pub session_id: String,
 }
 
 /// Which aggregation functions to compute.
@@ -617,16 +616,32 @@ async fn notify_parent(parent: &Option<ParentRef>, time: u64, value: EventValue)
     }
 }
 
-async fn notify_aggregator(aggregator: &Option<AggregatorRef>, time: u64, value: &EventValue) {
+fn event_value_to_f64(value: &EventValue) -> Option<f64> {
+    match value {
+        EventValue::IntValue(i) => Some(*i as f64),
+        EventValue::FloatValue(f) => Some(*f),
+        EventValue::BoolValue(b) => Some(if *b { 1.0 } else { 0.0 }),
+        _ => None,
+    }
+}
+
+async fn notify_aggregator(
+    aggregator: &Option<AggregatorRef>,
+    last_aggregated_value: &mut Option<f64>,
+    _time: u64,
+    value: &EventValue,
+) {
     if let Some(agg) = aggregator {
-        let numeric = match value {
-            EventValue::IntValue(i) => *i as f64,
-            EventValue::FloatValue(f) => *f,
-            EventValue::BoolValue(b) => if *b { 1.0 } else { 0.0 },
-            _ => return,
+        let new_value = match event_value_to_f64(value) {
+            Some(v) => v,
+            None => return,
         };
-        let mut client = AggregatorClient::get(agg.worker_name.clone());
-        client.on_session_value_changed(agg.session_id.clone(), time, numeric).await;
+        let delta = new_value - last_aggregated_value.unwrap_or(0.0);
+        *last_aggregated_value = Some(new_value);
+        if delta != 0.0 {
+            let mut client = AggregatorClient::get(agg.worker_name.clone());
+            client.on_delta(delta).await;
+        }
     }
 }
 
@@ -653,6 +668,7 @@ struct TimelineProcessorImpl {
     children: Vec<ChildWorkerRef>,
     parent: Option<ParentRef>,
     aggregator: Option<AggregatorRef>,
+    last_aggregated_value: Option<f64>,
     // Child state storage for binary ops (And/Or)
     left_child_state: StateDynamicsTimeLine<GolemEventValue>,
     right_child_state: StateDynamicsTimeLine<GolemEventValue>,
@@ -671,6 +687,7 @@ impl TimelineProcessor for TimelineProcessorImpl {
             children: Vec::new(),
             parent: None,
             aggregator: None,
+            last_aggregated_value: None,
             left_child_state: StateDynamicsTimeLine::default(),
             right_child_state: StateDynamicsTimeLine::default(),
             result_state: StateDynamicsTimeLine::default(),
@@ -718,7 +735,7 @@ impl TimelineProcessor for TimelineProcessorImpl {
                     self.result_state.add_state_dynamic_info(time, new_val);
                     let event_val = EventValue::BoolValue(result);
                     notify_parent(&self.parent, time, event_val.clone()).await;
-                    notify_aggregator(&self.aggregator, time, &event_val).await;
+                    notify_aggregator(&self.aggregator, &mut self.last_aggregated_value, time, &event_val).await;
                 }
             }
 
@@ -734,7 +751,7 @@ impl TimelineProcessor for TimelineProcessorImpl {
                         self.result_state.add_state_dynamic_info(time, new_val);
                         let event_val = EventValue::BoolValue(negated);
                         notify_parent(&self.parent, time, event_val.clone()).await;
-                        notify_aggregator(&self.aggregator, time, &event_val).await;
+                        notify_aggregator(&self.aggregator, &mut self.last_aggregated_value, time, &event_val).await;
                     }
                 }
             }
@@ -766,7 +783,7 @@ impl TimelineProcessor for TimelineProcessorImpl {
                         self.result_state.add_state_dynamic_info(time, new_val);
                         let event_val = EventValue::BoolValue(result);
                         notify_parent(&self.parent, time, event_val.clone()).await;
-                        notify_aggregator(&self.aggregator, time, &event_val).await;
+                        notify_aggregator(&self.aggregator, &mut self.last_aggregated_value, time, &event_val).await;
                     }
                 }
             }
@@ -798,7 +815,7 @@ impl TimelineProcessor for TimelineProcessorImpl {
                         self.result_state.add_state_dynamic_info(time, new_val);
                         let event_val = EventValue::BoolValue(result);
                         notify_parent(&self.parent, time, event_val.clone()).await;
-                        notify_aggregator(&self.aggregator, time, &event_val).await;
+                        notify_aggregator(&self.aggregator, &mut self.last_aggregated_value, time, &event_val).await;
                     }
                 }
             }
@@ -829,7 +846,7 @@ impl TimelineProcessor for TimelineProcessorImpl {
                         .add_state_dynamic_info(time, result_value.clone());
                     let event_val = EventValue::IntValue(current_count as i64);
                     notify_parent(&self.parent, time, event_val.clone()).await;
-                    notify_aggregator(&self.aggregator, time, &event_val).await;
+                    notify_aggregator(&self.aggregator, &mut self.last_aggregated_value, time, &event_val).await;
                 }
             }
 
@@ -844,7 +861,7 @@ impl TimelineProcessor for TimelineProcessorImpl {
                 self.result_state.add_state_dynamic_info(time, result_value);
                 let event_val = EventValue::IntValue(0);
                 notify_parent(&self.parent, time, event_val.clone()).await;
-                notify_aggregator(&self.aggregator, time, &event_val).await;
+                notify_aggregator(&self.aggregator, &mut self.last_aggregated_value, time, &event_val).await;
             }
         }
     }
@@ -895,18 +912,16 @@ impl TimelineProcessor for TimelineProcessorImpl {
 pub trait Aggregator {
     fn new(name: String) -> Self;
     fn initialize_aggregator(&mut self, aggregations: Vec<AggregationType>);
-    fn on_session_value_changed(&mut self, session_id: String, time: u64, value: f64);
+    fn on_delta(&mut self, delta: f64);
+    fn register_session(&mut self);
     fn get_aggregation_result(&self) -> AggregationResult;
 }
 
 struct AggregatorImpl {
     _name: String,
     aggregations: Vec<AggregationType>,
-    session_values: std::collections::HashMap<String, f64>,
     count: u64,
     sum: f64,
-    min: f64,
-    max: f64,
 }
 
 #[agent_implementation]
@@ -915,11 +930,8 @@ impl Aggregator for AggregatorImpl {
         Self {
             _name: name,
             aggregations: Vec::new(),
-            session_values: std::collections::HashMap::new(),
             count: 0,
             sum: 0.0,
-            min: f64::MAX,
-            max: f64::MIN,
         }
     }
 
@@ -927,21 +939,12 @@ impl Aggregator for AggregatorImpl {
         self.aggregations = aggregations;
     }
 
-    fn on_session_value_changed(&mut self, session_id: String, _time: u64, value: f64) {
-        if let Some(old_value) = self.session_values.insert(session_id, value) {
-            // Update: subtract old, add new
-            self.sum = self.sum - old_value + value;
-        } else {
-            // New session
-            self.count += 1;
-            self.sum += value;
-        }
-        if value < self.min {
-            self.min = value;
-        }
-        if value > self.max {
-            self.max = value;
-        }
+    fn on_delta(&mut self, delta: f64) {
+        self.sum += delta;
+    }
+
+    fn register_session(&mut self) {
+        self.count += 1;
     }
 
     fn get_aggregation_result(&self) -> AggregationResult {
@@ -954,8 +957,8 @@ impl Aggregator for AggregatorImpl {
             count: self.count,
             sum: self.sum,
             avg,
-            min: if self.count > 0 { Some(self.min) } else { None },
-            max: if self.count > 0 { Some(self.max) } else { None },
+            min: None,
+            max: None,
         }
     }
 }
@@ -992,10 +995,10 @@ impl TimelineDriver for TimelineDriverImpl {
             let aggregator_name = format!("aggregator-{}", agg_config.group_by_value);
             let mut agg_client = AggregatorClient::get(aggregator_name.clone());
             agg_client.initialize_aggregator(agg_config.aggregations).await;
+            agg_client.register_session().await;
 
             let agg_ref = AggregatorRef {
                 worker_name: aggregator_name,
-                session_id: self.name.clone(),
             };
 
             if result.is_leaf {
