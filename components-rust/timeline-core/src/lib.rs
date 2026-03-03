@@ -735,7 +735,13 @@ impl TimelineProcessor for TimelineProcessorImpl {
                     self.result_state.add_state_dynamic_info(time, new_val);
                     let event_val = EventValue::BoolValue(result);
                     notify_parent(&self.parent, time, event_val.clone()).await;
-                    notify_aggregator(&self.aggregator, &mut self.last_aggregated_value, time, &event_val).await;
+                    notify_aggregator(
+                        &self.aggregator,
+                        &mut self.last_aggregated_value,
+                        time,
+                        &event_val,
+                    )
+                    .await;
                 }
             }
 
@@ -751,7 +757,13 @@ impl TimelineProcessor for TimelineProcessorImpl {
                         self.result_state.add_state_dynamic_info(time, new_val);
                         let event_val = EventValue::BoolValue(negated);
                         notify_parent(&self.parent, time, event_val.clone()).await;
-                        notify_aggregator(&self.aggregator, &mut self.last_aggregated_value, time, &event_val).await;
+                        notify_aggregator(
+                            &self.aggregator,
+                            &mut self.last_aggregated_value,
+                            time,
+                            &event_val,
+                        )
+                        .await;
                     }
                 }
             }
@@ -783,7 +795,13 @@ impl TimelineProcessor for TimelineProcessorImpl {
                         self.result_state.add_state_dynamic_info(time, new_val);
                         let event_val = EventValue::BoolValue(result);
                         notify_parent(&self.parent, time, event_val.clone()).await;
-                        notify_aggregator(&self.aggregator, &mut self.last_aggregated_value, time, &event_val).await;
+                        notify_aggregator(
+                            &self.aggregator,
+                            &mut self.last_aggregated_value,
+                            time,
+                            &event_val,
+                        )
+                        .await;
                     }
                 }
             }
@@ -815,7 +833,13 @@ impl TimelineProcessor for TimelineProcessorImpl {
                         self.result_state.add_state_dynamic_info(time, new_val);
                         let event_val = EventValue::BoolValue(result);
                         notify_parent(&self.parent, time, event_val.clone()).await;
-                        notify_aggregator(&self.aggregator, &mut self.last_aggregated_value, time, &event_val).await;
+                        notify_aggregator(
+                            &self.aggregator,
+                            &mut self.last_aggregated_value,
+                            time,
+                            &event_val,
+                        )
+                        .await;
                     }
                 }
             }
@@ -846,7 +870,13 @@ impl TimelineProcessor for TimelineProcessorImpl {
                         .add_state_dynamic_info(time, result_value.clone());
                     let event_val = EventValue::IntValue(current_count as i64);
                     notify_parent(&self.parent, time, event_val.clone()).await;
-                    notify_aggregator(&self.aggregator, &mut self.last_aggregated_value, time, &event_val).await;
+                    notify_aggregator(
+                        &self.aggregator,
+                        &mut self.last_aggregated_value,
+                        time,
+                        &event_val,
+                    )
+                    .await;
                 }
             }
 
@@ -861,7 +891,13 @@ impl TimelineProcessor for TimelineProcessorImpl {
                 self.result_state.add_state_dynamic_info(time, result_value);
                 let event_val = EventValue::IntValue(0);
                 notify_parent(&self.parent, time, event_val.clone()).await;
-                notify_aggregator(&self.aggregator, &mut self.last_aggregated_value, time, &event_val).await;
+                notify_aggregator(
+                    &self.aggregator,
+                    &mut self.last_aggregated_value,
+                    time,
+                    &event_val,
+                )
+                .await;
             }
         }
     }
@@ -973,7 +1009,11 @@ impl Aggregator for AggregatorImpl {
 #[agent_definition]
 pub trait TimelineDriver {
     fn new(name: String) -> Self;
-    async fn initialize_timeline(&self, timeline: TimelineOpGraph, aggregation: Option<AggregationConfig>) -> Result<String, String>;
+    async fn initialize_timeline(
+        &self,
+        timeline: TimelineOpGraph,
+        aggregation: Option<AggregationConfig>,
+    ) -> Result<String, String>;
 }
 
 struct TimelineDriverImpl {
@@ -986,7 +1026,11 @@ impl TimelineDriver for TimelineDriverImpl {
         Self { name }
     }
 
-    async fn initialize_timeline(&self, timeline: TimelineOpGraph, aggregation: Option<AggregationConfig>) -> Result<String, String> {
+    async fn initialize_timeline(
+        &self,
+        timeline: TimelineOpGraph,
+        aggregation: Option<AggregationConfig>,
+    ) -> Result<String, String> {
         let recursive_op = timeline.to_recursive();
         let (result, _) = self.setup_node(&recursive_op, &mut 0, &None).await?;
 
@@ -994,7 +1038,9 @@ impl TimelineDriver for TimelineDriverImpl {
         if let Some(agg_config) = aggregation {
             let aggregator_name = format!("aggregator-{}", agg_config.group_by_value);
             let mut agg_client = AggregatorClient::get(aggregator_name.clone());
-            agg_client.initialize_aggregator(agg_config.aggregations).await;
+            agg_client
+                .initialize_aggregator(agg_config.aggregations)
+                .await;
             agg_client.register_session().await;
 
             let agg_ref = AggregatorRef {
