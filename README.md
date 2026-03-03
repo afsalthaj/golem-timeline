@@ -23,7 +23,7 @@ All three must be true simultaneously, and we measure how long that condition ho
 duration_where(
   has_existed(playerStateChange == "play")
   && !has_existed_within(playerStateChange == "seek", 5)
-  && latest_event_to_state("playerStateChange") == "buffer"
+  && latest_event_to_state(playerStateChange) == "buffer"
 )
 ```
 
@@ -33,7 +33,7 @@ With cross-session aggregation per CDN:
 duration_where(
   has_existed(playerStateChange == "play")
   && !has_existed_within(playerStateChange == "seek", 5)
-  && latest_event_to_state("playerStateChange") == "buffer"
+  && latest_event_to_state(playerStateChange) == "buffer"
 ) | aggregate(group_by="cdn-x", count, sum, avg)
 ```
 
@@ -43,7 +43,7 @@ duration_where(
 **Time spent idle per region:**
 ```javascript
 duration_in_cur_state(
-  latest_event_to_state("status") == "idle"
+  latest_event_to_state(status) == "idle"
 ) | aggregate(group_by="region", count, avg, max)
 ```
 

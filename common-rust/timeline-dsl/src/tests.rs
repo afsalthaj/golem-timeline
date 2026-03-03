@@ -8,7 +8,7 @@ fn assert_display(op: &TimeLineOp, expected: &str) {
 
 #[test]
 fn latest_event_to_state() {
-    let result = parse(r#"latest_event_to_state("status")"#).unwrap();
+    let result = parse(r#"latest_event_to_state(status)"#).unwrap();
     assert_display(&result.op, "TlLatestEventToState(status)");
     assert!(result.aggregation.is_none());
 }
@@ -39,19 +39,19 @@ fn has_existed_within() {
 
 #[test]
 fn equal_to_string() {
-    let result = parse(r#"latest_event_to_state("status") == "active""#).unwrap();
+    let result = parse(r#"latest_event_to_state(status) == "active""#).unwrap();
     assert_display(&result.op, "EqualTo(TlLatestEventToState(status), active)");
 }
 
 #[test]
 fn greater_than_int() {
-    let result = parse(r#"latest_event_to_state("score") > 100"#).unwrap();
+    let result = parse(r#"latest_event_to_state(score) > 100"#).unwrap();
     assert_display(&result.op, "GreaterThan(TlLatestEventToState(score), 100)");
 }
 
 #[test]
 fn greater_than_or_equal() {
-    let result = parse(r#"latest_event_to_state("score") >= 50"#).unwrap();
+    let result = parse(r#"latest_event_to_state(score) >= 50"#).unwrap();
     assert_display(
         &result.op,
         "GreaterThanOrEqual(TlLatestEventToState(score), 50)",
@@ -60,13 +60,13 @@ fn greater_than_or_equal() {
 
 #[test]
 fn less_than() {
-    let result = parse(r#"latest_event_to_state("health") < 20"#).unwrap();
+    let result = parse(r#"latest_event_to_state(health) < 20"#).unwrap();
     assert_display(&result.op, "LessThan(TlLatestEventToState(health), 20)");
 }
 
 #[test]
 fn less_than_or_equal() {
-    let result = parse(r#"latest_event_to_state("health") <= 0"#).unwrap();
+    let result = parse(r#"latest_event_to_state(health) <= 0"#).unwrap();
     assert_display(
         &result.op,
         "LessThanOrEqual(TlLatestEventToState(health), 0)",
@@ -75,7 +75,7 @@ fn less_than_or_equal() {
 
 #[test]
 fn compare_float() {
-    let result = parse(r#"latest_event_to_state("temperature") > 36.5"#).unwrap();
+    let result = parse(r#"latest_event_to_state(temperature) > 36.5"#).unwrap();
     assert_display(
         &result.op,
         "GreaterThan(TlLatestEventToState(temperature), 36.5)",
@@ -84,7 +84,7 @@ fn compare_float() {
 
 #[test]
 fn compare_bool() {
-    let result = parse(r#"latest_event_to_state("flag") == true"#).unwrap();
+    let result = parse(r#"latest_event_to_state(flag) == true"#).unwrap();
     assert_display(&result.op, "EqualTo(TlLatestEventToState(flag), true)");
 }
 
@@ -154,7 +154,7 @@ fn duration_where() {
 
 #[test]
 fn duration_in_cur_state() {
-    let result = parse(r#"duration_in_cur_state(latest_event_to_state("status") == "idle")"#).unwrap();
+    let result = parse(r#"duration_in_cur_state(latest_event_to_state(status) == "idle")"#).unwrap();
     assert_display(
         &result.op,
         "TlDurationInCurState(EqualTo(TlLatestEventToState(status), idle))",
@@ -188,7 +188,7 @@ fn aggregate_single_function() {
 #[test]
 fn aggregate_multiple_functions() {
     let result = parse(
-        r#"latest_event_to_state("score") > 0 | aggregate(group_by="team", count, sum, avg, min, max)"#,
+        r#"latest_event_to_state(score) > 0 | aggregate(group_by="team", count, sum, avg, min, max)"#,
     )
     .unwrap();
     let agg = result.aggregation.unwrap();
@@ -294,7 +294,7 @@ fn cirr_query() {
         duration_where(
             has_existed(playerStateChange == "play")
             && !has_existed_within(playerStateChange == "seek", 5)
-            && latest_event_to_state("playerStateChange") == "buffer"
+            && latest_event_to_state(playerStateChange) == "buffer"
         )
     "#;
     let result = parse(input).unwrap();
@@ -310,7 +310,7 @@ fn cirr_query_with_aggregation() {
         duration_where(
             has_existed(playerStateChange == "play")
             && !has_existed_within(playerStateChange == "seek", 5)
-            && latest_event_to_state("playerStateChange") == "buffer"
+            && latest_event_to_state(playerStateChange) == "buffer"
         ) | aggregate(group_by="cdn-x", count, sum, avg)
     "#;
     let result = parse(input).unwrap();

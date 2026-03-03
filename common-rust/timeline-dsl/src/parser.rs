@@ -222,7 +222,7 @@ impl Parser {
             Token::LatestEventToState => {
                 self.advance();
                 self.expect(Token::LParen)?;
-                let col = self.parse_string_lit()?;
+                let col = self.parse_column_name()?;
                 self.expect(Token::RParen)?;
                 Ok(TimeLineOp::TlLatestEventToState(EventColumnName(col)))
             }
@@ -310,6 +310,14 @@ impl Parser {
                 Ok(GolemEventValue::BoolValue(false))
             }
             _ => Err(self.error(format!("expected value, found '{}'", self.peek()))),
+        }
+    }
+
+    fn parse_column_name(&mut self) -> Result<String, ParseError> {
+        match self.peek().clone() {
+            Token::Ident(s) => { self.advance(); Ok(s) }
+            Token::StringLit(s) => { self.advance(); Ok(s) }
+            _ => Err(self.error(format!("expected column name, found '{}'", self.peek()))),
         }
     }
 
