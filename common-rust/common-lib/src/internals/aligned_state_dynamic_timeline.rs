@@ -34,7 +34,9 @@ impl<T: Clone + Debug + PartialEq + PartialOrd> AlignedStateDynamicsTimeLine<T> 
                 Some(b) => {
                     let aligned_points = left.points.split_off(&b);
                     AlignedStateDynamicsTimeLine {
-                        time_line1: StateDynamicsTimeLine { points: aligned_points },
+                        time_line1: StateDynamicsTimeLine {
+                            points: aligned_points,
+                        },
                         time_line2: right,
                         removed_points_timeline1: Some(left),
                         removed_points_timeline2: None,
@@ -59,7 +61,9 @@ impl<T: Clone + Debug + PartialEq + PartialOrd> AlignedStateDynamicsTimeLine<T> 
                     let aligned_points = right.points.split_off(&b);
                     AlignedStateDynamicsTimeLine {
                         time_line1: left,
-                        time_line2: StateDynamicsTimeLine { points: aligned_points },
+                        time_line2: StateDynamicsTimeLine {
+                            points: aligned_points,
+                        },
                         removed_points_timeline1: None,
                         removed_points_timeline2: Some(right),
                     }

@@ -85,6 +85,10 @@ impl<'t, T: Debug + Clone> Boundaries<'t, T> {
             }
         };
 
-        Boundaries { left: left_boundary, intersection, right: right_boundary }
+        Boundaries {
+            left: left_boundary,
+            intersection,
+            right: right_boundary,
+        }
     }
 }

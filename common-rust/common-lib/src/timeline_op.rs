@@ -91,9 +91,13 @@ impl Display for TimeLineOp {
         match self {
             TimeLineOp::EqualTo(tl, v) => write!(f, "EqualTo({}, {})", tl, text_of(v)),
             TimeLineOp::GreaterThan(tl, v) => write!(f, "GreaterThan({}, {})", tl, text_of(v)),
-            TimeLineOp::GreaterThanOrEqual(tl, v) => write!(f, "GreaterThanOrEqual({}, {})", tl, text_of(v)),
+            TimeLineOp::GreaterThanOrEqual(tl, v) => {
+                write!(f, "GreaterThanOrEqual({}, {})", tl, text_of(v))
+            }
             TimeLineOp::LessThan(tl, v) => write!(f, "LessThan({}, {})", tl, text_of(v)),
-            TimeLineOp::LessThanOrEqual(tl, v) => write!(f, "LessThanOrEqual({}, {})", tl, text_of(v)),
+            TimeLineOp::LessThanOrEqual(tl, v) => {
+                write!(f, "LessThanOrEqual({}, {})", tl, text_of(v))
+            }
             TimeLineOp::And(l, r) => write!(f, "And({}, {})", l, r),
             TimeLineOp::Or(l, r) => write!(f, "Or({}, {})", l, r),
             TimeLineOp::Not(tl) => write!(f, "Not({})", tl),
