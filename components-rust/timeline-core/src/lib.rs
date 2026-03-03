@@ -140,6 +140,40 @@ pub enum DurationState {
     Flat { value: u64 },
 }
 
+/// Reference to an aggregator agent that collects cross-session metrics.
+#[derive(Clone, Debug, Schema)]
+pub struct AggregatorRef {
+    pub worker_name: String,
+    pub session_id: String,
+}
+
+/// Which aggregation functions to compute.
+#[derive(Clone, Debug, Schema)]
+pub enum AggregationType {
+    Count,
+    Sum,
+    Avg,
+    Min,
+    Max,
+}
+
+/// Configuration for cross-session aggregation.
+#[derive(Clone, Debug, Schema)]
+pub struct AggregationConfig {
+    pub group_by_value: String,
+    pub aggregations: Vec<AggregationType>,
+}
+
+/// Result of querying an aggregator.
+#[derive(Clone, Debug, Schema)]
+pub struct AggregationResult {
+    pub count: u64,
+    pub sum: f64,
+    pub avg: f64,
+    pub min: Option<f64>,
+    pub max: Option<f64>,
+}
+
 // ============================================================================
 // Conversions between API boundary types and internal domain types
 // ============================================================================
@@ -583,6 +617,19 @@ async fn notify_parent(parent: &Option<ParentRef>, time: u64, value: EventValue)
     }
 }
 
+async fn notify_aggregator(aggregator: &Option<AggregatorRef>, time: u64, value: &EventValue) {
+    if let Some(agg) = aggregator {
+        let numeric = match value {
+            EventValue::IntValue(i) => *i as f64,
+            EventValue::FloatValue(f) => *f,
+            EventValue::BoolValue(b) => if *b { 1.0 } else { 0.0 },
+            _ => return,
+        };
+        let mut client = AggregatorClient::get(agg.worker_name.clone());
+        client.on_session_value_changed(agg.session_id.clone(), time, numeric).await;
+    }
+}
+
 // ---------------------------------------------------------------------------
 // TimelineProcessor — derived node agent (push model)
 //
@@ -595,6 +642,7 @@ pub trait TimelineProcessor {
     fn new(name: String) -> Self;
     fn initialize_derived(&mut self, operation: DerivedOperation, children: Vec<ChildWorkerRef>);
     fn set_parent(&mut self, parent: ParentRef);
+    fn set_aggregator(&mut self, aggregator: AggregatorRef);
     async fn on_child_state_changed(&mut self, child_index: u32, time: u64, value: EventValue);
     fn get_derived_result(&self, t1: u64) -> Result<TimelineResult, String>;
 }
@@ -604,6 +652,7 @@ struct TimelineProcessorImpl {
     operation: Option<DerivedOperation>,
     children: Vec<ChildWorkerRef>,
     parent: Option<ParentRef>,
+    aggregator: Option<AggregatorRef>,
     // Child state storage for binary ops (And/Or)
     left_child_state: StateDynamicsTimeLine<GolemEventValue>,
     right_child_state: StateDynamicsTimeLine<GolemEventValue>,
@@ -621,6 +670,7 @@ impl TimelineProcessor for TimelineProcessorImpl {
             operation: None,
             children: Vec::new(),
             parent: None,
+            aggregator: None,
             left_child_state: StateDynamicsTimeLine::default(),
             right_child_state: StateDynamicsTimeLine::default(),
             result_state: StateDynamicsTimeLine::default(),
@@ -635,6 +685,10 @@ impl TimelineProcessor for TimelineProcessorImpl {
 
     fn set_parent(&mut self, parent: ParentRef) {
         self.parent = Some(parent);
+    }
+
+    fn set_aggregator(&mut self, aggregator: AggregatorRef) {
+        self.aggregator = Some(aggregator);
     }
 
     async fn on_child_state_changed(&mut self, child_index: u32, time: u64, value: EventValue) {
@@ -662,7 +716,9 @@ impl TimelineProcessor for TimelineProcessorImpl {
                 let new_val = GolemEventValue::BoolValue(result);
                 if prev.as_ref() != Some(&new_val) {
                     self.result_state.add_state_dynamic_info(time, new_val);
-                    notify_parent(&self.parent, time, EventValue::BoolValue(result)).await;
+                    let event_val = EventValue::BoolValue(result);
+                    notify_parent(&self.parent, time, event_val.clone()).await;
+                    notify_aggregator(&self.aggregator, time, &event_val).await;
                 }
             }
 
@@ -676,7 +732,9 @@ impl TimelineProcessor for TimelineProcessorImpl {
                     let new_val = GolemEventValue::BoolValue(negated);
                     if prev.as_ref() != Some(&new_val) {
                         self.result_state.add_state_dynamic_info(time, new_val);
-                        notify_parent(&self.parent, time, EventValue::BoolValue(negated)).await;
+                        let event_val = EventValue::BoolValue(negated);
+                        notify_parent(&self.parent, time, event_val.clone()).await;
+                        notify_aggregator(&self.aggregator, time, &event_val).await;
                     }
                 }
             }
@@ -706,7 +764,9 @@ impl TimelineProcessor for TimelineProcessorImpl {
                     let new_val = GolemEventValue::BoolValue(result);
                     if prev.as_ref() != Some(&new_val) {
                         self.result_state.add_state_dynamic_info(time, new_val);
-                        notify_parent(&self.parent, time, EventValue::BoolValue(result)).await;
+                        let event_val = EventValue::BoolValue(result);
+                        notify_parent(&self.parent, time, event_val.clone()).await;
+                        notify_aggregator(&self.aggregator, time, &event_val).await;
                     }
                 }
             }
@@ -736,7 +796,9 @@ impl TimelineProcessor for TimelineProcessorImpl {
                     let new_val = GolemEventValue::BoolValue(result);
                     if prev.as_ref() != Some(&new_val) {
                         self.result_state.add_state_dynamic_info(time, new_val);
-                        notify_parent(&self.parent, time, EventValue::BoolValue(result)).await;
+                        let event_val = EventValue::BoolValue(result);
+                        notify_parent(&self.parent, time, event_val.clone()).await;
+                        notify_aggregator(&self.aggregator, time, &event_val).await;
                     }
                 }
             }
@@ -765,12 +827,9 @@ impl TimelineProcessor for TimelineProcessorImpl {
                     let result_value = GolemEventValue::IntValue(current_count as i64);
                     self.result_state
                         .add_state_dynamic_info(time, result_value.clone());
-                    notify_parent(
-                        &self.parent,
-                        time,
-                        EventValue::IntValue(current_count as i64),
-                    )
-                    .await;
+                    let event_val = EventValue::IntValue(current_count as i64);
+                    notify_parent(&self.parent, time, event_val.clone()).await;
+                    notify_aggregator(&self.aggregator, time, &event_val).await;
                 }
             }
 
@@ -783,7 +842,9 @@ impl TimelineProcessor for TimelineProcessorImpl {
                 });
                 let result_value = GolemEventValue::IntValue(0);
                 self.result_state.add_state_dynamic_info(time, result_value);
-                notify_parent(&self.parent, time, EventValue::IntValue(0)).await;
+                let event_val = EventValue::IntValue(0);
+                notify_parent(&self.parent, time, event_val.clone()).await;
+                notify_aggregator(&self.aggregator, time, &event_val).await;
             }
         }
     }
@@ -822,15 +883,94 @@ impl TimelineProcessor for TimelineProcessorImpl {
 }
 
 // ---------------------------------------------------------------------------
+// Aggregator — cross-session aggregation agent
+//
+// Receives values pushed from session root nodes, maintains running
+// accumulators (count, sum, min, max). One agent per group-by value
+// (e.g., "aggregator-cdn-x"). Memory is O(active sessions) for per-session
+// tracking + O(1) for accumulators.
+// ---------------------------------------------------------------------------
+
+#[agent_definition]
+pub trait Aggregator {
+    fn new(name: String) -> Self;
+    fn initialize_aggregator(&mut self, aggregations: Vec<AggregationType>);
+    fn on_session_value_changed(&mut self, session_id: String, time: u64, value: f64);
+    fn get_aggregation_result(&self) -> AggregationResult;
+}
+
+struct AggregatorImpl {
+    _name: String,
+    aggregations: Vec<AggregationType>,
+    session_values: std::collections::HashMap<String, f64>,
+    count: u64,
+    sum: f64,
+    min: f64,
+    max: f64,
+}
+
+#[agent_implementation]
+impl Aggregator for AggregatorImpl {
+    fn new(name: String) -> Self {
+        Self {
+            _name: name,
+            aggregations: Vec::new(),
+            session_values: std::collections::HashMap::new(),
+            count: 0,
+            sum: 0.0,
+            min: f64::MAX,
+            max: f64::MIN,
+        }
+    }
+
+    fn initialize_aggregator(&mut self, aggregations: Vec<AggregationType>) {
+        self.aggregations = aggregations;
+    }
+
+    fn on_session_value_changed(&mut self, session_id: String, _time: u64, value: f64) {
+        if let Some(old_value) = self.session_values.insert(session_id, value) {
+            // Update: subtract old, add new
+            self.sum = self.sum - old_value + value;
+        } else {
+            // New session
+            self.count += 1;
+            self.sum += value;
+        }
+        if value < self.min {
+            self.min = value;
+        }
+        if value > self.max {
+            self.max = value;
+        }
+    }
+
+    fn get_aggregation_result(&self) -> AggregationResult {
+        let avg = if self.count > 0 {
+            self.sum / self.count as f64
+        } else {
+            0.0
+        };
+        AggregationResult {
+            count: self.count,
+            sum: self.sum,
+            avg,
+            min: if self.count > 0 { Some(self.min) } else { None },
+            max: if self.count > 0 { Some(self.max) } else { None },
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
 // TimelineDriver — orchestrator agent that takes a TimelineOpGraph,
 // walks the tree, spawns EventProcessor / TimelineProcessor agents,
 // and wires them together (including parent refs for push propagation).
+// Optionally wires the root node to an Aggregator for cross-session metrics.
 // ---------------------------------------------------------------------------
 
 #[agent_definition]
 pub trait TimelineDriver {
     fn new(name: String) -> Self;
-    async fn initialize_timeline(&self, timeline: TimelineOpGraph) -> Result<String, String>;
+    async fn initialize_timeline(&self, timeline: TimelineOpGraph, aggregation: Option<AggregationConfig>) -> Result<String, String>;
 }
 
 struct TimelineDriverImpl {
@@ -843,9 +983,30 @@ impl TimelineDriver for TimelineDriverImpl {
         Self { name }
     }
 
-    async fn initialize_timeline(&self, timeline: TimelineOpGraph) -> Result<String, String> {
+    async fn initialize_timeline(&self, timeline: TimelineOpGraph, aggregation: Option<AggregationConfig>) -> Result<String, String> {
         let recursive_op = timeline.to_recursive();
         let (result, _) = self.setup_node(&recursive_op, &mut 0, &None).await?;
+
+        // Wire root node to aggregator if aggregation config is provided
+        if let Some(agg_config) = aggregation {
+            let aggregator_name = format!("aggregator-{}", agg_config.group_by_value);
+            let mut agg_client = AggregatorClient::get(aggregator_name.clone());
+            agg_client.initialize_aggregator(agg_config.aggregations).await;
+
+            let agg_ref = AggregatorRef {
+                worker_name: aggregator_name,
+                session_id: self.name.clone(),
+            };
+
+            if result.is_leaf {
+                // Root is a leaf — a single-node expression like TlLatestEventToState.
+                // Aggregation on raw leaf values is unusual; skip for now.
+            } else {
+                let mut client = TimelineProcessorClient::get(result.worker_name.clone());
+                client.set_aggregator(agg_ref).await;
+            }
+        }
+
         Ok(format!(
             "Timeline initialized. Result worker: {}",
             result.worker_name
