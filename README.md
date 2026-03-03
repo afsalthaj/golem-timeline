@@ -246,26 +246,226 @@ golem agent invoke \
   '3'
 ```
 
-## Streaming with Pulsar
+## Deploying CIRR at a Streaming Company
 
-For real workloads, use a message broker like Pulsar to stream events into the system.
-The pattern is:
+This section walks through a realistic end-to-end deployment of CIRR at a hypothetical
+streaming platform (think Disney+, Netflix, etc.) where player telemetry events flow through
+Pulsar or Kafka.
 
-1. A **producer** writes events to a Pulsar topic (e.g., player state changes).
-2. A **feeder** (consumer) reads from the topic and calls `add-event` on the appropriate
-   EventProcessor agents via the Golem invocation API or agent-to-agent RPC.
+### End-to-end architecture
 
 ```
-┌──────────┐     ┌─────────┐     ┌────────────────────┐
-│ Producer │────▶│  Pulsar  │────▶│  Feeder            │
-│ (events) │     │  Topic   │     │  (calls add-event  │
-└──────────┘     └─────────┘     │   on EventProcessor │
-                                  │   agents via Golem) │
-                                  └────────────────────┘
+┌────────────────┐     ┌───────────────┐     ┌────────────────────────────────────┐
+│  Video Players │────▶│  Pulsar/Kafka  │────▶│  Feeder (Pulsar Consumer)          │
+│  (millions of  │     │  Topic:        │     │                                    │
+│   sessions)    │     │  player-events │     │  1. Extract session_id from msg    │
+└────────────────┘     └───────────────┘     │  2. If new session:                │
+                                              │     → initialize_timeline(sess_id) │
+                                              │  3. Route event to leaf agents     │
+                                              │     using naming convention:       │
+                                              │     "{sess_id}-node-{N}"           │
+                                              └──────────────┬─────────────────────┘
+                                                             │
+                                              ┌──────────────▼─────────────────────┐
+                                              │         Golem Cloud (K8s)           │
+                                              │                                    │
+                                              │  ┌──────────┐   ┌──────────┐       │
+                                              │  │  Leaf     │   │  Leaf    │       │
+                                              │  │  Agents   │──▶│ Derived  │──▶ ...│
+                                              │  │(per sess) │   │  Agents  │       │
+                                              │  └──────────┘   └────┬─────┘       │
+                                              │                      │              │
+                                              │               ┌──────▼──────┐       │
+                                              │               │ Aggregator  │       │
+                                              │               │ (per CDN)   │       │
+                                              │               └─────────────┘       │
+                                              └────────────────────────────────────┘
 ```
 
-The feeder can be a standalone Rust binary that uses the Golem REST API, or another
-Golem agent that consumes from Pulsar and dispatches events.
+### Step 1: Define the CIRR workflow
+
+The CIRR expression is defined once for the entire platform:
+
+```
+TlDurationWhere(
+  And(
+    And(
+      TlHasExisted(playerStateChange == "play"),
+      Not(TlHasExistedWithin(userAction == "seek", 5))
+    ),
+    EqualTo(TlLatestEventToState("playerStateChange"), "buffer")
+  )
+)
+```
+
+This is the same expression for every session — Afsal watching a movie and John watching
+a movie both use this exact tree. The only difference is the session ID prefix in agent names.
+
+### Step 2: Bootstrap — Discover the agent topology
+
+The `TimelineDriver` uses a depth-first counter to name agents. For the CIRR tree, the
+traversal produces these nodes:
+
+```
+setup_node(TlDurationWhere)          → counter=1  "{sid}-node-1"  TimelineProcessor
+  setup_node(And)                    → counter=2  "{sid}-node-2"  TimelineProcessor
+    setup_node(And)        [left]    → counter=3  "{sid}-node-3"  TimelineProcessor
+      setup_node(TlHasExisted) [L]   → counter=4  "{sid}-node-4"  EventProcessor ★
+      setup_node(Not)          [R]   → counter=5  "{sid}-node-5"  TimelineProcessor
+        setup_node(TlHasExistedWithin)→ counter=6  "{sid}-node-6"  EventProcessor ★
+    setup_node(EqualTo)    [right]   → counter=7  "{sid}-node-7"  TimelineProcessor
+      setup_node(TlLatestEventToState)→ counter=8  "{sid}-node-8"  EventProcessor ★
+```
+
+The ★ markers are the **leaf EventProcessor agents** — the ones that receive events.
+This gives us the static routing table:
+
+| Leaf worker | Operation | Listens for column | Matching events |
+|---|---|---|---|
+| `{sid}-node-4` | TlHasExisted | `playerStateChange` | `playerStateChange == "play"` |
+| `{sid}-node-6` | TlHasExistedWithin | `userAction` | `userAction == "seek"` (within 5s) |
+| `{sid}-node-8` | TlLatestEventToState | `playerStateChange` | Any `playerStateChange` value |
+
+**This table is the same for every CIRR session.** The node numbering is deterministic
+because `setup_node` always traverses depth-first with a monotonic counter.
+
+> **Note:** The system does not currently return this plan as a structured object.
+> One practical approach: call `initialize_timeline` for a single bootstrap session,
+> observe the worker names created (e.g., from logs or the return string), and extract
+> the naming pattern. Replace the concrete session ID with a `{sid}` placeholder —
+> that becomes your static routing template for all future sessions.
+
+### Step 3: Build the Pulsar/Kafka consumer (feeder)
+
+The feeder is a standalone process (not a Golem agent) that bridges the message broker
+and Golem. Here is the event routing logic:
+
+```
+                    ┌──────────────────────────────────────┐
+                    │          Feeder (Consumer)            │
+                    │                                      │
+                    │  Event arrives from Pulsar:           │
+                    │  { session_id: "sess-42",            │
+                    │    time: 7,                           │
+                    │    event: [("playerStateChange",      │
+                    │             "buffer")] }              │
+                    │                                      │
+                    │  1. session_id = "sess-42"           │
+                    │                                      │
+                    │  2. First event for this session?    │
+                    │     YES → call initialize_timeline   │
+                    │           on TimelineDriver("sess-42")│
+                    │     NO  → skip (already initialized) │
+                    │                                      │
+                    │  3. Column is "playerStateChange"    │
+                    │     → route to node-4 AND node-8     │
+                    │                                      │
+                    │     If column were "userAction"      │
+                    │     → route to node-6 only           │
+                    └────────────┬──────────┬──────────────┘
+                                 │          │
+            ┌────────────────────▼┐   ┌─────▼──────────────────┐
+            │  EventProcessor     │   │  EventProcessor         │
+            │  "sess-42-node-4"   │   │  "sess-42-node-8"       │
+            │  (TlHasExisted)     │   │  (TlLatestEventToState)  │
+            └─────────────────────┘   └──────────────────────────┘
+```
+
+Note that **one event can fan out to multiple leaves**. A `playerStateChange` event
+must be sent to both `node-4` (which checks "has play ever existed?") and `node-8`
+(which tracks the latest state). The feeder is responsible for this fan-out.
+
+The feeder only needs to track **which sessions have been initialized** (a simple
+`HashSet<SessionId>`, not a full plan per session). The routing logic is static
+and identical for every session:
+
+```rust
+// Static routing table — derived once from the CIRR workflow
+fn route_event(session_id: &str, column: &str) -> Vec<String> {
+    match column {
+        "playerStateChange" => vec![
+            format!("{session_id}-node-4"),
+            format!("{session_id}-node-8"),
+        ],
+        "userAction" => vec![
+            format!("{session_id}-node-6"),
+        ],
+        _ => vec![], // unknown column, ignore
+    }
+}
+```
+
+### Step 4: Runtime event flow — Afsal and John watch movies
+
+```
+Timeline: 8 PM Friday
+
+  Afsal starts "The Mandalorian"           John starts "Moana"
+  session_id = "afsal-mando-1"             session_id = "john-moana-1"
+          │                                         │
+          ▼                                         ▼
+  ┌─── Pulsar Topic: player-events ─────────────────────────────────┐
+  │ {sid:"afsal-mando-1", time:1, playerStateChange:"play"}         │
+  │ {sid:"john-moana-1",  time:1, playerStateChange:"play"}         │
+  │ {sid:"afsal-mando-1", time:5, playerStateChange:"buffer"}       │
+  │ {sid:"john-moana-1",  time:3, userAction:"seek"}                │
+  │ {sid:"afsal-mando-1", time:7, userAction:"seek"}                │
+  │ ...                                                             │
+  └──────────────────────────┬──────────────────────────────────────┘
+                             │
+                      ┌──────▼───────┐
+                      │   Feeder     │
+                      └──────┬───────┘
+                             │
+              ┌──────────────┼──────────────┐
+              ▼                             ▼
+  Afsal's agent tree:              John's agent tree:
+  afsal-mando-1-node-1 (root)     john-moana-1-node-1 (root)
+  afsal-mando-1-node-2            john-moana-1-node-2
+  ...                             ...
+  afsal-mando-1-node-8            john-moana-1-node-8
+              │                             │
+              ▼                             ▼
+  ┌───────────────────┐         ┌───────────────────┐
+  │ aggregator-cdn-a  │         │ aggregator-cdn-b  │
+  │ (Akamai)          │         │ (Cloudfront)      │
+  └───────────────────┘         └───────────────────┘
+```
+
+**At any given instant**, most of these agents are **suspended** (not in memory).
+Only the agents currently processing a push notification are active. When Afsal's
+`playerStateChange:"buffer"` event arrives:
+
+1. Feeder calls `add_event` on `afsal-mando-1-node-4` and `afsal-mando-1-node-8`
+2. `node-4` wakes (~1ms), evaluates "has play existed?" → yes, pushes `true` to `node-3`, suspends
+3. `node-3` wakes (~1ms), evaluates `And(true, ...)` → pushes to `node-2`, suspends
+4. ... cascade continues to `node-1` (TlDurationWhere) → pushes delta to `aggregator-cdn-a`
+5. Meanwhile, `node-8` wakes (~1ms), records latest state as `"buffer"`, pushes to `node-7`, suspends
+6. `node-7` evaluates `EqualTo("buffer", "buffer")` → `true`, pushes to `node-2`
+7. All agents suspend. Total wall time: ~5–10ms. Total agents in memory during this: ~5
+
+All of John's agents remain completely suspended during this — zero cost.
+
+### Step 5: Querying results
+
+**Per-session query** — "What is Afsal's CIRR duration right now?"
+
+```shell
+golem agent invoke \
+  'timeline-processor("afsal-mando-1-node-1")' \
+  'timeline:core/timeline-processor.{get-derived-result}' \
+  '100'
+```
+
+This is a local point lookup on `node-1`'s precomputed state — no RPC cascade.
+
+**Cross-session query** — "What is the average CIRR across all Akamai sessions?"
+
+```shell
+golem agent invoke \
+  'aggregator("aggregator-cdn-a")' \
+  'timeline:core/aggregator.{get-aggregation-result}'
+```
 
 ## TimeLine DSL Operations
 
