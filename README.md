@@ -19,7 +19,7 @@ A user is experiencing connection-induced rebuffering when:
 
 All three must be true simultaneously, and we measure how long that condition holds.
 
-```
+```javascript
 duration_where(
   has_existed(playerStateChange == "play")
   && !has_existed_within(playerStateChange == "seek", 5)
@@ -29,7 +29,7 @@ duration_where(
 
 With cross-session aggregation per CDN:
 
-```
+```javascript
 duration_where(
   has_existed(playerStateChange == "play")
   && !has_existed_within(playerStateChange == "seek", 5)
@@ -41,14 +41,14 @@ duration_where(
 ### More examples
 
 **Time spent idle per region:**
-```
+```javascript
 duration_in_cur_state(
   latest_event_to_state("status") == "idle"
 ) | aggregate(group_by="region", count, avg, max)
 ```
 
 **Credit card location anomaly — location changed within 10 minutes:**
-```
+```javascript
 has_existed_within(
   lat_long > 0, 600
 )
