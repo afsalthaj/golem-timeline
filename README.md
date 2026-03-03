@@ -13,8 +13,6 @@ leaf nodes ingest events and push state changes upward through the agent tree. D
 incrementally on each notification and cascade changes to their parents. Point-in-time queries are local
 lookups on precomputed state — no cascading RPC required at query time.
 
-<img width="754" alt="image" src="https://github.com/user-attachments/assets/4016368e-c5e2-4799-abcb-8d08f7439bc9">
-
 ### Architecture
 
 ```
@@ -64,6 +62,7 @@ lookups on precomputed state — no cascading RPC required at query time.
 The `TimelineOpGraph` is a non-recursive `Vec<TimelineNode>` with index references — required because
 Golem's type system (derived via `#[derive(Schema)]`) does not support recursive types. Internally,
 it converts to/from the recursive `TimeLineOp` for computation.
+
 
 ### Push-based data flow
 
