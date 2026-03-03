@@ -12,11 +12,16 @@ pub(crate) fn state_to_result(state: Option<(u64, Option<u64>, EventValue)>) -> 
     }
 }
 
-pub(crate) async fn notify_parent(parent: &Option<ParentRef>, time: u64, value: EventValue) {
+pub(crate) async fn notify_parent(
+    parent: &Option<ParentRef>,
+    time: u64,
+    value: EventValue,
+    group_by_value: &Option<EventValue>,
+) {
     if let Some(parent) = parent {
         let mut client = TimelineProcessorClient::get(parent.worker_name.clone());
         client
-            .on_child_state_changed(parent.child_index, time, value)
+            .on_child_state_changed(parent.child_index, time, value, group_by_value.clone())
             .await;
     }
 }
@@ -30,24 +35,62 @@ pub(crate) fn event_value_to_f64(value: &EventValue) -> Option<f64> {
     }
 }
 
+fn event_value_to_string(value: &EventValue) -> String {
+    match value {
+        EventValue::StringValue(s) => s.clone(),
+        EventValue::IntValue(i) => i.to_string(),
+        EventValue::FloatValue(f) => f.to_string(),
+        EventValue::BoolValue(b) => b.to_string(),
+    }
+}
+
 pub(crate) async fn notify_aggregator(
-    aggregator: &Option<AggregatorRef>,
+    aggregation: &Option<AggregationConfig>,
+    aggregator_worker: &mut Option<String>,
     last_aggregated_value: &mut Option<f64>,
     _time: u64,
     value: &EventValue,
+    group_by_value: &Option<EventValue>,
 ) {
-    if let Some(agg) = aggregator {
-        let new_value = match event_value_to_f64(value) {
-            Some(v) => v,
-            None => return,
-        };
-        let delta = new_value - last_aggregated_value.unwrap_or(0.0);
-        *last_aggregated_value = Some(new_value);
-        if delta != 0.0 {
-            let mut client = AggregatorClient::get(agg.worker_name.clone());
-            client.on_delta(delta).await;
-        }
+    let agg_config = match aggregation {
+        Some(c) => c,
+        None => return,
+    };
+
+    let group_value = match group_by_value {
+        Some(v) => v,
+        None => return,
+    };
+
+    let new_value = match event_value_to_f64(value) {
+        Some(v) => v,
+        None => return,
+    };
+
+    let delta = new_value - last_aggregated_value.unwrap_or(0.0);
+    *last_aggregated_value = Some(new_value);
+
+    if delta == 0.0 {
+        return;
     }
+
+    let first_call = aggregator_worker.is_none();
+    let worker_name = aggregator_worker.get_or_insert_with(|| {
+        format!(
+            "aggregator-{}-{}",
+            agg_config.group_by_column,
+            event_value_to_string(group_value),
+        )
+    });
+
+    let mut client = AggregatorClient::get(worker_name.clone());
+    if first_call {
+        client
+            .initialize_aggregator(agg_config.aggregations.clone())
+            .await;
+        client.register_session().await;
+    }
+    client.on_delta(delta).await;
 }
 
 pub(crate) struct SetupResult {

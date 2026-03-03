@@ -132,12 +132,6 @@ pub enum DurationState {
     Flat { value: u64 },
 }
 
-/// Reference to an aggregator agent that collects cross-session metrics.
-#[derive(Clone, Debug, Schema)]
-pub struct AggregatorRef {
-    pub worker_name: String,
-}
-
 /// Which aggregation functions to compute.
 #[derive(Clone, Debug, Schema)]
 pub enum AggregationType {
@@ -149,9 +143,13 @@ pub enum AggregationType {
 }
 
 /// Configuration for cross-session aggregation.
+///
+/// `group_by_column` is the event column name (from the DSL, e.g. `cdn`).
+/// The feeder extracts the concrete value of this column from event data at
+/// runtime and routes each session's root node to the correct aggregator agent.
 #[derive(Clone, Debug, Schema)]
 pub struct AggregationConfig {
-    pub group_by_value: String,
+    pub group_by_column: String,
     pub aggregations: Vec<AggregationType>,
 }
 

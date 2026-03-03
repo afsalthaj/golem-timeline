@@ -34,7 +34,7 @@ duration_where(
   has_existed(playerStateChange == "play")
   && !has_existed_within(playerStateChange == "seek", 5)
   && latest_event_to_state(playerStateChange) == "buffer"
-) | aggregate(group_by="cdn-x", count, sum, avg)
+) | aggregate(group_by=cdn, count, sum, avg)
 ```
 
 
@@ -44,7 +44,7 @@ duration_where(
 ```javascript
 duration_in_cur_state(
   latest_event_to_state(status) == "idle"
-) | aggregate(group_by="region", count, avg, max)
+) | aggregate(group_by=region, count, avg, max)
 ```
 
 **Credit card location anomaly — location changed within 10 minutes:**
@@ -252,14 +252,14 @@ This spawns the required EventProcessor and TimelineProcessor agents, wired toge
 ### Initialize a timeline with cross-session aggregation
 
 To aggregate CIRR duration across CDN sessions, pass an `AggregationConfig` alongside the timeline.
-For example, to group by CDN `"cdn-x"` and compute Count, Sum, and Avg:
+For example, to group by the `cdn` column in event data and compute Count, Sum, and Avg:
 
 ```shell
 golem agent invoke \
   'timeline-driver("cirr-cdn-x-session-1")' \
   'timeline:core/timeline-driver.{initialize-timeline}' \
   '{nodes: [tl-duration-where(1), and(2, 3), comparison(equal-to, 4, string-value("buffer")), tl-latest-event-to-state("playerStateChange"), tl-has-existed(col-name: "playerStateChange", value: string-value("play"), op: equal))]}' \
-  '{group-by-value: "cdn-x", aggregations: [count, sum, avg]}'
+  '{group-by-column: "cdn", aggregations: [count, sum, avg]}'
 ```
 
 Each session's root node pushes deltas to the shared `aggregator-cdn-x` agent.

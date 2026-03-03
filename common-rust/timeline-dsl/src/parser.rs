@@ -321,16 +321,6 @@ impl Parser {
         }
     }
 
-    fn parse_string_lit(&mut self) -> Result<String, ParseError> {
-        match self.peek().clone() {
-            Token::StringLit(s) => {
-                self.advance();
-                Ok(s)
-            }
-            _ => Err(self.error(format!("expected string, found '{}'", self.peek()))),
-        }
-    }
-
     fn parse_int_lit(&mut self) -> Result<i64, ParseError> {
         match self.peek().clone() {
             Token::IntLit(n) => {
@@ -356,7 +346,7 @@ impl Parser {
         self.expect(Token::LParen)?;
         self.expect(Token::GroupBy)?;
         self.expect(Token::Eq)?;
-        let group_by = self.parse_string_lit()?;
+        let group_by = self.parse_column_name()?;
         self.expect(Token::Comma)?;
 
         let mut functions = vec![self.parse_agg_fn()?];

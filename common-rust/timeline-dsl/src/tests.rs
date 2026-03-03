@@ -176,7 +176,7 @@ fn complex_nested() {
 #[test]
 fn aggregate_single_function() {
     let result = parse(
-        r#"has_existed(status == "active") | aggregate(group_by="region", count)"#,
+        r#"has_existed(status == "active") | aggregate(group_by=region, count)"#,
     )
     .unwrap();
     assert_display(&result.op, "TlHasExisted(status == active)");
@@ -188,7 +188,7 @@ fn aggregate_single_function() {
 #[test]
 fn aggregate_multiple_functions() {
     let result = parse(
-        r#"latest_event_to_state(score) > 0 | aggregate(group_by="team", count, sum, avg, min, max)"#,
+        r#"latest_event_to_state(score) > 0 | aggregate(group_by=team, count, sum, avg, min, max)"#,
     )
     .unwrap();
     let agg = result.aggregation.unwrap();
@@ -211,7 +211,7 @@ fn full_complex_query_with_aggregation() {
         duration_where(
             has_existed(status == "active")
             && !(has_existed_within(error > 0, 300))
-        ) | aggregate(group_by="region", count, avg)
+        ) | aggregate(group_by=region, count, avg)
     "#;
     let result = parse(input).unwrap();
     assert_display(
@@ -284,7 +284,7 @@ fn error_bad_predicate_op() {
 #[test]
 fn error_missing_aggregate_function() {
     let err =
-        parse(r#"has_existed(x == 1) | aggregate(group_by="r", )"#).unwrap_err();
+        parse(r#"has_existed(x == 1) | aggregate(group_by=r, )"#).unwrap_err();
     assert!(err.message.contains("aggregation function"));
 }
 
@@ -311,7 +311,7 @@ fn cirr_query_with_aggregation() {
             has_existed(playerStateChange == "play")
             && !has_existed_within(playerStateChange == "seek", 5)
             && latest_event_to_state(playerStateChange) == "buffer"
-        ) | aggregate(group_by="cdn-x", count, sum, avg)
+        ) | aggregate(group_by=cdn, count, sum, avg)
     "#;
     let result = parse(input).unwrap();
     assert_display(
@@ -319,7 +319,7 @@ fn cirr_query_with_aggregation() {
         "TlDurationWhere(And(And(TlHasExisted(playerStateChange == play), Not(TlHasExistedWithin(playerStateChange == seek, 5))), EqualTo(TlLatestEventToState(playerStateChange), buffer)))",
     );
     let agg = result.aggregation.unwrap();
-    assert_eq!(agg.group_by, "cdn-x");
+    assert_eq!(agg.group_by, "cdn");
     assert_eq!(
         agg.functions,
         vec![AggregationFunction::Count, AggregationFunction::Sum, AggregationFunction::Avg],
