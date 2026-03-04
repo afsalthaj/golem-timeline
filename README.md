@@ -49,9 +49,9 @@ duration_in_cur_state(
 
 **Credit card location anomaly — location changed within 10 minutes:**
 ```javascript
-has_existed_within(
-  lat_long > 0, 600
-)
+duration_in_cur_state(
+  latest_event_to_state(location)) 
+) < 600
 ```
 
 **User engaged: played and never errored:**
