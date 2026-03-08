@@ -47,12 +47,14 @@ duration_in_cur_state(
 ) | aggregate(group_by(region), count, avg, max)
 ```
 
-**Credit card location anomaly — location changed within 10 minutes:**
+**Credit card location anomaly — location changed too quickly:**
 ```javascript
 duration_in_cur_state(
   latest_event_to_state(location)) 
 ) < 600
 ```
+If the cardholder has been at the current location for less than 600 seconds,
+the location just changed — flag it as a potential anomaly (e.g., New York → London in 10 minutes).
 
 **User engaged: played and never errored:**
 ```javascript
@@ -184,6 +186,14 @@ The summary of the above timeline is as follows:
 > contributing to the connection induced rebuffering!
 
 
+## A simple credit card transaction outlier detection
+
+```
+duration_in_cur_state(latest_event_to_state(location)) < 600
+```
+
+Track the cardholder's latest location as state, measure how long they've been at that location.
+If the duration is less than 600 seconds, the location changed suspiciously fast — flag it.
 
 ## QuickStart
 

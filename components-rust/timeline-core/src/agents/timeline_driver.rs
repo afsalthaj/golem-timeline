@@ -18,22 +18,20 @@ use crate::types::*;
 ///   ) | aggregate(group_by=cdn, count, sum, avg)
 ///   ```
 ///
-///   The driver spawns 8 agents for this session:
-///     Leaves (EventProcessor):
-///       - sess-42-node-1: has_existed(playerStateChange == "play")
-///       - sess-42-node-3: has_existed_within(playerStateChange == "seek", 5)
-///       - sess-42-node-5: latest_event_to_state("playerStateChange")
-///     Derived (TimelineProcessor):
-///       - sess-42-node-2: And(node-1, node-4)
-///       - sess-42-node-4: Not(node-3)
-///       - sess-42-node-6: EqualTo(node-5, "buffer")
-///       - sess-42-node-7: And(node-2, node-6)
-///       - sess-42-node-8: DurationWhere(node-7) ← root
+///   The driver spawns 8 agents (pre-order depth-first numbering):
+///     node-1: DurationWhere(node-2)                    ← root (TimelineProcessor)
+///     node-2: And(node-3, node-7)                      (TimelineProcessor)
+///     node-3: And(node-4, node-5)                      (TimelineProcessor)
+///     node-4: TlHasExisted(playerStateChange == "play") (EventProcessor LEAF)
+///     node-5: Not(node-6)                              (TimelineProcessor)
+///     node-6: TlHasExistedWithin(playerStateChange == "seek", 5) (EventProcessor LEAF)
+///     node-7: EqualTo(node-8, "buffer")                (TimelineProcessor)
+///     node-8: TlLatestEventToState("playerStateChange") (EventProcessor LEAF)
 ///
 ///   Then wires aggregation:
 ///     - All 3 leaves get `set_group_by_column("cdn")` — so they extract "cdn" from events
-///     - Root node-8 gets `set_aggregation(group_by_column="cdn", [Count, Sum, Avg])`
-///     - No Aggregator is created yet — node-8 lazily creates "aggregator-cdn-akamai"
+///     - Root node-1 gets `set_aggregation(group_by_column="cdn", [Count, Sum, Avg])`
+///     - No Aggregator is created yet — node-1 lazily creates "aggregator-cdn-akamai"
 ///       on the first delta push when it receives group_by_value="akamai" from the cascade
 #[agent_definition]
 pub trait TimelineDriver {
