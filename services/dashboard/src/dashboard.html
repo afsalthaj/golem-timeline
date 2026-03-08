@@ -198,9 +198,8 @@
     }
     .node-card {
       flex: 1; background: var(--surface); border: 1px solid var(--border);
-      border-radius: 8px; padding: 12px 16px; display: flex;
-      align-items: center; gap: 12px; min-height: 48px;
-      transition: border-color .15s;
+      border-radius: 8px; padding: 12px 16px;
+      min-height: 48px; transition: border-color .15s;
     }
     .node-card:hover { border-color: var(--accent); }
     .node-card.leaf { border-left: 3px solid var(--leaf-color); }
@@ -227,10 +226,12 @@
     .node-result.pending { color: var(--text-muted); }
     .node-result.ok { color: var(--green); }
     .node-result.err { color: var(--red); }
-    .node-result-detail {
-      font-size: 11px; color: var(--text-muted); margin-left: 8px;
-      font-family: 'SF Mono', 'Fira Code', monospace;
-      max-width: 400px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    .node-desc {
+      font-size: 12px; color: var(--text-muted); line-height: 1.4;
+      margin-top: 4px;
+    }
+    .node-header {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
     }
   </style>
 </head>
@@ -416,14 +417,22 @@ node-8  LatestEventToState ← LEAF: latest playerStateChange value</code>
     // ========== Node Inspector ==========
     // The CIRR tree structure (pre-order DFS numbering)
     const CIRR_TREE = [
-      { node: 1, op: 'DurationWhere',      type: 'derived', depth: 0, desc: 'cumulative seconds where CIRR condition is true' },
-      { node: 2, op: 'And',                type: 'derived', depth: 1, desc: '(has_existed ∧ ¬has_existed_within) ∧ (state == "buffer")' },
-      { node: 3, op: 'And',                type: 'derived', depth: 2, desc: 'has_existed ∧ ¬has_existed_within' },
-      { node: 4, op: 'TlHasExisted',       type: 'leaf',    depth: 3, desc: 'playerStateChange == "play" ever?' },
-      { node: 5, op: 'Not',                type: 'derived', depth: 3, desc: '¬has_existed_within(seek, 5)' },
-      { node: 6, op: 'TlHasExistedWithin', type: 'leaf',    depth: 4, desc: 'playerStateChange == "seek" within 5 time units?' },
-      { node: 7, op: 'EqualTo "buffer"',   type: 'derived', depth: 2, desc: 'latest state == "buffer"?' },
-      { node: 8, op: 'LatestEventToState', type: 'leaf',    depth: 3, desc: 'latest playerStateChange value' },
+      { node: 1, op: 'DurationWhere',      type: 'derived', depth: 0,
+        desc: 'How many seconds has the user been experiencing connection-induced rebuffering?' },
+      { node: 2, op: 'And',                type: 'derived', depth: 1,
+        desc: 'Are ALL three rebuffering conditions true at the same time?' },
+      { node: 3, op: 'And',                type: 'derived', depth: 2,
+        desc: 'Did playback start AND was there no recent seek? (rules out seek-induced buffering)' },
+      { node: 4, op: 'TlHasExisted',       type: 'leaf',    depth: 3,
+        desc: 'Has the user ever pressed play? (playerStateChange == "play" at any point in the past)' },
+      { node: 5, op: 'Not',                type: 'derived', depth: 3,
+        desc: 'Was there NO recent seek? (true = no seek recently, so buffering is connection-induced)' },
+      { node: 6, op: 'TlHasExistedWithin', type: 'leaf',    depth: 4,
+        desc: 'Did the user seek in the last 5 time units? (if yes, buffering is seek-induced, not connection-induced)' },
+      { node: 7, op: 'EqualTo "buffer"',   type: 'derived', depth: 2,
+        desc: 'Is the player currently buffering? (latest state == "buffer")' },
+      { node: 8, op: 'LatestEventToState', type: 'leaf',    depth: 3,
+        desc: 'What is the player doing right now? (latest playerStateChange value: play, buffer, pause, etc.)' },
     ];
 
     const sessionInput = document.getElementById('session-input');
@@ -505,11 +514,13 @@ node-8  LatestEventToState ← LEAF: latest playerStateChange value</code>
           '<div class="tree-node">' +
             '<div class="tree-indent"><span class="branch">' + indent + '</span></div>' +
             '<div class="node-card ' + cardCls + '">' +
-              '<span class="node-badge ' + badgeCls + '">' + r.type + '</span>' +
-              '<span class="node-name">node-' + r.node + '</span>' +
-              '<span class="node-op">' + escHtml(r.op) + '</span>' +
-              '<span class="node-result ' + resultCls + '">' + escHtml(r.display) + '</span>' +
-              '<span class="node-result-detail" title="' + escHtml(r.desc) + '">' + escHtml(r.desc) + '</span>' +
+              '<div class="node-header">' +
+                '<span class="node-badge ' + badgeCls + '">' + r.type + '</span>' +
+                '<span class="node-name">node-' + r.node + '</span>' +
+                '<span class="node-op">' + escHtml(r.op) + '</span>' +
+                '<span class="node-result ' + resultCls + '">→ ' + escHtml(r.display) + '</span>' +
+              '</div>' +
+              '<div class="node-desc">' + escHtml(r.desc) + '</div>' +
             '</div>' +
           '</div>';
       }

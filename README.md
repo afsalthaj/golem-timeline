@@ -124,7 +124,7 @@ Try changing the query time to **120** (before the buffer event) and clicking ag
 - **Leaf nodes** (green) hold raw state computed from ingested events
 - **Derived nodes** (blue) hold recomputed results from their children
 
-Each result is a local point-in-time lookup — no cascading RPC. The push cascade has already propagated all changes upward.
+Each result is a local point-in-time lookup (~10ms per agent invoke) — no cascading RPC. The push cascade has already propagated all changes upward.
 
 ### Viewing aggregation results
 
@@ -693,29 +693,29 @@ When Afsal presses play, an event hits his session's `EventProcessor` leaf. The 
 wakes agents one at a time up the tree:
 
 ```
-t=0ms   EventProcessor (leaf)        ← wakes, processes event, pushes to parent, suspends
-t=1ms   TimelineProcessor (And)      ← wakes, recomputes, pushes to parent, suspends
-t=2ms   TimelineProcessor (And)      ← wakes, recomputes, pushes to parent, suspends
-t=3ms   TimelineProcessor (Duration) ← wakes, recomputes, pushes delta to aggregator, suspends
-t=4ms   Aggregator                   ← wakes, adds delta to sum, suspends
+t=0ms    EventProcessor (leaf)        ← wakes, processes event, pushes to parent, suspends
+t=10ms   TimelineProcessor (And)      ← wakes, recomputes, pushes to parent, suspends
+t=20ms   TimelineProcessor (And)      ← wakes, recomputes, pushes to parent, suspends
+t=30ms   TimelineProcessor (Duration) ← wakes, recomputes, pushes delta to aggregator, suspends
+t=40ms   Aggregator                   ← wakes, adds delta to sum, suspends
 ```
 
-Each agent is active for **< 1ms** per event. At any instant, only the agents *currently
-processing a push notification* are in memory. The rest — including all agents for sessions
-where no events are arriving — are suspended.
+Each agent invoke takes **~10ms** (wake + execute + persist + suspend). At any instant, only the
+agents *currently processing a push notification* are in memory. The rest — including all agents
+for sessions where no events are arriving — are suspended.
 
 **Rough estimate of in-memory agents:**
 
 | Parameter | Value |
 |---|---|
 | Events per session per minute | ~2–5 (state changes are sparse) |
-| Processing time per agent per event | < 1 ms |
+| Processing time per agent per event | ~10 ms |
 | Agents woken per event (cascade depth) | ~5 (for CIRR) |
-| Active time per event | ~5 ms total across the chain |
+| Active time per event | ~50 ms total across the chain |
 | Peak events/sec across 10M sessions | ~300K–800K events/sec |
-| **In-memory agents at any instant** | **~1,500–4,000** |
+| **In-memory agents at any instant** | **~15,000–40,000** |
 
-That is: out of 80M total agents, only a few thousand are in memory at any moment.
+That is: out of 80M total agents, only tens of thousands are in memory at any moment.
 The rest cost nothing beyond durable storage.
 
 ### Kubernetes deployment (Golem Cloud)
@@ -731,8 +731,8 @@ These are the pods that execute agent (worker) code. Each pod hosts many agents 
 | Memory per active agent | ~1–5 MB | `StateDynamicsTimeLine` + `DurationState` + WASM runtime overhead |
 | In-memory agents per pod | ~500–2,000 | Depends on pod memory limit |
 | Pod memory | 4–8 GB | Standard for worker executor pods |
-| **Pods needed (steady state)** | **3–8** | For ~4,000 concurrently active agents |
-| Pods needed (burst/headroom) | 10–20 | For event spikes (e.g., popular show premiere) |
+| **Pods needed (steady state)** | **8–20** | For ~40,000 concurrently active agents |
+| Pods needed (burst/headroom) | 20–50 | For event spikes (e.g., popular show premiere) |
 
 #### Durable storage
 
@@ -768,7 +768,7 @@ and never hit the network.
 2. The `TimelineDriver` for each session spawns 8 agents and wires them. This is a burst of
    creation, but each driver runs once and suspends. Golem can spread creation across executor pods.
 3. Events start flowing: ~10M events/min across 2M sessions. The push cascade processes each
-   event in ~5ms end-to-end. Only ~5,000 agents are in memory at any instant.
+   event in ~50ms end-to-end (5 agents × ~10ms each). Around ~50,000 agents are in memory at any instant.
 4. Each session's root pushes deltas to its CDN's `Aggregator`. With 10 CDNs, each aggregator
    handles ~1M sessions but only processes one `on_delta` call at a time — it's a simple
    `sum += delta`, so it never becomes a bottleneck.
@@ -782,7 +782,7 @@ and never hit the network.
 | **Agent creation burst** (millions of agents at once) | Golem lazy-creates agents on first invocation. The `TimelineDriver` itself can be parallelized across sessions. Rate-limit session initialization if needed. |
 | **Storage growth** (80M serialized agents) | Serialized state is small (~1 KB). Implement TTL-based cleanup for completed sessions. Golem's persistence layer supports compaction. |
 | **Hot aggregator** (one aggregator per CDN receiving millions of deltas) | `on_delta` is O(1) — a single addition. If a single CDN has 5M sessions and each emits ~2 events/min, that's ~170K deltas/sec to one aggregator. May need sharding (e.g., `aggregator-cdn-x-shard-0`) for extreme cases. |
-| **Cold-start latency** (resuming a suspended agent) | Golem's resume time is typically <10ms. For latency-sensitive paths, keep agents warm with periodic heartbeats. |
+| **Cold-start latency** (resuming a suspended agent) | Golem's resume time is ~10ms. For latency-sensitive paths, keep agents warm with periodic heartbeats. |
 | **Event ordering across leaves** | The push-based model processes events per-leaf independently. Two leaves in the same session may receive events at different wall-clock times. The `And`/`Or` nodes use `time + 1` lookups to see the latest state, which handles this correctly for monotonically increasing timestamps. |
 
 ## Future Design: Compute Reuse Across Workflows
