@@ -49,13 +49,15 @@ duration_in_cur_state(
 
 **Credit card location anomaly — location changed too quickly:**
 ```javascript
-duration_in_cur_state(latest_event_to_state(location)) < 600
+duration_in_cur_state(
+  latest_event_to_state(location)) 
+) < 600
 ```
 If the cardholder has been at the current location for less than 600 seconds,
 the location just changed — flag it as a potential anomaly (e.g., New York → London in 10 minutes).
 
 **User engaged: played and never errored:**
-```
+```javascript
 has_existed(playerStateChange == "play") && !has_existed(error == "fatal")
 ```
 
@@ -96,29 +98,8 @@ lookups on precomputed state — no cascading RPC required at query time.
           └──────────────────┘       └──────────────────┘
 ```
 
-- **`common-rust/common-lib`** — Pure Rust domain library. Contains the recursive `TimeLineOp` DSL,
-  `StateDynamicsTimeLine`, `EventTimeLine`, predicates, zip/align logic. No Golem dependencies.
 
-- **`components-rust/timeline-core`** — Single Golem component with 4 agent types:
-  - **`EventProcessor`** — Leaf node. Ingests events (`add_event`) and computes leaf timeline operations
-    (`tl_latest_event_to_state`, `tl_has_existed`, `tl_has_existed_within`). On state change, pushes
-    the new value to its parent via `notify_parent`.
-  - **`TimelineProcessor`** — Derived node. Receives state change notifications from children via
-    `on_child_state_changed`, recomputes its own state (comparisons, boolean logic, duration tracking),
-    and cascades the change upward to its parent. Duration operations use a compact `DurationState`
-    (Climbing/Flat) to track cumulative time without per-tick storage.
-  - **`TimelineDriver`** — Orchestrator. Accepts a `TimelineOpGraph` (non-recursive, flat encoding of the DSL),
-    walks the tree, spawns `EventProcessor` / `TimelineProcessor` agents, and wires them together
-    by setting `ParentRef` on each child so push notifications flow upward.
-  - **`Aggregator`** — Cross-session accumulator. Receives delta-based updates from root
-    `TimelineProcessor` nodes, maintaining running Count / Sum / Avg / Min / Max with O(1) memory.
-
-The `TimelineOpGraph` is a non-recursive `Vec<TimelineNode>` with index references — required because
-Golem's type system (derived via `#[derive(Schema)]`) does not support recursive types. Internally,
-it converts to/from the recursive `TimeLineOp` for computation.
-
-
-### Push-based data flow
+### Data flow
 
 1. **Event ingestion** — An event arrives at an `EventProcessor` via `add_event`.
 2. **Leaf computation** — The leaf evaluates its operation (e.g., "has `status == error` ever been true?")
@@ -133,8 +114,7 @@ it converts to/from the recursive `TimeLineOp` for computation.
 6. **Query** — `get_leaf_result(t)` or `get_derived_result(t)` performs a local point lookup on the
    precomputed `StateDynamicsTimeLine`. No RPC cascade is needed.
 
-# Summary of examples (mentioned in the talk)
-## Connection Induced Rebuffering Ratio
+## Connection Induced Rebuffering Ratio - A crash course on the paper 
 
 
 ### Actual timeline
@@ -279,7 +259,8 @@ across all sessions grouped under `cdn-x`.
 
 ### Feed events
 
-Once the timeline is initialized, feed events to the leaf EventProcessor agents.
+Once the timeline is initialized (this may not be required as such in near future as initialisation is idempotent in golem), 
+feed events to the leaf EventProcessor agents.
 The driver logs which worker names it created — use those to target events:
 
 ```shell
