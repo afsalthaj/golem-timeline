@@ -6,6 +6,7 @@ members = [
     "services/event-generator",
     "services/kafka-producer",
     "services/kafka-consumer-feeder",
+    "services/dashboard",
     "test/integration-harness",
 ]
 

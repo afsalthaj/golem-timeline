@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CIRR Dashboard — Durable Timeline Analytics</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #22252f;
+      --border: #2a2d3a;
+      --text: #e1e4ed;
+      --text-muted: #8b8fa3;
+      --accent: #6c8cff;
+      --accent-dim: #3d5299;
+      --green: #3dd68c;
+      --orange: #f0a050;
+      --red: #f06060;
+      --cyan: #56d4e0;
+      --purple: #b07cff;
+      --leaf-color: #3dd68c;
+      --derived-color: #6c8cff;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    header {
+      padding: 20px 32px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    header h1 { font-size: 18px; font-weight: 600; letter-spacing: -0.3px; }
+    header .subtitle { font-size: 13px; color: var(--text-muted); }
+    header .status {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-left: auto;
+    }
+    header .status .dot {
+      display: inline-block;
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      margin-right: 5px;
+      vertical-align: middle;
+    }
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+    }
+    .tab {
+      padding: 12px 20px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: color .15s, border-color .15s;
+    }
+    .tab:hover { color: var(--text); }
+    .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .panel { display: none; padding: 24px 32px; }
+    .panel.active { display: block; }
+    /* --- Guide --- */
+    .guide { max-width: 720px; }
+    .guide h2 { font-size: 20px; margin-bottom: 8px; }
+    .guide .lead { color: var(--text-muted); font-size: 14px; margin-bottom: 24px; line-height: 1.6; }
+    .dsl-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 20px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--cyan);
+      margin-bottom: 24px;
+      white-space: pre;
+      overflow-x: auto;
+    }
+    .step { display: flex; gap: 16px; margin-bottom: 20px; }
+    .step-num {
+      flex-shrink: 0; width: 28px; height: 28px;
+      background: var(--accent-dim); color: #fff; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700;
+    }
+    .step-body { flex: 1; }
+    .step-body h3 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+    .step-body p { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+    .step-body code {
+      display: block; background: var(--surface); border: 1px solid var(--border);
+      border-radius: 6px; padding: 10px 14px;
+      font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12.5px;
+      color: var(--green); margin-top: 8px; white-space: pre; overflow-x: auto;
+    }
+    /* --- Shared controls --- */
+    .controls {
+      display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 20px;
+    }
+    .controls label { font-size: 13px; color: var(--text-muted); }
+    .controls input[type="text"], .controls input[type="number"] {
+      background: var(--surface); border: 1px solid var(--border); color: var(--text);
+      padding: 8px 12px; border-radius: 6px; font-size: 14px; outline: none;
+    }
+    .controls input[type="text"]:focus, .controls input[type="number"]:focus { border-color: var(--accent); }
+    .controls button, .btn {
+      background: var(--accent); color: #fff; border: none;
+      padding: 8px 20px; border-radius: 6px; font-size: 14px;
+      cursor: pointer; font-weight: 500;
+    }
+    .controls button:hover, .btn:hover { background: var(--accent-dim); }
+    .poll-toggle { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+    .poll-toggle label { cursor: pointer; }
+    .interval {
+      background: var(--surface); border: 1px solid var(--border); color: var(--text);
+      padding: 6px 8px; border-radius: 6px; font-size: 13px; width: 54px;
+      text-align: center; outline: none;
+    }
+    .presets { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+    .preset-btn {
+      background: var(--surface); border: 1px solid var(--border); color: var(--text-muted);
+      padding: 6px 14px; border-radius: 6px; font-size: 12px; cursor: pointer;
+    }
+    .preset-btn:hover { color: var(--text); border-color: var(--accent); }
+    .preset-btn.active { color: var(--accent); border-color: var(--accent); background: var(--surface2); }
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+    .empty-state p { margin-top: 8px; font-size: 14px; }
+    /* --- Metric cards --- */
+    .metrics-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 16px; margin-bottom: 24px;
+    }
+    .metric-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 20px;
+    }
+    .metric-card .label {
+      font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px;
+      color: var(--text-muted); margin-bottom: 8px;
+    }
+    .metric-card .value { font-size: 28px; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .metric-card .value.count { color: var(--accent); }
+    .metric-card .value.sum   { color: var(--green); }
+    .metric-card .value.avg   { color: var(--orange); }
+    .metric-card .value.minmax { color: var(--text); }
+    .result-section {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 24px; margin-bottom: 20px;
+    }
+    .worker-name {
+      font-size: 14px; font-weight: 600; margin-bottom: 16px;
+      padding-bottom: 12px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .worker-name code {
+      background: var(--bg); padding: 3px 8px; border-radius: 4px;
+      font-size: 13px; color: var(--accent);
+    }
+    .error-msg {
+      color: var(--red); font-size: 13px; padding: 12px;
+      background: rgba(240, 96, 96, 0.08); border-radius: 6px;
+    }
+    .history-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 16px; }
+    .history-table th {
+      text-align: left; color: var(--text-muted); font-weight: 500;
+      padding: 6px 12px 6px 0; border-bottom: 1px solid var(--border);
+    }
+    .history-table td { padding: 6px 12px 6px 0; font-variant-numeric: tabular-nums; }
+    /* --- Node Inspector --- */
+    .inspector-controls {
+      display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 20px;
+    }
+    .inspector-controls label { font-size: 13px; color: var(--text-muted); }
+    .inspector-controls input {
+      background: var(--surface); border: 1px solid var(--border); color: var(--text);
+      padding: 8px 12px; border-radius: 6px; font-size: 14px; outline: none;
+    }
+    .inspector-controls input:focus { border-color: var(--accent); }
+    .tree-container { display: flex; flex-direction: column; gap: 0; }
+    .tree-node {
+      display: flex; align-items: stretch; gap: 0; margin-bottom: 2px;
+    }
+    .tree-indent {
+      display: flex; align-items: center; padding-right: 0;
+    }
+    .tree-indent .branch {
+      color: var(--border); font-family: monospace; font-size: 14px;
+      white-space: pre; user-select: none;
+    }
+    .node-card {
+      flex: 1; background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; padding: 12px 16px; display: flex;
+      align-items: center; gap: 12px; min-height: 48px;
+      transition: border-color .15s;
+    }
+    .node-card:hover { border-color: var(--accent); }
+    .node-card.leaf { border-left: 3px solid var(--leaf-color); }
+    .node-card.derived { border-left: 3px solid var(--derived-color); }
+    .node-badge {
+      font-size: 11px; font-weight: 700; padding: 2px 8px;
+      border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px;
+      flex-shrink: 0;
+    }
+    .node-badge.leaf { background: rgba(61,214,140,0.15); color: var(--leaf-color); }
+    .node-badge.derived { background: rgba(108,140,255,0.15); color: var(--derived-color); }
+    .node-name {
+      font-size: 13px; font-weight: 600;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+    }
+    .node-op {
+      font-size: 12px; color: var(--text-muted);
+      font-family: 'SF Mono', 'Fira Code', monospace;
+    }
+    .node-result {
+      margin-left: auto; font-size: 13px; font-weight: 600;
+      font-variant-numeric: tabular-nums; white-space: nowrap;
+    }
+    .node-result.pending { color: var(--text-muted); }
+    .node-result.ok { color: var(--green); }
+    .node-result.err { color: var(--red); }
+    .node-result-detail {
+      font-size: 11px; color: var(--text-muted); margin-left: 8px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      max-width: 400px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>⏱ Timeline Aggregation Dashboard</h1>
+      <div class="subtitle">Durable Timeline Analytics on Golem</div>
+    </div>
+    <div class="status" id="status"><span class="dot"></span>Ready</div>
+  </header>
+
+  <div class="tabs">
+    <div class="tab active" data-panel="guide-panel">Getting Started</div>
+    <div class="tab" data-panel="inspect-panel">Node Inspector</div>
+    <div class="tab" data-panel="live-panel">Live Dashboard</div>
+  </div>
+
+  <!-- ==================== Getting Started ==================== -->
+  <div id="guide-panel" class="panel active">
+    <div class="guide">
+      <h2>CIRR — Connection Induced Rebuffering Ratio</h2>
+      <p class="lead">
+        This demo runs a real-time CIRR analysis pipeline. Multiple video playback sessions
+        generate events (play, buffer, seek, pause). Golem agents compute how long each session
+        experiences connection-induced rebuffering, then aggregate the results per CDN.
+      </p>
+      <div class="dsl-block">duration_where(
+  has_existed(playerStateChange == "play")
+  && !has_existed_within(playerStateChange == "seek", 5)
+  && latest_event_to_state(playerStateChange) == "buffer"
+) | aggregate(group_by(cdn), count, sum, avg)</div>
+
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h3>Run the demo</h3>
+          <p>This single command starts Golem, deploys the timeline component,
+             starts Kafka, initializes CIRR sessions with aggregation across 3 CDNs,
+             generates events, feeds them to Golem, and opens this dashboard.</p>
+          <code>cargo make demo</code>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h3>Sub-computation results and their progress for debuggability</h3>
+          <p>Switch to the <strong>Node Inspector</strong> tab. Enter a session ID
+             (e.g., <em>demo-akamai-1</em>) and a query time, then click <strong>Query All Nodes</strong>.
+             You'll see every sub-computation's result and its progress in the CIRR expression tree —
+             each leaf and each derived node — at that point in time.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h3>Watch aggregation results</h3>
+          <p>Switch to the <strong>Live Dashboard</strong> tab and click one of the preset
+             aggregator buttons (e.g., <em>aggregator-cdn-akamai</em>). Enable auto-poll to
+             watch metrics update in real time as events flow through Kafka.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h3>What the node tree means</h3>
+          <p>The CIRR expression compiles into 8 Golem agents per session:</p>
+          <code>node-1  DurationWhere      ← root (how long is CIRR true?)
+node-2  And                ← all 3 conditions combined
+node-3  And                ← has_existed ∧ ¬has_existed_within
+node-4  TlHasExisted       ← LEAF: playerStateChange == "play" ever?
+node-5  Not                ← negation of node-6
+node-6  TlHasExistedWithin ← LEAF: seek within last 5 time units?
+node-7  EqualTo "buffer"   ← current state == "buffer"?
+node-8  LatestEventToState ← LEAF: latest playerStateChange value</code>
+          <p style="margin-top: 8px;">
+            <span style="color: var(--leaf-color);">■</span> Leaf nodes ingest raw events.
+            <span style="color: var(--derived-color);">■</span> Derived nodes recompute from children.
+            Changes push upward automatically — no polling needed inside the tree.
+          </p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <h3>Cleanup</h3>
+          <p>Press <kbd>Ctrl+C</kbd> to stop the dashboard. The demo script automatically
+             cleans up Golem and Kafka on exit.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== Node Inspector ==================== -->
+  <div id="inspect-panel" class="panel">
+    <div class="inspector-controls">
+      <label for="session-input">Session ID:</label>
+      <input id="session-input" type="text" value="demo-akamai-1" style="width:200px" />
+      <label for="time-input">Query time (t₁):</label>
+      <input id="time-input" type="number" value="250" style="width:100px" min="0" />
+      <button class="btn" id="query-tree-btn">Query All Nodes</button>
+    </div>
+
+    <div class="presets" id="session-presets">
+      <button class="preset-btn" data-session="demo-akamai-1">demo-akamai-1</button>
+      <button class="preset-btn" data-session="demo-akamai-2">demo-akamai-2</button>
+      <button class="preset-btn" data-session="demo-akamai-3">demo-akamai-3</button>
+      <button class="preset-btn" data-session="demo-cloudfront-1">demo-cloudfront-1</button>
+      <button class="preset-btn" data-session="demo-fastly-1">demo-fastly-1</button>
+    </div>
+
+    <div class="dsl-block" style="font-size:12px; margin-bottom:20px; padding:12px 16px;">duration_where(                                          ← node-1 (root)
+  has_existed(playerStateChange == "play")                ← node-4 (leaf)
+  && !has_existed_within(playerStateChange == "seek", 5)  ← !node-6 (leaf) via node-5
+  && latest_event_to_state(playerStateChange) == "buffer" ← node-8 (leaf) via node-7
+) | aggregate(group_by(cdn), count, sum, avg)</div>
+
+    <div id="tree-output">
+      <div class="empty-state">
+        <p>Enter a session ID and query time, then click <strong>Query All Nodes</strong>.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== Live Dashboard ==================== -->
+  <div id="live-panel" class="panel">
+    <div class="controls">
+      <label for="worker-input">Aggregator worker:</label>
+      <input id="worker-input" type="text" value="aggregator-cdn-akamai" placeholder="e.g. aggregator-cdn-akamai" style="width:280px" />
+      <button id="fetch-btn">Fetch</button>
+      <div class="poll-toggle">
+        <input type="checkbox" id="poll-check" />
+        <label for="poll-check">Auto-poll every</label>
+        <input type="number" id="poll-interval" class="interval" value="3" min="1" max="60" />
+        <label for="poll-interval">s</label>
+      </div>
+    </div>
+    <div class="presets">
+      <button class="preset-btn" data-worker="aggregator-cdn-akamai">cdn: akamai</button>
+      <button class="preset-btn" data-worker="aggregator-cdn-cloudfront">cdn: cloudfront</button>
+      <button class="preset-btn" data-worker="aggregator-cdn-fastly">cdn: fastly</button>
+    </div>
+    <div id="main">
+      <div class="empty-state">
+        <p>Select a CDN preset above or enter a custom aggregator worker name.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ========== Tab switching ==========
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(tab.dataset.panel).classList.add('active');
+      });
+    });
+
+    const statusEl = document.getElementById('status');
+
+    function setStatus(text, ok) {
+      statusEl.innerHTML = '<span class="dot" style="background:' +
+        (ok ? 'var(--green)' : 'var(--red)') + '"></span>' + text;
+    }
+
+    function escHtml(s) {
+      const d = document.createElement('div');
+      d.textContent = s;
+      return d.innerHTML;
+    }
+
+    function fmt(n) {
+      if (n == null) return '—';
+      return typeof n === 'number' ? (Number.isInteger(n) ? n.toLocaleString() : n.toFixed(4)) : String(n);
+    }
+
+    // ========== Node Inspector ==========
+    // The CIRR tree structure (pre-order DFS numbering)
+    const CIRR_TREE = [
+      { node: 1, op: 'DurationWhere',      type: 'derived', depth: 0, desc: 'cumulative seconds where CIRR condition is true' },
+      { node: 2, op: 'And',                type: 'derived', depth: 1, desc: '(has_existed ∧ ¬has_existed_within) ∧ (state == "buffer")' },
+      { node: 3, op: 'And',                type: 'derived', depth: 2, desc: 'has_existed ∧ ¬has_existed_within' },
+      { node: 4, op: 'TlHasExisted',       type: 'leaf',    depth: 3, desc: 'playerStateChange == "play" ever?' },
+      { node: 5, op: 'Not',                type: 'derived', depth: 3, desc: '¬has_existed_within(seek, 5)' },
+      { node: 6, op: 'TlHasExistedWithin', type: 'leaf',    depth: 4, desc: 'playerStateChange == "seek" within 5 time units?' },
+      { node: 7, op: 'EqualTo "buffer"',   type: 'derived', depth: 2, desc: 'latest state == "buffer"?' },
+      { node: 8, op: 'LatestEventToState', type: 'leaf',    depth: 3, desc: 'latest playerStateChange value' },
+    ];
+
+    const sessionInput = document.getElementById('session-input');
+    const timeInput = document.getElementById('time-input');
+    const queryTreeBtn = document.getElementById('query-tree-btn');
+    const treeOutput = document.getElementById('tree-output');
+
+    document.querySelectorAll('#session-presets .preset-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        sessionInput.value = btn.dataset.session;
+        queryAllNodes();
+      });
+    });
+
+    queryTreeBtn.addEventListener('click', queryAllNodes);
+
+    async function queryAllNodes() {
+      const session = sessionInput.value.trim();
+      const t1 = parseInt(timeInput.value, 10);
+      if (!session || isNaN(t1)) return;
+
+      setStatus('Querying all nodes…', true);
+
+      // Fire all requests in parallel
+      const promises = CIRR_TREE.map(async (n) => {
+        const worker = session + '-node-' + n.node;
+        const endpoint = n.type === 'leaf'
+          ? '/api/leaf/' + encodeURIComponent(worker) + '/' + t1
+          : '/api/derived/' + encodeURIComponent(worker) + '/' + t1;
+        try {
+          const resp = await fetch(endpoint);
+          const data = await resp.json();
+          if (data.error) return { ...n, status: 'err', display: data.error, raw: data };
+          const result = data.result_json?.value ?? data;
+          return { ...n, status: 'ok', display: summarizeResult(result), raw: result };
+        } catch (e) {
+          return { ...n, status: 'err', display: e.message, raw: null };
+        }
+      });
+
+      const results = await Promise.all(promises);
+      renderTree(session, t1, results);
+      setStatus('Queried ' + results.length + ' nodes at t=' + t1, true);
+    }
+
+    function summarizeResult(result) {
+      if (result.results && Array.isArray(result.results)) {
+        if (result.results.length === 0) return 'empty';
+        const last = result.results[result.results.length - 1];
+        return formatEventValue(last.value);
+      }
+      return JSON.stringify(result);
+    }
+
+    function formatEventValue(v) {
+      if (v == null) return '—';
+      if (typeof v === 'object') {
+        if ('string-value' in v) return '"' + v['string-value'] + '"';
+        if ('int-value' in v) return String(v['int-value']);
+        if ('float-value' in v) return String(v['float-value']);
+        if ('bool-value' in v) return v['bool-value'] ? 'true' : 'false';
+      }
+      return String(v);
+    }
+
+    function renderTree(session, t1, results) {
+      let html = '<div class="result-section">' +
+        '<div class="worker-name">Session: <code>' + escHtml(session) +
+        '</code> at t₁ = <code>' + t1 + '</code></div>';
+
+      html += '<div class="tree-container">';
+      for (const r of results) {
+        const indent = buildIndent(r.depth);
+        const badgeCls = r.type;
+        const cardCls = r.type;
+        const resultCls = r.status === 'ok' ? 'ok' : (r.status === 'err' ? 'err' : 'pending');
+
+        html +=
+          '<div class="tree-node">' +
+            '<div class="tree-indent"><span class="branch">' + indent + '</span></div>' +
+            '<div class="node-card ' + cardCls + '">' +
+              '<span class="node-badge ' + badgeCls + '">' + r.type + '</span>' +
+              '<span class="node-name">node-' + r.node + '</span>' +
+              '<span class="node-op">' + escHtml(r.op) + '</span>' +
+              '<span class="node-result ' + resultCls + '">' + escHtml(r.display) + '</span>' +
+              '<span class="node-result-detail" title="' + escHtml(r.desc) + '">' + escHtml(r.desc) + '</span>' +
+            '</div>' +
+          '</div>';
+      }
+      html += '</div></div>';
+      treeOutput.innerHTML = html;
+    }
+
+    function buildIndent(depth) {
+      if (depth === 0) return '';
+      let s = '';
+      for (let i = 0; i < depth - 1; i++) s += '│  ';
+      s += '├─ ';
+      return s;
+    }
+
+    // ========== Live Dashboard ==========
+    document.querySelectorAll('[data-worker]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        workerInput.value = btn.dataset.worker;
+        doFetch();
+        if (pollCheck.checked) startPoll();
+      });
+    });
+
+    const workerInput = document.getElementById('worker-input');
+    const fetchBtn = document.getElementById('fetch-btn');
+    const pollCheck = document.getElementById('poll-check');
+    const pollInterval = document.getElementById('poll-interval');
+    const mainEl = document.getElementById('main');
+
+    let pollTimer = null;
+    let history = [];
+    const MAX_HISTORY = 50;
+
+    async function fetchResult(worker) {
+      setStatus('Fetching…', true);
+      try {
+        const resp = await fetch('/api/aggregation/' + encodeURIComponent(worker));
+        const data = await resp.json();
+        if (data.error) { renderError(worker, data.error); setStatus('Error', false); return; }
+        const result = data.result_json?.value ?? data;
+        history.unshift({ time: new Date(), ...result });
+        if (history.length > MAX_HISTORY) history.pop();
+        renderResult(worker, result);
+        setStatus('Updated ' + new Date().toLocaleTimeString(), true);
+      } catch (e) {
+        renderError(worker, e.message);
+        setStatus('Error', false);
+      }
+    }
+
+    function renderError(worker, msg) {
+      mainEl.innerHTML =
+        '<div class="result-section">' +
+          '<div class="worker-name">Aggregator: <code>' + escHtml(worker) + '</code></div>' +
+          '<div class="error-msg">' + escHtml(msg) + '</div>' +
+        '</div>';
+    }
+
+    function renderResult(worker, r) {
+      const cards = [
+        { label: 'Sessions (count)', value: fmt(r.count), cls: 'count' },
+        { label: 'Total CIRR (sum)', value: fmt(r.sum), cls: 'sum' },
+        { label: 'Avg CIRR / session', value: fmt(r.avg), cls: 'avg' },
+        { label: 'Min', value: fmt(r.min), cls: 'minmax' },
+        { label: 'Max', value: fmt(r.max), cls: 'minmax' },
+      ];
+      let html =
+        '<div class="result-section">' +
+          '<div class="worker-name">Aggregator: <code>' + escHtml(worker) + '</code></div>' +
+          '<div class="metrics-grid">' +
+            cards.map(c =>
+              '<div class="metric-card"><div class="label">' + c.label +
+              '</div><div class="value ' + c.cls + '">' + c.value + '</div></div>'
+            ).join('') +
+          '</div>';
+      if (history.length > 1) {
+        html +=
+          '<table class="history-table"><thead><tr>' +
+            '<th>Time</th><th>Count</th><th>Sum</th><th>Avg</th>' +
+          '</tr></thead><tbody>' +
+            history.map(h =>
+              '<tr><td>' + h.time.toLocaleTimeString() + '</td><td>' + fmt(h.count) +
+              '</td><td>' + fmt(h.sum) + '</td><td>' + fmt(h.avg) + '</td></tr>'
+            ).join('') +
+          '</tbody></table>';
+      }
+      html += '</div>';
+      mainEl.innerHTML = html;
+    }
+
+    function doFetch() {
+      const w = workerInput.value.trim();
+      if (!w) return;
+      history = [];
+      fetchResult(w);
+    }
+
+    function startPoll() {
+      stopPoll();
+      const w = workerInput.value.trim();
+      if (!w) return;
+      const ms = (parseInt(pollInterval.value, 10) || 3) * 1000;
+      pollTimer = setInterval(() => fetchResult(w), ms);
+    }
+
+    function stopPoll() {
+      if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+    }
+
+    fetchBtn.addEventListener('click', () => { doFetch(); if (pollCheck.checked) startPoll(); });
+    workerInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { doFetch(); if (pollCheck.checked) startPoll(); }
+    });
+    pollCheck.addEventListener('change', () => { if (pollCheck.checked) startPoll(); else stopPoll(); });
+    pollInterval.addEventListener('change', () => { if (pollCheck.checked) startPoll(); });
+  </script>
+</body>
+</html>
