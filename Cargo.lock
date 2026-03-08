@@ -868,7 +868,10 @@ dependencies = [
  "event-generator",
  "kafka-consumer-feeder",
  "kafka-producer",
+ "rdkafka",
+ "serde",
  "serde_json",
+ "tokio",
 ]
 
 [[package]]

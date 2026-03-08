@@ -75,7 +75,7 @@ fn lcg_next(state: u64) -> u64 {
     state.wrapping_mul(6364136223846793005).wrapping_add(1442695040888963407)
 }
 
-fn generate_cirr_session_events_n(session_id: &str, cdn: &str, count: usize) -> Vec<Event> {
+pub fn generate_cirr_session_events_n(session_id: &str, cdn: &str, count: usize) -> Vec<Event> {
     let mut events = Vec::with_capacity(count);
     let mut rng = hash_session(session_id);
     let mut time: u64 = 1;
