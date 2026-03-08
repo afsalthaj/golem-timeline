@@ -137,7 +137,8 @@ impl<'a> Lexer<'a> {
     fn next_token(&mut self) -> Result<Spanned, LexError> {
         let offset = self.pos;
 
-        match self.peek().unwrap() {
+        let byte = self.peek().ok_or(LexError { offset, message: "unexpected end of input".to_string() })?;
+        match byte {
             b'"' => self.read_string(offset),
             b'(' => { self.advance(); Ok(Spanned { token: Token::LParen, offset }) }
             b')' => { self.advance(); Ok(Spanned { token: Token::RParen, offset }) }
@@ -221,14 +222,16 @@ impl<'a> Lexer<'a> {
             while self.pos < self.input.len() && self.input[self.pos].is_ascii_digit() {
                 self.pos += 1;
             }
-            let s = std::str::from_utf8(&self.input[start..self.pos]).unwrap();
+            let s = std::str::from_utf8(&self.input[start..self.pos])
+                .map_err(|_| LexError { offset, message: "invalid UTF-8".to_string() })?;
             let val: f64 = s.parse().map_err(|_| LexError {
                 offset,
                 message: format!("invalid float '{}'", s),
             })?;
             Ok(Spanned { token: Token::FloatLit(val), offset })
         } else {
-            let s = std::str::from_utf8(&self.input[start..self.pos]).unwrap();
+            let s = std::str::from_utf8(&self.input[start..self.pos])
+                .map_err(|_| LexError { offset, message: "invalid UTF-8".to_string() })?;
             let val: i64 = s.parse().map_err(|_| LexError {
                 offset,
                 message: format!("invalid integer '{}'", s),
@@ -242,7 +245,8 @@ impl<'a> Lexer<'a> {
         while self.pos < self.input.len() && is_ident_cont(self.input[self.pos]) {
             self.pos += 1;
         }
-        let word = std::str::from_utf8(&self.input[start..self.pos]).unwrap();
+        let word = std::str::from_utf8(&self.input[start..self.pos])
+            .map_err(|_| LexError { offset, message: "invalid UTF-8".to_string() })?;
         let token = match word {
             "latest_event_to_state" => Token::LatestEventToState,
             "has_existed" => Token::HasExisted,

@@ -142,7 +142,7 @@ impl<T: Clone + PartialEq> StateDynamicsTimeLine<T> {
 
             // the new event falls on the right side of the existing time line
             (Some((left_t1, left_t2, left_val)), None) => {
-                if left_val == value && left_t2.is_some() && left_t2.unwrap() < new_time {
+                if left_val == value && left_t2.map_or(false, |t2| t2 < new_time) {
                     self.points.insert(
                         left_t1,
                         StateDynamicsTimeLinePoint {
@@ -152,7 +152,7 @@ impl<T: Clone + PartialEq> StateDynamicsTimeLine<T> {
                         },
                     );
                 } else if left_val != value {
-                    if left_t2.is_none() || left_t2.unwrap() > new_time {
+                    if left_t2.map_or(true, |t2| t2 > new_time) {
                         self.points.insert(
                             left_t1,
                             StateDynamicsTimeLinePoint {
@@ -169,7 +169,7 @@ impl<T: Clone + PartialEq> StateDynamicsTimeLine<T> {
                                 value,
                             },
                         );
-                    } else if left_t2.is_some() || left_t2.unwrap() < new_time {
+                    } else if left_t2.map_or(true, |t2| t2 < new_time) {
                         self.points.insert(
                             left_t1,
                             StateDynamicsTimeLinePoint {
@@ -395,9 +395,15 @@ impl<T: Debug + Clone + PartialOrd> StateDynamicsTimeLine<T> {
         let mut self_iter = aligned_left.points.iter().peekable();
         let mut other_iter = aligned_right.points.iter().peekable();
 
-        while self_iter.peek().is_some() && other_iter.peek().is_some() {
-            let self_point = self_iter.next().unwrap();
-            let other_point = other_iter.next().unwrap();
+        loop {
+            let self_point = match self_iter.next() {
+                Some(p) => p,
+                None => break,
+            };
+            let other_point = match other_iter.next() {
+                Some(p) => p,
+                None => break,
+            };
 
             let Boundaries {
                 left: left_ex,
