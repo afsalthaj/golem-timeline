@@ -5,6 +5,17 @@ system being backed by new agentic runtime [Golem](https://learn.golem.cloud) th
 
 Watch the talk from Afsal at [LambdaConf:2024:Estes-Park:Colorado](https://www.youtube.com/watch?v=9WjUBOfgriY) or refer presentation slides [here](https://github.com/afsalthaj/golem-timeline-presentation/blob/main/presentation_last.pdf)
 
+
+## Results
+
+### Aggregation results for CIRR across CDNs
+
+![img.png](img.png)
+
+### Debuggability
+
+![img_1.png](img_1.png)
+
 ## Timeline Query DSL
 
 A text-based DSL for expressing temporal analytics over event streams. Write a query, deploy it,
@@ -60,6 +71,78 @@ the location just changed — flag it as a potential anomaly (e.g., New York →
 ```javascript
 has_existed(playerStateChange == "play") && !has_existed(error == "fatal")
 ```
+
+## Quick Start — CIRR Demo
+
+Run the full CIRR pipeline end-to-end with a single command. Requires Docker (for Kafka) and [Golem CLI 1.4.1+](https://learn.golem.cloud).
+
+```bash
+cargo make demo
+```
+
+This will:
+1. Start a local Golem server and Kafka broker
+2. Build and deploy the timeline WASM component
+3. Initialize 9 CIRR sessions across 3 CDNs (akamai, cloudfront, fastly)
+4. Feed realistic playback events (init → play → buffer → play) to each session
+5. Open a dashboard at **http://localhost:3000**
+
+### Sub-computation results and their progress for debuggability
+
+The CIRR expression compiles into **8 Golem agents per session**. The **Node Inspector** tab in the dashboard lets you query every sub-computation's result and its progress at any point in time:
+
+```
+node-1  DurationWhere       ← root: cumulative seconds where CIRR is true
+node-2  And                 ← all 3 conditions combined
+node-3  And                 ← has_existed ∧ ¬has_existed_within
+node-4  TlHasExisted        ← LEAF: has playerStateChange == "play" ever occurred?
+node-5  Not                 ← negation of node-6
+node-6  TlHasExistedWithin  ← LEAF: was there a seek within the last 5 time units?
+node-7  EqualTo "buffer"    ← is the current player state "buffer"?
+node-8  LatestEventToState  ← LEAF: what is the latest playerStateChange value?
+```
+
+Once the demo is running and the dashboard is open at http://localhost:3000:
+
+1. Click the **Node Inspector** tab
+2. Click the **`demo-akamai-1`** preset button (session ID is pre-filled)
+3. Leave query time at **250** and click **Query All Nodes**
+
+You'll immediately see every sub-computation's result:
+
+- **node-8** (leaf) shows `"buffer"` — the latest `playerStateChange` value
+- **node-4** (leaf) shows `true` — "play" has existed at some point
+- **node-6** (leaf) shows `false` — no seek event within the last 5 time units
+- **node-5** (derived) shows `true` — negation of node-6 (¬false = true)
+- **node-7** (derived) shows `true` — latest state equals "buffer"
+- **node-3** (derived) shows `true` — has_existed ∧ ¬has_existed_within
+- **node-2** (derived) shows `true` — all three CIRR conditions are met
+- **node-1** (root) shows the cumulative rebuffering duration in seconds
+
+Try changing the query time to **120** (before the buffer event) and clicking again — you'll see how the sub-computations differ.
+
+- **Leaf nodes** (green) hold raw state computed from ingested events
+- **Derived nodes** (blue) hold recomputed results from their children
+
+Each result is a local point-in-time lookup — no cascading RPC. The push cascade has already propagated all changes upward.
+
+### Viewing aggregation results
+
+Once you've seen the per-session sub-computations, switch to aggregated metrics:
+
+1. Click the **Live Dashboard** tab
+2. Click **`cdn: akamai`** — results appear immediately
+
+The metrics show cross-session totals for all 3 akamai sessions:
+- **Count** = 3 (three sessions on this CDN)
+- **Sum** — total CIRR rebuffering duration (seconds) across all 3 sessions
+- **Avg** — average CIRR per session (sum ÷ 3)
+
+Click **`cdn: cloudfront`** or **`cdn: fastly`** to compare CDNs.
+
+### Cleanup
+
+Press `Ctrl+C` to stop the dashboard. The demo script automatically stops Golem and Kafka.
 
 ## Overview
 
