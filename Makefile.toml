@@ -1,0 +1,111 @@
+[config]
+default_to_workspace = false
+
+# --- Build ---
+
+[tasks.build]
+description = "Build the WASM component via golem build"
+command = "golem"
+args = ["build"]
+
+[tasks.deploy]
+description = "Deploy the timeline component to a running Golem server"
+command = "golem"
+args = ["deploy", "--yes"]
+
+# --- Golem server lifecycle ---
+
+[tasks.golem-start]
+description = "Start a clean Golem server in the background"
+script_runner = "@shell"
+script = '''
+pkill -f "golem-server" 2>/dev/null || true
+pkill -f "golem server run" 2>/dev/null || true
+sleep 1
+golem server run --clean > /dev/null 2>&1 &
+echo "Waiting for Golem server on port 9881..."
+for i in $(seq 1 60); do
+    if nc -z 127.0.0.1 9881 2>/dev/null; then
+        echo "Golem server ready."
+        exit 0
+    fi
+    sleep 1
+done
+echo "ERROR: Golem server did not start within 60s"
+exit 1
+'''
+
+[tasks.golem-stop]
+description = "Stop the Golem server"
+script_runner = "@shell"
+script = '''
+pkill -f "golem-server" 2>/dev/null || true
+pkill -f "golem server run" 2>/dev/null || true
+echo "Golem server stopped."
+'''
+
+# --- Integration test runners (with server lifecycle) ---
+
+[tasks.smoke]
+description = "Run smoke tests"
+dependencies = ["golem-start", "deploy"]
+run_task = { name = ["smoke-run", "golem-stop"], fork = true, cleanup_task = "golem-stop" }
+
+[tasks.smoke-run]
+private = true
+command = "cargo"
+args = ["test", "-p", "integration-harness", "--test", "smoke", "--", "--nocapture", "--ignored", "--test-threads=1"]
+
+[tasks.propagation]
+description = "Run propagation tests"
+dependencies = ["golem-start", "deploy"]
+run_task = { name = ["propagation-run", "golem-stop"], fork = true, cleanup_task = "golem-stop" }
+
+[tasks.propagation-run]
+private = true
+command = "cargo"
+args = ["test", "-p", "integration-harness", "--test", "propagation", "--", "--nocapture", "--ignored", "--test-threads=1"]
+
+[tasks.aggregation]
+description = "Run aggregation tests"
+dependencies = ["golem-start", "deploy"]
+run_task = { name = ["aggregation-run", "golem-stop"], fork = true, cleanup_task = "golem-stop" }
+
+[tasks.aggregation-run]
+private = true
+command = "cargo"
+args = ["test", "-p", "integration-harness", "--test", "aggregation", "--", "--nocapture", "--ignored", "--test-threads=1"]
+
+[tasks.integration]
+description = "Run all integration tests (smoke + propagation + aggregation)"
+dependencies = ["golem-start", "deploy"]
+run_task = { name = ["integration-run", "golem-stop"], fork = true, cleanup_task = "golem-stop" }
+
+[tasks.integration-run]
+private = true
+command = "cargo"
+args = ["test", "-p", "integration-harness", "--", "--nocapture", "--ignored", "--test-threads=1"]
+
+# --- Kafka ---
+
+[tasks.kafka-up]
+description = "Start Kafka via Docker Compose"
+command = "docker"
+args = ["compose", "-f", "test/integration-harness/docker/compose.yml", "up", "-d"]
+
+[tasks.kafka-down]
+description = "Stop Kafka and remove volumes"
+command = "docker"
+args = ["compose", "-f", "test/integration-harness/docker/compose.yml", "down", "-v"]
+
+[tasks.generate-events]
+description = "Run the Kafka event producer"
+command = "cargo"
+args = ["run", "-p", "kafka-producer"]
+
+# --- Convenience ---
+
+[tasks.check]
+description = "Check all crates compile"
+command = "cargo"
+args = ["check", "--workspace"]

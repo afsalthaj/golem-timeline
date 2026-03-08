@@ -1,6 +1,13 @@
 [workspace]
 resolver = "2"
-members = ["components-rust/*", "common-rust/*"]
+members = [
+    "components-rust/*",
+    "common-rust/*",
+    "services/event-generator",
+    "services/kafka-producer",
+    "services/kafka-consumer-feeder",
+    "test/integration-harness",
+]
 
 [profile.release]
 opt-level = "s"
