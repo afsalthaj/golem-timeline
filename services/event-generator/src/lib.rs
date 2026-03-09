@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 //! Event generator for timeline analytics testing.
 //!
 //! Generates realistic event streams (e.g., CIRR playback events) that can be

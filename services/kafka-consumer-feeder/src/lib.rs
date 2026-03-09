@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 //! Kafka consumer that feeds events to Golem workers via REST API.
 //!
 //! Consumes events from a Kafka topic and invokes Golem EventProcessor workers

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 use common_lib::{EventColumnName, GolemEvent, GolemEventPredicate, GolemEventValue};
 
 use crate::types::*;

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 use crate::internals::zip_result::ZipResult;
 
 // None represents, for the most of the time, future

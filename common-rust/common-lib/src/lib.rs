@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 pub use event_predicate::*;
 pub use golem_event::*;
 pub use state_dynamic_timeline::*;

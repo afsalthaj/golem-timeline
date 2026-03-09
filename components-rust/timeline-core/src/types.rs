@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 use golem_rust::Schema;
 
 /// A node index into the flat `TimelineOpGraph.nodes` array.

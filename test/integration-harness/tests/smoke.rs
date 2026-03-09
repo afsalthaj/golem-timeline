@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 //! Smoke test: verifies the basic end-to-end flow works.
 //!
 //! Run: `cargo make smoke`

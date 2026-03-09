@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 //! Aggregation tests: verify cross-session aggregation works.
 //!
 //! Run: `cargo make aggregation`

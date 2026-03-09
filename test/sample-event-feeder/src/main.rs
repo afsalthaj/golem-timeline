@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 use std::env;
 
 use futures::TryStreamExt;

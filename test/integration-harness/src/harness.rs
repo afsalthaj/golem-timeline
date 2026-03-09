@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 //! Test harness orchestration.
 //!
 //! Manages the lifecycle of infrastructure (Golem, Kafka) and provides

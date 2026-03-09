@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 use crate::types::*;
 use crate::agents::timeline_processor::TimelineProcessorClient;
 use crate::agents::event_processor::EventProcessorClient;

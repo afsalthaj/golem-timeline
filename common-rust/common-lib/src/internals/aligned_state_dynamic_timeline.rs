@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 use std::fmt::Debug;
 
 use crate::state_dynamic_timeline::StateDynamicsTimeLine;

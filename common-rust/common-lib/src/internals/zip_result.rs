@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 // A zip result merely represent the result of zipping two timelines
 #[derive(Clone, Debug, PartialEq)]
 pub enum ZipResult<'t, T: Clone> {

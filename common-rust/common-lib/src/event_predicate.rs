@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 use std::fmt::{Debug, Display};
 
 use crate::golem_event::{GolemEvent, GolemEventValue};

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 //! Propagation tests: verify the push-based cascade works correctly.
 //!
 //! Run: `cargo make propagation`

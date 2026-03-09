@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 //! Kafka pipeline test: event-generator → kafka-producer → Kafka → consume → Golem → assert.
 //!
 //! Verifies that events survive the full Kafka round-trip and produce correct

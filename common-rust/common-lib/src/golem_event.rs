@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 use std::collections::HashMap;
 use std::fmt::Display;
 

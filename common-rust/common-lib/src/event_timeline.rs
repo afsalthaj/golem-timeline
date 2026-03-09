@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 // EventTimeLine can represent Numerical TimeLine or Event TimeLine
 #[derive(PartialEq, Debug, Default)]
 pub struct EventTimeLine<T> {

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 //! Standalone Kafka producer binary.
 //!
 //! Generates events and publishes them to Kafka.

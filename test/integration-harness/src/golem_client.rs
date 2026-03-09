@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 //! Golem client using the `golem` CLI (v1.4.1) for agent invocation.
 //!
 //! Uses `golem agent invoke` which handles auth, routing, and

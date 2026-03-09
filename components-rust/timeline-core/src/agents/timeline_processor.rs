@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 use golem_rust::{agent_definition, agent_implementation};
 
 use common_lib::{GolemEventValue, StateDynamicsTimeLine};

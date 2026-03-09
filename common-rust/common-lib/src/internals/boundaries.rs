@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 use std::fmt::Debug;
 
 use crate::internals::zip_result::{Side, ZipResult};

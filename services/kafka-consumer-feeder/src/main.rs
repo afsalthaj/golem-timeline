@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 //! Standalone Kafka consumer/feeder binary.
 //!
 //! Consumes events from Kafka and feeds them to Golem workers.
