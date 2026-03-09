@@ -9,20 +9,23 @@
       --bg: #0A0A0A;
       --surface: #111318;
       --surface2: #1a1e28;
-      --border: #1C5D9C33;
+      --border: #1C5D9C55;
       --text: #e8ecf4;
       --text-muted: #8b99b3;
       --accent: #02A7D1;
       --accent-dim: #1C5D9C;
       --green: #02A7D1;
-      --orange: #DA2C5A;
-      --red: #DA2C5A;
+      --orange: #A78BFA;
+      --red: #A78BFA;
       --cyan: #02A7D1;
-      --purple: #1C5D9C;
+      --purple: #6366F1;
       --leaf-color: #02A7D1;
-      --derived-color: #DA2C5A;
+      --derived-color: #A78BFA;
       --deep-blue: #133A75;
+      --siri: #A78BFA;
+      --siri-mid: #6366F1;
       --rose: #DA2C5A;
+      --siri-gradient: linear-gradient(135deg, #DA2C5A 0%, #6366F1 50%, #02A7D1 100%);
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -30,47 +33,52 @@
       background: var(--bg); color: var(--text); min-height: 100vh;
     }
     header {
-      padding: 20px 40px; border-bottom: 2px solid var(--deep-blue);
+      padding: 20px 40px; border-bottom: 2px solid var(--accent-dim);
       display: flex; align-items: center; gap: 16px;
-      background: linear-gradient(135deg, #0A0A0A 0%, #133A75 100%);
+      background: linear-gradient(135deg, #0A0A0A 0%, #1a1040 35%, #1C5D9C 70%, #0d2854 100%);
     }
-    header h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.3px; }
-    header .subtitle { font-size: 13px; color: var(--cyan); }
+    header h1 {
+      font-size: 24px; font-weight: 700; letter-spacing: -0.3px;
+      background: var(--siri-gradient); -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent; background-clip: text;
+    }
     header .status { font-size: 12px; color: var(--text-muted); margin-left: auto; }
     header .status .dot {
       display: inline-block; width: 7px; height: 7px; border-radius: 50%;
       background: var(--green); margin-right: 5px; vertical-align: middle;
     }
     .tabs {
-      display: flex; border-bottom: 2px solid var(--deep-blue); padding: 0 40px;
-      background: var(--surface);
+      display: flex; border-bottom: 2px solid var(--accent-dim); padding: 0 40px;
+      background: linear-gradient(90deg, var(--surface) 0%, #111828 100%);
     }
     .tab {
       padding: 14px 24px; font-size: 13px; font-weight: 600; color: var(--text-muted);
       cursor: pointer; border-bottom: 3px solid transparent;
-      transition: color .15s, border-color .15s; text-transform: uppercase; letter-spacing: 0.5px;
+      transition: color .15s, border-color .15s, background .15s;
+      text-transform: uppercase; letter-spacing: 0.5px;
     }
-    .tab:hover { color: var(--text); }
-    .tab.active { color: var(--cyan); border-bottom-color: var(--rose); }
+    .tab:hover { color: var(--cyan); }
+    .tab.active { color: #fff; border-bottom-color: var(--rose); background: rgba(99,102,241,0.15); }
     .panel { display: none; padding: 32px 40px; }
     .panel.active { display: block; }
     .guide { max-width: 900px; }
-    .guide h2 { font-size: 20px; margin-bottom: 8px; }
+    .guide h2 { font-size: 20px; margin-bottom: 8px; color: var(--cyan); }
     .guide .lead { color: var(--text-muted); font-size: 14px; margin-bottom: 24px; line-height: 1.6; }
     .dsl-block {
-      background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+      background: var(--surface); border: 1px solid var(--accent-dim); border-radius: 8px;
       padding: 16px 20px; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 13px;
       line-height: 1.7; color: var(--cyan); margin-bottom: 24px; white-space: pre; overflow-x: auto;
+      border-left: 3px solid var(--siri);
     }
     .step { display: flex; gap: 16px; margin-bottom: 20px; }
     .step-num {
       flex-shrink: 0; width: 28px; height: 28px;
-      background: linear-gradient(135deg, var(--rose) 0%, var(--deep-blue) 100%);
+      background: var(--siri-gradient);
       color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center;
       font-size: 13px; font-weight: 700;
     }
     .step-body { flex: 1; }
-    .step-body h3 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+    .step-body h3 { font-size: 14px; font-weight: 600; margin-bottom: 4px; color: var(--cyan); }
     .step-body p { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
     .step-body code {
       display: block; background: var(--surface); border: 1px solid var(--border);
@@ -85,15 +93,15 @@
       background: var(--surface); border: 1px solid var(--border); color: var(--text);
       padding: 8px 12px; border-radius: 6px; font-size: 14px; outline: none;
     }
-    .controls input:focus { border-color: var(--accent); }
+    .controls input:focus { border-color: var(--cyan); box-shadow: 0 0 0 2px rgba(2,167,209,0.2); }
     .controls button, .btn {
-      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dim) 100%);
+      background: var(--siri-gradient);
       color: #fff; border: none;
       padding: 10px 24px; border-radius: 6px; font-size: 14px; cursor: pointer;
       font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px;
-      transition: opacity .15s;
+      transition: opacity .15s; box-shadow: 0 2px 8px rgba(218,44,90,0.3);
     }
-    .controls button:hover, .btn:hover { opacity: 0.85; }
+    .controls button:hover, .btn:hover { opacity: 0.9; box-shadow: 0 4px 16px rgba(218,44,90,0.4); }
     .poll-toggle { margin-left: auto; display: flex; align-items: center; gap: 8px; }
     .poll-toggle label { cursor: pointer; }
     .interval {
@@ -102,12 +110,12 @@
     }
     .presets { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
     .preset-btn {
-      background: var(--surface); border: 1px solid var(--deep-blue); color: var(--text-muted);
+      background: var(--surface); border: 1px solid var(--accent-dim); color: var(--text-muted);
       padding: 8px 16px; border-radius: 6px; font-size: 12px; cursor: pointer;
       font-weight: 500; transition: all .15s;
     }
     .preset-btn:hover { color: var(--cyan); border-color: var(--cyan); }
-    .preset-btn.active { color: #fff; border-color: var(--rose); background: var(--rose); }
+    .preset-btn.active { color: #fff; border-color: var(--siri); background: var(--siri-gradient); }
     .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
     .empty-state p { margin-top: 8px; font-size: 14px; }
     .metrics-grid {
@@ -115,7 +123,7 @@
       gap: 16px; margin-bottom: 24px;
     }
     .metric-card {
-      background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px;
+      background: var(--surface); border: 1px solid var(--accent-dim); border-radius: 10px; padding: 20px;
     }
     .metric-card .label {
       font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px;
@@ -124,10 +132,9 @@
     .metric-card .value { font-size: 28px; font-weight: 700; font-variant-numeric: tabular-nums; }
     .metric-card .value.count { color: var(--cyan); }
     .metric-card .value.sum   { color: var(--rose); }
-    .metric-card .value.avg   { color: var(--accent-dim); }
-    .metric-card .value.minmax { color: var(--text); }
+    .metric-card .value.avg   { color: var(--siri); }
     .result-section {
-      background: var(--surface); border: 1px solid var(--border);
+      background: var(--surface); border: 1px solid var(--accent-dim);
       border-radius: 10px; padding: 24px; margin-bottom: 20px;
     }
     .agent-name {
@@ -145,24 +152,24 @@
     }
     .history-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 16px; }
     .history-table th {
-      text-align: left; color: var(--text-muted); font-weight: 500;
-      padding: 6px 12px 6px 0; border-bottom: 1px solid var(--border);
+      text-align: left; color: var(--cyan); font-weight: 500;
+      padding: 6px 12px 6px 0; border-bottom: 1px solid var(--accent-dim);
     }
     .history-table td { padding: 6px 12px 6px 0; font-variant-numeric: tabular-nums; }
     .node-card {
       background: var(--surface); border: 1px solid var(--border);
-      border-radius: 8px; padding: 12px 16px; margin-bottom: 4px;
-      min-height: 48px; transition: border-color .15s;
+      border-radius: 8px; padding: 12px 16px; margin-bottom: 6px;
+      min-height: 48px; transition: border-color .15s, box-shadow .15s;
     }
-    .node-card:hover { border-color: var(--accent); }
+    .node-card:hover { border-color: var(--cyan); box-shadow: 0 0 0 1px rgba(2,167,209,0.3); }
     .node-card.leaf { border-left: 3px solid var(--leaf-color); }
     .node-card.derived { border-left: 3px solid var(--derived-color); }
     .node-badge {
       font-size: 11px; font-weight: 700; padding: 2px 8px;
       border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0;
     }
-    .node-badge.leaf { background: rgba(2,167,209,0.15); color: var(--leaf-color); }
-    .node-badge.derived { background: rgba(218,44,90,0.15); color: var(--derived-color); }
+    .node-badge.leaf { background: rgba(2,167,209,0.25); color: var(--leaf-color); }
+    .node-badge.derived { background: rgba(167,139,250,0.2); color: var(--derived-color); }
     .node-name {
       font-size: 13px; font-weight: 600; font-family: 'SF Mono', 'Fira Code', monospace;
     }
@@ -177,19 +184,19 @@
     .node-header { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
     textarea.dsl-editor {
       width: 100%; min-height: 120px; background: var(--surface);
-      border: 1px solid var(--border); color: var(--cyan); border-radius: 8px;
+      border: 1px solid var(--accent-dim); color: var(--cyan); border-radius: 8px;
       padding: 12px 16px; font-family: 'SF Mono', 'Fira Code', monospace;
       font-size: 13px; line-height: 1.6; resize: vertical; outline: none;
     }
-    textarea.dsl-editor:focus { border-color: var(--accent); }
+    textarea.dsl-editor:focus { border-color: var(--cyan); box-shadow: 0 0 0 2px rgba(2,167,209,0.2); }
     .deploy-result { margin-top: 20px; }
     .metric-list { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
     .metric-item {
-      background: var(--surface); border: 1px solid var(--deep-blue);
+      background: var(--surface); border: 1px solid var(--accent-dim);
       border-radius: 8px; padding: 14px 18px; cursor: pointer; transition: all .15s;
     }
-    .metric-item:hover { border-color: var(--cyan); }
-    .metric-item.active { border-color: var(--rose); border-left: 3px solid var(--rose); background: var(--surface2); }
+    .metric-item:hover { border-color: var(--cyan); box-shadow: 0 0 0 1px rgba(2,167,209,0.3); }
+    .metric-item.active { border-color: var(--siri); border-left: 3px solid var(--siri); background: rgba(167,139,250,0.08); }
     .metric-item .metric-title { font-size: 14px; font-weight: 600; color: var(--cyan); }
     .metric-item .metric-dsl {
       font-size: 11px; color: var(--text-muted); margin-top: 4px;
@@ -198,24 +205,61 @@
     }
     .routing-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 12px; }
     .routing-table th {
-      text-align: left; color: var(--text-muted); font-weight: 500;
-      padding: 6px 12px 6px 0; border-bottom: 1px solid var(--border);
+      text-align: left; color: var(--cyan); font-weight: 500;
+      padding: 6px 12px 6px 0; border-bottom: 1px solid var(--accent-dim);
     }
     .routing-table td {
       padding: 6px 12px 6px 0; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px;
     }
     .section-title {
       font-size: 15px; font-weight: 600; margin-bottom: 12px; margin-top: 20px;
-      color: var(--text);
+      color: var(--cyan);
     }
+    .timeline-points {
+      display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px;
+    }
+    .timeline-point {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--bg); border: 1px solid var(--accent-dim); border-radius: 6px;
+      padding: 4px 10px; font-size: 12px;
+      transition: background .3s, border-color .3s;
+    }
+    .timeline-point.new-point {
+      background: rgba(2,167,209,0.12); border-color: var(--cyan);
+    }
+    .tp-range {
+      color: var(--text-muted); font-family: 'SF Mono', 'Fira Code', monospace;
+      font-variant-numeric: tabular-nums;
+    }
+    .tp-value {
+      color: var(--cyan); font-weight: 600;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+    }
+    @keyframes pulse-live {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+    .stream-live {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 12px; color: var(--siri); font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .stream-live .pulse {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--siri); animation: pulse-live 1.2s ease-in-out infinite;
+    }
+    .stop-btn {
+      background: var(--surface); border: 1px solid var(--siri-mid); color: var(--siri);
+      padding: 10px 24px; border-radius: 6px; font-size: 14px; cursor: pointer;
+      font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px;
+      transition: all .15s;
+    }
+    .stop-btn:hover { background: rgba(99,102,241,0.15); }
   </style>
 </head>
 <body>
   <header>
-    <div>
-      <h1>⏱ Timeline Analytics Dashboard</h1>
-      <div class="subtitle">Durable Timeline Analytics on Golem</div>
-    </div>
+    <h1>⏱ Timeline Analytics Dashboard</h1>
     <div class="status" id="status"><span class="dot"></span>Ready</div>
   </header>
 
@@ -229,13 +273,13 @@
   <!-- ==================== Getting Started ==================== -->
   <div id="guide-panel" class="panel active">
     <div class="guide">
-      <h2>Timeline Analytics on Golem</h2>
       <p class="lead">
         Write a temporal analytics query in the DSL, deploy it, and the system materializes
         a push-based agent graph that processes events in real time. Each sub-computation
         runs as a durable Golem agent. Use the <strong>Deploy Metric</strong> tab to register
         your own metrics.
       </p>
+      <p class="lead" style="margin-bottom:8px"><strong style="color:var(--cyan)">Example:</strong> Connection Induced Rebuffering Ratio (CIRR)</p>
       <div class="dsl-block">duration_where(
   has_existed(playerStateChange == "play")
   && !has_existed_within(playerStateChange == "seek", 5)
@@ -263,10 +307,10 @@
       <div class="step">
         <div class="step-num">3</div>
         <div class="step-body">
-          <h3>Inspect sub-computations</h3>
+          <h3>Stream sub-computations</h3>
           <p>Switch to the <strong>Computation Progress</strong> tab. Select a registered metric,
-             enter a session ID (e.g., <code>sess-0</code>) and query time, then click
-             <strong>Query All Nodes</strong> to see every agent's result at that point in time.</p>
+             enter a session ID (e.g., <code>sess-0-cirr</code>) and query time, then click
+             <strong>▶ Stream</strong> to watch every agent's timeline update live as events flow in.</p>
         </div>
       </div>
       <div class="step">
@@ -283,8 +327,8 @@
 
   <!-- ==================== Deploy Metric ==================== -->
   <div id="deploy-panel" class="panel">
-    <div style="max-width: 960px;">
-      <h2 class="section-title" style="margin-top:0">Deploy a New Metric</h2>
+    <div class="guide">
+      <h2 class="section-title" style="margin-top:0; color: var(--rose)">Deploy a New Metric</h2>
       <div class="controls" style="flex-direction: column; align-items: stretch; gap: 12px;">
         <div style="display:flex; gap:12px; align-items:center;">
           <label for="metric-name-input">Metric name:</label>
@@ -298,12 +342,13 @@
 ) | aggregate(group_by(cdn), count, sum, avg)</textarea>
         <div><button class="btn" id="deploy-btn">Deploy Metric</button></div>
       </div>
-      <div id="deploy-output" class="deploy-result"></div>
 
       <h2 class="section-title">Registered Metrics</h2>
       <div id="registered-metrics">
-        <div class="empty-state"><p>No metrics registered yet.</p></div>
+        <div class="empty-state" style="padding:16px"><p>No metrics registered yet.</p></div>
       </div>
+
+      <div id="deploy-output" class="deploy-result"></div>
     </div>
   </div>
 
@@ -316,15 +361,22 @@
 
     <div class="controls">
       <label for="session-input">Session ID:</label>
-      <input id="session-input" type="text" placeholder="e.g. sess-42-cirr" style="width:240px" />
+      <input id="session-input" type="text" placeholder="e.g. sess-0-cirr" style="width:240px" />
       <label for="time-input">Query time (t₁):</label>
       <input id="time-input" type="number" value="250" style="width:100px" min="0" />
-      <button class="btn" id="query-tree-btn">Query All Nodes</button>
+      <button class="btn" id="stream-btn">▶ Stream</button>
+      <button class="stop-btn" id="stop-stream-btn" style="display:none">■ Stop</button>
+      <div class="poll-toggle">
+        <label for="inspect-interval">Interval:</label>
+        <input type="number" id="inspect-interval" class="interval" value="2" min="1" max="30" />
+        <label for="inspect-interval">s</label>
+      </div>
+      <span id="stream-indicator" style="display:none" class="stream-live"><span class="pulse"></span>Live</span>
     </div>
 
     <div id="tree-output">
       <div class="empty-state">
-        <p>Select a metric above, enter a session ID and query time, then click <strong>Query All Nodes</strong>.</p>
+        <p>Select a metric above, enter a session ID and query time, then click <strong>▶ Stream</strong> to watch sub-computations update live.</p>
       </div>
     </div>
   </div>
@@ -385,21 +437,51 @@
     function formatEventValue(v) {
       if (v == null) return '—';
       if (typeof v === 'object') {
-        if ('string-value' in v) return '"' + v['string-value'] + '"';
+        if ('string-value' in v) return v['string-value'];
         if ('int-value' in v) return String(v['int-value']);
         if ('float-value' in v) return String(v['float-value']);
         if ('bool-value' in v) return v['bool-value'] ? 'true' : 'false';
       }
+      if (typeof v === 'boolean') return v ? 'true' : 'false';
+      if (typeof v === 'number') return String(v);
       return String(v);
     }
 
+    function unwrapResult(data) {
+      let val = data.result_json?.value ?? data;
+      if (val && typeof val === 'object' && 'ok' in val) val = val.ok;
+      return val;
+    }
+
+    function getTimelinePoints(result) {
+      if (!result) return [];
+      if (result.results && Array.isArray(result.results)) return result.results;
+      return [];
+    }
+
     function summarizeResult(result) {
-      if (result.results && Array.isArray(result.results)) {
-        if (result.results.length === 0) return 'empty';
-        const last = result.results[result.results.length - 1];
-        return formatEventValue(last.value);
+      const pts = getTimelinePoints(result);
+      if (pts.length === 0) return '—';
+      const last = pts[pts.length - 1];
+      return formatEventValue(last.value);
+    }
+
+    function renderTimelinePoints(result, prevPointCount) {
+      const pts = getTimelinePoints(result);
+      if (pts.length === 0) return '<span style="color:var(--text-muted)">No data yet</span>';
+      let html = '<div class="timeline-points">';
+      for (let i = 0; i < pts.length; i++) {
+        const pt = pts[i];
+        const val = formatEventValue(pt.value);
+        const t2 = pt.t2 != null ? pt.t2 : '∞';
+        const isNew = prevPointCount != null && i >= prevPointCount;
+        html += '<div class="timeline-point' + (isNew ? ' new-point' : '') + '">' +
+          '<span class="tp-range">[' + pt.t1 + ', ' + t2 + ')</span>' +
+          '<span class="tp-value">' + escHtml(val) + '</span>' +
+          '</div>';
       }
-      return JSON.stringify(result);
+      html += '</div>';
+      return html;
     }
 
     // ========== Deploy Metric ==========
@@ -509,6 +591,8 @@
 
     // ========== Computation Progress ==========
     let selectedMetric = null;
+    let streamTimer = null;
+    let prevPointCounts = {};
 
     async function loadInspectMetrics() {
       try {
@@ -528,7 +612,6 @@
         }
         el.innerHTML = html;
 
-        // Store full metric data for lookup
         el._metrics = metrics;
         el.querySelectorAll('.metric-item').forEach(item => {
           item.addEventListener('click', () => {
@@ -542,20 +625,13 @@
 
     const sessionInput = document.getElementById('session-input');
     const timeInput = document.getElementById('time-input');
-    const queryTreeBtn = document.getElementById('query-tree-btn');
+    const streamBtn = document.getElementById('stream-btn');
+    const stopStreamBtn = document.getElementById('stop-stream-btn');
+    const inspectInterval = document.getElementById('inspect-interval');
+    const streamIndicator = document.getElementById('stream-indicator');
     const treeOutput = document.getElementById('tree-output');
 
-    queryTreeBtn.addEventListener('click', queryAllNodes);
-
-    async function queryAllNodes() {
-      if (!selectedMetric) { setStatus('Select a metric first', false); return; }
-      const session = sessionInput.value.trim();
-      const t1 = parseInt(timeInput.value, 10);
-      if (!session || isNaN(t1)) { setStatus('Enter session ID and query time', false); return; }
-
-      setStatus('Querying all nodes…', true);
-
-      // Build node list from the metric
+    function buildNodeList() {
       const nodes = [];
       for (const d of selectedMetric.derived_nodes) {
         nodes.push({ suffix: d.agent_suffix, op: d.operation, type: 'derived', desc: d.description });
@@ -563,27 +639,72 @@
       for (const l of selectedMetric.leaves) {
         nodes.push({ suffix: l.agent_suffix, op: l.agent_suffix, type: 'leaf', desc: l.description });
       }
-
-      const promises = nodes.map(async (n) => {
-        const agentName = session + '-' + n.suffix;
-        const endpoint = n.type === 'leaf'
-          ? '/api/leaf/' + encodeURIComponent(agentName) + '/' + t1
-          : '/api/derived/' + encodeURIComponent(agentName) + '/' + t1;
-        try {
-          const resp = await fetch(endpoint);
-          const data = await resp.json();
-          if (data.error) return { ...n, agentName, status: 'err', display: data.error };
-          const result = data.result_json?.value ?? data;
-          return { ...n, agentName, status: 'ok', display: summarizeResult(result) };
-        } catch (e) {
-          return { ...n, agentName, status: 'err', display: e.message };
-        }
-      });
-
-      const results = await Promise.all(promises);
-      renderInspectTree(session, t1, results);
-      setStatus('Queried ' + results.length + ' nodes at t=' + t1, true);
+      return nodes;
     }
+
+    async function queryNode(session, t1, n) {
+      const agentName = session + '-' + n.suffix;
+      const endpoint = n.type === 'leaf'
+        ? '/api/leaf/' + encodeURIComponent(agentName) + '/' + t1
+        : '/api/derived/' + encodeURIComponent(agentName) + '/' + t1;
+      try {
+        const resp = await fetch(endpoint);
+        const data = await resp.json();
+        if (data.error) return { ...n, agentName, status: 'err', error: data.error, result: null };
+        const result = unwrapResult(data);
+        return { ...n, agentName, status: 'ok', error: null, result };
+      } catch (e) {
+        return { ...n, agentName, status: 'err', error: e.message, result: null };
+      }
+    }
+
+    async function queryAllNodes() {
+      if (!selectedMetric) { setStatus('Select a metric first', false); return; }
+      const session = sessionInput.value.trim();
+      const t1 = parseInt(timeInput.value, 10);
+      if (!session || isNaN(t1)) { setStatus('Enter session ID and query time', false); return; }
+
+      const nodes = buildNodeList();
+      const results = await Promise.all(nodes.map(n => queryNode(session, t1, n)));
+      renderInspectTree(session, t1, results);
+
+      // Update prev counts for next tick highlight
+      for (const r of results) {
+        prevPointCounts[r.suffix] = getTimelinePoints(r.result).length;
+      }
+
+      setStatus('Streamed ' + results.length + ' nodes at t=' + t1 + ' — ' + new Date().toLocaleTimeString(), true);
+    }
+
+    function startStream() {
+      if (!selectedMetric) { setStatus('Select a metric first', false); return; }
+      const session = sessionInput.value.trim();
+      const t1 = parseInt(timeInput.value, 10);
+      if (!session || isNaN(t1)) { setStatus('Enter session ID and query time', false); return; }
+
+      stopStream();
+      prevPointCounts = {};
+      streamBtn.style.display = 'none';
+      stopStreamBtn.style.display = '';
+      streamIndicator.style.display = '';
+
+      queryAllNodes();
+      const ms = (parseInt(inspectInterval.value, 10) || 2) * 1000;
+      streamTimer = setInterval(queryAllNodes, ms);
+    }
+
+    function stopStream() {
+      if (streamTimer) { clearInterval(streamTimer); streamTimer = null; }
+      streamBtn.style.display = '';
+      stopStreamBtn.style.display = 'none';
+      streamIndicator.style.display = 'none';
+    }
+
+    streamBtn.addEventListener('click', startStream);
+    stopStreamBtn.addEventListener('click', stopStream);
+    inspectInterval.addEventListener('change', () => {
+      if (streamTimer) startStream();
+    });
 
     function renderInspectTree(session, t1, results) {
       let html = '<div class="result-section">' +
@@ -592,14 +713,24 @@
         '</code> at t₁ = <code>' + t1 + '</code></div>';
 
       for (const r of results) {
-        const resultCls = r.status === 'ok' ? 'ok' : 'err';
-        const agentType = r.type === 'leaf' ? 'event-processor' : 'timeline-processor';
-        const agentId = agentType + '("' + r.agentName + '")';
-        html += '<div class="node-card ' + r.type + '"><div class="node-header">' +
-          '<span class="node-badge ' + r.type + '">' + r.type + '</span>' +
-          '<span class="node-name">' + escHtml(agentId) + '</span>' +
-          '<span class="node-result ' + resultCls + '">→ ' + escHtml(r.display) + '</span>' +
-          '</div><div class="node-desc">' + escHtml(r.desc) + '</div></div>';
+        const currentValue = r.status === 'ok' ? summarizeResult(r.result) : '—';
+        const valueCls = r.status === 'ok' ? 'ok' : 'err';
+        html += '<div class="node-card ' + r.type + '">' +
+          '<div class="node-header">' +
+            '<span class="node-badge ' + r.type + '">' + r.type + '</span>' +
+            '<span class="node-name">' + escHtml(r.suffix) + '</span>' +
+            '<span class="node-result ' + valueCls + '">' + escHtml(currentValue) + '</span>' +
+          '</div>' +
+          '<div class="node-desc">' + escHtml(r.desc) + '</div>';
+
+        if (r.status === 'err') {
+          html += '<div class="error-msg" style="margin-top:8px">' + escHtml(r.error) + '</div>';
+        } else {
+          const prev = prevPointCounts[r.suffix];
+          html += renderTimelinePoints(r.result, prev);
+        }
+
+        html += '</div>';
       }
 
       html += '</div>';
@@ -646,7 +777,7 @@
         const resp = await fetch('/api/aggregation/' + encodeURIComponent(agent));
         const data = await resp.json();
         if (data.error) { renderError(agent, data.error); setStatus('Error', false); return; }
-        const result = data.result_json?.value ?? data;
+        const result = unwrapResult(data);
         history.unshift({ time: new Date(), ...result });
         if (history.length > MAX_HISTORY) history.pop();
         renderResult(agent, result);
@@ -670,8 +801,6 @@
         { label: 'Sessions (count)', value: fmt(r.count), cls: 'count' },
         { label: 'Total (sum)', value: fmt(r.sum), cls: 'sum' },
         { label: 'Avg / session', value: fmt(r.avg), cls: 'avg' },
-        { label: 'Min', value: fmt(r.min), cls: 'minmax' },
-        { label: 'Max', value: fmt(r.max), cls: 'minmax' },
       ];
       let html =
         '<div class="result-section">' +

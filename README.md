@@ -6,15 +6,26 @@ system being backed by new agentic runtime [Golem](https://learn.golem.cloud) th
 Watch the talk from Afsal at [LambdaConf:2024:Estes-Park:Colorado](https://www.youtube.com/watch?v=9WjUBOfgriY) or refer presentation slides [here](https://github.com/afsalthaj/golem-timeline-presentation/blob/main/presentation_last.pdf)
 
 
-## Results
 
-### Aggregation results for CIRR across CDNs
+# A management UI
 
 ![img.png](images/img.png)
 
-### Debuggability
+## Deploy a Metric
 
 ![img_1.png](images/img_1.png)
+
+## Sub computation result streaming
+
+![img_2.png](images/img_2.png)
+
+
+## Aggregation Results
+
+![img_3.png](images/img_3.png)
+
+
+You will get more idea about the dashboard soon.
 
 ### A quick demo 
 
