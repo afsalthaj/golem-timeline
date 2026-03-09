@@ -7,7 +7,7 @@ Watch the talk from Afsal at [LambdaConf:2024:Estes-Park:Colorado](https://www.y
 
 # A management UI
 
-![img.png](images/img.pg)
+![img.png](images/im.pg)
 
 ## Deploy a Metric
 
