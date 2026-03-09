@@ -59,18 +59,18 @@
     }
     .tab:hover { color: var(--cyan); }
     .tab.active { color: #fff; border-bottom-color: var(--rose); background: rgba(99,102,241,0.15); }
-    .panel { display: none; padding: 32px 40px; }
+    .panel { display: none; padding: 40px 48px; }
     .panel.active { display: block; }
     .guide { max-width: 900px; }
-    .guide h2 { font-size: 20px; margin-bottom: 8px; color: var(--cyan); }
-    .guide .lead { color: var(--text-muted); font-size: 14px; margin-bottom: 24px; line-height: 1.6; }
+    .guide h2 { font-size: 20px; margin-bottom: 12px; color: var(--cyan); }
+    .guide .lead { color: var(--text-muted); font-size: 14px; margin-bottom: 28px; line-height: 1.7; }
     .dsl-block {
       background: var(--surface); border: 1px solid var(--accent-dim); border-radius: 8px;
       padding: 16px 20px; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 13px;
-      line-height: 1.7; color: var(--cyan); margin-bottom: 24px; white-space: pre; overflow-x: auto;
+      line-height: 1.7; color: var(--text); margin-bottom: 32px; white-space: pre; overflow-x: auto;
       border-left: 3px solid var(--siri);
     }
-    .step { display: flex; gap: 16px; margin-bottom: 20px; }
+    .step { display: flex; gap: 16px; margin-bottom: 28px; }
     .step-num {
       flex-shrink: 0; width: 28px; height: 28px;
       background: var(--siri-gradient);
@@ -86,32 +86,32 @@
       font-size: 12.5px; color: var(--green); margin-top: 8px; white-space: pre; overflow-x: auto;
     }
     .controls {
-      display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 20px;
+      display: flex; gap: 14px; align-items: center; flex-wrap: wrap; margin-bottom: 28px;
     }
-    .controls label { font-size: 13px; color: var(--text-muted); }
+    .controls label { font-size: 12px; color: var(--text-muted); }
     .controls input[type="text"], .controls input[type="number"] {
       background: var(--surface); border: 1px solid var(--border); color: var(--text);
-      padding: 8px 12px; border-radius: 6px; font-size: 14px; outline: none;
+      padding: 6px 10px; border-radius: 5px; font-size: 12px; outline: none;
     }
     .controls input:focus { border-color: var(--cyan); box-shadow: 0 0 0 2px rgba(2,167,209,0.2); }
     .controls button, .btn {
       background: var(--siri-gradient);
       color: #fff; border: none;
-      padding: 10px 24px; border-radius: 6px; font-size: 14px; cursor: pointer;
+      padding: 6px 16px; border-radius: 5px; font-size: 12px; cursor: pointer;
       font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px;
-      transition: opacity .15s; box-shadow: 0 2px 8px rgba(218,44,90,0.3);
+      transition: opacity .15s; box-shadow: 0 1px 6px rgba(218,44,90,0.25);
     }
-    .controls button:hover, .btn:hover { opacity: 0.9; box-shadow: 0 4px 16px rgba(218,44,90,0.4); }
+    .controls button:hover, .btn:hover { opacity: 0.9; box-shadow: 0 2px 10px rgba(218,44,90,0.35); }
     .poll-toggle { margin-left: auto; display: flex; align-items: center; gap: 8px; }
     .poll-toggle label { cursor: pointer; }
     .interval {
       background: var(--surface); border: 1px solid var(--border); color: var(--text);
-      padding: 6px 8px; border-radius: 6px; font-size: 13px; width: 54px; text-align: center; outline: none;
+      padding: 5px 6px; border-radius: 5px; font-size: 12px; width: 48px; text-align: center; outline: none;
     }
-    .presets { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+    .presets { display: flex; gap: 10px; margin-bottom: 28px; flex-wrap: wrap; }
     .preset-btn {
       background: var(--surface); border: 1px solid var(--accent-dim); color: var(--text-muted);
-      padding: 8px 16px; border-radius: 6px; font-size: 12px; cursor: pointer;
+      padding: 5px 12px; border-radius: 5px; font-size: 11px; cursor: pointer;
       font-weight: 500; transition: all .15s;
     }
     .preset-btn:hover { color: var(--cyan); border-color: var(--cyan); }
@@ -120,22 +120,22 @@
     .empty-state p { margin-top: 8px; font-size: 14px; }
     .metrics-grid {
       display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-      gap: 16px; margin-bottom: 24px;
+      gap: 20px; margin-bottom: 28px;
     }
     .metric-card {
-      background: var(--surface); border: 1px solid var(--accent-dim); border-radius: 10px; padding: 20px;
+      background: var(--surface); border: 1px solid var(--accent-dim); border-radius: 8px; padding: 16px;
     }
     .metric-card .label {
-      font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px;
-      color: var(--text-muted); margin-bottom: 8px;
+      font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px;
+      color: var(--text-muted); margin-bottom: 6px;
     }
-    .metric-card .value { font-size: 28px; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .metric-card .value { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
     .metric-card .value.count { color: var(--cyan); }
     .metric-card .value.sum   { color: var(--rose); }
     .metric-card .value.avg   { color: var(--siri); }
     .result-section {
       background: var(--surface); border: 1px solid var(--accent-dim);
-      border-radius: 10px; padding: 24px; margin-bottom: 20px;
+      border-radius: 10px; padding: 28px; margin-bottom: 28px;
     }
     .agent-name {
       font-size: 14px; font-weight: 600; margin-bottom: 16px;
@@ -158,7 +158,7 @@
     .history-table td { padding: 6px 12px 6px 0; font-variant-numeric: tabular-nums; }
     .node-card {
       background: var(--surface); border: 1px solid var(--border);
-      border-radius: 8px; padding: 12px 16px; margin-bottom: 6px;
+      border-radius: 8px; padding: 14px 18px; margin-bottom: 12px;
       min-height: 48px; transition: border-color .15s, box-shadow .15s;
     }
     .node-card:hover { border-color: var(--cyan); box-shadow: 0 0 0 1px rgba(2,167,209,0.3); }
@@ -180,17 +180,33 @@
     .node-result.pending { color: var(--text-muted); }
     .node-result.ok { color: var(--green); }
     .node-result.err { color: var(--red); }
-    .node-desc { font-size: 12px; color: var(--text-muted); line-height: 1.4; margin-top: 4px; }
+    .node-desc { font-size: 12px; color: var(--text-muted); line-height: 1.4; margin-top: 6px; }
     .node-header { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .dsl-editor-wrap {
+      position: relative; width: 100%;
+    }
+    .dsl-editor-wrap pre.dsl-highlight {
+      position: absolute; top: 1px; left: 1px; right: 1px; bottom: 1px; margin: 0;
+      padding: 10px 14px; font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 12px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;
+      pointer-events: none; overflow: auto; color: var(--text); background: transparent;
+      border-radius: 6px;
+    }
     textarea.dsl-editor {
-      width: 100%; min-height: 120px; background: var(--surface);
-      border: 1px solid var(--accent-dim); color: var(--cyan); border-radius: 8px;
-      padding: 12px 16px; font-family: 'SF Mono', 'Fira Code', monospace;
-      font-size: 13px; line-height: 1.6; resize: vertical; outline: none;
+      width: 100%; min-height: 110px; background: var(--surface);
+      border: 1px solid var(--accent-dim); color: transparent; caret-color: var(--text);
+      border-radius: 6px; padding: 10px 14px; font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 12px; line-height: 1.6; resize: none; outline: none;
     }
     textarea.dsl-editor:focus { border-color: var(--cyan); box-shadow: 0 0 0 2px rgba(2,167,209,0.2); }
-    .deploy-result { margin-top: 20px; }
-    .metric-list { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+    .dsl-kw { color: var(--siri); }
+    .dsl-fn { color: var(--cyan); }
+    .dsl-str { color: var(--rose); }
+    .dsl-num { color: #D4A853; }
+    .dsl-op { color: var(--text-muted); }
+    .dsl-ident { color: var(--text); }
+    .deploy-result { margin-top: 28px; }
+    .metric-list { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 28px; }
     .metric-item {
       background: var(--surface); border: 1px solid var(--accent-dim);
       border-radius: 8px; padding: 14px 18px; cursor: pointer; transition: all .15s;
@@ -212,11 +228,28 @@
       padding: 6px 12px 6px 0; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px;
     }
     .section-title {
-      font-size: 15px; font-weight: 600; margin-bottom: 12px; margin-top: 20px;
+      font-size: 15px; font-weight: 600; margin-bottom: 14px; margin-top: 28px;
       color: var(--cyan);
     }
+    .section-title.gradient {
+      font-weight: 400; background: var(--siri-gradient);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .hint {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 15px; height: 15px; border-radius: 50%; font-size: 10px; font-weight: 700;
+      background: var(--surface2); color: var(--text-muted); cursor: help;
+      border: 1px solid var(--border); margin-left: 6px; position: relative;
+      vertical-align: middle; line-height: 1;
+    }
+    .hint:hover::after {
+      content: attr(data-tip); position: absolute; left: 24px; top: -4px;
+      background: var(--surface2); border: 1px solid var(--accent-dim); color: var(--text);
+      padding: 8px 12px; border-radius: 6px; font-size: 11px; font-weight: 400;
+      white-space: nowrap; z-index: 10; box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
     .timeline-points {
-      display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px;
+      display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;
     }
     .timeline-point {
       display: inline-flex; align-items: center; gap: 8px;
@@ -250,7 +283,7 @@
     }
     .stop-btn {
       background: var(--surface); border: 1px solid var(--siri-mid); color: var(--siri);
-      padding: 10px 24px; border-radius: 6px; font-size: 14px; cursor: pointer;
+      padding: 6px 16px; border-radius: 5px; font-size: 12px; cursor: pointer;
       font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px;
       transition: all .15s;
     }
@@ -328,22 +361,25 @@
   <!-- ==================== Deploy Metric ==================== -->
   <div id="deploy-panel" class="panel">
     <div class="guide">
-      <h2 class="section-title" style="margin-top:0; color: var(--rose)">Deploy a New Metric</h2>
+      <h2 class="section-title gradient" style="margin-top:0">Deploy your metric</h2>
       <div class="controls" style="flex-direction: column; align-items: stretch; gap: 12px;">
         <div style="display:flex; gap:12px; align-items:center;">
           <label for="metric-name-input">Metric name:</label>
           <input id="metric-name-input" type="text" value="cirr" placeholder="e.g. cirr" style="width:200px" />
         </div>
-        <label>DSL expression:</label>
-        <textarea id="dsl-input" class="dsl-editor">duration_where(
+        <label style="margin-top:8px">DSL expression:</label>
+        <div class="dsl-editor-wrap">
+          <pre class="dsl-highlight" id="dsl-highlight" aria-hidden="true"></pre>
+          <textarea id="dsl-input" class="dsl-editor">duration_where(
   has_existed(playerStateChange == "play")
   && !has_existed_within(playerStateChange == "seek", 5)
   && latest_event_to_state(playerStateChange) == "buffer"
 ) | aggregate(group_by(cdn), count, sum, avg)</textarea>
-        <div><button class="btn" id="deploy-btn">Deploy Metric</button></div>
+        </div>
+        <div style="text-align:right"><button class="btn" id="deploy-btn">Deploy</button></div>
       </div>
 
-      <h2 class="section-title">Registered Metrics</h2>
+      <h2 class="section-title gradient">Registered Metrics</h2>
       <div id="registered-metrics">
         <div class="empty-state" style="padding:16px"><p>No metrics registered yet.</p></div>
       </div>
@@ -354,7 +390,7 @@
 
   <!-- ==================== Computation Progress ==================== -->
   <div id="inspect-panel" class="panel">
-    <h2 class="section-title" style="margin-top:0">Select a Metric</h2>
+    <h2 class="section-title gradient" style="margin-top:0">Select a metric</h2>
     <div id="inspect-metric-list" class="metric-list">
       <div class="empty-state" style="padding:20px"><p>No metrics registered. Deploy one first.</p></div>
     </div>
@@ -428,6 +464,35 @@
       d.textContent = s;
       return d.innerHTML;
     }
+
+    function highlightDsl(text) {
+      return escHtml(text)
+        .replace(/\b(duration_where|has_existed|has_existed_within|latest_event_to_state|aggregate|group_by)\b/g,
+          '<span class="dsl-kw">$1</span>')
+        .replace(/\b(count|sum|avg|min|max)\b/g, '<span class="dsl-fn">$1</span>')
+        .replace(/&quot;([^&]*)&quot;/g, '<span class="dsl-str">"$1"</span>')
+        .replace(/\b(\d+)\b/g, '<span class="dsl-num">$1</span>')
+        .replace(/(&&|!=|==|\|\||!)/g, '<span class="dsl-op">$1</span>')
+        .replace(/(\|)(?!\|)/g, '<span class="dsl-op">$1</span>');
+    }
+
+    // Highlight static DSL block
+    document.querySelectorAll('.dsl-block').forEach(el => {
+      el.innerHTML = highlightDsl(el.textContent);
+    });
+
+    // Highlight DSL editor
+    const dslHighlight = document.getElementById('dsl-highlight');
+    const dslTextarea = document.getElementById('dsl-input');
+    function syncHighlight() {
+      dslHighlight.innerHTML = highlightDsl(dslTextarea.value) + '\n';
+    }
+    dslTextarea.addEventListener('input', syncHighlight);
+    dslTextarea.addEventListener('scroll', () => {
+      dslHighlight.scrollTop = dslTextarea.scrollTop;
+      dslHighlight.scrollLeft = dslTextarea.scrollLeft;
+    });
+    syncHighlight();
 
     function fmt(n) {
       if (n == null) return '—';
@@ -522,9 +587,8 @@
       html += '<div class="agent-name">Metric: <code>' + escHtml(metric.name) + '</code></div>';
 
       // Agent tree
-      html += '<div class="section-title" style="margin-top:0">Agent Tree</div>';
-      html += '<p style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">' +
-        'Agent names are: <code>{session-id}-{metric-name}-{suffix}</code></p>';
+      html += '<div class="section-title" style="margin-top:0">Computation Graph' +
+        '<span class="hint" data-tip="Each node is a durable Golem agent. Named {session-id}-{suffix}.">?</span></div>';
 
       for (const d of metric.derived_nodes) {
         html += '<div class="node-card derived"><div class="node-header">' +
@@ -541,10 +605,9 @@
       }
 
       // Routing table
-      html += '<div class="section-title">Leaf Routing Table</div>' +
-        '<p style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">' +
-        'Feeders use this to route events to the correct leaf agents.</p>';
-      html += '<table class="routing-table"><thead><tr><th>Event Column</th><th>Agent Suffixes</th></tr></thead><tbody>';
+      html += '<div class="section-title">Event Routing' +
+        '<span class="hint" data-tip="Maps event columns to the leaf agents that consume them.">?</span></div>';
+      html += '<table class="routing-table"><thead><tr><th>Event Column</th><th>Receivers</th></tr></thead><tbody>';
       for (const [col, suffixes] of Object.entries(metric.routing_table.routes)) {
         html += '<tr><td>' + escHtml(col) + '</td><td>' +
           suffixes.map(s => escHtml(s)).join(', ') + '</td></tr>';
@@ -553,8 +616,9 @@
 
       // Aggregation
       if (metric.aggregation) {
-        html += '<div class="section-title">Aggregation</div>' +
-          '<p style="font-size:13px;color:var(--text-muted);">Group by: <code>' +
+        html += '<div class="section-title">Aggregation' +
+          '<span class="hint" data-tip="Cross-session rollup. Results grouped by the specified column.">?</span></div>' +
+          '<p style="font-size:12px;color:var(--text-muted);">Group by: <code>' +
           escHtml(metric.aggregation.group_by_column) + '</code> — Functions: ' +
           metric.aggregation.functions.join(', ') + '</p>';
       }
