@@ -26,7 +26,7 @@ Watch the talk from Afsal at [LambdaConf:2024:Estes-Park:Colorado](https://www.y
 
 ## Aggregation Results
 
-![img_4.png](images/im_4.png)
+![img_4.png](images/img_4.png)
 
 
 You will get more idea about the dashboard soon.
