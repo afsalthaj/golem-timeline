@@ -5,8 +5,6 @@ system being backed by new agentic runtime [Golem](https://learn.golem.cloud) th
 
 Watch the talk from Afsal at [LambdaConf:2024:Estes-Park:Colorado](https://www.youtube.com/watch?v=9WjUBOfgriY) or refer presentation slides [here](https://github.com/afsalthaj/golem-timeline-presentation/blob/main/presentation_last.pdf)
 
-
-
 # A management UI
 
 ![img.png](images/img.png)
@@ -22,7 +20,6 @@ Watch the talk from Afsal at [LambdaConf:2024:Estes-Park:Colorado](https://www.y
 ## Sub computation result streaming
 
 ![img.png](images/stream.png)
-
 
 ![img_3.png](images/img_3.png)
 
