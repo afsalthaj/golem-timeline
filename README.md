@@ -7,21 +7,21 @@ Watch the talk from Afsal at [LambdaConf:2024:Estes-Park:Colorado](https://www.y
 
 # A management UI
 
-![img.png](images/im.pg)
+![img.png](images/img.png)
 
 ## Deploy a Metric
 
-![img_1.png](images/img_1.pg)
+![img_1.png](images/img_1.png)
 
 ### After deploy
 
-![img_2.png](images/img_2.pg)
+![img_2.png](images/img_2.png)
 
 ## Sub computation result streaming
 
 ![img.png](images/stream.png)
 
-![img_3.png](images/img_.png)
+![img_3.png](images/img_3.png)
 
 
 ## Aggregation Results
