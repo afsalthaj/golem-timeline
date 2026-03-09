@@ -302,14 +302,14 @@
         <div class="step-body">
           <h3>What the node tree means</h3>
           <p>The CIRR expression compiles into 8 Golem agents per session:</p>
-          <code>node-1  DurationWhere      ← root (how long is CIRR true?)
-node-2  And                ← all 3 conditions combined
-node-3  And                ← has_existed ∧ ¬has_existed_within
-node-4  TlHasExisted       ← LEAF: playerStateChange == "play" ever?
-node-5  Not                ← negation of node-6
-node-6  TlHasExistedWithin ← LEAF: seek within last 5 time units?
-node-7  EqualTo "buffer"   ← current state == "buffer"?
-node-8  LatestEventToState ← LEAF: latest playerStateChange value</code>
+          <code>node-1  duration-where         ← root (how long is CIRR true?)
+node-2  and                    ← all 3 conditions combined
+node-3  and                    ← has-existed ∧ ¬has-existed-within
+node-4  tl-has-existed         ← LEAF: playerStateChange == "play" ever?
+node-5  not                    ← negation of node-6
+node-6  tl-has-existed-within  ← LEAF: seek within last 5 time units?
+node-7  equal-to("buffer")    ← current state == "buffer"?
+node-8  latest-event-to-state ← LEAF: latest playerStateChange value</code>
           <p style="margin-top: 8px;">
             <span style="color: var(--leaf-color);">■</span> Leaf nodes ingest raw events.
             <span style="color: var(--derived-color);">■</span> Derived nodes recompute from children.
@@ -347,10 +347,10 @@ node-8  LatestEventToState ← LEAF: latest playerStateChange value</code>
       <button class="preset-btn" data-session="demo-fastly-1">demo-fastly-1</button>
     </div>
 
-    <div class="dsl-block" style="font-size:12px; margin-bottom:20px; padding:12px 16px;">duration_where(                                          ← node-1 (root)
-  has_existed(playerStateChange == "play")                ← node-4 (leaf)
-  && !has_existed_within(playerStateChange == "seek", 5)  ← !node-6 (leaf) via node-5
-  && latest_event_to_state(playerStateChange) == "buffer" ← node-8 (leaf) via node-7
+    <div class="dsl-block" style="font-size:12px; margin-bottom:20px; padding:12px 16px;">duration_where(                                          ← <span style="color:var(--derived-color)">{session-id}-node-1</span> (root)
+  has_existed(playerStateChange == "play")                ← <span style="color:var(--leaf-color)">{session-id}-node-4</span> (leaf)
+  && !has_existed_within(playerStateChange == "seek", 5)  ← <span style="color:var(--derived-color)">{session-id}-node-5</span> ¬<span style="color:var(--leaf-color)">{session-id}-node-6</span> (leaf)
+  && latest_event_to_state(playerStateChange) == "buffer" ← <span style="color:var(--derived-color)">{session-id}-node-7</span> ← <span style="color:var(--leaf-color)">{session-id}-node-8</span> (leaf)
 ) | aggregate(group_by(cdn), count, sum, avg)</div>
 
     <div id="tree-output">
@@ -417,21 +417,21 @@ node-8  LatestEventToState ← LEAF: latest playerStateChange value</code>
     // ========== Node Inspector ==========
     // The CIRR tree structure (pre-order DFS numbering)
     const CIRR_TREE = [
-      { node: 1, op: 'DurationWhere',      type: 'derived', depth: 0,
+      { node: 1, op: 'duration-where',         type: 'derived', agent: 'timeline-processor', depth: 0,
         desc: 'How many seconds has the user been experiencing connection-induced rebuffering?' },
-      { node: 2, op: 'And',                type: 'derived', depth: 1,
+      { node: 2, op: 'and',                    type: 'derived', agent: 'timeline-processor', depth: 1,
         desc: 'Are ALL three rebuffering conditions true at the same time?' },
-      { node: 3, op: 'And',                type: 'derived', depth: 2,
+      { node: 3, op: 'and',                    type: 'derived', agent: 'timeline-processor', depth: 2,
         desc: 'Did playback start AND was there no recent seek? (rules out seek-induced buffering)' },
-      { node: 4, op: 'TlHasExisted',       type: 'leaf',    depth: 3,
+      { node: 4, op: 'tl-has-existed',         type: 'leaf',    agent: 'event-processor',    depth: 3,
         desc: 'Has the user ever pressed play? (playerStateChange == "play" at any point in the past)' },
-      { node: 5, op: 'Not',                type: 'derived', depth: 3,
+      { node: 5, op: 'not',                    type: 'derived', agent: 'timeline-processor', depth: 3,
         desc: 'Was there NO recent seek? (true = no seek recently, so buffering is connection-induced)' },
-      { node: 6, op: 'TlHasExistedWithin', type: 'leaf',    depth: 4,
+      { node: 6, op: 'tl-has-existed-within',  type: 'leaf',    agent: 'event-processor',    depth: 4,
         desc: 'Did the user seek in the last 5 time units? (if yes, buffering is seek-induced, not connection-induced)' },
-      { node: 7, op: 'EqualTo "buffer"',   type: 'derived', depth: 2,
+      { node: 7, op: 'equal-to("buffer")',     type: 'derived', agent: 'timeline-processor', depth: 2,
         desc: 'Is the player currently buffering? (latest state == "buffer")' },
-      { node: 8, op: 'LatestEventToState', type: 'leaf',    depth: 3,
+      { node: 8, op: 'latest-event-to-state',  type: 'leaf',    agent: 'event-processor',    depth: 3,
         desc: 'What is the player doing right now? (latest playerStateChange value: play, buffer, pause, etc.)' },
     ];
 
@@ -510,14 +510,15 @@ node-8  LatestEventToState ← LEAF: latest playerStateChange value</code>
         const cardCls = r.type;
         const resultCls = r.status === 'ok' ? 'ok' : (r.status === 'err' ? 'err' : 'pending');
 
+        const workerName = session + '-node-' + r.node;
+        const agentId = r.agent + '("' + workerName + '")';
         html +=
           '<div class="tree-node">' +
             '<div class="tree-indent"><span class="branch">' + indent + '</span></div>' +
             '<div class="node-card ' + cardCls + '">' +
               '<div class="node-header">' +
                 '<span class="node-badge ' + badgeCls + '">' + r.type + '</span>' +
-                '<span class="node-name">node-' + r.node + '</span>' +
-                '<span class="node-op">' + escHtml(r.op) + '</span>' +
+                '<span class="node-name">' + escHtml(agentId) + '</span>' +
                 '<span class="node-result ' + resultCls + '">→ ' + escHtml(r.display) + '</span>' +
               '</div>' +
               '<div class="node-desc">' + escHtml(r.desc) + '</div>' +
