@@ -36,7 +36,7 @@ pub trait TimelineProcessor {
     ///   - node-6: `initialize_derived(Comparison(EqualTo, "buffer"), [node-5])` — latest state == "buffer"
     ///   - node-7: `initialize_derived(And, [node-2, node-6])` — all three conditions combined
     ///   - node-8: `initialize_derived(DurationWhere, [node-7])` — cumulative time where all true
-    fn initialize_derived(&mut self, operation: DerivedOperation, children: Vec<ChildWorkerRef>);
+    fn initialize_derived(&mut self, operation: DerivedOperation, children: Vec<ChildAgentRef>);
 
     /// Wire this node to its parent. Not set on the root — the root pushes to the Aggregator.
     ///
@@ -84,10 +84,10 @@ pub trait TimelineProcessor {
 struct TimelineProcessorImpl {
     _name: String,
     operation: Option<DerivedOperation>,
-    children: Vec<ChildWorkerRef>,
+    children: Vec<ChildAgentRef>,
     parent: Option<ParentRef>,
     aggregation: Option<AggregationConfig>,
-    aggregator_worker: Option<String>,
+    aggregator_agent: Option<String>,
     last_aggregated_value: Option<f64>,
     left_child_state: StateDynamicsTimeLine<GolemEventValue>,
     right_child_state: StateDynamicsTimeLine<GolemEventValue>,
@@ -104,7 +104,7 @@ impl TimelineProcessor for TimelineProcessorImpl {
             children: Vec::new(),
             parent: None,
             aggregation: None,
-            aggregator_worker: None,
+            aggregator_agent: None,
             last_aggregated_value: None,
             left_child_state: StateDynamicsTimeLine::default(),
             right_child_state: StateDynamicsTimeLine::default(),
@@ -113,7 +113,7 @@ impl TimelineProcessor for TimelineProcessorImpl {
         }
     }
 
-    fn initialize_derived(&mut self, operation: DerivedOperation, children: Vec<ChildWorkerRef>) {
+    fn initialize_derived(&mut self, operation: DerivedOperation, children: Vec<ChildAgentRef>) {
         self.operation = Some(operation);
         self.children = children;
     }
@@ -161,7 +161,7 @@ impl TimelineProcessor for TimelineProcessorImpl {
                     notify_parent(&self.parent, time, event_val.clone(), &group_by_value).await;
                     notify_aggregator(
                         &self.aggregation,
-                        &mut self.aggregator_worker,
+                        &mut self.aggregator_agent,
                         &mut self.last_aggregated_value,
                         time,
                         &event_val,
@@ -186,7 +186,7 @@ impl TimelineProcessor for TimelineProcessorImpl {
                             .await;
                         notify_aggregator(
                             &self.aggregation,
-                            &mut self.aggregator_worker,
+                            &mut self.aggregator_agent,
                             &mut self.last_aggregated_value,
                             time,
                             &event_val,
@@ -227,7 +227,7 @@ impl TimelineProcessor for TimelineProcessorImpl {
                             .await;
                         notify_aggregator(
                             &self.aggregation,
-                            &mut self.aggregator_worker,
+                            &mut self.aggregator_agent,
                             &mut self.last_aggregated_value,
                             time,
                             &event_val,
@@ -268,7 +268,7 @@ impl TimelineProcessor for TimelineProcessorImpl {
                             .await;
                         notify_aggregator(
                             &self.aggregation,
-                            &mut self.aggregator_worker,
+                            &mut self.aggregator_agent,
                             &mut self.last_aggregated_value,
                             time,
                             &event_val,
@@ -305,7 +305,7 @@ impl TimelineProcessor for TimelineProcessorImpl {
                     notify_parent(&self.parent, time, event_val.clone(), &group_by_value).await;
                     notify_aggregator(
                         &self.aggregation,
-                        &mut self.aggregator_worker,
+                        &mut self.aggregator_agent,
                         &mut self.last_aggregated_value,
                         time,
                         &event_val,
@@ -326,7 +326,7 @@ impl TimelineProcessor for TimelineProcessorImpl {
                 notify_parent(&self.parent, time, event_val.clone(), &group_by_value).await;
                 notify_aggregator(
                     &self.aggregation,
-                    &mut self.aggregator_worker,
+                    &mut self.aggregator_agent,
                     &mut self.last_aggregated_value,
                     time,
                     &event_val,

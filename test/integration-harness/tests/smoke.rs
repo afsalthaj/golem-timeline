@@ -11,7 +11,7 @@ mod tests {
     /// Smoke test: initialize a trivial timeline, feed one event, check result.
     ///
     /// Timeline: latest_event_to_state(playerStateChange)
-    ///   - Single leaf node (node-1).
+    ///   - Single leaf node (latest-event-to-state-1).
     ///   - Feed one event: {time: 100, playerStateChange: "play"}
     ///   - Assert: get_leaf_result(101) returns "play"
     #[test]
@@ -33,8 +33,8 @@ mod tests {
         let result_value = GolemClient::extract_result(&init);
         println!("Init result: {:?}", result_value);
 
-        // The driver creates one leaf: {session_id}-node-1
-        let leaf = format!("{}-node-1", session_id);
+        // The driver creates one leaf: {session_id}-latest-event-to-state-1
+        let leaf = format!("{}-latest-event-to-state-1", session_id);
 
         // Feed one event
         let event_wave = r#"{time: 100, event: [("playerStateChange", string-value("play"))]}"#;
@@ -73,7 +73,7 @@ mod tests {
             )
             .expect("Failed to init");
 
-        let leaf = format!("{}-node-1", session_id);
+        let leaf = format!("{}-latest-event-to-state-1", session_id);
 
         // Feed sequence: init → buffer → play
         let events = [

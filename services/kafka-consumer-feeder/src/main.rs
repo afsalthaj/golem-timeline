@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 //! Standalone Kafka consumer/feeder binary.
 //!
-//! Consumes events from Kafka and feeds them to Golem workers.
+//! Consumes events from Kafka and feeds them to Golem agents.
 //! Can be used independently for cloud deployments.
 //!
 //! # Environment variables
@@ -28,17 +28,17 @@ async fn main() {
     let golem_base_url =
         env::var("GOLEM_BASE_URL").unwrap_or_else(|_| "http://localhost:9005".to_string());
     let component_id = env::var("COMPONENT_ID").expect("COMPONENT_ID must be set");
-    let leaf_workers = env::var("LEAF_WORKERS").expect("LEAF_WORKERS must be set");
+    let leaf_agents = env::var("LEAF_WORKERS").expect("LEAF_WORKERS must be set");
 
-    let leaf_worker_names: Vec<String> = leaf_workers
+    let leaf_agent_names: Vec<String> = leaf_agents
         .split(',')
         .map(|s| s.trim().to_string())
         .filter(|s| !s.is_empty())
         .collect();
 
     log::info!(
-        "Starting Kafka consumer/feeder: broker={}, topic={}, group={}, workers={:?}",
-        kafka_broker, kafka_topic, consumer_group, leaf_worker_names,
+        "Starting Kafka consumer/feeder: broker={}, topic={}, group={}, agents={:?}",
+        kafka_broker, kafka_topic, consumer_group, leaf_agent_names,
     );
 
     let config = FeederConfig {
@@ -47,7 +47,7 @@ async fn main() {
         consumer_group,
         golem_base_url,
         component_id,
-        leaf_worker_names,
+        leaf_agent_names,
     };
 
     let start = std::time::Instant::now();
@@ -62,5 +62,5 @@ async fn main() {
         .expect("Failed to run feeder");
 
     let elapsed = start.elapsed();
-    println!("Fed {} events to Golem workers in {:.2?}", count, elapsed);
+    println!("Fed {} events to Golem agents in {:.2?}", count, elapsed);
 }

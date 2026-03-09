@@ -114,112 +114,33 @@ done
 nc -z 127.0.0.1 9092 2>/dev/null || { echo "ERROR: Kafka did not start"; exit 1; }
 echo "    Kafka ready."
 
-# --- CIRR timeline with aggregation ---
-# Graph:
-#   0: TlDurationWhere(1)
-#   1: And(2, 6)
-#   2: And(3, 4)
-#   3: TlHasExisted(playerStateChange == "play")
-#   4: Negation(5)
-#   5: TlHasExistedWithin(playerStateChange == "seek", 5)
-#   6: Comparison(EqualTo, 7, "buffer")
-#   7: TlLatestEventToState("playerStateChange")
-#
-# Node numbering (pre-order DFS):
-#   node-1: DurationWhere     (root, TimelineProcessor)
-#   node-2: And               (TimelineProcessor)
-#   node-3: And               (TimelineProcessor)
-#   node-4: TlHasExisted      (EventProcessor LEAF)
-#   node-5: Not               (TimelineProcessor)
-#   node-6: TlHasExistedWithin (EventProcessor LEAF)
-#   node-7: EqualTo           (TimelineProcessor)
-#   node-8: LatestEventToState (EventProcessor LEAF)
-#
-# Leaves: node-4, node-6, node-8
-
-TIMELINE='{nodes: [tl-duration-where(1), and((2, 6)), and((3, 4)), tl-has-existed({col-name: "playerStateChange", value: string-value("play"), op: equal}), negation(5), tl-has-existed-within(({col-name: "playerStateChange", value: string-value("seek"), op: equal}, 5)), comparison((equal-to, 7, string-value("buffer"))), tl-latest-event-to-state("playerStateChange")]}'
-AGG='some({group-by-column: "cdn", aggregations: [count, sum, avg]})'
-
-CDNS=("akamai" "cloudfront" "fastly")
-SESSIONS_PER_CDN=3
-TOTAL_SESSIONS=$((SESSIONS_PER_CDN * ${#CDNS[@]}))
-
+# --- Generate events into Kafka ---
 echo ""
-echo "==> Initializing $TOTAL_SESSIONS CIRR sessions across ${#CDNS[@]} CDNs..."
+echo "==> Generating events into Kafka..."
+KAFKA_TOPIC=timeline-events SESSION_COUNT=9 EVENTS_PER_SESSION=50 cargo run -p kafka-producer 2>/dev/null
+echo "    Events published to Kafka topic 'timeline-events'."
 
-SESSION_IDS=()
-SESSION_CDNS=()
-for cdn in "${CDNS[@]}"; do
-    for j in $(seq 1 $SESSIONS_PER_CDN); do
-        sid="demo-${cdn}-${j}"
-        golem agent invoke --format json "timeline-driver(\"$sid\")" initialize-timeline "$TIMELINE" "$AGG" > /dev/null 2>&1
-        SESSION_IDS+=("$sid")
-        SESSION_CDNS+=("$cdn")
-        echo "    Initialized session $sid (cdn=$cdn)"
-    done
-done
-
-echo ""
-echo "==> Feeding events to all sessions..."
-
-# For each session, feed a realistic sequence of events to all 3 leaves
-for idx in "${!SESSION_IDS[@]}"; do
-    sid="${SESSION_IDS[$idx]}"
-    cdn="${SESSION_CDNS[$idx]}"
-    leaf4="${sid}-node-4"   # has_existed(playerStateChange == "play")
-    leaf6="${sid}-node-6"   # has_existed_within(playerStateChange == "seek", 5)
-    leaf8="${sid}-node-8"   # latest_event_to_state(playerStateChange)
-
-    # Use different timing offsets per session to create variety
-    base=$((idx * 100 + 100))
-
-    # Event 1: playerStateChange = "init"
-    t=$((base))
-    ev="{time: ${t}, event: [(\"playerStateChange\", string-value(\"init\")), (\"cdn\", string-value(\"${cdn}\"))]}"
-    golem agent invoke --format json "event-processor(\"$leaf4\")" add-event "$ev" > /dev/null 2>&1
-    golem agent invoke --format json "event-processor(\"$leaf6\")" add-event "$ev" > /dev/null 2>&1
-    golem agent invoke --format json "event-processor(\"$leaf8\")" add-event "$ev" > /dev/null 2>&1
-
-    # Event 2: playerStateChange = "play"
-    t=$((base + 10))
-    ev="{time: ${t}, event: [(\"playerStateChange\", string-value(\"play\")), (\"cdn\", string-value(\"${cdn}\"))]}"
-    golem agent invoke --format json "event-processor(\"$leaf4\")" add-event "$ev" > /dev/null 2>&1
-    golem agent invoke --format json "event-processor(\"$leaf6\")" add-event "$ev" > /dev/null 2>&1
-    golem agent invoke --format json "event-processor(\"$leaf8\")" add-event "$ev" > /dev/null 2>&1
-
-    # Event 3: playerStateChange = "buffer" (triggers CIRR condition)
-    t=$((base + 30))
-    ev="{time: ${t}, event: [(\"playerStateChange\", string-value(\"buffer\")), (\"cdn\", string-value(\"${cdn}\"))]}"
-    golem agent invoke --format json "event-processor(\"$leaf4\")" add-event "$ev" > /dev/null 2>&1
-    golem agent invoke --format json "event-processor(\"$leaf6\")" add-event "$ev" > /dev/null 2>&1
-    golem agent invoke --format json "event-processor(\"$leaf8\")" add-event "$ev" > /dev/null 2>&1
-
-    # Event 4: playerStateChange = "play" (ends rebuffering)
-    t=$((base + 50))
-    ev="{time: ${t}, event: [(\"playerStateChange\", string-value(\"play\")), (\"cdn\", string-value(\"${cdn}\"))]}"
-    golem agent invoke --format json "event-processor(\"$leaf4\")" add-event "$ev" > /dev/null 2>&1
-    golem agent invoke --format json "event-processor(\"$leaf6\")" add-event "$ev" > /dev/null 2>&1
-    golem agent invoke --format json "event-processor(\"$leaf8\")" add-event "$ev" > /dev/null 2>&1
-
-    echo "    Fed 4 events to $sid"
-done
-
-echo ""
-echo "==> Querying aggregation results..."
-for cdn in "${CDNS[@]}"; do
-    result=$(golem agent invoke --format json "aggregator(\"aggregator-cdn-${cdn}\")" get-aggregation-result 2>/dev/null || echo '{"error": "not found"}')
-    echo "    aggregator-cdn-${cdn}: $result"
-done
-
+# --- Start dashboard ---
 echo ""
 echo "==> Starting dashboard at http://localhost:3000 ..."
-cargo run -p dashboard &
+KAFKA_BROKER=localhost:9092 KAFKA_TOPIC=timeline-events cargo run -p dashboard &
 DASH_PID=$!
+
+# Wait for dashboard to start
+sleep 3
 
 echo ""
 echo "════════════════════════════════════════════════════════════════"
 echo "  Dashboard running at http://localhost:3000"
-echo "  Click 'Live Dashboard' tab → select a CDN preset"
+echo ""
+echo "  1. Click the 'Deploy Metric' tab"
+echo "  2. Enter a metric name (e.g., 'cirr') and the DSL expression"
+echo "  3. Click 'Deploy Metric'"
+echo "     → The feeder starts consuming from Kafka and feeding events"
+echo "       to the Golem agents automatically"
+echo "  4. Switch to 'Computation Progress' to see per-session results"
+echo "  5. Switch to 'Live Dashboard' to see aggregation across CDNs"
+echo ""
 echo "  Press Ctrl+C to stop everything"
 echo "════════════════════════════════════════════════════════════════"
 

@@ -19,10 +19,10 @@ mod tests {
     ///   3: TlHasExisted(status == "error")
     ///
     /// Node numbering from setup_node (depth-first):
-    ///   node-1: And (TimelineProcessor)
-    ///   node-2: TlHasExisted(status=="active") (EventProcessor LEAF)
-    ///   node-3: Not (TimelineProcessor)
-    ///   node-4: TlHasExisted(status=="error") (EventProcessor LEAF)
+    ///   and-1: And (TimelineProcessor)
+    ///   has-existed-2: TlHasExisted(status=="active") (EventProcessor LEAF)
+    ///   not-3: Not (TimelineProcessor)
+    ///   has-existed-4: TlHasExisted(status=="error") (EventProcessor LEAF)
     #[test]
     #[ignore]
     fn test_boolean_logic_propagation() {
@@ -45,9 +45,9 @@ mod tests {
             .initialize_timeline(session_id, timeline_wave, "none")
             .expect("Failed to init boolean timeline");
 
-        let leaf_active = format!("{}-node-2", session_id);
-        let leaf_error = format!("{}-node-4", session_id);
-        let root = format!("{}-node-1", session_id);
+        let leaf_active = format!("{}-has-existed-2", session_id);
+        let leaf_error = format!("{}-has-existed-4", session_id);
+        let root = format!("{}-and-1", session_id);
 
         // Step 1: Send {status: "active"} at time 10
         let event1 = r#"{time: 10, event: [("status", string-value("active"))]}"#;
@@ -94,7 +94,7 @@ mod tests {
     ///   6: Comparison(EqualTo, 7, "buffer")
     ///   7: TlLatestEventToState("playerStateChange")
     ///
-    /// Leaves: node-4, node-6, node-8. Root: node-1.
+    /// Leaves: has-existed-4, has-existed-within-6, latest-event-to-state-8. Root: duration-where-1.
     #[test]
     #[ignore]
     fn test_cirr_propagation() {
@@ -122,11 +122,12 @@ mod tests {
             .expect("Failed to init CIRR timeline");
         println!("CIRR init: {:?}", GolemClient::extract_result(&init));
 
-        // Leaves: node-4, node-6, node-8
-        let leaves: Vec<String> = [4, 6, 8]
-            .iter()
-            .map(|n| format!("{}-node-{}", session_id, n))
-            .collect();
+        // Leaves: has-existed-4, has-existed-within-6, latest-event-to-state-8
+        let leaves: Vec<String> = vec![
+            format!("{}-has-existed-4", session_id),
+            format!("{}-has-existed-within-6", session_id),
+            format!("{}-latest-event-to-state-8", session_id),
+        ];
 
         // Event 1: playerStateChange = "play" at time 100
         let event1 = r#"{time: 100, event: [("playerStateChange", string-value("play"))]}"#;
@@ -140,8 +141,8 @@ mod tests {
             client.add_event(leaf, event2).unwrap();
         }
 
-        // Root (node-1) should now have DurationWhere counting from time 200
-        let root = format!("{}-node-1", session_id);
+        // Root (duration-where-1) should now have DurationWhere counting from time 200
+        let root = format!("{}-duration-where-1", session_id);
         let result = client.get_derived_result(&root, 250).unwrap();
         let s = serde_json::to_string(&result).unwrap();
         println!("Root at t=250: {}", s);

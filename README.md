@@ -6,15 +6,26 @@ system being backed by new agentic runtime [Golem](https://learn.golem.cloud) th
 Watch the talk from Afsal at [LambdaConf:2024:Estes-Park:Colorado](https://www.youtube.com/watch?v=9WjUBOfgriY) or refer presentation slides [here](https://github.com/afsalthaj/golem-timeline-presentation/blob/main/presentation_last.pdf)
 
 
-## Results
 
-### Aggregation results for CIRR across CDNs
+# A management UI
 
 ![img.png](images/img.png)
 
-### Debuggability
+## Deploy a Metric
 
 ![img_1.png](images/img_1.png)
+
+## Sub computation result streaming
+
+![img_2.png](images/img_2.png)
+
+
+## Aggregation Results
+
+![img_3.png](images/img_3.png)
+
+
+You will get more idea about the dashboard soon.
 
 ### A quick demo 
 
@@ -97,35 +108,35 @@ This will:
 
 ### Sub-computation results and their progress for debuggability
 
-The CIRR expression compiles into **8 Golem agents per session**. The **Node Inspector** tab in the dashboard lets you query every sub-computation's result and its progress at any point in time:
+The CIRR expression compiles into **8 Golem agents per session**. The **Computation Progress** tab in the dashboard lets you query every sub-computation's result and its progress at any point in time:
 
 ```
-node-1  duration-where         ← root: cumulative seconds where CIRR is true
-node-2  and                    ← all 3 conditions combined
-node-3  and                    ← has-existed ∧ ¬has-existed-within
-node-4  tl-has-existed         ← LEAF: has playerStateChange == "play" ever occurred?
-node-5  not                    ← negation of node-6
-node-6  tl-has-existed-within  ← LEAF: was there a seek within the last 5 time units?
-node-7  equal-to("buffer")    ← is the current player state "buffer"?
-node-8  latest-event-to-state ← LEAF: what is the latest playerStateChange value?
+duration-where-1         ← root: cumulative seconds where CIRR is true
+and-2                    ← all 3 conditions combined
+and-3                    ← has-existed ∧ ¬has-existed-within
+has-existed-4            ← LEAF: has playerStateChange == "play" ever occurred?
+not-5                    ← negation of has-existed-within-6
+has-existed-within-6     ← LEAF: was there a seek within the last 5 time units?
+equal-to-7               ← is the current player state "buffer"?
+latest-event-to-state-8  ← LEAF: what is the latest playerStateChange value?
 ```
 
 Once the demo is running and the dashboard is open at http://localhost:3000:
 
-1. Click the **Node Inspector** tab
+1. Click the **Computation Progress** tab
 2. Click the **`demo-akamai-1`** preset button (session ID is pre-filled)
 3. Leave query time at **250** and click **Query All Nodes**
 
 You'll immediately see every sub-computation's result:
 
-- **node-8** (leaf) shows `"buffer"` — the latest `playerStateChange` value
-- **node-4** (leaf) shows `true` — "play" has existed at some point
-- **node-6** (leaf) shows `false` — no seek event within the last 5 time units
-- **node-5** (derived) shows `true` — negation of node-6 (¬false = true)
-- **node-7** (derived) shows `true` — latest state equals "buffer"
-- **node-3** (derived) shows `true` — has_existed ∧ ¬has_existed_within
-- **node-2** (derived) shows `true` — all three CIRR conditions are met
-- **node-1** (root) shows the cumulative rebuffering duration in seconds
+- **latest-event-to-state-8** (leaf) shows `"buffer"` — the latest `playerStateChange` value
+- **has-existed-4** (leaf) shows `true` — "play" has existed at some point
+- **has-existed-within-6** (leaf) shows `false` — no seek event within the last 5 time units
+- **not-5** (derived) shows `true` — negation of has-existed-within-6 (¬false = true)
+- **equal-to-7** (derived) shows `true` — latest state equals "buffer"
+- **and-3** (derived) shows `true` — has_existed ∧ ¬has_existed_within
+- **and-2** (derived) shows `true` — all three CIRR conditions are met
+- **duration-where-1** (root) shows the cumulative rebuffering duration in seconds
 
 Try changing the query time to **120** (before the buffer event) and clicking again — you'll see how the sub-computations differ.
 
@@ -352,16 +363,16 @@ across all sessions grouped under `cdn-x`.
 
 Once the timeline is initialized (this may not be required as such in near future as initialisation is idempotent in golem), 
 feed events to the leaf EventProcessor agents.
-The driver logs which worker names it created — use those to target events:
+The driver logs which agent names it created — use those to target events:
 
 ```shell
 golem agent invoke \
-  'event-processor("cirr-node-1")' \
+  'event-processor("cirr-latest-event-to-state-8")' \
   'timeline:core/event-processor.{add-event}' \
   '{time: 1, event: [("playerStateChange", string-value("play"))]}'
 
 golem agent invoke \
-  'event-processor("cirr-node-1")' \
+  'event-processor("cirr-latest-event-to-state-8")' \
   'timeline:core/event-processor.{add-event}' \
   '{time: 5, event: [("playerStateChange", string-value("pause"))]}'
 ```
@@ -370,7 +381,7 @@ golem agent invoke \
 
 ```shell
 golem agent invoke \
-  'event-processor("cirr-node-1")' \
+  'event-processor("cirr-latest-event-to-state-8")' \
   'timeline:core/event-processor.{get-leaf-result}' \
   '3'
 ```
@@ -436,26 +447,26 @@ The `TimelineDriver` uses a depth-first counter to name agents. For the CIRR tre
 traversal produces these nodes:
 
 ```
-setup_node(TlDurationWhere)          → counter=1  "{sid}-node-1"  TimelineProcessor
-  setup_node(And)                    → counter=2  "{sid}-node-2"  TimelineProcessor
-    setup_node(And)        [left]    → counter=3  "{sid}-node-3"  TimelineProcessor
-      setup_node(TlHasExisted) [L]   → counter=4  "{sid}-node-4"  EventProcessor ★
-      setup_node(Not)          [R]   → counter=5  "{sid}-node-5"  TimelineProcessor
-        setup_node(TlHasExistedWithin)→ counter=6  "{sid}-node-6"  EventProcessor ★
-    setup_node(EqualTo)    [right]   → counter=7  "{sid}-node-7"  TimelineProcessor
-      setup_node(TlLatestEventToState)→ counter=8  "{sid}-node-8"  EventProcessor ★
+setup_node(TlDurationWhere)          → counter=1  "{sid}-duration-where-1"          TimelineProcessor
+  setup_node(And)                    → counter=2  "{sid}-and-2"                     TimelineProcessor
+    setup_node(And)        [left]    → counter=3  "{sid}-and-3"                     TimelineProcessor
+      setup_node(TlHasExisted) [L]   → counter=4  "{sid}-has-existed-4"             EventProcessor ★
+      setup_node(Not)          [R]   → counter=5  "{sid}-not-5"                     TimelineProcessor
+        setup_node(TlHasExistedWithin)→ counter=6  "{sid}-has-existed-within-6"     EventProcessor ★
+    setup_node(EqualTo)    [right]   → counter=7  "{sid}-equal-to-7"               TimelineProcessor
+      setup_node(TlLatestEventToState)→ counter=8  "{sid}-latest-event-to-state-8"  EventProcessor ★
 ```
 
 The ★ markers are the **leaf EventProcessor agents** — the ones that receive events.
 This gives us the static routing table:
 
-| Leaf worker | Operation | Listens for column | Matching events |
+| Leaf agent | Operation | Listens for column | Matching events |
 |---|---|---|---|
-| `{sid}-node-4` | TlHasExisted | `playerStateChange` | `playerStateChange == "play"` |
-| `{sid}-node-6` | TlHasExistedWithin | `userAction` | `userAction == "seek"` (within 5s) |
-| `{sid}-node-8` | TlLatestEventToState | `playerStateChange` | Any `playerStateChange` value |
+| `{sid}-has-existed-4` | TlHasExisted | `playerStateChange` | `playerStateChange == "play"` |
+| `{sid}-has-existed-within-6` | TlHasExistedWithin | `userAction` | `userAction == "seek"` (within 5s) |
+| `{sid}-latest-event-to-state-8` | TlLatestEventToState | `playerStateChange` | Any `playerStateChange` value |
 
-**This table is the same for every CIRR session.** The node numbering is deterministic
+**This table is the same for every CIRR session.** The agent naming is deterministic
 because `setup_node` always traverses depth-first with a monotonic counter.
 
 > **Note:** The system does not currently return this plan as a structured object.
@@ -487,21 +498,22 @@ and Golem. Here is the event routing logic:
                     │     NO  → skip (already initialized) │
                     │                                      │
                     │  3. Column is "playerStateChange"    │
-                    │     → route to node-4 AND node-8     │
-                    │                                      │
-                    │     If column were "userAction"      │
-                    │     → route to node-6 only           │
-                    └────────────┬──────────┬──────────────┘
+                    │     → route to has-existed-4 AND latest-event-to-state-8  │
+                    │                                                           │
+                    │     If column were "userAction"                           │
+                    │     → route to has-existed-within-6 only                  │
+                    └────────────┬──────────┬───────────────────────────────────┘
                                  │          │
-            ┌────────────────────▼┐   ┌─────▼──────────────────┐
-            │  EventProcessor     │   │  EventProcessor         │
-            │  "sess-42-node-4"   │   │  "sess-42-node-8"       │
-            │  (TlHasExisted)     │   │  (TlLatestEventToState)  │
-            └─────────────────────┘   └──────────────────────────┘
+            ┌────────────────────▼┐   ┌─────▼─────────────────────────────┐
+            │  EventProcessor     │   │  EventProcessor                    │
+            │  "sess-42-has-      │   │  "sess-42-latest-event-to-state-8" │
+            │   existed-4"        │   │  (TlLatestEventToState)            │
+            │  (TlHasExisted)     │   │                                    │
+            └─────────────────────┘   └────────────────────────────────────┘
 ```
 
 Note that **one event can fan out to multiple leaves**. A `playerStateChange` event
-must be sent to both `node-4` (which checks "has play ever existed?") and `node-8`
+must be sent to both `has-existed-4` (which checks "has play ever existed?") and `latest-event-to-state-8`
 (which tracks the latest state). The feeder is responsible for this fan-out.
 
 The feeder only needs to track **which sessions have been initialized** (a simple
@@ -513,11 +525,11 @@ and identical for every session:
 fn route_event(session_id: &str, column: &str) -> Vec<String> {
     match column {
         "playerStateChange" => vec![
-            format!("{session_id}-node-4"),
-            format!("{session_id}-node-8"),
+            format!("{session_id}-has-existed-4"),
+            format!("{session_id}-latest-event-to-state-8"),
         ],
         "userAction" => vec![
-            format!("{session_id}-node-6"),
+            format!("{session_id}-has-existed-within-6"),
         ],
         _ => vec![], // unknown column, ignore
     }
@@ -548,11 +560,11 @@ Timeline: 8 PM Friday
                              │
               ┌──────────────┼──────────────┐
               ▼                             ▼
-  Afsal's agent tree:              John's agent tree:
-  afsal-mando-1-node-1 (root)     john-moana-1-node-1 (root)
-  afsal-mando-1-node-2            john-moana-1-node-2
-  ...                             ...
-  afsal-mando-1-node-8            john-moana-1-node-8
+  Afsal's agent tree:                          John's agent tree:
+  afsal-mando-1-duration-where-1 (root)       john-moana-1-duration-where-1 (root)
+  afsal-mando-1-and-2                         john-moana-1-and-2
+  ...                                         ...
+  afsal-mando-1-latest-event-to-state-8       john-moana-1-latest-event-to-state-8
               │                             │
               ▼                             ▼
   ┌───────────────────┐         ┌───────────────────┐
@@ -565,12 +577,12 @@ Timeline: 8 PM Friday
 Only the agents currently processing a push notification are active. When Afsal's
 `playerStateChange:"buffer"` event arrives:
 
-1. Feeder calls `add_event` on `afsal-mando-1-node-4` and `afsal-mando-1-node-8`
-2. `node-4` wakes (~1ms), evaluates "has play existed?" → yes, pushes `true` to `node-3`, suspends
-3. `node-3` wakes (~1ms), evaluates `And(true, ...)` → pushes to `node-2`, suspends
-4. ... cascade continues to `node-1` (TlDurationWhere) → pushes delta to `aggregator-cdn-a`
-5. Meanwhile, `node-8` wakes (~1ms), records latest state as `"buffer"`, pushes to `node-7`, suspends
-6. `node-7` evaluates `EqualTo("buffer", "buffer")` → `true`, pushes to `node-2`
+1. Feeder calls `add_event` on `afsal-mando-1-has-existed-4` and `afsal-mando-1-latest-event-to-state-8`
+2. `has-existed-4` wakes (~1ms), evaluates "has play existed?" → yes, pushes `true` to `and-3`, suspends
+3. `and-3` wakes (~1ms), evaluates `And(true, ...)` → pushes to `and-2`, suspends
+4. ... cascade continues to `duration-where-1` (TlDurationWhere) → pushes delta to `aggregator-cdn-a`
+5. Meanwhile, `latest-event-to-state-8` wakes (~1ms), records latest state as `"buffer"`, pushes to `equal-to-7`, suspends
+6. `equal-to-7` evaluates `EqualTo("buffer", "buffer")` → `true`, pushes to `and-2`
 7. All agents suspend. Total wall time: ~5–10ms. Total agents in memory during this: ~5
 
 All of John's agents remain completely suspended during this — zero cost.
@@ -581,12 +593,12 @@ All of John's agents remain completely suspended during this — zero cost.
 
 ```shell
 golem agent invoke \
-  'timeline-processor("afsal-mando-1-node-1")' \
+  'timeline-processor("afsal-mando-1-duration-where-1")' \
   'timeline:core/timeline-processor.{get-derived-result}' \
   '100'
 ```
 
-This is a local point lookup on `node-1`'s precomputed state — no RPC cascade.
+This is a local point lookup on `duration-where-1`'s precomputed state — no RPC cascade.
 
 **Cross-session query** — "What is the average CIRR across all Akamai sessions?"
 
@@ -853,9 +865,9 @@ Instead:
      `timeline-driver("{session-id}")` → `initialize-timeline(graph, aggregation)` to spawn
      and wire all agents for that session.
    - It then sends the event to every leaf agent for that metric:
-     `event-processor("{session-id}-node-4").add-event(...)`,
-     `event-processor("{session-id}-node-6").add-event(...)`,
-     `event-processor("{session-id}-node-8").add-event(...)`.
+     `event-processor("{session-id}-has-existed-4").add-event(...)`,
+     `event-processor("{session-id}-has-existed-within-6").add-event(...)`,
+     `event-processor("{session-id}-latest-event-to-state-8").add-event(...)`.
    - The push cascade takes care of the rest — each leaf pushes state changes upward
      through the derived nodes to the root and aggregator.
 
@@ -872,16 +884,16 @@ The deployment workflow must somehow get the leaf routing table to the feeders.
 
 **What the feeder currently does:**
 
-The feeder takes a hardcoded list of leaf worker names (e.g., `sess-1-node-4, sess-1-node-6`)
+The feeder takes a hardcoded list of leaf agent names (e.g., `sess-1-has-existed-4, sess-1-has-existed-within-6`)
 and sends every consumed event to every listed leaf. It has no concept of metrics, graphs, or
 templates — it's just a static event router.
 
 **The driver returns the leaf agent names:**
 
-`initialize_timeline` returns an `InitializeResult` containing the root worker name and
-all leaf worker names. The feeder calls the driver on every event for a session and gets
+`initialize_timeline` returns an `InitializeResult` containing the root agent name and
+all leaf agent names. The feeder calls the driver on every event for a session and gets
 back exactly which `event-processor` agents to send events to — no graph walking, no
-tracking, no in-memory state. The driver is a durable Golem worker: the first call spawns
+tracking, no in-memory state. The driver is a durable Golem agent: the first call spawns
 and wires all agents; subsequent calls are idempotent and return the same result.
 
 **The hard problem — how does a running feeder learn about a new metric?**
@@ -916,27 +928,27 @@ Processing event1 (sess-42):
   1. Calls: timeline-driver("sess-42").initialize-timeline(cirr_graph, agg_config)
      → Driver spawns 8 agents, wires parent refs
      → Returns InitializeResult:
-         root_worker:  "sess-42-node-1"
-         leaf_workers: ["sess-42-node-4", "sess-42-node-6", "sess-42-node-8"]
-  2. Sends event to each leaf from the result:
-       event-processor("sess-42-node-4").add-event(...)
-       event-processor("sess-42-node-6").add-event(...)
-       event-processor("sess-42-node-8").add-event(...)
+         root_agent:  "sess-42-duration-where-1"
+         leaf_agents: ["sess-42-has-existed-4", "sess-42-has-existed-within-6", "sess-42-latest-event-to-state-8"]
+     2. Sends event to each leaf from the result:
+       event-processor("sess-42-has-existed-4").add-event(...)
+       event-processor("sess-42-has-existed-within-6").add-event(...)
+       event-processor("sess-42-latest-event-to-state-8").add-event(...)
 
-Processing event2 (sess-42 again):
-  1. Calls: timeline-driver("sess-42").initialize-timeline(cirr_graph, agg_config)
+     Processing event2 (sess-42 again):
+     1. Calls: timeline-driver("sess-42").initialize-timeline(cirr_graph, agg_config)
      → Driver is durable — agents already exist, idempotent, no re-wiring
      → Returns same InitializeResult:
-         root_worker:  "sess-42-node-1"
-         leaf_workers: ["sess-42-node-4", "sess-42-node-6", "sess-42-node-8"]
-  2. Sends event to the 3 leaves
+         root_agent:  "sess-42-duration-where-1"
+         leaf_agents: ["sess-42-has-existed-4", "sess-42-has-existed-within-6", "sess-42-latest-event-to-state-8"]
+     2. Sends event to the 3 leaves
 
-Processing event3 (sess-99):
-  1. Calls: timeline-driver("sess-99").initialize-timeline(...)
+     Processing event3 (sess-99):
+     1. Calls: timeline-driver("sess-99").initialize-timeline(...)
      → New session — spawns 8 fresh agents
      → Returns InitializeResult:
-         root_worker:  "sess-99-node-1"
-         leaf_workers: ["sess-99-node-4", "sess-99-node-6", "sess-99-node-8"]
+         root_agent:  "sess-99-duration-where-1"
+         leaf_agents: ["sess-99-has-existed-4", "sess-99-has-existed-within-6", "sess-99-latest-event-to-state-8"]
   2. Sends event to sess-99's leaves
 ```
 
@@ -978,33 +990,33 @@ a [future design goal](#future-design-compute-reuse-across-workflows) documented
 ### Agent naming
 
 The `TimelineDriver` names inner agents using pre-order depth-first numbering:
-`{session-id}-node-{counter}`. Each node is a separate Golem agent with its own agent type.
+`{session-id}-{operation}-{counter}`. Each node is a separate Golem agent with its own agent type.
 The developer sees a **template** of all agents their metric will create per session, with
 `{session-id}` as a placeholder. They pick a real session ID from the list of sessions the
 platform has seen to inspect or query.
 
 For the CIRR metric, the full agent template is:
 
-| Golem agent ID | Worker name | Operation | Description |
+| Golem agent ID | Agent name | Operation | Description |
 |---|---|---|---|
 | `timeline-driver("{session-id}")` | `{session-id}` | — | Orchestrator (runs once to spawn and wire all agents) |
-| `timeline-processor("{session-id}-node-1")` | `{session-id}-node-1` | duration-where | Root: cumulative CIRR rebuffering seconds |
-| `timeline-processor("{session-id}-node-2")` | `{session-id}-node-2` | and | All 3 conditions combined |
-| `timeline-processor("{session-id}-node-3")` | `{session-id}-node-3` | and | has-existed ∧ ¬has-existed-within |
-| `event-processor("{session-id}-node-4")` | `{session-id}-node-4` | tl-has-existed | Leaf: has play ever occurred? |
-| `timeline-processor("{session-id}-node-5")` | `{session-id}-node-5` | not | ¬has-existed-within(seek, 5) |
-| `event-processor("{session-id}-node-6")` | `{session-id}-node-6` | tl-has-existed-within | Leaf: was there a recent seek? |
-| `timeline-processor("{session-id}-node-7")` | `{session-id}-node-7` | equal-to("buffer") | Is current state "buffer"? |
-| `event-processor("{session-id}-node-8")` | `{session-id}-node-8` | latest-event-to-state | Leaf: latest playerStateChange |
+| `timeline-processor("{session-id}-duration-where-1")` | `{session-id}-duration-where-1` | duration-where | Root: cumulative CIRR rebuffering seconds |
+| `timeline-processor("{session-id}-and-2")` | `{session-id}-and-2` | and | All 3 conditions combined |
+| `timeline-processor("{session-id}-and-3")` | `{session-id}-and-3` | and | has-existed ∧ ¬has-existed-within |
+| `event-processor("{session-id}-has-existed-4")` | `{session-id}-has-existed-4` | tl-has-existed | Leaf: has play ever occurred? |
+| `timeline-processor("{session-id}-not-5")` | `{session-id}-not-5` | not | ¬has-existed-within(seek, 5) |
+| `event-processor("{session-id}-has-existed-within-6")` | `{session-id}-has-existed-within-6` | tl-has-existed-within | Leaf: was there a recent seek? |
+| `timeline-processor("{session-id}-equal-to-7")` | `{session-id}-equal-to-7` | equal-to("buffer") | Is current state "buffer"? |
+| `event-processor("{session-id}-latest-event-to-state-8")` | `{session-id}-latest-event-to-state-8` | latest-event-to-state | Leaf: latest playerStateChange |
 | `aggregator("aggregator-cdn-{value}")` | `aggregator-cdn-{value}` | aggregator | Shared across sessions per CDN value |
 
 For session `sess-42` on CDN `akamai`, the actual agents are:
-`timeline-driver("sess-42")`, `timeline-processor("sess-42-node-1")`, ...,
-`event-processor("sess-42-node-4")`, ..., `aggregator("aggregator-cdn-akamai")`.
+`timeline-driver("sess-42")`, `timeline-processor("sess-42-duration-where-1")`, ...,
+`event-processor("sess-42-has-existed-4")`, ..., `aggregator("aggregator-cdn-akamai")`.
 
 The developer doesn't need to construct these names manually. The dashboard shows:
 - The **agent template** for their metric (the full table above with business descriptions)
-- **Sub-computation results** for any session ID the developer looks up (Node Inspector)
+- **Sub-computation results** for any session ID the developer looks up (Computation Progress)
 - **Aggregation results** across sessions (Live Dashboard)
 
 ### What the developer experience looks like
@@ -1020,17 +1032,17 @@ The developer doesn't need to construct these names manually. The dashboard show
 2. Clicks **Deploy Metric**. The system registers it, names it (e.g., `buffering-duration`),
    and shows the agent template:
    ```
-   node-1  DurationWhere        → How long has the condition been true?
-   node-2  And                  → Are both sub-conditions true?
-   node-3  TlHasExisted (leaf)  → Has the user ever pressed play?
-   node-4  EqualTo "buffer"     → Is the player currently buffering?
-   node-5  LatestEventToState   → What is the current player state?
+   duration-where-1        → How long has the condition been true?
+   and-2                   → Are both sub-conditions true?
+   has-existed-3 (leaf)    → Has the user ever pressed play?
+   equal-to-4 "buffer"     → Is the player currently buffering?
+   latest-event-to-state-5 → What is the current player state?
    ```
 
 3. Events start flowing. The developer enters a session ID they want to debug
    (e.g., `sess-42` from their application logs) and a query time.
 
-4. Node Inspector shows all sub-computation results for that session at that point in time.
+4. Computation Progress shows all sub-computation results for that session at that point in time.
    Live Dashboard shows aggregation results across all sessions.
 
 5. Another developer registers the exact same DSL expression → they see the same metric,
@@ -1094,7 +1106,7 @@ Each agent has at most one parent:
 
 ```rust
 pub struct ParentRef {
-    pub worker_name: String,
+    pub agent_name: String,
     pub child_index: u32,
 }
 ```
@@ -1107,11 +1119,11 @@ Sharing requires fan-out to multiple parents.
 The `TimelineDriver` names agents by traversal order:
 
 ```rust
-let worker_name = format!("{}-node-{}", self.name, counter);
+let agent_name = format!("{}-{}-{}", self.name, operation, counter);
 ```
 
 Two workflows traversing the same sub-expression `Y` produce different names
-(`sess-1-node-4` vs `sess-1-node-7`). There is no way to detect that they
+(`sess-1-has-existed-4` vs `sess-1-has-existed-7`). There is no way to detect that they
 compute the same thing.
 
 **3. The driver always re-initializes**
@@ -1145,7 +1157,7 @@ There is no "add another parent" operation.
 Name agents by what they compute, not where they appear in the tree:
 
 ```rust
-// Instead of: "{sid}-node-4"
+// Instead of: "{sid}-has-existed-4"
 // Use:        "{sid}-leaf-{hash(TlHasExisted, playerStateChange, play)}"
 fn agent_name(session_id: &str, op: &TimeLineOp) -> String {
     let hash = hash_operation(op);  // deterministic hash of the subtree
@@ -1171,7 +1183,7 @@ pub parents: Vec<ParentRef>,
 ```rust
 async fn notify_parents(parents: &[ParentRef], time: u64, value: EventValue) {
     for parent in parents {
-        let mut client = TimelineProcessorClient::get(parent.worker_name.clone());
+        let mut client = TimelineProcessorClient::get(parent.agent_name.clone());
         client.on_child_state_changed(parent.child_index, time, value.clone()).await;
     }
 }
@@ -1182,13 +1194,13 @@ async fn notify_parents(parents: &[ParentRef], time: u64, value: EventValue) {
 The driver checks if an agent already exists before creating it:
 
 ```rust
-if agent_exists(&worker_name) {
+if agent_exists(&agent_name) {
     // Agent already computing this — just add our parent ref
-    add_parent_ref(&worker_name, new_parent_ref).await;
+    add_parent_ref(&agent_name, new_parent_ref).await;
 } else {
     // First time — create and initialize
-    initialize_leaf(&worker_name, operation).await;
-    set_parent(&worker_name, new_parent_ref).await;
+    initialize_leaf(&agent_name, operation).await;
+    set_parent(&agent_name, new_parent_ref).await;
 }
 ```
 

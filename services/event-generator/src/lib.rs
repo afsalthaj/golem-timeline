@@ -84,20 +84,16 @@ pub fn generate_cirr_session_events_n(session_id: &str, cdn: &str, count: usize)
     // Event 0: init
     events.push(Event {
         time,
-        event: vec![("playerStateChange".into(), EventValue::StringValue("init".into()))],
-    });
-    time += 1;
-
-    // Event 1: cdn assignment
-    events.push(Event {
-        time,
-        event: vec![("cdnChange".into(), EventValue::StringValue(cdn.into()))],
+        event: vec![
+            ("playerStateChange".into(), EventValue::StringValue("init".into())),
+            ("cdn".into(), EventValue::StringValue(cdn.into())),
+        ],
     });
     time += 1;
 
     // Remaining events: realistic state machine
     let mut current_state = "buffer"; // after init we buffer first
-    let mut i = 2;
+    let mut i = 1;
     while i < count {
         rng = lcg_next(rng);
         let time_step = (rng % 3) + 1; // 1-3
@@ -116,7 +112,10 @@ pub fn generate_cirr_session_events_n(session_id: &str, cdn: &str, count: usize)
                     // Insert a seek event before continuing to play
                     events.push(Event {
                         time,
-                        event: vec![("userAction".into(), EventValue::StringValue("seek".into()))],
+                        event: vec![
+                            ("userAction".into(), EventValue::StringValue("seek".into())),
+                            ("cdn".into(), EventValue::StringValue(cdn.into())),
+                        ],
                     });
                     i += 1;
                     if i >= count {
@@ -143,10 +142,10 @@ pub fn generate_cirr_session_events_n(session_id: &str, cdn: &str, count: usize)
         current_state = next_state;
         events.push(Event {
             time,
-            event: vec![(
-                "playerStateChange".into(),
-                EventValue::StringValue(current_state.into()),
-            )],
+            event: vec![
+                ("playerStateChange".into(), EventValue::StringValue(current_state.into())),
+                ("cdn".into(), EventValue::StringValue(cdn.into())),
+            ],
         });
         i += 1;
     }
