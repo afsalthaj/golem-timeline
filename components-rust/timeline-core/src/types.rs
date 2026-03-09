@@ -153,6 +153,16 @@ pub struct AggregationConfig {
     pub aggregations: Vec<AggregationType>,
 }
 
+/// Result of initializing a timeline via the TimelineDriver.
+///
+/// Contains the root worker name and all leaf worker names so the feeder
+/// knows exactly where to send events — no graph walking needed.
+#[derive(Clone, Debug, Schema)]
+pub struct InitializeResult {
+    pub root_worker: String,
+    pub leaf_workers: Vec<String>,
+}
+
 /// Result of querying an aggregator.
 #[derive(Clone, Debug, Schema)]
 pub struct AggregationResult {

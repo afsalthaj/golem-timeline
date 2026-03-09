@@ -55,7 +55,7 @@ pub trait TimelineDriver {
         &self,
         timeline: TimelineOpGraph,
         aggregation: Option<AggregationConfig>,
-    ) -> Result<String, String>;
+    ) -> Result<InitializeResult, String>;
 }
 
 struct TimelineDriverImpl {
@@ -72,7 +72,7 @@ impl TimelineDriver for TimelineDriverImpl {
         &self,
         timeline: TimelineOpGraph,
         aggregation: Option<AggregationConfig>,
-    ) -> Result<String, String> {
+    ) -> Result<InitializeResult, String> {
         let recursive_op = timeline.to_recursive();
         let mut leaves = Vec::new();
         let (result, _) = self
@@ -98,10 +98,10 @@ impl TimelineDriver for TimelineDriverImpl {
             }
         }
 
-        Ok(format!(
-            "Timeline initialized. Result worker: {}",
-            result.worker_name
-        ))
+        Ok(InitializeResult {
+            root_worker: result.worker_name,
+            leaf_workers: leaves,
+        })
     }
 }
 
