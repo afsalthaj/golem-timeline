@@ -16,6 +16,14 @@ Watch the talk from Afsal at [LambdaConf:2024:Estes-Park:Colorado](https://www.y
 
 ![img_1.png](img_1.png)
 
+### A quick demo 
+
+```sh
+cargo make demo
+
+# go to the dashboard at http://localhost:3000
+```
+
 ## Timeline Query DSL
 
 A text-based DSL for expressing temporal analytics over event streams. Write a query, deploy it,
