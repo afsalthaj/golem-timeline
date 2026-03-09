@@ -7,26 +7,26 @@ Watch the talk from Afsal at [LambdaConf:2024:Estes-Park:Colorado](https://www.y
 
 # A management UI
 
-![img.png](images/img.png)
+![img.png](images/img.pg)
 
 ## Deploy a Metric
 
-![img_1.png](images/img_1.png)
+![img_1.png](images/img_1.pg)
 
 ### After deploy
 
-![img_2.png](images/img_2.png)
+![img_2.png](images/img_2.pg)
 
 ## Sub computation result streaming
 
 ![img.png](images/stream.png)
 
-![img_3.png](images/img_3.png)
+![img_3.png](images/img_.png)
 
 
 ## Aggregation Results
 
-![img_4.png](images/img_4.png)
+![img_4.png](images/im_4.png)
 
 
 You will get more idea about the dashboard soon.
