@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Durable timeline analytics on [Golem](https://learn.golem.cloud) — a push-based agent graph that processes temporal event streams in real time, built on WebAssembly.
+Durable timeline analytics on [Golem](https://learn.golem.cloud) — a durable agent graph that processes temporal event streams in real time, built on WebAssembly.
 
 ## Build and test
 

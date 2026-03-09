@@ -13,20 +13,17 @@ Watch the talk from Afsal at [LambdaConf:2024:Estes-Park:Colorado](https://www.y
 
 ![img_1.png](images/img_1.png)
 
-### After deploy
+### Computation Graph
 
 ![img_2.png](images/img_2.png)
 
-## Sub computation result streaming
+## Computation streaming
 
 ![img.png](images/stream.png)
 
-![img_3.png](images/img_3.png)
-
-
 ## Aggregation Results
 
-![img_4.png](images/img_4.png)
+![img.png](images/aggregate.png)
 
 
 You will get more idea about the dashboard soon.
@@ -42,7 +39,7 @@ cargo make demo
 ## Timeline Query DSL
 
 A text-based DSL for expressing temporal analytics over event streams. Write a query, deploy it,
-and the system materializes a push-based agent graph that processes events in real time.
+and the system materializes a durable agent graph that processes events in real time.
 
 ### CIRR — Connection Induced Rebuffering Ratio
 
