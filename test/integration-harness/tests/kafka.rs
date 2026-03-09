@@ -59,7 +59,7 @@ mod tests {
     ///   5. Query the timeline leaf and assert the final state
     ///
     /// Timeline: latest_event_to_state("playerStateChange")
-    ///   - Single leaf node (node-1)
+    ///   - Single leaf node (latest-event-to-state-1)
     ///   - After all events, the leaf should reflect the last playerStateChange value
     #[test]
     #[ignore]
@@ -80,7 +80,7 @@ mod tests {
             )
             .expect("Failed to init timeline");
 
-        let leaf = format!("{}-node-1", session_id);
+        let leaf = format!("{}-latest-event-to-state-1", session_id);
 
         // Generate a small set of events (10 events for speed)
         let events = event_generator::generate_cirr_session_events_n(session_id, "akamai", 10);

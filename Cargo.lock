@@ -301,8 +301,11 @@ name = "dashboard"
 version = "0.1.0"
 dependencies = [
  "axum",
+ "common-lib",
+ "rdkafka",
  "serde",
  "serde_json",
+ "timeline-dsl",
  "tokio",
  "tower-http",
 ]

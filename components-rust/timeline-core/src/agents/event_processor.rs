@@ -40,7 +40,7 @@ pub trait EventProcessor {
     /// Wire this leaf to its parent TimelineProcessor so state changes push upward.
     ///
     /// CIRR example:
-    ///   - node-1 (has_existed "play") → `set_parent(ParentRef { worker_name: "node-2", child_index: 0 })`
+    ///   - node-1 (has_existed "play") → `set_parent(ParentRef { agent_name: "node-2", child_index: 0 })`
     ///     When node-1's state changes, it calls `node-2.on_child_state_changed(0, time, value, group_by)`.
     fn set_parent(&mut self, parent: ParentRef);
 

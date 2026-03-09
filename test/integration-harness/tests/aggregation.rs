@@ -19,8 +19,8 @@ mod tests {
     ///   1: TlLatestEventToState("playerStateChange")
     ///
     /// Nodes from setup_node:
-    ///   node-1: EqualTo (TimelineProcessor, ROOT)
-    ///   node-2: TlLatestEventToState (EventProcessor, LEAF)
+    ///   equal-to-1: EqualTo (TimelineProcessor, ROOT)
+    ///   latest-event-to-state-2: TlLatestEventToState (EventProcessor, LEAF)
     #[test]
     #[ignore]
     fn test_multi_session_aggregation() {
@@ -46,9 +46,9 @@ mod tests {
                 .expect(&format!("Failed to init {}", session_id));
         }
 
-        // Feed events to each session's leaf (node-2)
+        // Feed events to each session's leaf (latest-event-to-state-2)
         for session_id in &sessions {
-            let leaf = format!("{}-node-2", session_id);
+            let leaf = format!("{}-latest-event-to-state-2", session_id);
 
             // Event with cdn + playerStateChange = "init"
             let event1 = r#"{time: 100, event: [("playerStateChange", string-value("init")), ("cdn", string-value("akamai"))]}"#;

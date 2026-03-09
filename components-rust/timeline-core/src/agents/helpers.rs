@@ -20,7 +20,7 @@ pub(crate) async fn notify_parent(
     group_by_value: &Option<EventValue>,
 ) {
     if let Some(parent) = parent {
-        let mut client = TimelineProcessorClient::get(parent.worker_name.clone());
+        let mut client = TimelineProcessorClient::get(parent.agent_name.clone());
         client
             .on_child_state_changed(parent.child_index, time, value, group_by_value.clone())
             .await;
@@ -47,7 +47,7 @@ fn event_value_to_string(value: &EventValue) -> String {
 
 pub(crate) async fn notify_aggregator(
     aggregation: &Option<AggregationConfig>,
-    aggregator_worker: &mut Option<String>,
+    aggregator_agent: &mut Option<String>,
     last_aggregated_value: &mut Option<f64>,
     _time: u64,
     value: &EventValue,
@@ -75,8 +75,8 @@ pub(crate) async fn notify_aggregator(
         return;
     }
 
-    let first_call = aggregator_worker.is_none();
-    let worker_name = aggregator_worker.get_or_insert_with(|| {
+    let first_call = aggregator_agent.is_none();
+    let agent_name = aggregator_agent.get_or_insert_with(|| {
         format!(
             "aggregator-{}-{}",
             agg_config.group_by_column,
@@ -84,7 +84,7 @@ pub(crate) async fn notify_aggregator(
         )
     });
 
-    let mut client = AggregatorClient::get(worker_name.clone());
+    let mut client = AggregatorClient::get(agent_name.clone());
     if first_call {
         client
             .initialize_aggregator(agg_config.aggregations.clone())
@@ -95,20 +95,20 @@ pub(crate) async fn notify_aggregator(
 }
 
 pub(crate) struct SetupResult {
-    pub worker_name: String,
+    pub agent_name: String,
     pub is_leaf: bool,
 }
 
 pub(crate) async fn set_child_parent(child: &SetupResult, parent_name: &str, child_index: u32) {
     let parent_ref = ParentRef {
-        worker_name: parent_name.to_string(),
+        agent_name: parent_name.to_string(),
         child_index,
     };
     if child.is_leaf {
-        let mut client = EventProcessorClient::get(child.worker_name.clone());
+        let mut client = EventProcessorClient::get(child.agent_name.clone());
         client.set_parent(parent_ref).await;
     } else {
-        let mut client = TimelineProcessorClient::get(child.worker_name.clone());
+        let mut client = TimelineProcessorClient::get(child.agent_name.clone());
         client.set_parent(parent_ref).await;
     }
 }

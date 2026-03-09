@@ -39,7 +39,7 @@ their own metrics or inspect them dynamically.
   On deploy, calls `POST /api/metrics`, shows the agent template (full list of Golem agent IDs
   with `{session-id}` placeholder and business descriptions derived from the compiled graph).
 - **Session lookup**: Developer enters a session ID they know (from their application logs or
-  event stream) and a query time → Node Inspector queries all agents for that session.
+  event stream) and a query time → Computation Progress queries all agents for that session.
   No enumeration of all sessions — that's impossible at scale.
 - **Per-metric aggregation**: Aggregator worker names are derived from the metric's
   `group_by_column` — show the correct preset buttons per metric.

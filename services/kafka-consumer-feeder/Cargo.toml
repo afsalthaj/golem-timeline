@@ -2,7 +2,7 @@
 name = "kafka-consumer-feeder"
 version = "0.1.0"
 edition = "2021"
-description = "Consumes events from Kafka and feeds them to Golem workers via REST API. Reusable for local testing and cloud deployments."
+description = "Consumes events from Kafka and feeds them to Golem agents via REST API. Reusable for local testing and cloud deployments."
 
 [dependencies]
 rdkafka = { version = "0.36", features = ["cmake-build"] }

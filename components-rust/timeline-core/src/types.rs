@@ -112,15 +112,15 @@ pub enum DerivedOperation {
 
 /// Identifies a child agent to fetch results from.
 #[derive(Clone, Debug, Schema)]
-pub struct ChildWorkerRef {
-    pub worker_name: String,
+pub struct ChildAgentRef {
+    pub agent_name: String,
     pub is_leaf: bool,
 }
 
 /// Reference to a parent agent that should be notified on state changes.
 #[derive(Clone, Debug, Schema)]
 pub struct ParentRef {
-    pub worker_name: String,
+    pub agent_name: String,
     pub child_index: u32,
 }
 
@@ -156,12 +156,12 @@ pub struct AggregationConfig {
 
 /// Result of initializing a timeline via the TimelineDriver.
 ///
-/// Contains the root worker name and all leaf worker names so the feeder
+/// Contains the root agent name and all leaf agent names so the feeder
 /// knows exactly where to send events — no graph walking needed.
 #[derive(Clone, Debug, Schema)]
 pub struct InitializeResult {
-    pub root_worker: String,
-    pub leaf_workers: Vec<String>,
+    pub root_agent: String,
+    pub leaf_agents: Vec<String>,
 }
 
 /// Result of querying an aggregator.

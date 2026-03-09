@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
-//! Kafka consumer that feeds events to Golem workers via REST API.
+//! Kafka consumer that feeds events to Golem agents via REST API.
 //!
-//! Consumes events from a Kafka topic and invokes Golem EventProcessor workers
+//! Consumes events from a Kafka topic and invokes Golem EventProcessor agents
 //! using the Golem REST API. Reusable as a library (for test harness) or
 //! as a standalone binary (for cloud deployments).
 //!
@@ -31,16 +31,16 @@ pub struct FeederConfig {
     pub golem_base_url: String,
     /// Golem component ID (UUID) for the timeline-core component.
     pub component_id: String,
-    /// List of leaf worker names to feed events to.
-    /// These are the EventProcessor workers created by the TimelineDriver.
-    pub leaf_worker_names: Vec<String>,
+    /// List of leaf agent names to feed events to.
+    /// These are the EventProcessor agents created by the TimelineDriver.
+    pub leaf_agent_names: Vec<String>,
 }
 
 use rdkafka::consumer::{Consumer, StreamConsumer};
 use rdkafka::ClientConfig;
 use rdkafka::Message;
 
-/// Consumes from Kafka and feeds events to Golem workers.
+/// Consumes from Kafka and feeds events to Golem agents.
 pub struct GolemFeeder {
     config: FeederConfig,
     consumer: StreamConsumer,
@@ -48,7 +48,7 @@ pub struct GolemFeeder {
 }
 
 impl GolemFeeder {
-    /// Create a new feeder connected to Kafka and ready to invoke Golem workers.
+    /// Create a new feeder connected to Kafka and ready to invoke Golem agents.
     pub async fn new(config: FeederConfig) -> Result<Self, Box<dyn std::error::Error>> {
         let consumer: StreamConsumer = ClientConfig::new()
             .set("bootstrap.servers", &config.kafka_broker)
@@ -68,11 +68,11 @@ impl GolemFeeder {
         })
     }
 
-    /// Consume events from Kafka and feed them to Golem workers.
+    /// Consume events from Kafka and feed them to Golem agents.
     ///
     /// For each event consumed:
     /// 1. Deserialize the event from JSON
-    /// 2. Send it to each leaf worker via the Golem REST API
+    /// 2. Send it to each leaf agent via the Golem REST API
     ///    POST /v1/components/{component_id}/workers/{worker}/invoke-and-await
     ///         ?function=timeline:event-processor/api/add-event
     ///    Body: {"params": [<event>]}
@@ -122,7 +122,7 @@ impl GolemFeeder {
                 }
             };
 
-            for worker_name in &self.config.leaf_worker_names {
+            for worker_name in &self.config.leaf_agent_names {
                 let params = serde_json::json!({ "params": [event] });
                 match self.invoke_worker(worker_name, function, params).await {
                     Ok(resp) => {
@@ -143,8 +143,8 @@ impl GolemFeeder {
 
     /// Invoke a single Golem worker function via REST API.
     ///
-    /// The worker_name is the raw name (e.g., "sess-1-node-4").
-    /// We construct the Golem agent_id as `event-processor("worker_name")`.
+    /// The worker_name is the raw name (e.g., "sess-1-has-existed-4").
+    /// We construct the Golem agent_id as `event-processor("agent_name")`.
     async fn invoke_worker(
         &self,
         worker_name: &str,

@@ -20,7 +20,7 @@ Durable timeline analytics on [Golem](https://learn.golem.cloud) — a push-base
 - The WASM component uses `golem-rust` SDK with `#[agent_definition]` / `#[agent_implementation]` macros — not raw WIT exports.
 - Agent functions are invoked via `golem agent invoke` using WAVE format. Enum variants are kebab-case (e.g., `string-value("x")`), struct fields are kebab-case (e.g., `{col-name: "x"}`).
 - `TimelineOpGraph` is the flat, non-recursive graph encoding sent over the wire (`nodes[0]` = root, children referenced by `NodeIndex`). `TimeLineOp` is the recursive internal representation.
-- `setup_node` in the driver uses pre-order depth-first numbering: counter increments before recursion, producing worker names like `{session}-node-{counter}`.
+- `setup_node` in the driver uses pre-order depth-first numbering: counter increments before recursion, producing agent names like `{session}-{operation}-{counter}` (e.g., `sess-42-has-existed-4`, `sess-42-duration-where-1`).
 - The push cascade flows leaf → root via `on_child_state_changed`. Point-in-time queries (`get_leaf_result`, `get_derived_result`) are local lookups — no RPC cascade.
 
 ## Coding conventions
