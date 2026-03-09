@@ -10,11 +10,11 @@ Watch the talk from Afsal at [LambdaConf:2024:Estes-Park:Colorado](https://www.y
 
 ### Aggregation results for CIRR across CDNs
 
-![img.png](img.png)
+![img.png](images/img.png)
 
 ### Debuggability
 
-![img_1.png](img_1.png)
+![img_1.png](images/img_1.png)
 
 ### A quick demo 
 
