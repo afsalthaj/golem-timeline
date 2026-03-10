@@ -381,61 +381,6 @@ Pulsar or Kafka.
                                               └────────────────────────────────────┘
 ```
 
-### Step 1: Define the CIRR workflow
-
-The CIRR expression is defined once for the entire platform:
-
-```
-TlDurationWhere(
-  And(
-    And(
-      TlHasExisted(playerStateChange == "play"),
-      Not(TlHasExistedWithin(userAction == "seek", 5))
-    ),
-    EqualTo(TlLatestEventToState("playerStateChange"), "buffer")
-  )
-)
-```
-
-This is the same expression for every session — Afsal watching a movie and John watching
-a movie both use this exact tree. The only difference is the session ID prefix in agent names.
-
-### Step 2: Bootstrap — Discover the agent topology
-
-The `TimelineDriver` uses a depth-first counter to name agents. For the CIRR tree, the
-traversal produces these nodes:
-
-```
-setup_node(TlDurationWhere)          → counter=1  "{sid}-duration-where-1"          TimelineProcessor
-  setup_node(And)                    → counter=2  "{sid}-and-2"                     TimelineProcessor
-    setup_node(And)        [left]    → counter=3  "{sid}-and-3"                     TimelineProcessor
-      setup_node(TlHasExisted) [L]   → counter=4  "{sid}-has-existed-4"             EventProcessor ★
-      setup_node(Not)          [R]   → counter=5  "{sid}-not-5"                     TimelineProcessor
-        setup_node(TlHasExistedWithin)→ counter=6  "{sid}-has-existed-within-6"     EventProcessor ★
-    setup_node(EqualTo)    [right]   → counter=7  "{sid}-equal-to-7"               TimelineProcessor
-      setup_node(TlLatestEventToState)→ counter=8  "{sid}-latest-event-to-state-8"  EventProcessor ★
-```
-
-The ★ markers are the **leaf EventProcessor agents** — the ones that receive events.
-This gives us the static routing table:
-
-| Leaf agent | Operation | Listens for column | Matching events |
-|---|---|---|---|
-| `{sid}-has-existed-4` | TlHasExisted | `playerStateChange` | `playerStateChange == "play"` |
-| `{sid}-has-existed-within-6` | TlHasExistedWithin | `userAction` | `userAction == "seek"` (within 5s) |
-| `{sid}-latest-event-to-state-8` | TlLatestEventToState | `playerStateChange` | Any `playerStateChange` value |
-
-**This table is the same for every CIRR session.** The agent naming is deterministic
-because `setup_node` always traverses depth-first with a monotonic counter.
-
-> **Note:** The system does not currently return this plan as a structured object.
-> One practical approach: call `initialize_timeline` for a single bootstrap session,
-> observe the worker names created (e.g., from logs or the return string), and extract
-> the naming pattern. Replace the concrete session ID with a `{sid}` placeholder —
-> that becomes your static routing template for all future sessions.
-
-### Step 3: Build the Pulsar/Kafka consumer (feeder)
-
 The feeder is a standalone process (not a Golem agent) that bridges the message broker
 and Golem. Here is the event routing logic:
 
@@ -495,7 +440,7 @@ fn route_event(session_id: &str, column: &str) -> Vec<String> {
 }
 ```
 
-### Step 4: Runtime event flow — Afsal and John watch movies
+### Runtime event flow — Afsal and John watch movies
 
 ```
 Timeline: 8 PM Friday
