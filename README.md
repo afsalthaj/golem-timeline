@@ -65,7 +65,7 @@ duration_where(
 
 
 ### Actual timeline
-```
+```jquery-css
       |
 seek  |                   seek
       |               
@@ -77,14 +77,14 @@ t ---------------------------------------------->
 
 #### TLHas_Existed(play)
 
-```
+```jquery-css
      (play)--------------------------------------
 -----t1
 ```
 
 #### Not TLHas_Existed_Within(seek, 5sec)
 
-```
+```jquery-css
                          
 t1----------               t7-------------             
                          
@@ -94,7 +94,7 @@ t1----------               t7-------------
 
 #### Latest state is buffer (TL_LatestEventToState)
 
-```
+```jquery-css
             t3-------------(bufer)
 
 -------------  
@@ -104,7 +104,7 @@ t1          t3
 
 #### And all of it
 
-```
+```jquery-css
 
                     t7--------t10
        
@@ -113,7 +113,7 @@ t1------t2----------t7
 
 #### TL_duration_where:
 
-```
+```jquery-css
 
 3sec                            /
 2sec                          /
@@ -157,7 +157,7 @@ has_existed(playerStateChange == "play") && !has_existed(error == "fatal")
 
 Run the full CIRR pipeline end-to-end with a single command. Requires Docker (for Kafka) and [Golem CLI 1.4.1+](https://learn.golem.cloud).
 
-```bash
+```shell
 cargo make demo
 ```
 
@@ -235,7 +235,7 @@ lookups on precomputed state — no cascading RPC required at query time.
 
 ### Architecture
 
-```
+```sh
                           ┌─────────────────┐
                           │ TimelineDriver  │  (1) Walks the DSL tree, spawns agents,
                           │ (orchestrator)  │      wires ParentRef / AggregatorRef
@@ -353,7 +353,7 @@ Pulsar or Kafka.
 
 ### End-to-end architecture
 
-```
+```jquery-css
 ┌────────────────┐     ┌───────────────┐      ┌────────────────────────────────────┐
 │  Video Players │────▶│  Pulsar/Kafka │────▶ │  Feeder (Pulsar Consumer)          │
 │  (millions of  │     │  Topic:       │      │                                    │
@@ -384,7 +384,7 @@ Pulsar or Kafka.
 The feeder is a standalone process (not a Golem agent) that bridges the message broker
 and Golem. Here is the event routing logic:
 
-```
+```jquery-css
                     ┌─────────────────────────────────────------------------------─┐
                     │          Feeder (Consumer)                                   │
                     │                                                              │
@@ -442,7 +442,7 @@ fn route_event(session_id: &str, column: &str) -> Vec<String> {
 
 ### Runtime event flow — Afsal and John watch movies
 
-```
+```jquery-css
 Timeline: 8 PM Friday
 
   Afsal starts "The Mandalorian"           John starts "Moana"
@@ -556,14 +556,14 @@ across all sessions on CDN X"). Each session's root `TimelineProcessor` is wired
 ## System Design: Capacity Planning at Scale
 
 This section walks through what a production deployment looks like at streaming-platform scale
-(e.g., Disney+), how many agents exist, how many are actually in memory at any instant, and what
+(e.g., Disney+, Netflix), how many agents exist, how many are actually in memory at any instant, and what
 the Kubernetes deployment looks like.
 
 ### Agents per session
 
 Consider the full CIRR expression from the examples above:
 
-```
+```sh
 TlDurationWhere(
   And(
     And(
@@ -577,7 +577,7 @@ TlDurationWhere(
 
 The `TimelineDriver` walks this tree and spawns one agent per node:
 
-```
+```js
                     TlDurationWhere          ← TimelineProcessor
                          │
                         And                  ← TimelineProcessor
@@ -597,7 +597,7 @@ The `TimelineDriver` walks this tree and spawns one agent per node:
 
 Plus 1 shared `Aggregator` per CDN (not per session).
 
-### Disney+ scale estimate
+### Disney+ / Netflix scale estimate
 
 | Parameter | Estimate |
 |---|---|
@@ -686,7 +686,7 @@ and never hit the network.
 
 ### Scaling scenario walkthrough
 
-**8 PM Friday — a popular new show drops on Disney+:**
+**8 PM Friday — a popular new show drops on Disney+ or Netflix:**
 
 1. 2M users start streaming within 5 minutes → 2M new sessions → 16M new agents created.
 2. The `TimelineDriver` for each session spawns 8 agents and wires them. This is a burst of
@@ -718,7 +718,7 @@ agent types (EventProcessor, TimelineProcessor, TimelineDriver, Aggregator) — 
 building blocks, not metric-specific. Every metric expression (CIRR, Time-to-First-Play, engagement
 scores, etc.) uses the same deployed component. There is no per-metric deployment.
 
-```
+```jquery-css
 ┌────────────────────────────────────────────────────────────────┐
 │                     Golem Cluster                              │
 │                                                                │
@@ -754,7 +754,7 @@ Instead:
 
 2. **Derives the leaf routing table** — the system walks the compiled graph to identify which
    nodes are leaves and what each leaf needs from the event stream. For the CIRR metric:
-   ```
+   ```sh
    node-4  tl-has-existed         → needs events containing "playerStateChange"
    node-6  tl-has-existed-within  → needs events containing "playerStateChange"
    node-8  latest-event-to-state  → needs events containing "playerStateChange"
@@ -818,7 +818,7 @@ feeder immediately starts routing events to its leaf agents — no polling delay
 
 A concrete example of the CIRR metric with events arriving from Kafka:
 
-```
+```jquery-css
 Feeder startup:
   1. Consumes CIRR graph + aggregation config from timeline-metrics-config topic
   2. Ready to process events
@@ -926,7 +926,7 @@ The developer doesn't need to construct these names manually. The dashboard show
 ### What the developer experience looks like
 
 1. Developer writes a metric in the DSL editor:
-   ```
+   ```js
    duration_where(
      has_existed(playerStateChange == "play")
      && latest_event_to_state(playerStateChange) == "buffer"
@@ -935,7 +935,7 @@ The developer doesn't need to construct these names manually. The dashboard show
 
 2. Clicks **Deploy Metric**. The system registers it, names it (e.g., `buffering-duration`),
    and shows the agent template:
-   ```
+   ```js
    duration-where-1        → How long has the condition been true?
    and-2                   → Are both sub-conditions true?
    has-existed-3 (leaf)    → Has the user ever pressed play?
@@ -959,7 +959,7 @@ The developer doesn't need to construct these names manually. The dashboard show
 Timeline expressions naturally share sub-expressions. Consider a streaming platform that
 runs two workflows for the same session:
 
-```
+```jquery-css
 Workflow A (CIRR):
   TlDurationWhere(
     And(
@@ -977,7 +977,7 @@ computes `Y` once, and both Workflow A's `And` node and Workflow B's root consum
 output. This is **compute reuse** — the agent DAG shares common sub-expressions instead
 of duplicating them.
 
-```
+```jquery-css
 Without reuse (current):              With reuse (future):
 
   Workflow A        Workflow B           Workflow A        Workflow B
@@ -997,7 +997,7 @@ Without reuse (current):              With reuse (future):
                                               1 leaf, shared
 ```
 
-At Disney+ scale with 10M sessions and 3 workflows sharing 2 common sub-expressions,
+At Disney+ or Netflix scale with 10M sessions and 3 workflows sharing 2 common sub-expressions,
 this saves ~20M redundant agents and eliminates duplicate event processing.
 
 ### Why it doesn't work today
@@ -1037,7 +1037,7 @@ There is no "add another parent" operation.
 
 ### What the fix looks like
 
-```
+```jquery-css
                  Current                              Future
           ┌──────────────────┐                ┌──────────────────┐
           │   ParentRef      │                │   Vec<ParentRef> │
