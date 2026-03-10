@@ -61,7 +61,76 @@ duration_where(
 ```
 
 
-### More examples
+## A visual model of the above DSL logic
+
+
+### Actual timeline
+```
+      |
+seek  |                   seek
+      |               
+buffer|                               ---(buffer)---
+play  |         ---(play)--             
+t ---------------------------------------------->  
+                t1        t2          t3          t10
+```
+
+#### TLHas_Existed(play)
+
+```
+     (play)--------------------------------------
+-----t1
+```
+
+#### Not TLHas_Existed_Within(seek, 5sec)
+
+```
+                         
+t1----------               t7-------------             
+                         
+           t2---(seek+5)---t7
+
+```
+
+#### Latest state is buffer (TL_LatestEventToState)
+
+```
+            t3-------------(bufer)
+
+-------------  
+t1          t3
+
+```
+
+#### And all of it
+
+```
+
+                    t7--------t10
+       
+t1------t2----------t7
+```
+
+#### TL_duration_where:
+
+```
+
+3sec                            /
+2sec                          /
+1sec                        /
+0sec----------------------/
+                          t7  t8 t9 t10
+
+```
+
+The summary of the above timeline is as follows:
+> User did start playing at some point. After playing user did perform a seek event
+> at some point. We extend this event to a configurable 5 seconds. Even after
+> extending the seek event to 5 seconds, we can see there still exists 3 seconds
+> of buffering, indicating this buffering may not be the direct outcome of seek -
+> contributing to the connection induced rebuffering!
+
+## More examples
 
 **Time spent idle per region:**
 ```javascript
@@ -209,111 +278,8 @@ lookups on precomputed state — no cascading RPC required at query time.
 6. **Query** — `get_leaf_result(t)` or `get_derived_result(t)` performs a local point lookup on the
    precomputed `StateDynamicsTimeLine`. No RPC cascade is needed.
 
-## Connection Induced Rebuffering Ratio - A crash course on the paper 
 
-
-### Actual timeline
-```
-      |
-seek  |                   seek
-      |               
-buffer|                               ---(buffer)---
-play  |         ---(play)--             
-t ---------------------------------------------->  
-                t1        t2          t3          t10
-```
-
-### TimeLine DSL semantics
-
-#### TLHas_Existed(play)
-
-```
-     (play)--------------------------------------
------t1
-```
-
-#### Not TLHas_Existed_Within(seek, 5sec)
-
-```
-                         
-t1----------               t7-------------             
-                         
-           t2---(seek+5)---t7
-
-```
-
-#### Latest state is buffer (TL_LatestEventToState)
-
-```
-            t3-------------(bufer)
-
--------------  
-t1          t3
-
-```
-
-#### And all of it
-
-```
-
-                    t7--------t10
-       
-t1------t2----------t7
-```
-
-#### TL_duration_where:
-
-```
-
-3sec                            /
-2sec                          /
-1sec                        /
-0sec----------------------/
-                          t7  t8 t9 t10
-
-```
-
-The summary of the above timeline is as follows:
-> User did start playing at some point. After playing user did perform a seek event
-> at some point. We extend this event to a configurable 5 seconds. Even after
-> extending the seek event to 5 seconds, we can see there still exists 3 seconds
-> of buffering, indicating this buffering may not be the direct outcome of seek -
-> contributing to the connection induced rebuffering!
-
-
-## A simple credit card transaction outlier detection
-
-```
-duration_in_cur_state(latest_event_to_state(location)) < 600
-```
-
-Track the cardholder's latest location as state, measure how long they've been at that location.
-If the duration is less than 600 seconds, the location changed suspiciously fast — flag it.
-
-## QuickStart
-
-### Prerequisites
-
-- Rust with `wasm32-wasip1` target: `rustup target add wasm32-wasip1`
-- Golem CLI: download from https://github.com/golemcloud/golem/releases
-
-### Build
-
-```shell
-golem build
-```
-
-### Run locally
-
-```shell
-# Terminal 1: start the Golem server
-golem server run
-
-# Terminal 2: deploy the component
-golem deploy
-```
-
-### Initialize a timeline
+### How to understand the internal details
 
 Use the REPL or `golem agent invoke` to submit a timeline expression to the driver.
 For example, the CIRR expression `EqualTo(TlLatestEventToState("playerStateChange"), "play")`:
