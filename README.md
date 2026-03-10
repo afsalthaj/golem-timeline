@@ -237,23 +237,23 @@ lookups on precomputed state — no cascading RPC required at query time.
 
 ```
                           ┌─────────────────┐
-                          │ TimelineDriver   │  (1) Walks the DSL tree, spawns agents,
-                          │ (orchestrator)   │      wires ParentRef / AggregatorRef
+                          │ TimelineDriver  │  (1) Walks the DSL tree, spawns agents,
+                          │ (orchestrator)  │      wires ParentRef / AggregatorRef
                           └────────┬────────┘
                                    │ spawns & wires
               ┌────────────────────┼────────────────────┐
-              ▼                    ▼                     ▼
+              ▼                    ▼                    ▼
    ┌──────────────────┐ ┌──────────────────┐  ┌──────────────────┐
    │ EventProcessor   │ │ EventProcessor   │  │ EventProcessor   │
-   │ (leaf: has_exist) │ │ (leaf: latest)   │  │ (leaf: within)   │
+   │ (leaf: has_exist)│ │ (leaf: latest)   │  │ (leaf: within)   │
    └────────┬─────────┘ └────────┬─────────┘  └────────┬─────────┘
-            │ push                │ push                │ push
+            │ push               │ push                │ push
             ▼                    ▼                     ▼
    ┌──────────────────┐ ┌──────────────────┐
    │TimelineProcessor │ │TimelineProcessor │  (2) Receives on_child_state_changed,
    │ (derived: And)   │ │ (derived: EqualTo│      recomputes, pushes to parent
    └────────┬─────────┘ └────────┬─────────┘
-            │ push                │ push
+            │ push               │ push
             └────────┬───────────┘
                      ▼
           ┌──────────────────┐       ┌──────────────────┐
@@ -354,11 +354,11 @@ Pulsar or Kafka.
 ### End-to-end architecture
 
 ```
-┌────────────────┐     ┌───────────────┐     ┌────────────────────────────────────┐
-│  Video Players │────▶│  Pulsar/Kafka  │────▶│  Feeder (Pulsar Consumer)          │
-│  (millions of  │     │  Topic:        │     │                                    │
-│   sessions)    │     │  player-events │     │  1. Extract session_id from msg    │
-└────────────────┘     └───────────────┘     │  2. If new session:                │
+┌────────────────┐     ┌───────────────┐      ┌────────────────────────────────────┐
+│  Video Players │────▶│  Pulsar/Kafka │────▶ │  Feeder (Pulsar Consumer)          │
+│  (millions of  │     │  Topic:       │      │                                    │
+│   sessions)    │     │  player-events│      │  1. Extract session_id from msg    │
+└────────────────┘     └───────────────┘      │  2. If new session:                │
                                               │     → initialize_timeline(sess_id) │
                                               │  3. Route event to leaf agents     │
                                               │     using naming convention:       │
@@ -366,18 +366,18 @@ Pulsar or Kafka.
                                               └──────────────┬─────────────────────┘
                                                              │
                                               ┌──────────────▼─────────────────────┐
-                                              │         Golem Cloud (K8s)           │
+                                              │         Golem Cloud (K8s)          │
                                               │                                    │
-                                              │  ┌──────────┐   ┌──────────┐       │
-                                              │  │  Leaf     │   │  Leaf    │       │
-                                              │  │  Agents   │──▶│ Derived  │──▶ ...│
-                                              │  │(per sess) │   │  Agents  │       │
-                                              │  └──────────┘   └────┬─────┘       │
-                                              │                      │              │
-                                              │               ┌──────▼──────┐       │
-                                              │               │ Aggregator  │       │
-                                              │               │ (per CDN)   │       │
-                                              │               └─────────────┘       │
+                                              │  ┌──────────┐    ┌──────────┐      │
+                                              │  │  Leaf    │    │  Leaf    │      │
+                                              │  │  Agents  │──▶ │ Derived  │──▶ ..│
+                                              │  │(per sess)│    │  Agents  │      │
+                                              │  └──────────┘    └────┬─────┘      │
+                                              │                      │             │
+                                              │               ┌──────▼──────┐      │
+                                              │               │ Aggregator  │      │
+                                              │               │ (per CDN)   │      │
+                                              │               └─────────────┘      │
                                               └────────────────────────────────────┘
 ```
 
@@ -385,35 +385,35 @@ The feeder is a standalone process (not a Golem agent) that bridges the message 
 and Golem. Here is the event routing logic:
 
 ```
-                    ┌──────────────────────────────────────┐
-                    │          Feeder (Consumer)            │
-                    │                                      │
-                    │  Event arrives from Pulsar:           │
-                    │  { session_id: "sess-42",            │
-                    │    time: 7,                           │
-                    │    event: [("playerStateChange",      │
-                    │             "buffer")] }              │
-                    │                                      │
-                    │  1. session_id = "sess-42"           │
-                    │                                      │
-                    │  2. First event for this session?    │
-                    │     YES → call initialize_timeline   │
-                    │           on TimelineDriver("sess-42")│
-                    │     NO  → skip (already initialized) │
-                    │                                      │
-                    │  3. Column is "playerStateChange"    │
-                    │     → route to has-existed-4 AND latest-event-to-state-8  │
-                    │                                                           │
-                    │     If column were "userAction"                           │
-                    │     → route to has-existed-within-6 only                  │
-                    └────────────┬──────────┬───────────────────────────────────┘
-                                 │          │
-            ┌────────────────────▼┐   ┌─────▼─────────────────────────────┐
-            │  EventProcessor     │   │  EventProcessor                    │
-            │  "sess-42-has-      │   │  "sess-42-latest-event-to-state-8" │
-            │   existed-4"        │   │  (TlLatestEventToState)            │
-            │  (TlHasExisted)     │   │                                    │
-            └─────────────────────┘   └────────────────────────────────────┘
+                    ┌─────────────────────────────────────------------------------─┐
+                    │          Feeder (Consumer)                                   │
+                    │                                                              │
+                    │  Event arrives from Pulsar:                                  │
+                    │  { session_id: "sess-42",                                    │
+                    │    time: 7,                                                  │
+                    │    event: [("playerStateChange",                             │
+                    │             "buffer")] }                                     │
+                    │                                                              │
+                    │  1. session_id = "sess-42"                                   │
+                    │                                                              │
+                    │  2. First event for this session?                            │
+                    │     YES → call initialize_timeline                           │
+                    │           on TimelineDriver("sess-42")                       │
+                    │     NO  → skip (already initialized)                         │
+                    │                                                              │
+                    │  3. Column is "playerStateChange"                            │
+                    │     → route to has-existed-4 AND latest-event-to-state-8     │
+                    │                                                              │
+                    │     If column were "userAction"                              │
+                    │     → route to has-existed-within-6 only                     │
+                    └────────────┬─────────---─┬───────────────────────────────────┘
+                                 │             │
+              ┌──────────────────▼---┐   ┌─────▼────────────────────────────-─┐
+              │  EventProcessor      │   │  EventProcessor                    │
+              │  "sess-42-has-       │   │  "sess-42-latest-event-to-state-8" │
+              │   existed-4"         │   │  (TlLatestEventToState)            │
+              │  (TlHasExisted)      │   │                                    │
+              └─────────────────────-┘   └────────────────────────────────────┘
 ```
 
 Note that **one event can fan out to multiple leaves**. A `playerStateChange` event
@@ -728,10 +728,10 @@ scores, etc.) uses the same deployed component. There is no per-metric deploymen
 │  └──────────────────────────────────────────────────────────┘  │
 │                                                                │
 │  Metric: CIRR                    Metric: Time-to-First-Play    │
-│  ┌──────────────────────┐       ┌──────────────────────┐      │
-│  │ 8 agents per session │       │ 2 agents per session │      │
-│  │ sess-42, sess-99 ... │       │ sess-42, sess-99 ... │      │
-│  └──────────────────────┘       └──────────────────────┘      │
+│  ┌──────────────────────┐       ┌──────────────────────┐       │
+│  │ 8 agents per session │       │ 2 agents per session │       │
+│  │ sess-42, sess-99 ... │       │ sess-42, sess-99 ... │       │
+│  └──────────────────────┘       └──────────────────────┘       │
 └────────────────────────────────────────────────────────────────┘
 ```
 
@@ -989,7 +989,7 @@ Without reuse (current):              With reuse (future):
   └─┬───┬─┘         │       │           └─┬───┬─┘
     │   │           │       │             │   │
   ┌─┴─┐ ┌┴──┐    ┌──┴──┐              ┌─┴─┐ │
-  │ X │ │ Y │    │ Y'  │  ← duplicate  │ X │ │
+  │ X │ │ Y │    │ Y'  │  ← duplicate │ X │ │
   └───┘ └───┘    └─────┘              └───┘ │
                                              │    ┌───────┐
     2 leaves compute Y                       └────┤   Y   ├──── Workflow B root
@@ -1044,11 +1044,11 @@ There is no "add another parent" operation.
           │   (single)       │                │   (fan-out)      │
           └──────────────────┘                └──────────────────┘
 
-          ┌──────────────────┐                ┌──────────────────┐
+          ┌──────────────────┐                ┌─────────────────-─┐
           │  "{sid}-node-{N}"│                │  content-addressed│
-          │  (positional)    │                │  naming (hash of │
+          │  (positional)    │                │  naming (hash of  │
           └──────────────────┘                │  operation + cols)│
-                                              └──────────────────┘
+                                              └─────────────────-─┘
 
           ┌──────────────────┐                ┌──────────────────┐
           │  initialize_leaf │                │  add_parent_ref  │
